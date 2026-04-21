@@ -1,6 +1,11 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { Buffer } from "node:buffer";
-import { openai, ensureCompatibleFormat, speechToText } from "@workspace/integrations-openai-ai-server/audio";
+import {
+  openai,
+  ensureCompatibleFormat,
+  speechToText,
+} from "@workspace/integrations-openai-ai-server/audio";
+import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
@@ -52,28 +57,49 @@ router.post("/voice/chat", async (req: Request, res: Response) => {
     aborted = true;
   });
 
+  const t0 = Date.now();
   try {
     const inputBuffer = Buffer.from(audio, "base64");
-    const { buffer: compatibleBuffer, format } = await ensureCompatibleFormat(inputBuffer);
+    logger.info({ bytes: inputBuffer.length }, "voice: received audio");
 
-    // Transcribe user audio first (cheap + fast) so we can echo it back.
-    const userTranscript = await speechToText(compatibleBuffer, format).catch(() => "");
+    const { buffer: compatibleBuffer, format } =
+      await ensureCompatibleFormat(inputBuffer);
+    logger.info(
+      { ms: Date.now() - t0, format, bytes: compatibleBuffer.length },
+      "voice: converted",
+    );
+
+    const userTranscript = await speechToText(compatibleBuffer, format).catch(
+      (e: unknown) => {
+        logger.error(
+          { err: e instanceof Error ? e.message : String(e) },
+          "voice: stt failed",
+        );
+        return "";
+      },
+    );
+    logger.info(
+      { ms: Date.now() - t0, transcript: userTranscript },
+      "voice: transcribed",
+    );
     if (userTranscript) {
       send({ type: "user_transcript", data: userTranscript });
     }
 
     const priorMessages = (Array.isArray(history) ? history : [])
-      .filter((m): m is IncomingMessage =>
-        !!m &&
-        (m.role === "user" || m.role === "assistant") &&
-        typeof m.content === "string" &&
-        m.content.trim().length > 0,
+      .filter(
+        (m): m is IncomingMessage =>
+          !!m &&
+          (m.role === "user" || m.role === "assistant") &&
+          typeof m.content === "string" &&
+          m.content.trim().length > 0,
       )
       .slice(-12)
       .map((m) => ({ role: m.role, content: m.content }));
 
     const audioBase64 = compatibleBuffer.toString("base64");
 
+    logger.info({ ms: Date.now() - t0 }, "voice: calling gpt-audio");
     const stream = await openai.chat.completions.create({
       model: "gpt-audio",
       modalities: ["text", "audio"],
@@ -94,8 +120,14 @@ router.post("/voice/chat", async (req: Request, res: Response) => {
       stream: true,
     });
 
+    let firstChunkLogged = false;
+    let audioChunks = 0;
     for await (const chunk of stream) {
       if (aborted) break;
+      if (!firstChunkLogged) {
+        firstChunkLogged = true;
+        logger.info({ ms: Date.now() - t0 }, "voice: first chunk");
+      }
       const delta = chunk.choices?.[0]?.delta as
         | { audio?: { transcript?: string; data?: string } }
         | undefined;
@@ -104,15 +136,22 @@ router.post("/voice/chat", async (req: Request, res: Response) => {
         send({ type: "transcript", data: delta.audio.transcript });
       }
       if (delta.audio.data) {
+        audioChunks += 1;
         send({ type: "audio", data: delta.audio.data });
       }
     }
+
+    logger.info(
+      { ms: Date.now() - t0, audioChunks, aborted },
+      "voice: stream done",
+    );
 
     if (!aborted) {
       send({ done: true });
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : "Voice request failed";
+    logger.error({ err: message, ms: Date.now() - t0 }, "voice: failed");
     try {
       send({ type: "error", error: message });
     } catch {
