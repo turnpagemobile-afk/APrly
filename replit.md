@@ -4,6 +4,17 @@
 
 pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
 
+## APRly App
+
+`artifacts/aprly` — premium dark-mode FinTech web app (React + Vite + Tailwind). Features:
+- Hero "Debt Interest Optimizer" calculator (live, animated, accessible)
+- Voice Assistant mode (Web Speech API: synthesis + recognition)
+- Plaid Link integration (sandbox, simulated backend)
+- Stripe-style $39/mo paywall
+- Dashboard with credit score gauge, rate reductions, hardship portal stepper
+- Backend routes in `artifacts/api-server/src/routes/`: leads, optimizer, plaid, stripe, dashboard
+- Postgres (Drizzle) `leads` table in `lib/db/src/schema/leads.ts`
+
 ## Stack
 
 - **Monorepo tool**: pnpm workspaces

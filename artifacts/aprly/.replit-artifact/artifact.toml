@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "APRly"
+version = "1.0.0"
+id = "artifacts/aprly"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18280
+
+[services.development]
+run = "pnpm --filter @workspace/aprly run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/aprly", "run", "build" ]
+publicDir = "artifacts/aprly/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18280"
+BASE_PATH = "/"

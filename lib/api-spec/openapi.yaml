@@ -3,20 +3,23 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: APRly API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: leads
+  - name: optimizer
+  - name: plaid
+  - name: stripe
+  - name: dashboard
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +27,358 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /leads:
+    post:
+      operationId: createLead
+      tags: [leads]
+      summary: Capture a lead (name, email, total debt)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLeadInput"
+      responses:
+        "200":
+          description: Lead created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+
+  /optimizer/calculate:
+    post:
+      operationId: calculateOptimization
+      tags: [optimizer]
+      summary: Calculate debt interest savings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptimizerInput"
+      responses:
+        "200":
+          description: Optimizer result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OptimizerResult"
+
+  /plaid/link-token:
+    post:
+      operationId: createPlaidLinkToken
+      tags: [plaid]
+      summary: Create a Plaid Link sandbox token
+      responses:
+        "200":
+          description: Link token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaidLinkToken"
+
+  /plaid/exchange:
+    post:
+      operationId: exchangePlaidPublicToken
+      tags: [plaid]
+      summary: Exchange a public token for an access token (sandbox-simulated)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlaidExchangeInput"
+      responses:
+        "200":
+          description: Linked account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaidLinkedAccount"
+
+  /stripe/subscribe:
+    post:
+      operationId: createSubscription
+      tags: [stripe]
+      summary: Create a simulated Stripe subscription for the Interest Protection Plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscribeInput"
+      responses:
+        "200":
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard data — credit score, rate reductions, hardship status
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    CreateLeadInput:
+      type: object
+      required: [name, email, totalDebt]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+        totalDebt:
+          type: number
+          minimum: 0
+        interestRate:
+          type: number
+          minimum: 0
+
+    Lead:
+      type: object
+      required: [id, name, email, totalDebt, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        totalDebt:
+          type: number
+        interestRate:
+          type: number
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    OptimizerInput:
+      type: object
+      required: [totalDebt, interestRate]
+      properties:
+        totalDebt:
+          type: number
+          minimum: 0
+        interestRate:
+          type: number
+          minimum: 0
+          description: Current APR as a percent (e.g. 24.99)
+        targetRate:
+          type: number
+          minimum: 0
+          default: 2
+          description: Target APR after optimization (default 2%)
+        monthlyPayment:
+          type: number
+          minimum: 0
+          nullable: true
+
+    OptimizerResult:
+      type: object
+      required:
+        - dailyInterestWaste
+        - monthlyInterestWaste
+        - monthlySavings
+        - annualSavings
+        - currentPayoffMonths
+        - newPayoffMonths
+        - newPayoffDate
+        - currentRate
+        - targetRate
+      properties:
+        dailyInterestWaste:
+          type: number
+        monthlyInterestWaste:
+          type: number
+        monthlySavings:
+          type: number
+        annualSavings:
+          type: number
+        currentPayoffMonths:
+          type: integer
+        newPayoffMonths:
+          type: integer
+        newPayoffDate:
+          type: string
+          format: date
+        currentRate:
+          type: number
+        targetRate:
+          type: number
+
+    PlaidLinkToken:
+      type: object
+      required: [linkToken, expiration, sandbox]
+      properties:
+        linkToken:
+          type: string
+        expiration:
+          type: string
+          format: date-time
+        sandbox:
+          type: boolean
+
+    PlaidExchangeInput:
+      type: object
+      required: [publicToken]
+      properties:
+        publicToken:
+          type: string
+        institutionName:
+          type: string
+
+    PlaidLinkedAccount:
+      type: object
+      required: [itemId, institutionName, mask, accountType]
+      properties:
+        itemId:
+          type: string
+        institutionName:
+          type: string
+        mask:
+          type: string
+        accountType:
+          type: string
+
+    SubscribeInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        plan:
+          type: string
+          default: interest-protection-monthly
+
+    Subscription:
+      type: object
+      required: [id, status, plan, amount, currency, currentPeriodEnd]
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        plan:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        currentPeriodEnd:
+          type: string
+          format: date-time
+
+    DashboardSummary:
+      type: object
+      required:
+        - creditScore
+        - creditScoreDelta
+        - creditScoreBand
+        - rateReductions
+        - hardshipPortal
+        - linkedAccounts
+        - totalDebt
+        - estimatedAnnualSavings
+      properties:
+        creditScore:
+          type: integer
+        creditScoreDelta:
+          type: integer
+        creditScoreBand:
+          type: string
+        rateReductions:
+          type: array
+          items:
+            $ref: "#/components/schemas/RateReduction"
+        hardshipPortal:
+          $ref: "#/components/schemas/HardshipPortal"
+        linkedAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/LinkedAccountSummary"
+        totalDebt:
+          type: number
+        estimatedAnnualSavings:
+          type: number
+
+    RateReduction:
+      type: object
+      required: [id, lender, currentApr, targetApr, estimatedSavings, status]
+      properties:
+        id:
+          type: string
+        lender:
+          type: string
+        currentApr:
+          type: number
+        targetApr:
+          type: number
+        estimatedSavings:
+          type: number
+        status:
+          type: string
+          enum: [recommended, in_progress, won, denied]
+
+    HardshipPortal:
+      type: object
+      required: [stage, progress, steps, etaDays]
+      properties:
+        stage:
+          type: string
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        etaDays:
+          type: integer
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/HardshipStep"
+
+    HardshipStep:
+      type: object
+      required: [name, status]
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+          enum: [done, active, pending]
+
+    LinkedAccountSummary:
+      type: object
+      required: [institutionName, mask, balance, apr]
+      properties:
+        institutionName:
+          type: string
+        mask:
+          type: string
+        balance:
+          type: number
+        apr:
+          type: number
