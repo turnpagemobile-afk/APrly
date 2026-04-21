@@ -62,8 +62,9 @@ export default function Paywall() {
         {/* Left: Summary */}
         <div className="space-y-8">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight mb-4">Interest Protection Plan</h1>
-            <p className="text-xl text-muted-foreground">Stop paying banks for your own money.</p>
+            <p className="text-xs md:text-sm font-bold uppercase tracking-[0.25em] text-primary mb-3">Interest Protection</p>
+            <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-5 leading-[0.95]">Stop paying banks<br/>for your own money.</h1>
+            <p className="text-xl md:text-2xl text-muted-foreground">One flat price. Every account watched. Every day.</p>
           </div>
           
           <div className="p-6 rounded-2xl bg-card border border-border/50">

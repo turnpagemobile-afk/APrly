@@ -24,7 +24,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
+    <div className="container mx-auto px-4 py-12 md:py-16 space-y-10">
+      <div className="max-w-3xl">
+        <p className="text-xs md:text-sm font-bold uppercase tracking-[0.25em] text-primary mb-3">Your cockpit</p>
+        <h1 className="text-4xl md:text-6xl font-black tracking-tight">Dashboard</h1>
+      </div>
       {/* Top Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-card/50 border-border/50">
