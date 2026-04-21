@@ -277,7 +277,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-4">
             <div className="hidden sm:block">
-              <VoiceAssistant />
+              <div className="hidden" aria-hidden="true">
+                <VoiceAssistant />
+              </div>
             </div>
             <Link href="/paywall">
               <Button size="sm" className="font-semibold shadow-[0_0_15px_rgba(59,130,246,0.5)]">
