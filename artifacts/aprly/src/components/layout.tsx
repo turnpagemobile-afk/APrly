@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, Link } from "wouter";
-import { Mic, MicOff, ShieldCheck, Lock, CreditCard } from "lucide-react";
+import { Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // A simple store for the voice assistant to communicate with the calculator
@@ -158,16 +158,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-muted-foreground text-sm">
             <div>&copy; {new Date().getFullYear()} APRly. All rights reserved.</div>
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4" />
-                <span>Bank-Level Security</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Lock className="h-4 w-4" />
-                <span>256-bit Encryption</span>
-              </div>
-            </div>
           </div>
         </div>
       </footer>
