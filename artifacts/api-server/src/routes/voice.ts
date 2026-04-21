@@ -52,9 +52,20 @@ router.post("/voice/chat", async (req: Request, res: Response) => {
     res.write(`data: ${JSON.stringify(payload)}\n\n`);
   };
 
+  // SSE comment line keeps proxies (and the browser EventSource layer) from
+  // closing the connection while we wait for the first model chunk.
+  const heartbeat = setInterval(() => {
+    try {
+      res.write(`: ping ${Date.now()}\n\n`);
+    } catch {
+      // socket already closed
+    }
+  }, 1000);
+
   let aborted = false;
   req.on("close", () => {
     aborted = true;
+    clearInterval(heartbeat);
   });
 
   const t0 = Date.now();
@@ -122,34 +133,47 @@ router.post("/voice/chat", async (req: Request, res: Response) => {
 
     let firstChunkLogged = false;
     let audioChunks = 0;
+    let textChunks = 0;
+    let lastFinish: string | null = null;
+    let firstChunkSample: unknown = null;
     for await (const chunk of stream) {
       if (aborted) break;
       if (!firstChunkLogged) {
         firstChunkLogged = true;
-        logger.info({ ms: Date.now() - t0 }, "voice: first chunk");
+        firstChunkSample = chunk;
+        logger.info(
+          { ms: Date.now() - t0, sample: JSON.stringify(chunk).slice(0, 800) },
+          "voice: first chunk",
+        );
       }
-      const delta = chunk.choices?.[0]?.delta as
-        | { audio?: { transcript?: string; data?: string } }
+      const choice = chunk.choices?.[0] as
+        | { delta?: { audio?: { transcript?: string; data?: string }; content?: string }; finish_reason?: string }
         | undefined;
-      if (!delta?.audio) continue;
-      if (delta.audio.transcript) {
+      if (choice?.finish_reason) lastFinish = choice.finish_reason;
+      const delta = choice?.delta;
+      if (!delta) continue;
+      if (delta.audio?.transcript) {
+        textChunks += 1;
         send({ type: "transcript", data: delta.audio.transcript });
       }
-      if (delta.audio.data) {
+      if (delta.audio?.data) {
         audioChunks += 1;
         send({ type: "audio", data: delta.audio.data });
       }
     }
+    void firstChunkSample;
 
     logger.info(
-      { ms: Date.now() - t0, audioChunks, aborted },
+      { ms: Date.now() - t0, audioChunks, textChunks, lastFinish, aborted },
       "voice: stream done",
     );
 
+    clearInterval(heartbeat);
     if (!aborted) {
       send({ done: true });
     }
   } catch (err) {
+    clearInterval(heartbeat);
     const message = err instanceof Error ? err.message : "Voice request failed";
     logger.error({ err: message, ms: Date.now() - t0 }, "voice: failed");
     try {
