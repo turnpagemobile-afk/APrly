@@ -231,7 +231,7 @@ function Step1({
           size="lg"
           onClick={onNext}
           disabled={!ready}
-          className="font-black uppercase tracking-wider text-base px-8 h-14 shadow-[0_0_18px_rgba(59,130,246,0.55)] hover:shadow-[0_0_24px_rgba(59,130,246,0.8)] transition-shadow"
+          className="font-black uppercase tracking-wider text-base px-8 h-14 shadow-[0_0_18px_rgba(59,130,246,0.55)] hover:shadow-[0_0_24px_rgba(59,130,246,0.8)] transition-shadow disabled:opacity-40 disabled:shadow-none"
         >
           Continue <ArrowRight className="ml-2 h-5 w-5" />
         </Button>
@@ -527,8 +527,8 @@ function Step3({
 
 export default function Home() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [totalDebt, setTotalDebt] = useState<string>("");
-  const [interestRate, setInterestRate] = useState<string>("");
+  const [totalDebt, setTotalDebt] = useState<string>("15000");
+  const [interestRate, setInterestRate] = useState<string>("24.99");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [accounts, setAccounts] = useState<CardEntry[]>([
