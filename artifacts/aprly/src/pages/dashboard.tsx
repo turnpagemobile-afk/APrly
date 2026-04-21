@@ -18,11 +18,11 @@ const HERO_COPY = [
   {
     eyebrow: "Your cockpit",
     headline: "Stop the bleed.",
-    tagline: "Right now your APR is quietly stealing from your future. Today, we hand it back.",
+    tagline: "Right now your rate is quietly stealing from your future. Today, we hand it back.",
   },
   {
     eyebrow: "Your money, rewired",
-    headline: "Outsmart your APR.",
+    headline: "Outsmart your rate.",
     tagline: "The banks bet you won't fight back. Prove them wrong, one rate cut at a time.",
   },
   {
@@ -156,7 +156,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-right">
                       <p className="font-black text-lg">${acc.balance.toLocaleString()}</p>
-                      <p className="text-sm text-destructive font-bold">{acc.apr}% APR</p>
+                      <p className="text-sm text-destructive font-bold">{acc.apr}% Rate</p>
                     </div>
                   </div>
                 ))

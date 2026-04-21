@@ -21,7 +21,7 @@ import { useLocation } from "wouter";
 
 const SLOGAN_STRINGS = [
   "Stop feeding the banks. Take your money back.",
-  "Your APR is bleeding you dry. We're the tourniquet.",
+  "Your rate is bleeding you dry. We're the tourniquet.",
   "Every day you wait costs you real money.",
   "Crush your interest rate. Keep your paycheck.",
   "The smartest move you'll make this year.",
@@ -29,7 +29,7 @@ const SLOGAN_STRINGS = [
 
 const SLOGANS: { full: string; lead: string; accent: string }[] = [
   { full: SLOGAN_STRINGS[0], lead: "Stop feeding the banks.", accent: "Take your money back." },
-  { full: SLOGAN_STRINGS[1], lead: "Your APR is bleeding you dry.", accent: "We're the tourniquet." },
+  { full: SLOGAN_STRINGS[1], lead: "Your rate is bleeding you dry.", accent: "We're the tourniquet." },
   { full: SLOGAN_STRINGS[2], lead: "Every day you wait", accent: "costs you real money." },
   { full: SLOGAN_STRINGS[3], lead: "Crush your interest rate.", accent: "Keep your paycheck." },
   { full: SLOGAN_STRINGS[4], lead: "The smartest move", accent: "you'll make this year." },
@@ -227,7 +227,7 @@ export default function Home() {
               See it in dollars per day.
             </h2>
             <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl">
-              Type your debt and APR. We'll show the leak in real time — and exactly what we can claw back.
+              Type your debt and rate. We'll show the leak in real time — and exactly what we can claw back.
             </p>
           </div>
 
@@ -307,7 +307,7 @@ export default function Home() {
                         htmlFor="rate"
                         className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground"
                       >
-                        Current APR (%)
+                        Current Rate (%)
                       </Label>
                       <Input
                         id="rate"
@@ -398,7 +398,7 @@ export default function Home() {
                     <div>
                       <p className="font-black text-lg tracking-tight">Auto-detect your debts</p>
                       <p className="text-sm text-muted-foreground">
-                        Connect your bank to pull every balance and APR in one tap.
+                        Connect your bank to pull every balance and rate in one tap.
                       </p>
                     </div>
                   </div>
