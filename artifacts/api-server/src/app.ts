@@ -41,6 +41,11 @@ const leadsRateLimit = rateLimit({
 });
 
 app.use("/api/leads", leadsRateLimit);
+app.use(
+  "/api/voice",
+  express.json({ limit: "50mb" }),
+  express.urlencoded({ extended: true, limit: "50mb" }),
+);
 app.use("/api", router);
 
 export default app;
