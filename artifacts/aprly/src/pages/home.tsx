@@ -10,12 +10,20 @@ import { Lock, CreditCard, Building, ArrowDown } from "lucide-react";
 import { motion, AnimatePresence, animate } from "framer-motion";
 import { useLocation } from "wouter";
 
-const SLOGANS: { lead: string; accent: string }[] = [
-  { lead: "Stop feeding the banks.", accent: "Take your money back." },
-  { lead: "Your APR is bleeding you dry.", accent: "We're the tourniquet." },
-  { lead: "Every day you wait", accent: "costs you real money." },
-  { lead: "Crush your interest rate.", accent: "Keep your paycheck." },
-  { lead: "The smartest move", accent: "you'll make this year." },
+const SLOGAN_STRINGS = [
+  "Stop feeding the banks. Take your money back.",
+  "Your APR is bleeding you dry. We're the tourniquet.",
+  "Every day you wait costs you real money.",
+  "Crush your interest rate. Keep your paycheck.",
+  "The smartest move you'll make this year.",
+] as const;
+
+const SLOGANS: { full: string; lead: string; accent: string }[] = [
+  { full: SLOGAN_STRINGS[0], lead: "Stop feeding the banks.", accent: "Take your money back." },
+  { full: SLOGAN_STRINGS[1], lead: "Your APR is bleeding you dry.", accent: "We're the tourniquet." },
+  { full: SLOGAN_STRINGS[2], lead: "Every day you wait", accent: "costs you real money." },
+  { full: SLOGAN_STRINGS[3], lead: "Crush your interest rate.", accent: "Keep your paycheck." },
+  { full: SLOGAN_STRINGS[4], lead: "The smartest move", accent: "you'll make this year." },
 ];
 
 function RotatingHeadline() {
@@ -40,7 +48,7 @@ function RotatingHeadline() {
     >
       {/* SR-only: announce the active slogan to assistive tech */}
       <span className="sr-only" aria-live="polite">
-        {current.lead} {current.accent}
+        {current.full}
       </span>
 
       <AnimatePresence mode="wait">
