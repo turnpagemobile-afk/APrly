@@ -29,8 +29,14 @@ app.use(
   }),
 );
 app.use(cors());
-app.use(express.json({ limit: "16kb" }));
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+
+const skipVoice = (mw: express.RequestHandler): express.RequestHandler => (req, res, next) => {
+  if (req.path.startsWith("/api/voice")) return next();
+  return mw(req, res, next);
+};
+
+app.use(skipVoice(express.json({ limit: "16kb" })));
+app.use(skipVoice(express.urlencoded({ extended: true, limit: "16kb" })));
 
 const leadsRateLimit = rateLimit({
   windowMs: 60 * 60 * 1000,
