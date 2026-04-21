@@ -26,34 +26,37 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto px-4 py-12 md:py-16 space-y-10">
       <div className="max-w-3xl">
-        <p className="text-xs md:text-sm font-bold uppercase tracking-[0.25em] text-primary mb-3">Your cockpit</p>
-        <h1 className="text-4xl md:text-6xl font-black tracking-tight">Dashboard</h1>
+        <p className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-primary mb-4">Your cockpit</p>
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95]">Dashboard</h1>
+        <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl">
+          Every dollar of interest you stop paying today compounds for years. Let's go.
+        </p>
       </div>
       {/* Top Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-card/50 border-border/50">
-          <CardContent className="p-6 flex items-center justify-between">
+          <CardContent className="p-8 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Total Debt</p>
-              <p className="text-3xl font-bold">${summary.totalDebt.toLocaleString()}</p>
+              <p className="text-sm md:text-base font-bold text-muted-foreground uppercase tracking-[0.2em] mb-2">Total Debt</p>
+              <p className="text-4xl md:text-5xl font-black tracking-tight">${summary.totalDebt.toLocaleString()}</p>
             </div>
-            <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
-              <AlertCircle className="h-6 w-6 text-destructive" />
+            <div className="h-14 w-14 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+              <AlertCircle className="h-7 w-7 text-destructive" />
             </div>
           </CardContent>
         </Card>
-        
-        <Card className="bg-card/50 border-primary/20 md:col-span-2 relative overflow-hidden">
+
+        <Card className="bg-card/50 border-primary/30 md:col-span-2 relative overflow-hidden">
           <div className="absolute inset-0 bg-primary/5" />
-          <CardContent className="p-6 flex items-center justify-between relative z-10">
+          <CardContent className="p-8 flex items-center justify-between relative z-10 gap-6">
             <div>
-              <p className="text-sm font-medium text-primary uppercase tracking-wider mb-1">Estimated Annual Savings</p>
-              <p className="text-4xl font-bold text-primary drop-shadow-[0_0_12px_rgba(59,130,246,0.6)]">
+              <p className="text-sm md:text-base font-bold text-primary uppercase tracking-[0.2em] mb-2">Estimated Annual Savings</p>
+              <p className="text-5xl md:text-6xl font-black tracking-tight text-primary drop-shadow-[0_0_18px_rgba(59,130,246,0.7)]">
                 ${summary.estimatedAnnualSavings.toLocaleString()}
               </p>
             </div>
-            <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
-              <TrendingDown className="h-6 w-6 text-primary" />
+            <div className="h-14 w-14 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+              <TrendingDown className="h-7 w-7 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -64,40 +67,40 @@ export default function Dashboard() {
         <div className="space-y-8">
           <Card className="bg-card border-border/50">
             <CardHeader>
-              <CardTitle>Credit Health</CardTitle>
+              <CardTitle className="text-2xl font-black tracking-tight">Credit Health</CardTitle>
             </CardHeader>
             <CardContent>
-              <CreditScoreGauge 
-                score={summary.creditScore} 
-                delta={summary.creditScoreDelta} 
-                band={summary.creditScoreBand} 
+              <CreditScoreGauge
+                score={summary.creditScore}
+                delta={summary.creditScoreDelta}
+                band={summary.creditScoreBand}
               />
             </CardContent>
           </Card>
 
           <Card className="bg-card border-border/50">
             <CardHeader>
-              <CardTitle>Linked Accounts</CardTitle>
+              <CardTitle className="text-2xl font-black tracking-tight">Linked Accounts</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {summary.linkedAccounts.length === 0 ? (
                 <div className="text-center py-6">
-                  <p className="text-muted-foreground mb-4">No accounts linked yet.</p>
+                  <p className="text-base text-muted-foreground mb-5 font-medium">No accounts linked yet.</p>
                   <PlaidLinkButton />
                 </div>
               ) : (
                 summary.linkedAccounts.map((acc, i) => (
-                  <div key={i} className="flex justify-between items-center p-3 rounded-lg bg-background border border-border/50">
+                  <div key={i} className="flex justify-between items-center p-4 rounded-lg bg-background border border-border/50">
                     <div className="flex items-center gap-3">
-                      <Building className="h-5 w-5 text-muted-foreground" />
+                      <Building className="h-6 w-6 text-muted-foreground" />
                       <div>
-                        <p className="font-medium text-sm">{acc.institutionName}</p>
-                        <p className="text-xs text-muted-foreground">•••• {acc.mask}</p>
+                        <p className="font-bold text-base">{acc.institutionName}</p>
+                        <p className="text-sm text-muted-foreground">•••• {acc.mask}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold">${acc.balance.toLocaleString()}</p>
-                      <p className="text-xs text-destructive font-medium">{acc.apr}% APR</p>
+                      <p className="font-black text-lg">${acc.balance.toLocaleString()}</p>
+                      <p className="text-sm text-destructive font-bold">{acc.apr}% APR</p>
                     </div>
                   </div>
                 ))
@@ -110,29 +113,34 @@ export default function Dashboard() {
         <div className="lg:col-span-2 space-y-8">
           <Card className="bg-card border-border/50">
             <CardHeader>
-              <CardTitle>Actionable Rate Reductions</CardTitle>
-              <CardDescription>Opportunities to negotiate lower rates based on your profile.</CardDescription>
+              <CardTitle className="text-2xl md:text-3xl font-black tracking-tight">Actionable Rate Reductions</CardTitle>
+              <CardDescription className="text-base">Opportunities to negotiate lower rates based on your profile.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {summary.rateReductions.map((reduction) => (
-                <div key={reduction.id} className="flex flex-col sm:flex-row justify-between items-center p-4 rounded-xl bg-background border border-border/50 gap-4">
+                <div key={reduction.id} className="flex flex-col sm:flex-row justify-between items-center p-5 rounded-xl bg-background border border-border/50 gap-4">
                   <div>
-                    <h4 className="font-semibold text-lg">{reduction.lender}</h4>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className="text-destructive border-destructive/30 bg-destructive/10">{reduction.currentApr}%</Badge>
-                      <span className="text-muted-foreground text-sm">→</span>
-                      <Badge variant="outline" className="text-primary border-primary/30 bg-primary/10">{reduction.targetApr}%</Badge>
+                    <h4 className="font-black text-xl tracking-tight">{reduction.lender}</h4>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge variant="outline" className="text-destructive border-destructive/30 bg-destructive/10 text-sm font-bold px-2.5 py-0.5">{reduction.currentApr}%</Badge>
+                      <span className="text-muted-foreground text-base font-bold">→</span>
+                      <Badge variant="outline" className="text-primary border-primary/30 bg-primary/10 text-sm font-bold px-2.5 py-0.5">{reduction.targetApr}%</Badge>
                     </div>
                   </div>
                   <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
                     <div className="text-right">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider">Est. Savings</p>
-                      <p className="font-bold text-primary">${reduction.estimatedSavings.toLocaleString()}/yr</p>
+                      <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">Est. Savings</p>
+                      <p className="font-black text-xl text-primary">${reduction.estimatedSavings.toLocaleString()}/yr</p>
                     </div>
                     {reduction.status === "recommended" ? (
-                      <Button size="sm" className="shadow-[0_0_10px_rgba(59,130,246,0.3)]">Negotiate</Button>
+                      <Button
+                        size="lg"
+                        className="font-black uppercase tracking-wider text-base px-6 shadow-[0_0_18px_rgba(59,130,246,0.55)] hover:shadow-[0_0_24px_rgba(59,130,246,0.8)] transition-shadow"
+                      >
+                        Negotiate
+                      </Button>
                     ) : (
-                      <Badge variant="secondary" className="capitalize">{reduction.status.replace("_", " ")}</Badge>
+                      <Badge variant="secondary" className="capitalize text-sm font-bold px-3 py-1">{reduction.status.replace("_", " ")}</Badge>
                     )}
                   </div>
                 </div>
@@ -142,8 +150,8 @@ export default function Dashboard() {
 
           <Card className="bg-card border-border/50">
             <CardHeader>
-              <CardTitle>Hardship Portal</CardTitle>
-              <CardDescription>Bank Handshake Progress</CardDescription>
+              <CardTitle className="text-2xl md:text-3xl font-black tracking-tight">Hardship Portal</CardTitle>
+              <CardDescription className="text-base">Bank Handshake Progress</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="mb-6">
