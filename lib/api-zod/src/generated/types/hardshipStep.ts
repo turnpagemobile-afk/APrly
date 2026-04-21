@@ -10,4 +10,6 @@ import type { HardshipStepStatus } from "./hardshipStepStatus";
 export interface HardshipStep {
   name: string;
   status: HardshipStepStatus;
+  description?: string;
+  cta?: string;
 }

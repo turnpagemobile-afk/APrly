@@ -47,13 +47,54 @@ router.get("/dashboard/summary", (_req, res, next) => {
       ],
       hardshipPortal: {
         stage: "Bank Handshake",
-        progress: 64,
+        progress: 38,
         etaDays: 9,
         steps: [
-          { name: "Profile verified", status: "done" },
-          { name: "Hardship letter drafted", status: "done" },
-          { name: "Bank handshake", status: "active" },
-          { name: "New APR confirmed", status: "pending" },
+          {
+            name: "Profile verified",
+            status: "done",
+            description: "Identity, income, and hardship cause confirmed.",
+          },
+          {
+            name: "Hardship letter drafted",
+            status: "done",
+            description: "Custom hardship packet sent to issuer's retention desk.",
+          },
+          {
+            name: "Bank handshake",
+            status: "active",
+            description: "Negotiation in progress with the assigned hardship officer (~9 days).",
+          },
+          {
+            name: "Confirm new rate in writing",
+            status: "pending",
+            description: "Review the issuer's official rate-change notice the moment it arrives.",
+            cta: "Review notice",
+          },
+          {
+            name: "Sign the hardship agreement",
+            status: "pending",
+            description: "E-sign in APRly to lock in the lower rate immediately.",
+            cta: "E-sign",
+          },
+          {
+            name: "Auto-pay realignment",
+            status: "pending",
+            description: "We recalculate your minimums at the new rate so nothing slips.",
+            cta: "Update auto-pay",
+          },
+          {
+            name: "Snowball redirect",
+            status: "pending",
+            description: "Saved interest is auto-routed to your highest-rate remaining card.",
+            cta: "Set target card",
+          },
+          {
+            name: "Schedule next re-negotiation",
+            status: "pending",
+            description: "APRly queues your next rate review (typically 90 days out).",
+            cta: "Set reminder",
+          },
         ],
       },
       linkedAccounts: [

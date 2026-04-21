@@ -373,6 +373,10 @@ components:
         status:
           type: string
           enum: [done, active, pending]
+        description:
+          type: string
+        cta:
+          type: string
 
     LinkedAccountSummary:
       type: object

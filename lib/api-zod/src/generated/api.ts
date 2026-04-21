@@ -165,6 +165,8 @@ export const GetDashboardSummaryResponse = zod.object({
       zod.object({
         name: zod.string(),
         status: zod.enum(["done", "active", "pending"]),
+        description: zod.string().optional(),
+        cta: zod.string().optional(),
       }),
     ),
   }),

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building, AlertCircle, TrendingDown, Clock, ShieldCheck } from "lucide-react";
+import { Building, AlertCircle, TrendingDown, Clock, ShieldCheck, Check, ArrowRight } from "lucide-react";
 
 const HERO_COPY = [
   {
@@ -207,45 +207,97 @@ export default function Dashboard() {
           <Card className="bg-card border-border/50">
             <CardHeader>
               <CardTitle className="text-2xl md:text-3xl font-black tracking-tight">Hardship Portal</CardTitle>
-              <CardDescription className="text-base">Bank Handshake Progress</CardDescription>
+              <CardDescription className="text-base">Bank Handshake — start to finish.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="mb-6">
+              <div className="mb-8">
                 <div className="flex justify-between items-end mb-2">
                   <div>
-                    <p className="text-sm font-medium text-primary">{summary.hardshipPortal.stage}</p>
+                    <p className="text-sm font-bold text-primary uppercase tracking-[0.2em]">{summary.hardshipPortal.stage}</p>
                   </div>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground">
                     <Clock className="h-4 w-4" /> ETA: {summary.hardshipPortal.etaDays} days
                   </div>
                 </div>
                 <Progress value={summary.hardshipPortal.progress} className="h-2" />
               </div>
 
-              <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
+              <ol className="relative space-y-5 before:absolute before:left-5 before:top-2 before:bottom-2 before:w-0.5 before:bg-gradient-to-b before:from-primary/40 before:via-border before:to-border/40">
                 {summary.hardshipPortal.steps.map((step, i) => {
                   const isActive = step.status === "active";
                   const isDone = step.status === "done";
                   return (
-                    <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-background bg-card shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 shadow">
+                    <li key={i} className="relative flex items-start gap-4">
+                      <div
+                        className={`relative z-10 flex items-center justify-center h-10 w-10 rounded-full border-2 shrink-0 ${
+                          isDone
+                            ? "bg-primary border-primary text-primary-foreground"
+                            : isActive
+                            ? "bg-primary/15 border-primary text-primary shadow-[0_0_18px_rgba(59,130,246,0.6)]"
+                            : "bg-card border-border text-muted-foreground"
+                        }`}
+                      >
                         {isDone ? (
-                          <div className="w-3 h-3 bg-primary rounded-full" />
+                          <Check className="h-5 w-5" />
                         ) : isActive ? (
-                          <div className="w-3 h-3 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                          <div className="h-2.5 w-2.5 bg-primary rounded-full animate-pulse" />
                         ) : (
-                          <div className="w-3 h-3 bg-muted rounded-full" />
+                          <span className="text-sm font-black">{i + 1}</span>
                         )}
                       </div>
-                      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg border border-border/50 bg-background/50">
-                        <p className={`font-medium ${isActive ? "text-primary" : isDone ? "text-foreground" : "text-muted-foreground"}`}>
-                          {step.name}
-                        </p>
+
+                      <div
+                        className={`flex-1 rounded-xl border p-4 ${
+                          isActive
+                            ? "border-primary/40 bg-primary/5"
+                            : isDone
+                            ? "border-border/40 bg-background/30"
+                            : "border-border/50 bg-background/40"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                          <p
+                            className={`font-black tracking-tight text-base ${
+                              isActive ? "text-primary" : isDone ? "text-foreground" : "text-foreground/80"
+                            }`}
+                          >
+                            {step.name}
+                          </p>
+                          {isDone && (
+                            <Badge variant="outline" className="text-xs font-bold border-primary/30 text-primary bg-primary/10">
+                              Complete
+                            </Badge>
+                          )}
+                          {isActive && (
+                            <Badge variant="outline" className="text-xs font-bold border-primary/40 text-primary bg-primary/15">
+                              In progress
+                            </Badge>
+                          )}
+                        </div>
+                        {step.description && (
+                          <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                            {step.description}
+                          </p>
+                        )}
+                        {step.cta && !isDone && (
+                          <Button
+                            size="sm"
+                            variant={isActive ? "default" : "outline"}
+                            disabled={!isActive && step.status === "pending"}
+                            className={`mt-3 font-bold ${
+                              isActive
+                                ? "shadow-[0_0_14px_rgba(59,130,246,0.5)]"
+                                : ""
+                            }`}
+                          >
+                            {step.cta} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                          </Button>
+                        )}
                       </div>
-                    </div>
+                    </li>
                   );
                 })}
-              </div>
+              </ol>
             </CardContent>
           </Card>
         </div>

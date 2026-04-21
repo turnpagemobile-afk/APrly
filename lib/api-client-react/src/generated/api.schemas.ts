@@ -130,6 +130,8 @@ export const HardshipStepStatus = {
 export interface HardshipStep {
   name: string;
   status: HardshipStepStatus;
+  description?: string;
+  cta?: string;
 }
 
 export interface HardshipPortal {
