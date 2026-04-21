@@ -6,7 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Lock, CreditCard, Building, ArrowDown } from "lucide-react";
+import {
+  Lock,
+  CreditCard,
+  Building,
+  ArrowDown,
+  Flame,
+  TrendingDown,
+  Calendar,
+  Sparkles,
+} from "lucide-react";
 import { motion, AnimatePresence, animate } from "framer-motion";
 import { useLocation } from "wouter";
 
@@ -206,54 +215,114 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CALCULATOR — its own calm section, with breathing room */}
-      <section ref={calcRef} className="px-4 py-24 md:py-32">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center max-w-3xl mx-auto mb-16 md:mb-20">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary mb-4">The Damage</p>
-            <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-6">
+      {/* OPTIMIZER — matches Dashboard's card language */}
+      <section ref={calcRef} className="px-4 py-20 md:py-28">
+        <div className="container mx-auto max-w-6xl space-y-12">
+          {/* Header — same eyebrow + black headline scale as Dashboard */}
+          <div className="max-w-3xl">
+            <p className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-primary mb-4">
+              The Optimizer
+            </p>
+            <h2 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95]">
               See it in dollars per day.
             </h2>
-            <p className="text-lg md:text-xl text-muted-foreground">
-              Type your debt and APR. We'll show the leak in real time.
+            <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl">
+              Type your debt and APR. We'll show the leak in real time — and exactly what we can claw back.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-            {/* Calculator Form */}
-            <Card className="bg-card/70 backdrop-blur border-border/60 shadow-2xl">
-              <CardContent className="p-8 md:p-10">
-                <form onSubmit={handleSave} className="space-y-8">
-                  <div className="space-y-3">
-                    <Label htmlFor="debt" className="text-base font-semibold tracking-wide">
-                      Total Debt ($)
-                    </Label>
-                    <Input
-                      id="debt"
-                      type="number"
-                      value={totalDebt}
-                      onChange={(e) => setTotalDebt(e.target.value)}
-                      className="text-2xl h-16 font-bold bg-background border-border/60 focus-visible:ring-primary"
-                    />
+          {/* Top stat row — Daily Waste hero card spans 2 cols, like Dashboard's savings card */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="bg-card/50 border-border/50">
+              <CardContent className="p-8 flex items-center justify-between">
+                <div>
+                  <p className="text-sm md:text-base font-bold text-muted-foreground uppercase tracking-[0.2em] mb-2">
+                    Total Debt
+                  </p>
+                  <p className="text-4xl md:text-5xl font-black tracking-tight">
+                    <AnimatedNumber value={parseFloat(totalDebt) || 0} />
+                  </p>
+                </div>
+                <div className="h-14 w-14 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+                  <CreditCard className="h-7 w-7 text-destructive" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/50 border-destructive/30 md:col-span-2 relative overflow-hidden">
+              <div className="absolute inset-0 bg-destructive/5" />
+              <CardContent className="p-8 flex items-center justify-between relative z-10 gap-6">
+                <div>
+                  <p className="text-sm md:text-base font-bold text-destructive uppercase tracking-[0.2em] mb-2">
+                    Daily Interest Waste
+                  </p>
+                  <p className="text-5xl md:text-6xl font-black tracking-tight leading-none">
+                    <AnimatedNumber value={res?.dailyInterestWaste || 0} isWaste />
+                  </p>
+                  <p className="mt-2 text-sm md:text-base font-medium text-muted-foreground">
+                    Gone, every single day.
+                  </p>
+                </div>
+                <div className="h-14 w-14 rounded-full bg-destructive/15 flex items-center justify-center shrink-0">
+                  <Flame className="h-7 w-7 text-destructive" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Two-column: form + savings results */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left: Inputs card */}
+            <Card className="bg-card border-border/50 lg:col-span-2">
+              <CardContent className="p-8 space-y-8">
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-black tracking-tight">
+                    Your Numbers
+                  </h3>
+                  <p className="text-base text-muted-foreground mt-1">
+                    Updates instantly as you type.
+                  </p>
+                </div>
+
+                <form onSubmit={handleSave} className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <Label
+                        htmlFor="debt"
+                        className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                      >
+                        Total Debt ($)
+                      </Label>
+                      <Input
+                        id="debt"
+                        type="number"
+                        value={totalDebt}
+                        onChange={(e) => setTotalDebt(e.target.value)}
+                        className="text-2xl h-16 font-black bg-background border-border/60 focus-visible:ring-primary"
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label
+                        htmlFor="rate"
+                        className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                      >
+                        Current APR (%)
+                      </Label>
+                      <Input
+                        id="rate"
+                        type="number"
+                        step="0.01"
+                        value={interestRate}
+                        onChange={(e) => setInterestRate(e.target.value)}
+                        className="text-2xl h-16 font-black bg-background border-border/60 focus-visible:ring-primary"
+                      />
+                    </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <Label htmlFor="rate" className="text-base font-semibold tracking-wide">
-                      Current Interest Rate (% APR)
-                    </Label>
-                    <Input
-                      id="rate"
-                      type="number"
-                      step="0.01"
-                      value={interestRate}
-                      onChange={(e) => setInterestRate(e.target.value)}
-                      className="text-2xl h-16 font-bold bg-background border-border/60 focus-visible:ring-primary"
-                    />
-                  </div>
-
-                  <div className="pt-4 space-y-4">
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Save your plan to continue (optional)
+                  <div className="pt-2 space-y-3">
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                      Save your plan (optional)
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Input
@@ -274,7 +343,8 @@ export default function Home() {
 
                   <Button
                     type="submit"
-                    className="w-full h-14 text-lg font-bold shadow-[0_0_25px_rgba(56,189,248,0.45)]"
+                    size="lg"
+                    className="w-full font-black uppercase tracking-wider text-base px-6 shadow-[0_0_18px_rgba(59,130,246,0.55)] hover:shadow-[0_0_24px_rgba(59,130,246,0.8)] transition-shadow"
                     disabled={calculateOpt.isPending}
                   >
                     {calculateOpt.isPending ? "Calculating..." : "Save My Plan"}
@@ -283,45 +353,58 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Results */}
-            <div className="space-y-8" aria-live="polite">
-              <Card className="bg-card/60 backdrop-blur border-destructive/20 overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-destructive/15 via-transparent to-transparent" />
-                <CardContent className="p-10 md:p-12 text-center relative z-10">
-                  <div className="text-xs md:text-sm font-bold uppercase tracking-[0.25em] text-muted-foreground mb-4">
-                    Daily Interest Waste
+            {/* Right: Savings stack */}
+            <div className="space-y-6" aria-live="polite">
+              <Card className="bg-card border-primary/30 relative overflow-hidden">
+                <div className="absolute inset-0 bg-primary/5" />
+                <CardContent className="p-6 relative z-10 flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-2">
+                      Monthly Savings
+                    </p>
+                    <p className="text-3xl md:text-4xl font-black tracking-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
+                      <AnimatedNumber value={res?.monthlySavings || 0} />
+                    </p>
                   </div>
-                  <div className="text-7xl md:text-8xl font-black tracking-tighter leading-none">
-                    <AnimatedNumber value={res?.dailyInterestWaste || 0} isWaste />
-                  </div>
-                  <div className="text-base md:text-lg font-medium text-muted-foreground mt-4">
-                    ...gone, every single day.
+                  <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                    <Calendar className="h-6 w-6 text-primary" />
                   </div>
                 </CardContent>
               </Card>
 
-              <div className="grid grid-cols-2 gap-6">
-                <Card className="bg-card/60 backdrop-blur border-border/40 text-center p-8">
-                  <div className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground mb-3">
-                    Monthly Savings
+              <Card className="bg-card border-primary/30 relative overflow-hidden">
+                <div className="absolute inset-0 bg-primary/5" />
+                <CardContent className="p-6 relative z-10 flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-2">
+                      Annual Savings
+                    </p>
+                    <p className="text-3xl md:text-4xl font-black tracking-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
+                      <AnimatedNumber value={res?.annualSavings || 0} />
+                    </p>
                   </div>
-                  <div className="text-4xl md:text-5xl font-black">
-                    <AnimatedNumber value={res?.monthlySavings || 0} />
+                  <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                    <TrendingDown className="h-6 w-6 text-primary" />
                   </div>
-                </Card>
-                <Card className="bg-card/60 backdrop-blur border-border/40 text-center p-8">
-                  <div className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground mb-3">
-                    Annual Savings
-                  </div>
-                  <div className="text-4xl md:text-5xl font-black">
-                    <AnimatedNumber value={res?.annualSavings || 0} />
-                  </div>
-                </Card>
-              </div>
+                </CardContent>
+              </Card>
 
-              <div className="pt-4 flex justify-center">
-                <PlaidLinkButton />
-              </div>
+              <Card className="bg-card border-border/50">
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-black text-lg tracking-tight">Auto-detect your debts</p>
+                      <p className="text-sm text-muted-foreground">
+                        Connect your bank to pull every balance and APR in one tap.
+                      </p>
+                    </div>
+                  </div>
+                  <PlaidLinkButton />
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
