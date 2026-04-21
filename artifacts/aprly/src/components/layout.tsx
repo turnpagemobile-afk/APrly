@@ -15,10 +15,93 @@ export const VoiceStore = {
   },
 };
 
+// Pick the most natural-sounding English voice the browser offers.
+// Prefers modern neural/natural voices from Google, Microsoft, and Apple.
+function pickHumanVoice(): SpeechSynthesisVoice | null {
+  if (typeof window === "undefined" || !window.speechSynthesis) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+
+  const en = voices.filter((v) => /^en[-_]/i.test(v.lang) || v.lang === "en");
+  const pool = en.length ? en : voices;
+
+  // Ordered preferences — higher = more natural on most platforms.
+  const preferred = [
+    /Google US English/i,
+    /Samantha/i,           // macOS / iOS premium
+    /Ava \(Premium\)/i,    // macOS premium
+    /Ava/i,
+    /Jenny/i,              // Microsoft Neural
+    /Aria/i,               // Microsoft Neural
+    /Guy/i,                // Microsoft Neural
+    /Natural/i,
+    /Neural/i,
+    /Online/i,             // Microsoft online voices are usually neural
+    /Female/i,
+  ];
+
+  for (const re of preferred) {
+    const hit = pool.find((v) => re.test(v.name));
+    if (hit) return hit;
+  }
+  return pool[0] ?? null;
+}
+
+// Break text into short clauses so we can vary pacing and sound less robotic.
+function speakHumanlike(text: string, onDone?: () => void) {
+  if (typeof window === "undefined" || !window.speechSynthesis) {
+    onDone?.();
+    return;
+  }
+  const synth = window.speechSynthesis;
+  synth.cancel();
+
+  const voice = pickHumanVoice();
+  const parts = text
+    .split(/([.!?,])\s+/)
+    .reduce<string[]>((acc, piece, i, arr) => {
+      if (/[.!?,]/.test(piece)) {
+        acc[acc.length - 1] = (acc[acc.length - 1] || "") + piece;
+      } else if (piece.trim()) {
+        acc.push(piece.trim());
+      }
+      return acc;
+    }, [])
+    .filter(Boolean);
+
+  const queue = parts.length ? parts : [text];
+
+  queue.forEach((chunk, idx) => {
+    const u = new SpeechSynthesisUtterance(chunk);
+    if (voice) u.voice = voice;
+    u.lang = voice?.lang || "en-US";
+    // Warmer, slightly slower cadence with subtle variation per clause.
+    const jitter = (Math.random() - 0.5) * 0.04;
+    u.rate = 0.95 + jitter;
+    u.pitch = 1.05 + (Math.random() - 0.5) * 0.05;
+    u.volume = 1;
+    if (idx === queue.length - 1 && onDone) {
+      u.onend = () => onDone();
+    }
+    synth.speak(u);
+  });
+}
+
 export function VoiceAssistant() {
   const [isActive, setIsActive] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+
+  // Warm up the voice list (some browsers populate it asynchronously).
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    const prime = () => window.speechSynthesis.getVoices();
+    prime();
+    window.speechSynthesis.onvoiceschanged = prime;
+    return () => {
+      if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -41,7 +124,7 @@ export function VoiceAssistant() {
           if (numbers && numbers.length > 0) {
             const val1 = parseFloat(numbers[0]);
             const val2 = numbers[1] ? parseFloat(numbers[1]) : undefined;
-            
+
             // Heuristic: if value > 100, probably debt, else rate
             let totalDebt, interestRate;
             if (val1 > 100) {
@@ -52,6 +135,7 @@ export function VoiceAssistant() {
               totalDebt = val2;
             }
             VoiceStore.emit({ totalDebt, interestRate });
+            speakHumanlike("Got it. Crunching the numbers for you now.");
           }
         };
         recognitionRef.current = recognition;
@@ -69,19 +153,18 @@ export function VoiceAssistant() {
       }
     } else {
       setIsActive(true);
-      const msg = new SpeechSynthesisUtterance(
-        "Welcome to APRly. Tell me your total debt, then your interest rate."
-      );
-      msg.onend = () => {
-        if (recognitionRef.current) {
-          try {
-            recognitionRef.current.start();
-          } catch (e) {
-            console.error(e);
+      speakHumanlike(
+        "Hey, welcome to APRly. Just tell me your total debt, and then your interest rate, and I'll take it from there.",
+        () => {
+          if (recognitionRef.current) {
+            try {
+              recognitionRef.current.start();
+            } catch (e) {
+              console.error(e);
+            }
           }
         }
-      };
-      window.speechSynthesis.speak(msg);
+      );
     }
   };
 
