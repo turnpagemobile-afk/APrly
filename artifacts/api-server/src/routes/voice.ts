@@ -110,17 +110,43 @@ router.post("/voice/chat", async (req: Request, res: Response) => {
 
     const audioBase64 = compatibleBuffer.toString("base64");
 
-    logger.info({ ms: Date.now() - t0 }, "voice: calling gpt-audio");
+    // gpt-audio rejects multi-turn message arrays that mix text history with
+    // an input_audio user turn — it returns an empty stream. Inline the
+    // persona + transcript history directly inside the audio user turn as a
+    // text part. This keeps the model in single-turn audio-in/audio-out mode
+    // (the only shape we have seen reliably stream chunks back).
+    const historyText = priorMessages.length
+      ? "\n\nConversation so far:\n" +
+        priorMessages
+          .map(
+            (m) =>
+              `${m.role === "user" ? "User" : "APRly"}: ${m.content.trim()}`,
+          )
+          .join("\n")
+      : "";
+
+    const personaText =
+      SYSTEM_PROMPT +
+      historyText +
+      "\n\nNow listen to the user's spoken message and reply by voice.";
+
+    logger.info(
+      {
+        ms: Date.now() - t0,
+        priorMessages: priorMessages.length,
+        audioBase64Bytes: audioBase64.length,
+      },
+      "voice: calling gpt-audio",
+    );
     const stream = await openai.chat.completions.create({
       model: "gpt-audio",
       modalities: ["text", "audio"],
       audio: { voice: "alloy", format: "pcm16" },
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        ...priorMessages,
         {
           role: "user",
           content: [
+            { type: "text", text: personaText },
             {
               type: "input_audio",
               input_audio: { data: audioBase64, format },
@@ -135,19 +161,23 @@ router.post("/voice/chat", async (req: Request, res: Response) => {
     let audioChunks = 0;
     let textChunks = 0;
     let lastFinish: string | null = null;
-    let firstChunkSample: unknown = null;
     for await (const chunk of stream) {
       if (aborted) break;
       if (!firstChunkLogged) {
         firstChunkLogged = true;
-        firstChunkSample = chunk;
         logger.info(
-          { ms: Date.now() - t0, sample: JSON.stringify(chunk).slice(0, 800) },
+          { ms: Date.now() - t0, sample: JSON.stringify(chunk).slice(0, 600) },
           "voice: first chunk",
         );
       }
       const choice = chunk.choices?.[0] as
-        | { delta?: { audio?: { transcript?: string; data?: string }; content?: string }; finish_reason?: string }
+        | {
+            delta?: {
+              audio?: { transcript?: string; data?: string };
+              content?: string;
+            };
+            finish_reason?: string;
+          }
         | undefined;
       if (choice?.finish_reason) lastFinish = choice.finish_reason;
       const delta = choice?.delta;
@@ -161,7 +191,6 @@ router.post("/voice/chat", async (req: Request, res: Response) => {
         send({ type: "audio", data: delta.audio.data });
       }
     }
-    void firstChunkSample;
 
     logger.info(
       { ms: Date.now() - t0, audioChunks, textChunks, lastFinish, aborted },
