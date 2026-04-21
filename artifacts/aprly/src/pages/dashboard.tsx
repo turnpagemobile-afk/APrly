@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useGetDashboardSummary } from "@workspace/api-client-react";
 import { CreditScoreGauge } from "../components/credit-score-gauge";
 import { PlaidLinkButton } from "../components/plaid-link-button";
@@ -7,6 +8,67 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Building, AlertCircle, TrendingDown, Clock, ShieldCheck } from "lucide-react";
+
+const HERO_COPY = [
+  {
+    eyebrow: "Your cockpit",
+    headline: "Dashboard",
+    tagline: "Every dollar of interest you stop paying today compounds for years. Let's go.",
+  },
+  {
+    eyebrow: "Your cockpit",
+    headline: "Stop the bleed.",
+    tagline: "Right now your APR is quietly stealing from your future. Today, we hand it back.",
+  },
+  {
+    eyebrow: "Your money, rewired",
+    headline: "Outsmart your APR.",
+    tagline: "The banks bet you won't fight back. Prove them wrong, one rate cut at a time.",
+  },
+  {
+    eyebrow: "Command center",
+    headline: "Every basis point matters.",
+    tagline: "Lower the rate, shorten the runway, keep the difference. This is how debt actually dies.",
+  },
+] as const;
+
+function HeroRotator() {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const tick = setInterval(() => {
+      setVisible(false);
+      const swap = setTimeout(() => {
+        setIndex((i) => (i + 1) % HERO_COPY.length);
+        setVisible(true);
+      }, 450);
+      return () => clearTimeout(swap);
+    }, 6000);
+    return () => clearInterval(tick);
+  }, []);
+
+  const copy = HERO_COPY[index];
+
+  return (
+    <div
+      className={`max-w-3xl transition-all duration-500 ease-out ${
+        visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
+      }`}
+      aria-live="polite"
+    >
+      <p className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-primary mb-4">
+        {copy.eyebrow}
+      </p>
+      <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95]">
+        {copy.headline}
+      </h1>
+      <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl">
+        {copy.tagline}
+      </p>
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const { data: summary, isLoading, error } = useGetDashboardSummary();
@@ -25,13 +87,7 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-16 space-y-10">
-      <div className="max-w-3xl">
-        <p className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-primary mb-4">Your cockpit</p>
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95]">Dashboard</h1>
-        <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl">
-          Every dollar of interest you stop paying today compounds for years. Let's go.
-        </p>
-      </div>
+      <HeroRotator />
       {/* Top Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-card/50 border-border/50">
