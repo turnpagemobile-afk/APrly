@@ -4,6 +4,15 @@ import { db, leadsTable } from "@workspace/db";
 
 const router: IRouter = Router();
 
+function isDuplicateKeyError(err: unknown): boolean {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "code" in err &&
+    (err as { code: unknown }).code === "23505"
+  );
+}
+
 router.post("/leads", async (req, res, next) => {
   try {
     const input = CreateLeadBody.parse(req.body);
@@ -33,6 +42,10 @@ router.post("/leads", async (req, res, next) => {
     });
     res.json(data);
   } catch (err) {
+    if (isDuplicateKeyError(err)) {
+      res.status(409).json({ error: "A lead with this email already exists." });
+      return;
+    }
     next(err);
   }
 });

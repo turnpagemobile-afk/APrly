@@ -146,15 +146,19 @@ components:
         name:
           type: string
           minLength: 1
+          maxLength: 200
         email:
           type: string
           format: email
+          maxLength: 254
         totalDebt:
           type: number
           minimum: 0
+          maximum: 100000000
         interestRate:
           type: number
           minimum: 0
+          maximum: 100
 
     Lead:
       type: object

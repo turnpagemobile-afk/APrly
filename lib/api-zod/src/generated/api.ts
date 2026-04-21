@@ -17,16 +17,28 @@ export const HealthCheckResponse = zod.object({
 /**
  * @summary Capture a lead (name, email, total debt)
  */
+export const createLeadBodyNameMax = 200;
+
+export const createLeadBodyEmailMax = 254;
 
 export const createLeadBodyTotalDebtMin = 0;
+export const createLeadBodyTotalDebtMax = 100000000;
 
 export const createLeadBodyInterestRateMin = 0;
+export const createLeadBodyInterestRateMax = 100;
 
 export const CreateLeadBody = zod.object({
-  name: zod.string().min(1),
-  email: zod.string().email(),
-  totalDebt: zod.number().min(createLeadBodyTotalDebtMin),
-  interestRate: zod.number().min(createLeadBodyInterestRateMin).optional(),
+  name: zod.string().min(1).max(createLeadBodyNameMax),
+  email: zod.string().email().max(createLeadBodyEmailMax),
+  totalDebt: zod
+    .number()
+    .min(createLeadBodyTotalDebtMin)
+    .max(createLeadBodyTotalDebtMax),
+  interestRate: zod
+    .number()
+    .min(createLeadBodyInterestRateMin)
+    .max(createLeadBodyInterestRateMax)
+    .optional(),
 });
 
 export const CreateLeadResponse = zod.object({

@@ -7,11 +7,21 @@
  */
 
 export interface CreateLeadInput {
-  /** @minLength 1 */
+  /**
+   * @minLength 1
+   * @maxLength 200
+   */
   name: string;
+  /** @maxLength 254 */
   email: string;
-  /** @minimum 0 */
+  /**
+   * @minimum 0
+   * @maximum 100000000
+   */
   totalDebt: number;
-  /** @minimum 0 */
+  /**
+   * @minimum 0
+   * @maximum 100
+   */
   interestRate?: number;
 }
