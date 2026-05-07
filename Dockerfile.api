@@ -1,0 +1,65 @@
+# syntax=docker/dockerfile:1.7
+#
+# Production image for @workspace/api-server.
+# Multi-stage: deps -> builder (esbuild bundle) -> runtime (node:24-slim).
+# The bundle in `dist/index.mjs` is self-contained, so the runtime stage
+# does NOT carry node_modules.
+
+# ─────────────────────────────────────────────────────────────────────
+# deps: install workspace dependencies into a cacheable pnpm store
+# ─────────────────────────────────────────────────────────────────────
+FROM node:24-slim AS deps
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3 make g++ ca-certificates \
+ && rm -rf /var/lib/apt/lists/* \
+ && corepack enable
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json tsconfig.json ./
+COPY artifacts/api-server/package.json ./artifacts/api-server/
+COPY artifacts/aprly/package.json ./artifacts/aprly/
+COPY lib/db/package.json ./lib/db/
+COPY lib/api-client-react/package.json ./lib/api-client-react/
+COPY lib/api-zod/package.json ./lib/api-zod/
+COPY lib/integrations-openai-ai-server/package.json ./lib/integrations-openai-ai-server/
+COPY lib/integrations-openai-ai-react/package.json ./lib/integrations-openai-ai-react/
+COPY scripts/package.json ./scripts/
+
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# ─────────────────────────────────────────────────────────────────────
+# builder: compile a self-contained bundle via esbuild
+# ─────────────────────────────────────────────────────────────────────
+FROM deps AS builder
+
+WORKDIR /app
+COPY . .
+
+RUN pnpm --filter @workspace/api-server run build
+
+# ─────────────────────────────────────────────────────────────────────
+# runtime: minimal node image, non-root user, only the bundle
+# ─────────────────────────────────────────────────────────────────────
+FROM node:24-slim AS runtime
+
+ENV NODE_ENV=production
+ENV PORT=5000
+
+RUN groupadd --system --gid 10001 app \
+ && useradd --system --uid 10001 --gid app --create-home --shell /bin/sh app
+
+WORKDIR /app
+
+COPY --from=builder --chown=app:app /app/artifacts/api-server/dist ./dist
+
+USER app
+
+EXPOSE 5000
+
+CMD ["node", "--enable-source-maps", "dist/index.mjs"]

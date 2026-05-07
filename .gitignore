@@ -51,6 +51,8 @@ Thumbs.db
 ProjectMap.txt
 generate_map.sh
 .env
+.env.*
+!.env.example
 local_docs
 local_docs/*
 Overview.md

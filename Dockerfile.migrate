@@ -1,0 +1,39 @@
+# syntax=docker/dockerfile:1.7
+#
+# Helper image for one-shot ops on the production database:
+#   - schema sync via `drizzle-kit push` (default CMD)
+#   - idempotent seed via `pnpm --filter @workspace/db run seed`
+# Used in docker-compose.prod.yml as `db-migrate` and `db-seed` services.
+
+FROM node:24-slim
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+ENV NODE_ENV=production
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3 make g++ ca-certificates \
+ && rm -rf /var/lib/apt/lists/* \
+ && corepack enable
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json tsconfig.json ./
+COPY artifacts/api-server/package.json ./artifacts/api-server/
+COPY artifacts/aprly/package.json ./artifacts/aprly/
+COPY lib/db/package.json ./lib/db/
+COPY lib/api-client-react/package.json ./lib/api-client-react/
+COPY lib/api-zod/package.json ./lib/api-zod/
+COPY lib/integrations-openai-ai-server/package.json ./lib/integrations-openai-ai-server/
+COPY lib/integrations-openai-ai-react/package.json ./lib/integrations-openai-ai-react/
+COPY scripts/package.json ./scripts/
+
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# Only the source we actually need at runtime — no api-server / frontend code.
+COPY lib/db ./lib/db
+
+# Default action is the drizzle-kit schema sync.
+# docker-compose.prod.yml overrides this CMD for the db-seed service.
+CMD ["pnpm", "--filter", "@workspace/db", "run", "push"]
