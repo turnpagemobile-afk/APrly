@@ -1,0 +1,18 @@
+{
+  "name": "APRly.ai",
+  "short_name": "APRly",
+  "description": "APRly is the wealth cockpit that hunts down credit card and personal-loan interest and gives it back.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0c0c0e",
+  "theme_color": "#0c0c0e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

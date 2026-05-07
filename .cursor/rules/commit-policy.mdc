@@ -1,0 +1,78 @@
+---
+description: Commit policy for AI assistants — explicit-instruction commits, local checks, validated message format
+alwaysApply: true
+---
+
+# Commit policy for AI assistants (Debt-Optimizer-Pro)
+
+## Commit authorization
+
+AI must NOT run `git commit`, `git push`, `git revert`, `git reset --hard`,
+`git rebase`, or any other history-changing operation without an explicit
+instruction from the user.
+
+Direct triggers that authorize a commit:
+- UA: «зроби коміт», «комить», «робимо коміт», «коміт».
+- EN: «commit», «do the commit», «please commit».
+
+If the message is ambiguous (`готово`, `ок`, `гаразд`, `ready`, `done`),
+the AI MUST ask for confirmation via `AskQuestion` before committing.
+
+## Local verification before every commit
+
+Before committing, the AI MUST present a short pre-commit checklist with
+concrete commands relevant to the changed scope, and either run what it
+can or ask the user to run them.
+
+Baseline checks for this monorepo:
+- `pnpm --filter @workspace/aprly run typecheck` — frontend changes.
+- `pnpm --filter @workspace/api-server run typecheck` — backend changes.
+- `pnpm run typecheck` — `lib/*` or cross-package changes.
+- IDE lints via `ReadLints` — any TS/TSX edit.
+- `pnpm --filter @workspace/aprly run dev` — UI/visual changes (manual).
+- `git diff --stat` summary of staged files.
+
+The AI proceeds to commit only after the user confirms the checks passed.
+
+## Commit message format
+
+Authoritative regex (also enforced by the `commit-msg` hook from
+`local_docs/commit_validate.txt`):
+
+```regex
+^(feat|fix|docs|style|refactor|test|chore):\s\[([A-Z]+-[0-9]+(,\s*)?)+\]\s.+$
+```
+
+Format: `<type>: [TICKET-ID] description`
+
+- Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`.
+- `TICKET-ID` MUST be a real Jira key obtained from the user (e.g. `[APRLY-12]`).
+  The AI MUST request the key via `AskQuestion` before committing — never invent one.
+- Multiple keys allowed via comma: `[APRLY-12, APRLY-13]`.
+- Subject under 72 chars; optional body separated by a blank line.
+- The hook regex accepts only `LETTERS-DIGITS` keys; complex Jira IDs like
+  `[APR-SP1-E01-S03-T01]` will be rejected — use the canonical `[APRLY-N]` form.
+
+### Examples
+
+Correct:
+- `feat: [APRLY-12] add landing optimizer wizard`
+- `fix: [APRLY-34, APRLY-35] guard summary fields against null`
+
+Incorrect:
+- `feat: add landing` — missing ticket and brackets.
+- `feat: [APR-SP1-E01-S03] ...` — non-canonical id, regex will reject.
+- `update stuff` — missing type.
+
+## Forbidden
+
+- Editing `git config` (any scope).
+- Using `--no-verify`, `--no-gpg-sign`, or any flag that bypasses hooks.
+- Force-pushing to `main` or `petrychenko_dev` without explicit user request.
+- Amending or rewriting commits authored by other contributors.
+- Committing files that may contain secrets (`.env`, credentials, tokens).
+
+## Reference
+
+- Hook script and developer setup: `local_docs/commit_validate.txt`.
+- Plans/history conventions: `.cursor/rules/project-plans-and-history.mdc`.

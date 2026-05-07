@@ -238,42 +238,26 @@ export function VoiceAssistant() {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
+
+  const handleGetStarted = () => {
+    if (location !== "/") {
+      setLocation("/#plan");
+      return;
+    }
+    const el = document.getElementById("plan");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-transparent text-foreground dark">
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-black tracking-tight text-primary drop-shadow-[0_0_12px_rgba(56,189,248,0.5)]">APRly</span>
+            <span className="text-2xl font-black tracking-tight text-primary drop-shadow-[0_0_12px_rgba(56,189,248,0.5)]">
+              APRly
+            </span>
           </Link>
-
-          <nav className="hidden md:flex items-center gap-6">
-            <Link
-              href="/"
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                location === "/" ? "text-primary" : "text-muted-foreground"
-              }`}
-            >
-              Optimizer
-            </Link>
-            <Link
-              href="/dashboard"
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                location === "/dashboard" ? "text-primary" : "text-muted-foreground"
-              }`}
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/paywall"
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                location === "/paywall" ? "text-primary" : "text-muted-foreground"
-              }`}
-            >
-              Plan
-            </Link>
-          </nav>
 
           <div className="flex items-center gap-4">
             <div className="hidden sm:block">
@@ -281,11 +265,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <VoiceAssistant />
               </div>
             </div>
-            <Link href="/paywall">
-              <Button size="sm" className="font-semibold shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-                Get Started
-              </Button>
-            </Link>
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleGetStarted}
+              className="font-semibold shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+            >
+              Get Started
+            </Button>
           </div>
         </div>
       </header>
@@ -295,7 +282,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <footer className="border-t border-border/40 bg-card py-8 mt-16">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-muted-foreground text-sm">
-            <div>&copy; {new Date().getFullYear()} APRly. All rights reserved.</div>
+            <div>
+              &copy; {new Date().getFullYear()} APRly. All rights reserved.
+            </div>
+            <nav className="flex items-center gap-6">
+              <Link
+                href="/privacy"
+                className="hover:text-primary transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                href="/terms"
+                className="hover:text-primary transition-colors"
+              >
+                Terms of Service
+              </Link>
+            </nav>
           </div>
         </div>
       </footer>
