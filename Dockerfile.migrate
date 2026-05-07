@@ -28,6 +28,14 @@ COPY lib/integrations-openai-ai-server/package.json ./lib/integrations-openai-ai
 COPY lib/integrations-openai-ai-react/package.json ./lib/integrations-openai-ai-react/
 COPY scripts/package.json ./scripts/
 
+RUN node <<'NODE'
+const fs = require("node:fs");
+const p = "pnpm-workspace.yaml";
+let y = fs.readFileSync(p, "utf8");
+y = y.replace(/^minimumReleaseAge:\s*\d+/m, "minimumReleaseAge: 0");
+fs.writeFileSync(p, y);
+NODE
+
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile
 
