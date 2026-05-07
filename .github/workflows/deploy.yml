@@ -1,0 +1,85 @@
+# Production deployment to the DigitalOcean droplet (134.122.126.71).
+#
+# Triggered automatically when `validate` (ci.yml) finishes successfully on
+# main, and also available as a manual button under Actions -> deploy ->
+# Run workflow (useful for redeploys / rollbacks). Branch protection is
+# unavailable in this repo, so the workflow_run gate plus an in-job conclusion
+# check are the soft-but-real protection against deploying broken code.
+
+name: deploy
+
+on:
+  workflow_run:
+    workflows: ["validate"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' ||
+          (github.event.workflow_run.conclusion == 'success' &&
+           github.event.workflow_run.head_branch == 'main') }}
+
+    steps:
+      - name: Deploy via SSH (git pull + compose build/up + migrate + seed)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          port: 22
+          command_timeout: 25m
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd /var/www/aprly
+
+            echo "=== git fetch + reset to origin/main ==="
+            git fetch --all --prune
+            git checkout main
+            git reset --hard origin/main
+            git log -1 --oneline
+
+            echo "=== docker compose build ==="
+            docker compose -f docker-compose.prod.yml --env-file .env.prod build
+
+            echo "=== docker compose up -d ==="
+            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+
+            echo "=== db-migrate (drizzle-kit push) ==="
+            docker compose -f docker-compose.prod.yml --env-file .env.prod \
+              --profile ops run --rm db-migrate
+
+            echo "=== db-seed (idempotent) ==="
+            docker compose -f docker-compose.prod.yml --env-file .env.prod \
+              --profile ops run --rm db-seed
+
+            echo "=== prune dangling images ==="
+            docker image prune -f
+
+            echo "=== running services ==="
+            docker compose -f docker-compose.prod.yml --env-file .env.prod ps
+
+      - name: Post-deploy healthcheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="http://${{ secrets.DROPLET_HOST }}/api/healthz"
+          for i in 1 2 3 4 5; do
+            echo "attempt $i: GET $URL"
+            if curl -fsS --max-time 10 "$URL" >/dev/null; then
+              echo "healthcheck OK"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "healthcheck FAILED after 5 attempts" >&2
+          exit 1
