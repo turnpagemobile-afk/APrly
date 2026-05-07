@@ -94,7 +94,7 @@ export default function Dashboard() {
           <CardContent className="p-8 flex items-center justify-between">
             <div>
               <p className="text-sm md:text-base font-bold text-muted-foreground uppercase tracking-[0.2em] mb-2">Total Debt</p>
-              <p className="text-4xl md:text-5xl font-black tracking-tight">${summary.totalDebt.toLocaleString()}</p>
+              <p className="text-4xl md:text-5xl font-black tracking-tight">${summary?.totalDebt?.toLocaleString()}</p>
             </div>
             <div className="h-14 w-14 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
               <AlertCircle className="h-7 w-7 text-destructive" />
@@ -108,7 +108,7 @@ export default function Dashboard() {
             <div>
               <p className="text-sm md:text-base font-bold text-primary uppercase tracking-[0.2em] mb-2">Estimated Annual Savings</p>
               <p className="text-5xl md:text-6xl font-black tracking-tight text-primary drop-shadow-[0_0_18px_rgba(59,130,246,0.7)]">
-                ${summary.estimatedAnnualSavings.toLocaleString()}
+                ${summary?.estimatedAnnualSavings?.toLocaleString()}
               </p>
             </div>
             <div className="h-14 w-14 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
@@ -139,13 +139,13 @@ export default function Dashboard() {
               <CardTitle className="text-2xl font-black tracking-tight">Linked Accounts</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {summary.linkedAccounts.length === 0 ? (
+              {summary?.linkedAccounts?.length === 0 ? (
                 <div className="text-center py-6">
                   <p className="text-base text-muted-foreground mb-5 font-medium">No accounts linked yet.</p>
                   <PlaidLinkButton />
                 </div>
               ) : (
-                summary.linkedAccounts.map((acc, i) => (
+                summary?.linkedAccounts?.map((acc, i) => (
                   <div key={i} className="flex justify-between items-center p-4 rounded-lg bg-background border border-border/50">
                     <div className="flex items-center gap-3">
                       <Building className="h-6 w-6 text-muted-foreground" />
@@ -173,7 +173,7 @@ export default function Dashboard() {
               <CardDescription className="text-base">Opportunities to negotiate lower rates based on your profile.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {summary.rateReductions.map((reduction) => (
+              {summary?.rateReductions?.map((reduction) => (
                 <div key={reduction.id} className="flex flex-col sm:flex-row justify-between items-center p-5 rounded-xl bg-background border border-border/50 gap-4">
                   <div>
                     <h4 className="font-black text-xl tracking-tight">{reduction.lender}</h4>
@@ -213,17 +213,17 @@ export default function Dashboard() {
               <div className="mb-8">
                 <div className="flex justify-between items-end mb-2">
                   <div>
-                    <p className="text-sm font-bold text-primary uppercase tracking-[0.2em]">{summary.hardshipPortal.stage}</p>
+                    <p className="text-sm font-bold text-primary uppercase tracking-[0.2em]">{summary?.hardshipPortal?.stage || ''}</p>
                   </div>
                   <div className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground">
-                    <Clock className="h-4 w-4" /> ETA: {summary.hardshipPortal.etaDays} days
+                    <Clock className="h-4 w-4" /> ETA: {summary?.hardshipPortal?.etaDays || ''} days
                   </div>
                 </div>
-                <Progress value={summary.hardshipPortal.progress} className="h-2" />
+                <Progress value={summary?.hardshipPortal?.progress || 0} className="h-2" />
               </div>
 
               <ol className="relative space-y-5 before:absolute before:left-5 before:top-2 before:bottom-2 before:w-0.5 before:bg-gradient-to-b before:from-primary/40 before:via-border before:to-border/40">
-                {summary.hardshipPortal.steps.map((step, i) => {
+                {summary?.hardshipPortal?.steps?.map((step, i) => {
                   const isActive = step.status === "active";
                   const isDone = step.status === "done";
                   return (

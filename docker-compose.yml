@@ -1,0 +1,79 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: aprly
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d aprly"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Bind-mount .:/app приховує node_modules з образу; анонімний том /app/node_modules часто
+  # стає порожнім. Один раз ставимо залежності в спільний том перед app-сервісами.
+  install-deps:
+    # Образ node:arm64 + overrides у pnpm-workspace.yaml відрізають @rollup/linux-arm64-*;
+    # залишено лише linux-x64 (Replit). amd64 у контейнері відповідає lockfile.
+    platform: linux/amd64
+    build:
+      context: .
+    environment:
+      # pnpm інакше перериває зміну node_modules без TTY (Docker / CI)
+      CI: "true"
+    volumes:
+      - .:/app
+      - app-node-modules:/app/node_modules
+    command: ["pnpm", "install", "--frozen-lockfile"]
+    restart: "no"
+
+  api-server:
+    platform: linux/amd64
+    build:
+      context: .
+    environment:
+      - DATABASE_URL=postgres://user:password@db:5432/aprly
+      - PORT=5000
+      - NODE_ENV=development
+      # Підставте реальні значення через .env у корені репо (Compose підхоплює для ${...})
+      - AI_INTEGRATIONS_OPENAI_BASE_URL=${AI_INTEGRATIONS_OPENAI_BASE_URL:-https://api.openai.com/v1}
+      - AI_INTEGRATIONS_OPENAI_API_KEY=${AI_INTEGRATIONS_OPENAI_API_KEY:-docker-dev-placeholder}
+    ports:
+      - "5000:5000"
+    depends_on:
+      install-deps:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - app-node-modules:/app/node_modules
+    # Використовуємо --bundle або прямий запуск через tsx, якщо доступно
+    command: pnpm --filter @workspace/api-server run dev
+
+  frontend:
+    platform: linux/amd64
+    build:
+      context: .
+    environment:
+      - VITE_API_URL=http://localhost:5000
+      - PORT=5173
+      - BASE_PATH=/
+    ports:
+      - "5173:5173"
+    depends_on:
+      install-deps:
+        condition: service_completed_successfully
+      api-server:
+        condition: service_started
+    volumes:
+      - .:/app
+      - app-node-modules:/app/node_modules
+    # Скрипт dev у aprly вже містить --host 0.0.0.0; зайвий --host ламав аргументи vite
+    command: pnpm --filter @workspace/aprly run dev
+
+volumes:
+  app-node-modules:

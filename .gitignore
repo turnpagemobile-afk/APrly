@@ -10,6 +10,7 @@ out-tsc
 
 # dependencies
 node_modules
+.pnpm-store/
 
 # IDEs and editors
 /.idea
@@ -47,3 +48,12 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+ProjectMap.txt
+generate_map.sh
+.env
+local_docs
+local_docs/*
+Overview.md
+threat_model.md
+.cursor/history/*
+.cursor/plans/*

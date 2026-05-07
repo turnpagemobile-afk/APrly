@@ -1,0 +1,12 @@
+node_modules
+.replit
+.apt
+.cache
+dist
+build
+.env
+*.log
+.git
+.agents
+.config
+.idea
