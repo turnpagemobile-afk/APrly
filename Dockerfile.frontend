@@ -29,6 +29,8 @@ COPY lib/integrations-openai-ai-server/package.json ./lib/integrations-openai-ai
 COPY lib/integrations-openai-ai-react/package.json ./lib/integrations-openai-ai-react/
 COPY scripts/package.json ./scripts/
 
+RUN corepack prepare pnpm@10.33.4 --activate
+
 # Same rationale as Dockerfile.api — Docker builds must not fail on release-age guard.
 RUN node <<'NODE'
 const fs = require("node:fs");
@@ -37,6 +39,8 @@ let y = fs.readFileSync(p, "utf8");
 y = y.replace(/^minimumReleaseAge:\s*\d+/m, "minimumReleaseAge: 0");
 fs.writeFileSync(p, y);
 NODE
+
+ENV npm_config_user_agent="pnpm/10.33.4 npm/? node/v24.0.0"
 
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile

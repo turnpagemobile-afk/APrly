@@ -30,6 +30,10 @@ COPY lib/integrations-openai-ai-server/package.json ./lib/integrations-openai-ai
 COPY lib/integrations-openai-ai-react/package.json ./lib/integrations-openai-ai-react/
 COPY scripts/package.json ./scripts/
 
+# Pin pnpm via package.json#packageManager so Corepack does not pull a random
+# major (e.g. pnpm 11) whose lifecycle env differs from local dev.
+RUN corepack prepare pnpm@10.33.4 --activate
+
 # Workspace pins minimumReleaseAge: 1440 (supply-chain hardening). That rejects
 # packages published within the last 24h and often breaks fresh Docker builds
 # where the droplet/CI hits npm slightly sooner than local dev did.
@@ -40,6 +44,10 @@ let y = fs.readFileSync(p, "utf8");
 y = y.replace(/^minimumReleaseAge:\s*\d+/m, "minimumReleaseAge: 0");
 fs.writeFileSync(p, y);
 NODE
+
+# Root package.json preinstall checks npm_config_user_agent for "pnpm/*"; some
+# Corepack/Docker combinations omit it when spawning the preinstall shell.
+ENV npm_config_user_agent="pnpm/10.33.4 npm/? node/v24.0.0"
 
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile
