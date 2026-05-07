@@ -1,0 +1,11 @@
+---
+description: Maintain project plans and change history under .cursor for all agents working in this repo
+alwaysApply: true
+---
+
+# Плани та історія змін (Debt-Optimizer-Pro)
+
+- **`/.cursor/plans/`** — зберігайте актуальні плани роботи (Markdown). При зміні підходу додавайте дату або окремий файл.
+- **`/.cursor/history/`** — після суттєвих змін у репозиторії додавайте короткий запис: дата, що змінено, основні файли або PR.
+
+**Не зберігайте секрети** (API keys, паролі, прод-креденшили) у `plans/` чи `history/`.
