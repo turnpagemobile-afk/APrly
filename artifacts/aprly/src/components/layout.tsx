@@ -6,6 +6,7 @@ import {
   useVoiceRecorder,
 } from "@workspace/integrations-openai-ai-react/audio";
 import { Button } from "@/components/ui/button";
+import { brandContent, footerContent, navContent } from "@/content/landing";
 
 export const VoiceStore = {
   listeners: new Set<(data: { totalDebt?: number; interestRate?: number }) => void>(),
@@ -240,38 +241,77 @@ export function VoiceAssistant() {
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
 
-  const handleGetStarted = () => {
-    if (location !== "/") {
-      setLocation("/#plan");
+  const goToAnchor = (href: string) => {
+    if (!href.startsWith("#")) {
+      setLocation(href);
       return;
     }
-    const el = document.getElementById("plan");
+    const id = href.slice(1);
+    if (location !== "/") {
+      setLocation(`/${href}`);
+      return;
+    }
+    const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const copyright = footerContent.copyrightTemplate.replace(
+    "{year}",
+    String(new Date().getFullYear()),
+  );
+
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-transparent text-foreground dark">
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-black tracking-tight text-primary drop-shadow-[0_0_12px_rgba(56,189,248,0.5)]">
-              APRly
+    <div className="min-h-[100dvh] flex flex-col bg-background text-foreground">
+      <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
+          <Link
+            href="/"
+            className="flex items-center gap-2"
+            aria-label={brandContent.name}
+          >
+            <span className="text-2xl font-black tracking-tight text-foreground">
+              {brandContent.name}
             </span>
           </Link>
 
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:block">
-              <div className="hidden" aria-hidden="true">
-                <VoiceAssistant />
-              </div>
+          <nav
+            className="hidden md:flex items-center gap-7 text-sm font-semibold text-primary"
+            aria-label="Primary"
+          >
+            {navContent.links.map((link) => (
+              <button
+                key={link.id}
+                type="button"
+                onClick={() => goToAnchor(link.href)}
+                className="hover:opacity-80 transition-opacity"
+              >
+                {link.label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden" aria-hidden="true">
+              <VoiceAssistant />
             </div>
             <Button
               type="button"
               size="sm"
-              onClick={handleGetStarted}
-              className="font-semibold shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+              variant="outline"
+              disabled
+              aria-disabled="true"
+              title={navContent.logIn.note}
+              className="hidden sm:inline-flex font-semibold"
             >
-              Get Started
+              {navContent.logIn.label}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => goToAnchor(navContent.getStarted.target)}
+              className="font-semibold"
+            >
+              {navContent.getStarted.label}
             </Button>
           </div>
         </div>
@@ -279,26 +319,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       <main className="flex-1">{children}</main>
 
-      <footer className="border-t border-border/40 bg-card py-8 mt-16">
+      <footer className="border-t border-border/60 bg-card text-card-foreground py-8 mt-16">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-muted-foreground text-sm">
-            <div>
-              &copy; {new Date().getFullYear()} APRly. All rights reserved.
-            </div>
-            <nav className="flex items-center gap-6">
-              <Link
-                href="/privacy"
-                className="hover:text-primary transition-colors"
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                href="/terms"
-                className="hover:text-primary transition-colors"
-              >
-                Terms of Service
-              </Link>
+            <nav
+              className="flex items-center gap-6 text-primary font-semibold"
+              aria-label="Footer"
+            >
+              {footerContent.links.map((link) => (
+                <Link
+                  key={link.id}
+                  href={link.href}
+                  className="hover:opacity-80 transition-opacity"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </nav>
+            <div className="text-center md:text-right">{copyright}</div>
           </div>
         </div>
       </footer>

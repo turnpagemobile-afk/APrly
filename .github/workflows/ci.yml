@@ -1,0 +1,80 @@
+# Continuous Integration for the APRly monorepo.
+#
+# Runs on every PR to main and on pushes to main / petrychenko_dev so the
+# deploy workflow can wait for a green CI signal via workflow_run.
+#
+# Pragmatic typecheck strategy: tsc --build --noCheck emits the workspace .d.ts
+# files without enforcing baseline errors in lib/integrations-openai-ai-*; we
+# then run strict typecheck only for the packages we actually ship (aprly +
+# api-server) plus sanity production builds.
+
+name: validate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, petrychenko_dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      CI: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace types (no strict check)
+        run: pnpm exec tsc --build --noCheck
+
+      - name: Typecheck @workspace/aprly
+        run: pnpm --filter @workspace/aprly run typecheck
+
+      - name: Typecheck @workspace/api-server
+        run: pnpm --filter @workspace/api-server run typecheck
+
+      - name: Build @workspace/api-server (esbuild bundle)
+        run: pnpm --filter @workspace/api-server run build
+
+      - name: Build @workspace/aprly (vite)
+        env:
+          PORT: "5173"
+          BASE_PATH: "/"
+          NODE_ENV: production
+        run: pnpm --filter @workspace/aprly run build
+
+      - name: Validate docker-compose.prod.yml syntax
+        shell: bash
+        run: |
+          cat > /tmp/aprly-ci.env <<'EOF'
+          POSTGRES_USER=ci
+          POSTGRES_PASSWORD=ci
+          POSTGRES_DB=ci
+          DATABASE_URL=postgres://ci:ci@db:5432/ci
+          AI_INTEGRATIONS_OPENAI_BASE_URL=https://api.openai.com/v1
+          AI_INTEGRATIONS_OPENAI_API_KEY=ci-placeholder
+          NODE_ENV=production
+          EOF
+          docker compose -f docker-compose.prod.yml --env-file /tmp/aprly-ci.env config -q

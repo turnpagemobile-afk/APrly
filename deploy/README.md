@@ -1,0 +1,127 @@
+# APRly droplet runbook
+
+Quick reference for operating the production droplet.
+
+## Hosts and paths
+
+- Host: `ubuntu@134.122.126.71` (SSH key auth only, root login allowed but unused)
+- Repo on droplet: `/var/www/aprly` (owned by `ubuntu:ubuntu`)
+- Env file: `/var/www/aprly/.env.prod` (mode `0600`, NOT in git)
+- Public listener: `nginx` container on TCP 80
+- Private services (docker network only): `db` (postgres:16), `api-server` (node)
+- Postgres data volume: `aprly-pgdata`
+
+## Compose entry points
+
+All commands assume `cd /var/www/aprly`.
+
+```bash
+COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
+```
+
+| Action | Command |
+| --- | --- |
+| Status | `$COMPOSE ps` |
+| All logs (follow) | `$COMPOSE logs -f` |
+| Logs for one service | `$COMPOSE logs -f api-server` (or `frontend`, `db`) |
+| Last 200 lines | `$COMPOSE logs --tail=200 api-server` |
+| Restart one service | `$COMPOSE up -d --no-deps --force-recreate api-server` |
+| Stop everything | `$COMPOSE down` |
+| Stop + delete db volume | `$COMPOSE down -v` (DESTROYS DATA) |
+
+## CI/CD overview
+
+- `validate` (`.github/workflows/ci.yml`) runs on every PR and push to `main` /
+  `petrychenko_dev`. Pragmatic typecheck and sanity builds.
+- `deploy` (`.github/workflows/deploy.yml`) auto-triggers when `validate`
+  finishes successfully on `main`. Also exposed as `workflow_dispatch`.
+- Deploy script: `git fetch + reset --hard origin/main` -> `compose build` ->
+  `up -d` -> `db-migrate` -> `db-seed` -> healthcheck `http://134.122.126.71/api/healthz`.
+
+## Manual deployment (when CI is unavailable)
+
+```bash
+cd /var/www/aprly
+git fetch --all --prune
+git checkout main
+git reset --hard origin/main
+$COMPOSE build
+$COMPOSE up -d
+$COMPOSE --profile ops run --rm db-migrate
+$COMPOSE --profile ops run --rm db-seed
+curl -fsS http://134.122.126.71/api/healthz && echo OK
+```
+
+## Rolling back
+
+Two equivalent paths.
+
+### Option A — re-run CI deploy from a previous SHA
+
+1. GitHub -> Actions -> deploy -> Run workflow.
+2. Choose Branch / Tag dropdown -> pick the older commit on `main`.
+3. Run; deploy.yml will reset the droplet checkout to that commit.
+
+### Option B — direct on the droplet
+
+```bash
+cd /var/www/aprly
+git log --oneline -10                 # find the good commit
+git reset --hard <SHA>
+$COMPOSE build
+$COMPOSE up -d
+```
+
+After rollback, fix the bug on `petrychenko_dev` and merge a forward fix to
+`main` so CI/CD can resume normal flow.
+
+## Database operations
+
+| Action | Command |
+| --- | --- |
+| Open psql | `$COMPOSE exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"` |
+| Re-run migrations only | `$COMPOSE --profile ops run --rm db-migrate` |
+| Re-run seed only | `$COMPOSE --profile ops run --rm db-seed` |
+| Quick row count | `$COMPOSE exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c 'SELECT count(*) FROM leads;'` |
+| Backup (tar+psql dump) | `$COMPOSE exec db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > /var/www/aprly/backups/aprly-$(date -u +%Y%m%dT%H%M%SZ).sql` |
+
+`POSTGRES_USER` / `POSTGRES_DB` come from `.env.prod`; `psql` reads them when
+shelled inside the `db` container.
+
+Backups directory `/var/www/aprly/backups/` should be created with `mkdir -p`
+the first time. Off-droplet backups are out of scope for this runbook.
+
+## Editing `.env.prod`
+
+```bash
+cd /var/www/aprly
+sudo -n true 2>/dev/null || true        # we own the file as ubuntu
+nano .env.prod
+$COMPOSE up -d                          # re-reads env on container restart
+```
+
+For changes that affect the build (rare; almost everything we use is runtime
+env), follow with `$COMPOSE build api-server frontend && $COMPOSE up -d`.
+
+## Common failure modes
+
+- **`Permission denied (publickey)` in deploy logs**: regenerate `aprly_ci`
+  pair, append the new pubkey to `~/.ssh/authorized_keys`, replace the
+  `DROPLET_SSH_KEY` GitHub secret with the new private key.
+- **`workflow_run` does not start deploy**: check that `validate` finished on
+  `main` (head_branch matters). Manual re-run via `workflow_dispatch`.
+- **Healthcheck times out**: usually means `api-server` is up but unable to
+  reach `db`. Inspect `$COMPOSE logs api-server` for connection errors and
+  `$COMPOSE logs db` for startup state.
+- **Disk full warnings**: `docker system prune -af` (no volumes) and check
+  `/var/lib/docker/volumes/aprly-pgdata/_data` size.
+- **Out-of-band git changes on the droplet**: `deploy.yml` resets hard, so
+  any uncommitted edits in `/var/www/aprly` are wiped on next deploy. Make
+  edits in the repo and push instead.
+
+## What is NOT here yet
+
+- HTTPS / Let's Encrypt — pending domain.
+- Off-droplet backups (S3/Spaces).
+- Slack/Telegram deploy notifications.
+- Branch protection / required CI on `main` — pending Admin role.

@@ -7,6 +7,7 @@ import { OptimizerStep1 } from "./OptimizerStep1";
 import { OptimizerStep2 } from "./OptimizerStep2";
 import { OptimizerStep3 } from "./OptimizerStep3";
 import type { CardEntry } from "./types";
+import { optimizerContent } from "@/content/landing";
 
 const TARGET_APR = 8;
 
@@ -56,54 +57,44 @@ export const OptimizerSection = forwardRef<HTMLElement>(function OptimizerSectio
     <section
       ref={ref}
       id="optimizer"
-      className="px-4 py-20 md:py-28"
+      className="px-4 py-16 md:py-24 scroll-mt-24"
     >
-      <div className="container mx-auto max-w-5xl space-y-10">
-        <div className="max-w-3xl">
-          <p className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-primary mb-4">
-            {step === 1
-              ? "Step 1 of 3 — The Damage"
-              : step === 2
-                ? "Step 2 of 3 — The Cards"
-                : "Step 3 of 3 — The Plan"}
-          </p>
-          <h2 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95]">
-            {step === 1
-              ? "Two numbers. That's all."
-              : step === 2
-                ? "Tell us about each card."
-                : "Here's what we save you."}
+      <div className="container mx-auto max-w-3xl space-y-8">
+        <div className="text-center max-w-2xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+            {optimizerContent.title}
           </h2>
-          <p className="mt-4 text-lg md:text-xl text-muted-foreground max-w-2xl">
-            {step === 1
-              ? "Just punch in your total debt and rate. We'll show the leak in real time."
-              : step === 2
-                ? "The more we know, the harder we negotiate. Add every card you carry."
-                : "Activate APRly and we start clawing this back, today."}
+          <p className="mt-3 text-sm md:text-base text-muted-foreground">
+            {optimizerContent.subtitle}
           </p>
         </div>
 
-        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.2em]">
-          {[1, 2, 3].map((n) => (
-            <div key={n} className="flex items-center gap-3">
-              <div
-                className={`h-9 w-9 rounded-full flex items-center justify-center border-2 transition-colors ${
-                  step >= (n as 1 | 2 | 3)
-                    ? "bg-primary border-primary text-primary-foreground"
-                    : "bg-card border-border/60 text-muted-foreground"
-                }`}
-              >
-                {step > n ? <Check className="h-4 w-4" /> : n}
-              </div>
-              {n < 3 && (
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex items-center gap-3 text-sm font-bold">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="flex items-center gap-3">
                 <div
-                  className={`h-0.5 w-10 md:w-20 transition-colors ${
-                    step > n ? "bg-primary" : "bg-border/60"
+                  className={`h-8 w-8 rounded-full flex items-center justify-center border-2 transition-colors ${
+                    step >= (n as 1 | 2 | 3)
+                      ? "bg-primary border-primary text-primary-foreground"
+                      : "bg-card border-border/60 text-muted-foreground"
                   }`}
-                />
-              )}
-            </div>
-          ))}
+                >
+                  {step > n ? <Check className="h-4 w-4" /> : n}
+                </div>
+                {n < 3 && (
+                  <div
+                    className={`h-px w-8 md:w-12 border-t border-dotted ${
+                      step > n ? "border-primary" : "border-border/60"
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+          <p className="text-xs md:text-sm text-muted-foreground">
+            {optimizerContent.stepLabels[step]}
+          </p>
         </div>
 
         <AnimatePresence mode="wait">

@@ -220,7 +220,7 @@ export function OptimizerStep3({
               aria-disabled="true"
               className="font-black uppercase tracking-wider text-base px-8 h-14 shadow-[0_0_18px_rgba(59,130,246,0.55)] disabled:shadow-none"
             >
-              Activate Audit Access — $39 one-time
+              Activate APRly — $39/mo
             </Button>
             <p className="mt-1 text-xs text-muted-foreground sm:text-right">
               Available after stage launch (Stripe pending)
