@@ -1,18 +1,13 @@
 import { useEffect, useRef } from "react";
-import { useLocation } from "wouter";
 import { HeroSection } from "../components/landing/HeroSection";
+import { StatsSection } from "../components/landing/StatsSection";
+import { HowItWorksSection } from "../components/landing/HowItWorksSection";
 import { OptimizerSection } from "../components/landing/OptimizerSection";
-import { TrustBar } from "../components/landing/TrustBar";
+import { FaqSection } from "../components/landing/FaqSection";
 import { PlanSection } from "../components/landing/PlanSection";
-
-function smoothScrollToId(id: string) {
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-}
 
 export default function Home() {
   const optimizerRef = useRef<HTMLElement>(null);
-  const [, setLocation] = useLocation();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -33,19 +28,13 @@ export default function Home() {
     });
   };
 
-  const handleSeePlan = () => {
-    smoothScrollToId("plan");
-    setLocation("/#plan", { replace: true });
-  };
-
   return (
     <div className="flex flex-col">
-      <HeroSection
-        onSeeOptimizer={handleSeeOptimizer}
-        onSeePlan={handleSeePlan}
-      />
+      <HeroSection onSeeOptimizer={handleSeeOptimizer} />
+      <StatsSection />
+      <HowItWorksSection />
       <OptimizerSection ref={optimizerRef} />
-      <TrustBar />
+      <FaqSection />
       <PlanSection />
     </div>
   );

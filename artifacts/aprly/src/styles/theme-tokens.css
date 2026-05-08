@@ -1,0 +1,349 @@
+/**
+ * AUTO-GENERATED. Do not edit by hand.
+ * Source: local_docs/{Light,Dark} theme.tokens.json
+ * Regenerate: pnpm --filter @workspace/aprly run tokens
+ */
+
+:root {
+  /* === page === */
+  --page-bg: #FBFBFB;
+  --page-bg-0: rgba(246, 248, 252, 0);
+
+  /* === error === */
+  --error-box-bg-color: #FEF2F4;
+
+  /* === progressbar === */
+  --progressbar-default-color: #D4E9FB;
+  --progressbar-selected-color: #2693ED;
+
+  /* === action === */
+  --action-default-color: #7865EC;
+  --action-hover-color: #6656C9;
+
+  /* === card === */
+  --card-bg-color: #FFFFFF;
+  --card-border-color: #F5F5F6;
+
+  /* === bottom === */
+  --bottom-buttons-bg-color: #FFFFFF;
+
+  /* === stepper === */
+  --stepper-bg: rgba(150, 208, 238, 0.15);
+
+  /* === tabbar === */
+  --tabbar-bg: #161230;
+
+  /* === tabs === */
+  --tabs-title-selected: #1B67A6;
+
+  /* === tabbar === */
+  --tabbar-selected-bg: #FFFFFF;
+
+  /* === login === */
+  --login-bg: rgba(255, 255, 255, 0.85);
+
+  /* === exp === */
+  --exp-chip-bg-color: #F6F4FE;
+  --exp-chip-border-color: #E4E0FB;
+
+  /* === message === */
+  --message-own-bg-color: #FFFFFF;
+  --message-own-border-color: #F5F5F6;
+  --message-other-bg-color: #F6F4FE;
+  --message-other-border-color: #E1E3E6;
+
+  /* === average === */
+  --average-text-color: #202226;
+
+  /* === hint === */
+  --hint-text-color: #5B616D;
+
+  /* === disable === */
+  --disable-text-color: #C4C7CC;
+
+  /* === button === */
+  --button-special-bg-color: #FFFFFF;
+  --button-disable-color: #9FA3AC;
+  --button-primary-disable-text-color: #F5F5F6;
+
+  /* === illustration === */
+  --illustration-0-color: #FBFBFB;
+  --illustration-1-color: #FFFFFF;
+  --illustration-2-color: #F5F5F6;
+  --illustration-border-color: #C4C7CC;
+
+  /* === illustratot === */
+  --illustratot-grad-1: #C6D0E2;
+  --illustratot-grad-2: rgba(198, 208, 226, 0);
+
+  /* === popup === */
+  --popup-header-bg-color: #FFFFFF;
+  --popup-header-border-color: #FBFBFB;
+
+  /* === pop === */
+  --pop-up-shade: rgba(3, 15, 72, 0.75);
+
+  /* === input === */
+  --input-default-bg-color: #FFFFFF;
+  --input-default-border-color: #E1E3E6;
+  --input-focus-bg-color: #F6F4FE;
+  --input-focus-border-color: #A79BF3;
+  --input-error-bg-color: #FEF2F4;
+  --input-disable-bg-color: #E1E3E6;
+  --input-disable-border-color: #C4C7CC;
+  --input-disable-text-color: #9FA3AC;
+  --input-placeholder-text-color: #C4C7CC;
+  --input-label-text-color: #5B616D;
+
+  /* === primary === */
+  --primary-theme-050: #FBFAFE;
+  --primary-theme-100: #F6F4FE;
+  --primary-theme-200: #E4E0FB;
+  --primary-theme-300: #C9C1F7;
+  --primary-theme-400: #A79BF3;
+  --primary-theme-500: #7865EC;
+  --primary-theme-600: #6656C9;
+  --primary-theme-700: #5447A5;
+  --primary-theme-800: #3C3376;
+  --primary-theme-900: #241E47;
+  --primary-theme-950: #161230;
+
+  /* === secondary === */
+  --secondary-theme-050: #FFFCF8;
+  --secondary-theme-100: #FFF8EF;
+  --secondary-theme-200: #FFEAD1;
+  --secondary-theme-300: #FFD5A3;
+  --secondary-theme-400: #FFBB6A;
+  --secondary-theme-500: #FF9619;
+  --secondary-theme-600: #D98015;
+  --secondary-theme-700: #B36912;
+  --secondary-theme-800: #804B0D;
+  --secondary-theme-900: #4D2D08;
+  --secondary-theme-950: #351C05;
+
+  /* === neutral === */
+  --neutral-theme-000: #FFFFFF;
+  --neutral-theme-050: #FBFBFB;
+  --neutral-theme-100: #F5F5F6;
+  --neutral-theme-200: #E1E3E6;
+  --neutral-theme-300: #C4C7CC;
+  --neutral-theme-400: #9FA3AC;
+  --neutral-theme-500: #6B7280;
+  --neutral-theme-600: #5B616D;
+  --neutral-theme-700: #4B505A;
+  --neutral-theme-800: #363940;
+  --neutral-theme-900: #202226;
+  --neutral-theme-950: #151619;
+  --neutral-theme-1000: #000000;
+
+  /* === warning === */
+  --warning-theme-050: #FEFDF8;
+  --warning-theme-100: #FEFAEE;
+  --warning-theme-200: #FBF0CE;
+  --warning-theme-300: #F7E19C;
+  --warning-theme-400: #F1CE5E;
+  --warning-theme-500: #EAB308;
+  --warning-theme-600: #C79807;
+  --warning-theme-700: #A47D06;
+  --warning-theme-800: #755A04;
+  --warning-theme-900: #463602;
+  --warning-theme-950: #2F2301;
+
+  /* === danger === */
+  --danger-theme-050: #FFF9FA;
+  --danger-theme-100: #FEF2F4;
+  --danger-theme-200: #FDD9DF;
+  --danger-theme-300: #FBB2BF;
+  --danger-theme-400: #F88296;
+  --danger-theme-500: #F43F5E;
+  --danger-theme-600: #CF3650;
+  --danger-theme-700: #AB2C42;
+  --danger-theme-800: #7A202F;
+  --danger-theme-900: #49131C;
+  --danger-theme-950: #320A14;
+
+  /* === info === */
+  --info-theme-050: #F8FCFE;
+  --info-theme-100: #F0F7FE;
+  --info-theme-200: #D4E9FB;
+  --info-theme-300: #A8D4F8;
+  --info-theme-400: #72B9F3;
+  --info-theme-500: #2693ED;
+  --info-theme-600: #207DC9;
+  --info-theme-700: #1B67A6;
+  --info-theme-800: #134A77;
+  --info-theme-900: #0B2C47;
+  --info-scheme-950: #061C30;
+}
+
+.dark {
+  /* === page === */
+  --page-bg: #151619;
+  --page-bg-0: rgba(0, 7, 41, 0);
+
+  /* === error === */
+  --error-box-bg-color: #320A14;
+
+  /* === progressbar === */
+  --progressbar-default-color: #0B2C47;
+  --progressbar-selected-color: #2693ED;
+
+  /* === action === */
+  --action-default-color: #7865EC;
+  --action-hover-color: #6656C9;
+
+  /* === card === */
+  --card-bg-color: #020D42;
+  --card-border-color: #161230;
+
+  /* === bottom === */
+  --bottom-buttons-bg-color: #030E45;
+
+  /* === stepper === */
+  --stepper-bg: rgba(150, 208, 238, 0.1);
+
+  /* === tabbar === */
+  --tabbar-bg: #161230;
+
+  /* === tabs === */
+  --tabs-title-selected: #2693ED;
+
+  /* === tabbar === */
+  --tabbar-selected-bg: #3C3376;
+
+  /* === login === */
+  --login-bg: rgba(0, 7, 41, 0.85);
+
+  /* === exp === */
+  --exp-chip-bg-color: #161230;
+  --exp-chip-border-color: #241E47;
+
+  /* === message === */
+  --message-own-bg-color: #030F48;
+  --message-own-border-color: #161230;
+  --message-other-bg-color: #4D2D08;
+  --message-other-border-color: #804B0D;
+
+  /* === average === */
+  --average-text-color: #C4C7CC;
+
+  /* === hint === */
+  --hint-text-color: #5B616D;
+
+  /* === disable === */
+  --disable-text-color: #4B505A;
+
+  /* === button === */
+  --button-special-bg-color: #202226;
+  --button-disable-color: #363940;
+  --button-primary-disable-text-color: #5B616D;
+
+  /* === illustration === */
+  --illustration-0-color: #020C3D;
+  --illustration-1-color: #030F48;
+  --illustration-2-color: #1C2963;
+  --illustration-border-color: #5447A5;
+
+  /* === illustratot === */
+  --illustratot-grad-1: #273143;
+  --illustratot-grad-2: rgba(39, 49, 67, 0);
+
+  /* === popup === */
+  --popup-header-bg-color: #020C3D;
+  --popup-header-border-color: #161230;
+
+  /* === pop === */
+  --pop-up-shade: rgba(0, 0, 0, 0.75);
+
+  /* === input === */
+  --input-default-bg-color: #202226;
+  --input-default-border-color: #4B505A;
+  --input-focus-bg-color: #241E47;
+  --input-focus-border-color: #D98015;
+  --input-error-bg-color: #49131C;
+  --input-disable-bg-color: #363940;
+  --input-disable-border-color: #4B505A;
+  --input-disable-text-color: #363940;
+  --input-placeholder-text-color: #5B616D;
+  --input-label-text-color: #C4C7CC;
+
+  /* === primary === */
+  --primary-theme-050: #161230;
+  --primary-theme-100: #241E47;
+  --primary-theme-200: #3C3376;
+  --primary-theme-300: #5447A5;
+  --primary-theme-400: #6656C9;
+  --primary-theme-500: #7865EC;
+  --primary-theme-600: #A79BF3;
+  --primary-theme-700: #C9C1F7;
+  --primary-theme-800: #E4E0FB;
+  --primary-theme-900: #F6F4FE;
+  --primary-theme-950: #FBFAFE;
+
+  /* === secondary === */
+  --secondary-theme-050: #351C05;
+  --secondary-theme-100: #4D2D08;
+  --secondary-theme-200: #804B0D;
+  --secondary-theme-300: #B36912;
+  --secondary-theme-400: #D98015;
+  --secondary-theme-500: #FF9619;
+  --secondary-theme-600: #FFBB6A;
+  --secondary-theme-700: #FFD5A3;
+  --secondary-theme-800: #FFEAD1;
+  --secondary-theme-900: #FFF8EF;
+  --secondary-theme-950: #FFFCF8;
+
+  /* === neutral === */
+  --neutral-theme-000: #000000;
+  --neutral-theme-050: #151619;
+  --neutral-theme-100: #202226;
+  --neutral-theme-200: #363940;
+  --neutral-theme-300: #4B505A;
+  --neutral-theme-400: #5B616D;
+  --neutral-theme-500: #6B7280;
+  --neutral-theme-600: #9FA3AC;
+  --neutral-theme-700: #C4C7CC;
+  --neutral-theme-800: #E1E3E6;
+  --neutral-theme-900: #F5F5F6;
+  --neutral-theme-950: #FBFBFB;
+  --neutral-theme-1000: #FFFFFF;
+
+  /* === warning === */
+  --warning-theme-050: #2F2301;
+  --warning-theme-100: #463602;
+  --warning-theme-200: #755A04;
+  --warning-theme-300: #A47D06;
+  --warning-theme-400: #C79807;
+  --warning-theme-500: #EAB308;
+  --warning-theme-600: #F1CE5E;
+  --warning-theme-700: #F7E19C;
+  --warning-theme-800: #FBF0CE;
+  --warning-theme-900: #FEFAEE;
+  --warning-theme-950: #FEFDF8;
+
+  /* === danger === */
+  --danger-theme-050: #320A14;
+  --danger-theme-100: #49131C;
+  --danger-theme-200: #7A202F;
+  --danger-theme-300: #AB2C42;
+  --danger-theme-400: #CF3650;
+  --danger-theme-500: #F43F5E;
+  --danger-theme-600: #F88296;
+  --danger-theme-700: #FBB2BF;
+  --danger-theme-800: #FDD9DF;
+  --danger-theme-900: #FEF2F4;
+  --danger-theme-950: #FFF9FA;
+
+  /* === info === */
+  --info-theme-050: #061C30;
+  --info-theme-100: #0B2C47;
+  --info-theme-200: #134A77;
+  --info-theme-300: #1B67A6;
+  --info-theme-400: #207DC9;
+  --info-theme-500: #2693ED;
+  --info-theme-600: #72B9F3;
+  --info-theme-700: #A8D4F8;
+  --info-theme-800: #D4E9FB;
+  --info-theme-900: #F0F7FE;
+  --info-scheme-950: #F8FCFE;
+}
