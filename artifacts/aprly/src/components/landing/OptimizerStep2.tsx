@@ -1,20 +1,44 @@
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
   ChevronLeft,
   CreditCard,
+  Landmark,
   Plus,
   Trash2,
 } from "lucide-react";
+import type { PlaidLinkOnSuccessMetadata } from "react-plaid-link";
+import {
+  useCreatePlaidLinkToken,
+  useExchangePlaidPublicToken,
+} from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import type { CardEntry } from "./types";
+import { accountsAreComplete } from "./optimizerAccounts";
+import {
+  createPlaidLink,
+  destroyPlaidHandler,
+  ensurePlaidScript,
+  openPlaidLinkDeferred,
+  type PlaidLinkHandler,
+} from "./plaidLink";
 
 export interface OptimizerStep2Props {
   accounts: CardEntry[];
-  setAccounts: (a: CardEntry[]) => void;
+  setAccounts: Dispatch<SetStateAction<CardEntry[]>>;
   name: string;
   setName: (v: string) => void;
   email: string;
@@ -33,6 +57,72 @@ export function OptimizerStep2({
   onBack,
   onNext,
 }: OptimizerStep2Props) {
+  const { toast } = useToast();
+  const linkHandlerRef = useRef<PlaidLinkHandler | null>(null);
+  const plaidClickLockRef = useRef(false);
+  const [plaidOpening, setPlaidOpening] = useState(false);
+
+  const createLinkToken = useCreatePlaidLinkToken();
+  const exchangeToken = useExchangePlaidPublicToken();
+
+  useEffect(() => {
+    return () => {
+      plaidClickLockRef.current = false;
+      destroyPlaidHandler(linkHandlerRef.current);
+      linkHandlerRef.current = null;
+    };
+  }, []);
+
+  const appendImported = useCallback(
+    (rows: { brand: string; balance: number; rate: number; accountId?: string }[]) => {
+      setAccounts((prev) => {
+        const seen = new Set(
+          prev.map((a) => a.accountId).filter((id): id is string => !!id),
+        );
+        const fresh = rows.filter((r) => !r.accountId || !seen.has(r.accountId));
+        const mapped: CardEntry[] = fresh.map((r) => ({
+          brand: r.brand,
+          balance: String(r.balance),
+          rate: String(r.rate),
+          accountId: r.accountId,
+        }));
+        return [...prev, ...mapped];
+      });
+    },
+    [setAccounts],
+  );
+
+  const runExchange = useCallback(
+    async (publicToken: string, metadata: PlaidLinkOnSuccessMetadata) => {
+      try {
+        const result = await exchangeToken.mutateAsync({
+          data: {
+            publicToken,
+            institutionName: metadata.institution?.name,
+          },
+        });
+        appendImported(result.importedCards);
+        if (!result.importedCards.length) {
+          toast({
+            title: "No card debt imported",
+            description:
+              "Plaid returned no credit-card balances with APR. Try another sandbox institution or add cards manually.",
+          });
+        }
+      } catch (e) {
+        toast({
+          variant: "destructive",
+          title: "Could not load bank cards",
+          description: e instanceof Error ? e.message : "Unknown error",
+        });
+      } finally {
+        destroyPlaidHandler(linkHandlerRef.current);
+        linkHandlerRef.current = null;
+      }
+    },
+    [appendImported, exchangeToken, toast],
+  );
+
   const update = (i: number, patch: Partial<CardEntry>) => {
     setAccounts(accounts.map((a, idx) => (idx === i ? { ...a, ...patch } : a)));
   };
@@ -40,6 +130,66 @@ export function OptimizerStep2({
     setAccounts([...accounts, { brand: "", balance: "", rate: "" }]);
   const remove = (i: number) =>
     setAccounts(accounts.filter((_, idx) => idx !== i));
+
+  const cardsReady = useMemo(() => accountsAreComplete(accounts), [accounts]);
+
+  const startPlaid = async () => {
+    if (plaidClickLockRef.current) {
+      return;
+    }
+    plaidClickLockRef.current = true;
+    setPlaidOpening(true);
+    try {
+      await ensurePlaidScript();
+
+      destroyPlaidHandler(linkHandlerRef.current);
+      linkHandlerRef.current = null;
+
+      const { linkToken } = await createLinkToken.mutateAsync();
+      const token = typeof linkToken === "string" ? linkToken.trim() : "";
+      if (!token) {
+        throw new Error("Empty link_token from API");
+      }
+
+      const handler = createPlaidLink({
+        token,
+        onSuccess: (publicToken: string, metadata: PlaidLinkOnSuccessMetadata) => {
+          plaidClickLockRef.current = false;
+          setPlaidOpening(false);
+          void runExchange(publicToken, metadata);
+        },
+        onExit: () => {
+          plaidClickLockRef.current = false;
+          setPlaidOpening(false);
+          destroyPlaidHandler(linkHandlerRef.current);
+          linkHandlerRef.current = null;
+        },
+        onEvent: (eventName: string) => {
+          if (eventName === "ERROR") {
+            plaidClickLockRef.current = false;
+            setPlaidOpening(false);
+          }
+        },
+      });
+
+      linkHandlerRef.current = handler;
+      // Defer open() like plaid_link_test.html (create first, open on next task after user flow / await).
+      openPlaidLinkDeferred(handler);
+    } catch (e) {
+      plaidClickLockRef.current = false;
+      setPlaidOpening(false);
+      destroyPlaidHandler(linkHandlerRef.current);
+      linkHandlerRef.current = null;
+      toast({
+        variant: "destructive",
+        title: "Plaid unavailable",
+        description: e instanceof Error ? e.message : "Unknown error",
+      });
+    }
+  };
+
+  const plaidBusy =
+    plaidOpening || createLinkToken.isPending || exchangeToken.isPending;
 
   return (
     <motion.div
@@ -51,7 +201,7 @@ export function OptimizerStep2({
     >
       <div className="space-y-5">
         {accounts.map((acc, i) => (
-          <Card key={i} className="bg-card border-border/50">
+          <Card key={acc.accountId ?? `card-${i}`} className="bg-card border-border/50">
             <CardContent className="p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -113,13 +263,24 @@ export function OptimizerStep2({
           </Card>
         ))}
 
-        <Button
-          variant="outline"
-          onClick={add}
-          className="w-full h-12 font-bold border-dashed border-border/60 hover:border-primary hover:text-primary"
-        >
-          <Plus className="mr-2 h-4 w-4" /> Add another card
-        </Button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Button
+            variant="outline"
+            onClick={add}
+            className="h-12 font-bold border-dashed border-border/60 hover:border-primary hover:text-primary"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add another card
+          </Button>
+          <Button
+            variant="outline"
+            type="button"
+            onClick={startPlaid}
+            disabled={plaidBusy}
+            className="h-12 font-bold border-dashed border-border/60 hover:border-primary hover:text-primary"
+          >
+            <Landmark className="mr-2 h-4 w-4" /> Add cards from banks
+          </Button>
+        </div>
       </div>
 
       <Card className="bg-card border-border/50">
@@ -152,7 +313,8 @@ export function OptimizerStep2({
         <Button
           size="lg"
           onClick={onNext}
-          className="font-black uppercase tracking-wider text-base px-8 h-14 shadow-[0_0_18px_rgba(59,130,246,0.55)] hover:shadow-[0_0_24px_rgba(59,130,246,0.8)] transition-shadow"
+          disabled={!cardsReady}
+          className="font-black uppercase tracking-wider text-base px-8 h-14 shadow-[0_0_18px_rgba(59,130,246,0.55)] hover:shadow-[0_0_24px_rgba(59,130,246,0.8)] transition-shadow disabled:opacity-40 disabled:shadow-none"
         >
           See My Plan <ArrowRight className="ml-2 h-5 w-5" />
         </Button>

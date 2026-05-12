@@ -254,9 +254,26 @@ components:
         institutionName:
           type: string
 
+    PlaidImportedCard:
+      type: object
+      required: [brand, balance, rate]
+      properties:
+        brand:
+          type: string
+        balance:
+          type: number
+          minimum: 0
+        rate:
+          type: number
+          minimum: 0
+          description: Current APR as a percent (e.g. 24.99)
+        accountId:
+          type: string
+          description: Plaid account_id for deduplication on the client
+
     PlaidLinkedAccount:
       type: object
-      required: [itemId, institutionName, mask, accountType]
+      required: [itemId, institutionName, mask, accountType, importedCards]
       properties:
         itemId:
           type: string
@@ -266,6 +283,10 @@ components:
           type: string
         accountType:
           type: string
+        importedCards:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlaidImportedCard"
 
     SubscribeInput:
       type: object

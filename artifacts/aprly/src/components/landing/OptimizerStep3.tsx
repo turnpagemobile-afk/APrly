@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   CreditCard,
   Flame,
-  Sparkles,
   TrendingDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,7 +36,7 @@ function AnimatedNumber({
 
   return (
     <motion.span
-      className={`font-mono tabular-nums ${
+      className={`inline-block max-w-full font-mono tabular-nums tracking-tight ${
         isRed
           ? "text-destructive drop-shadow-[0_0_18px_rgba(248,113,113,0.7)]"
           : "text-primary drop-shadow-[0_0_18px_rgba(56,189,248,0.7)]"
@@ -61,14 +60,15 @@ export interface OptimizerStep3Props {
         annualSavings?: number;
       }
     | undefined;
-  totalDebt: string;
+  /** Sum of all card balances used for the optimizer call */
+  totalDebtAmount: number;
   isPending: boolean;
   onBack: () => void;
 }
 
 export function OptimizerStep3({
   res,
-  totalDebt,
+  totalDebtAmount,
   isPending,
   onBack,
 }: OptimizerStep3Props) {
@@ -83,32 +83,32 @@ export function OptimizerStep3({
       className="space-y-8"
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-card border-border/50">
-          <CardContent className="p-8 flex items-center justify-between">
-            <div>
+        <Card className="bg-card border-border/50 @container min-w-0">
+          <CardContent className="p-6 md:p-8 flex items-center justify-between gap-3 min-w-0">
+            <div className="min-w-0 flex-1 pr-1">
               <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-2">
                 Total Debt
               </p>
-              <p className="text-4xl md:text-5xl font-black tracking-tight">
-                <AnimatedNumber value={parseFloat(totalDebt) || 0} />
+              <p className="text-[clamp(1.35rem,4cqi+0.85rem,3.1rem)] md:text-[clamp(1.5rem,5cqi+0.75rem,3.25rem)] font-black leading-[1.05]">
+                <AnimatedNumber value={totalDebtAmount} />
               </p>
             </div>
-            <div className="h-14 w-14 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-              <CreditCard className="h-7 w-7 text-destructive" />
+            <div className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+              <CreditCard className="h-6 w-6 md:h-7 md:w-7 text-destructive" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-destructive/30 md:col-span-2 relative overflow-hidden">
+        <Card className="bg-card border-destructive/30 md:col-span-2 relative overflow-hidden min-w-0 @container">
           <div className="absolute inset-0 bg-destructive/5" />
-          <CardContent className="p-8 flex items-center justify-between relative z-10 gap-6">
-            <div>
+          <CardContent className="p-6 md:p-8 flex items-center justify-between relative z-10 gap-4 min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-xs font-bold text-destructive uppercase tracking-[0.2em] mb-2">
                 Daily Interest Waste
               </p>
-              <p className="text-5xl md:text-6xl font-black tracking-tight leading-none">
+              <p className="text-[clamp(1.5rem,3.5cqi+1.1rem,3.75rem)] md:text-[clamp(1.75rem,4cqi+1rem,3.85rem)] font-black leading-none">
                 {showSkeleton ? (
-                  <Skeleton className="h-14 w-56 bg-card/60" />
+                  <Skeleton className="h-14 w-56 max-w-full bg-card/60" />
                 ) : (
                   <AnimatedNumber
                     value={res?.dailyInterestWaste || 0}
@@ -128,16 +128,16 @@ export function OptimizerStep3({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="bg-card border-primary/30 relative overflow-hidden">
+        <Card className="bg-card border-primary/30 relative overflow-hidden min-w-0 @container">
           <div className="absolute inset-0 bg-primary/5" />
-          <CardContent className="p-6 relative z-10 flex items-center justify-between gap-4">
-            <div>
+          <CardContent className="p-6 relative z-10 flex items-center justify-between gap-4 min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-2">
                 Monthly Savings
               </p>
-              <p className="text-3xl md:text-4xl font-black tracking-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
+              <p className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] md:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
                 {showSkeleton ? (
-                  <Skeleton className="h-9 w-40 bg-card/60" />
+                  <Skeleton className="h-9 w-40 max-w-full bg-card/60" />
                 ) : (
                   <AnimatedNumber value={res?.monthlySavings || 0} />
                 )}
@@ -149,16 +149,16 @@ export function OptimizerStep3({
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-primary/30 relative overflow-hidden">
+        <Card className="bg-card border-primary/30 relative overflow-hidden min-w-0 @container">
           <div className="absolute inset-0 bg-primary/5" />
-          <CardContent className="p-6 relative z-10 flex items-center justify-between gap-4">
-            <div>
+          <CardContent className="p-6 relative z-10 flex items-center justify-between gap-4 min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-2">
                 Annual Savings
               </p>
-              <p className="text-3xl md:text-4xl font-black tracking-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
+              <p className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] md:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
                 {showSkeleton ? (
-                  <Skeleton className="h-9 w-40 bg-card/60" />
+                  <Skeleton className="h-9 w-40 max-w-full bg-card/60" />
                 ) : (
                   <AnimatedNumber value={res?.annualSavings || 0} />
                 )}
@@ -170,27 +170,6 @@ export function OptimizerStep3({
           </CardContent>
         </Card>
       </div>
-
-      <Card className="bg-card border-border/50">
-        <CardContent className="p-6 space-y-4">
-          <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
-              <Sparkles className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <p className="font-black text-lg tracking-tight">
-                Auto-detect your debts
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Connect your bank to pull every balance and rate in one tap.
-              </p>
-              <p className="mt-2 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                Coming soon — Plaid Sandbox in upcoming release.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
         <Button variant="ghost" onClick={onBack} className="font-bold sm:w-auto">

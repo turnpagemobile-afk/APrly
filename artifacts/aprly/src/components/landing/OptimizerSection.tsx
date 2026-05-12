@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
 import { useCalculateOptimization } from "@workspace/api-client-react";
@@ -7,6 +7,7 @@ import { OptimizerStep1 } from "./OptimizerStep1";
 import { OptimizerStep2 } from "./OptimizerStep2";
 import { OptimizerStep3 } from "./OptimizerStep3";
 import type { CardEntry } from "./types";
+import { aggregateCardBalances } from "./optimizerAccounts";
 import { optimizerContent } from "@/content/landing";
 
 const TARGET_APR = 8;
@@ -26,6 +27,20 @@ export const OptimizerSection = forwardRef<HTMLElement>(function OptimizerSectio
 
   const calculateOpt = useCalculateOptimization();
 
+  const goToStep2 = useCallback(() => {
+    setAccounts((prev) => {
+      const next = [...prev];
+      const first = next[0] ?? { brand: "", balance: "", rate: "" };
+      next[0] = {
+        ...first,
+        balance: totalDebt,
+        rate: interestRate,
+      };
+      return next;
+    });
+    setStep(2);
+  }, [totalDebt, interestRate]);
+
   useEffect(() => {
     const unsub = VoiceStore.subscribe((data) => {
       if (data.totalDebt !== undefined) setTotalDebt(data.totalDebt.toString());
@@ -39,19 +54,40 @@ export const OptimizerSection = forwardRef<HTMLElement>(function OptimizerSectio
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      const debt = parseFloat(totalDebt);
-      const rate = parseFloat(interestRate);
-      if (!isNaN(debt) && !isNaN(rate)) {
+      if (step === 1) {
+        const debt = parseFloat(totalDebt);
+        const rate = parseFloat(interestRate);
+        if (!Number.isNaN(debt) && !Number.isNaN(rate) && debt > 0 && rate > 0) {
+          calculateOpt.mutate({
+            data: { totalDebt: debt, interestRate: rate, targetRate: TARGET_APR },
+          });
+        }
+        return;
+      }
+
+      const agg = aggregateCardBalances(accounts);
+      if (agg) {
         calculateOpt.mutate({
-          data: { totalDebt: debt, interestRate: rate, targetRate: TARGET_APR },
+          data: {
+            totalDebt: agg.totalDebt,
+            interestRate: agg.blendedRate,
+            targetRate: TARGET_APR,
+          },
         });
       }
     }, 250);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalDebt, interestRate]);
+  }, [step, totalDebt, interestRate, accounts]);
 
   const res = calculateOpt.data;
+
+  const step3TotalDebt = useMemo(() => {
+    const agg = aggregateCardBalances(accounts);
+    if (agg) return agg.totalDebt;
+    const fallback = parseFloat(totalDebt);
+    return Number.isNaN(fallback) ? 0 : fallback;
+  }, [accounts, totalDebt]);
 
   return (
     <section
@@ -105,7 +141,7 @@ export const OptimizerSection = forwardRef<HTMLElement>(function OptimizerSectio
               setTotalDebt={setTotalDebt}
               interestRate={interestRate}
               setInterestRate={setInterestRate}
-              onNext={() => setStep(2)}
+              onNext={goToStep2}
             />
           )}
           {step === 2 && (
@@ -125,7 +161,7 @@ export const OptimizerSection = forwardRef<HTMLElement>(function OptimizerSectio
             <OptimizerStep3
               key="step3"
               res={res}
-              totalDebt={totalDebt}
+              totalDebtAmount={step3TotalDebt}
               isPending={calculateOpt.isPending}
               onBack={() => setStep(2)}
             />

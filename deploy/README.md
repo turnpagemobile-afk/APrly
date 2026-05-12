@@ -6,7 +6,11 @@ Quick reference for operating the production droplet.
 
 - Host: `ubuntu@134.122.126.71` (SSH key auth only, root login allowed but unused)
 - Repo on droplet: `/var/www/aprly` (owned by `ubuntu:ubuntu`)
-- Env file: `/var/www/aprly/.env.prod` (mode `0600`, NOT in git)
+- Env file: `/var/www/aprly/.env.prod` (mode `0600`, NOT in git). Must define
+  Postgres + `DATABASE_URL`, OpenAI (`AI_INTEGRATIONS_OPENAI_*`), and for Plaid
+  routes: `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV` (`sandbox` /
+  `development` / `production`). Optional: `PLAID_REDIRECT_URI` (required for
+  some Link flows once DNS/TLS is live).
 - Public listener: `nginx` container on TCP 80
 - Private services (docker network only): `db` (postgres:16), `api-server` (node)
 - Postgres data volume: `aprly-pgdata`
