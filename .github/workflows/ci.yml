@@ -75,6 +75,10 @@ jobs:
           DATABASE_URL=postgres://ci:ci@db:5432/ci
           AI_INTEGRATIONS_OPENAI_BASE_URL=https://api.openai.com/v1
           AI_INTEGRATIONS_OPENAI_API_KEY=ci-placeholder
+          PLAID_CLIENT_ID=ci-placeholder
+          PLAID_SECRET=ci-placeholder
+          PLAID_ENV=sandbox
+          PLAID_REDIRECT_URI=
           NODE_ENV=production
           EOF
           docker compose -f docker-compose.prod.yml --env-file /tmp/aprly-ci.env config -q

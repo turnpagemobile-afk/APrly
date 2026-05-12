@@ -1,20 +1,96 @@
+import { randomUUID } from "node:crypto";
 import { Router, type IRouter } from "express";
+import {
+  AccountSubtype,
+  AccountType,
+  APRAprTypeEnum,
+  Configuration,
+  CountryCode,
+  PlaidApi,
+  PlaidEnvironments,
+  Products,
+  type CreditCardLiability,
+} from "plaid";
 import {
   CreatePlaidLinkTokenResponse,
   ExchangePlaidPublicTokenBody,
   ExchangePlaidPublicTokenResponse,
 } from "@workspace/api-zod";
+import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
-router.post("/plaid/link-token", (_req, res, next) => {
+function plaidConfigured(): boolean {
+  return !!(
+    process.env["PLAID_CLIENT_ID"]?.trim() && process.env["PLAID_SECRET"]?.trim()
+  );
+}
+
+function plaidBasePath(): string {
+  const env = process.env["PLAID_ENV"]?.trim().toLowerCase();
+  if (env === "production") return PlaidEnvironments.production;
+  return PlaidEnvironments.sandbox;
+}
+
+function getPlaidClient(): PlaidApi {
+  const clientId = process.env["PLAID_CLIENT_ID"]!;
+  const secret = process.env["PLAID_SECRET"]!;
+  return new PlaidApi(
+    new Configuration({
+      basePath: plaidBasePath(),
+      baseOptions: {
+        headers: {
+          "PLAID-CLIENT-ID": clientId,
+          "PLAID-SECRET": secret,
+        },
+      },
+    }),
+  );
+}
+
+function pickPurchaseApr(liab: CreditCardLiability | undefined): number | undefined {
+  if (!liab?.aprs?.length) return undefined;
+  const purchase = liab.aprs.find((a) => a.apr_type === APRAprTypeEnum.PurchaseApr);
+  const pct = purchase?.apr_percentage ?? liab.aprs[0]?.apr_percentage;
+  return pct != null && Number.isFinite(pct) ? pct : undefined;
+}
+
+router.post("/plaid/link-token", async (_req, res, next) => {
   try {
-    const expiration = new Date(Date.now() + 1000 * 60 * 30).toISOString();
-    const linkToken = `link-sandbox-${Math.random().toString(36).slice(2, 12)}`;
+    if (!plaidConfigured()) {
+      res.status(503).json({
+        error:
+          "Plaid is not configured. Set PLAID_CLIENT_ID and PLAID_SECRET in .env.",
+      });
+      return;
+    }
+
+    const client = getPlaidClient();
+    const redirectUri = process.env["PLAID_REDIRECT_URI"]?.trim();
+
+    const tokenRes = await client.linkTokenCreate({
+      user: { client_user_id: randomUUID() },
+      client_name: "APRly",
+      // Transactions + Liabilities: broader institution support in Link; Liabilities alone can fail Link init for some flows.
+      products: [Products.Transactions, Products.Liabilities],
+      country_codes: [CountryCode.Us],
+      language: "en",
+      ...(redirectUri ? { redirect_uri: redirectUri } : {}),
+    });
+
+    const linkToken = tokenRes.data.link_token;
+    if (linkToken.length < 40) {
+      logger.warn(
+        { linkTokenLength: linkToken.length, requestId: tokenRes.data.request_id },
+        "link_token looks unusually short; confirm api-server uses real Plaid credentials (not an old mock).",
+      );
+    }
+    const expiration = tokenRes.data.expiration ?? new Date().toISOString();
+
     const data = CreatePlaidLinkTokenResponse.parse({
       linkToken,
       expiration,
-      sandbox: true,
+      sandbox: plaidBasePath() === PlaidEnvironments.sandbox,
     });
     res.json(data);
   } catch (err) {
@@ -22,14 +98,85 @@ router.post("/plaid/link-token", (_req, res, next) => {
   }
 });
 
-router.post("/plaid/exchange", (req, res, next) => {
+router.post("/plaid/exchange", async (req, res, next) => {
   try {
     const input = ExchangePlaidPublicTokenBody.parse(req.body);
+
+    if (!plaidConfigured()) {
+      res.status(503).json({
+        error:
+          "Plaid is not configured. Set PLAID_CLIENT_ID and PLAID_SECRET in .env.",
+      });
+      return;
+    }
+
+    const client = getPlaidClient();
+    const exchangeRes = await client.itemPublicTokenExchange({
+      public_token: input.publicToken,
+    });
+
+    const accessToken = exchangeRes.data.access_token;
+    const itemId = exchangeRes.data.item_id;
+
+    const liabRes = await client.liabilitiesGet({
+      access_token: accessToken,
+    });
+
+    const institutionName =
+      input.institutionName?.trim() ||
+      liabRes.data.item.institution_name?.trim() ||
+      "Linked institution";
+
+    const creditLiabs = liabRes.data.liabilities.credit ?? [];
+    const byAccountId = new Map<string, CreditCardLiability>();
+    for (const c of creditLiabs) {
+      if (c.account_id) byAccountId.set(c.account_id, c);
+    }
+
+    const importedCards: {
+      brand: string;
+      balance: number;
+      rate: number;
+      accountId?: string;
+    }[] = [];
+
+    for (const acc of liabRes.data.accounts) {
+      if (acc.type !== AccountType.Credit || acc.subtype !== AccountSubtype.CreditCard) {
+        continue;
+      }
+      if (!acc.account_id) continue;
+
+      const liab = byAccountId.get(acc.account_id);
+      const rate = pickPurchaseApr(liab);
+      if (rate == null || rate <= 0) continue;
+
+      const balance = acc.balances?.current;
+      if (balance == null || !Number.isFinite(balance) || balance <= 0) continue;
+
+      const brand =
+        (acc.official_name || acc.name || "Credit card").trim() +
+        (acc.mask ? ` · ${acc.mask}` : "");
+
+      importedCards.push({
+        brand,
+        balance: Math.round(balance * 100) / 100,
+        rate: Math.round(rate * 100) / 100,
+        accountId: acc.account_id,
+      });
+    }
+
+    const firstId = importedCards[0]?.accountId;
+    const firstMask =
+      (firstId &&
+        liabRes.data.accounts.find((a) => a.account_id === firstId)?.mask) ||
+      "----";
+
     const data = ExchangePlaidPublicTokenResponse.parse({
-      itemId: `item-sandbox-${Math.random().toString(36).slice(2, 10)}`,
-      institutionName: input.institutionName ?? "Chase Sandbox",
-      mask: String(Math.floor(1000 + Math.random() * 9000)),
+      itemId,
+      institutionName: String(institutionName),
+      mask: firstMask || "----",
       accountType: "credit",
+      importedCards,
     });
     res.json(data);
   } catch (err) {

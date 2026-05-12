@@ -17,6 +17,7 @@ export * from "./linkedAccountSummary";
 export * from "./optimizerInput";
 export * from "./optimizerResult";
 export * from "./plaidExchangeInput";
+export * from "./plaidImportedCard";
 export * from "./plaidLinkedAccount";
 export * from "./plaidLinkToken";
 export * from "./rateReduction";

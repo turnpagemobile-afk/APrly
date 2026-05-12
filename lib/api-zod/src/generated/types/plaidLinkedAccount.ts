@@ -5,10 +5,12 @@
  * APRly API
  * OpenAPI spec version: 0.1.0
  */
+import type { PlaidImportedCard } from "./plaidImportedCard";
 
 export interface PlaidLinkedAccount {
   itemId: string;
   institutionName: string;
   mask: string;
   accountType: string;
+  importedCards: PlaidImportedCard[];
 }

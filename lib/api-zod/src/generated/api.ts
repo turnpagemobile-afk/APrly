@@ -108,11 +108,31 @@ export const ExchangePlaidPublicTokenBody = zod.object({
   institutionName: zod.string().optional(),
 });
 
+export const exchangePlaidPublicTokenResponseImportedCardsItemBalanceMin = 0;
+
+export const exchangePlaidPublicTokenResponseImportedCardsItemRateMin = 0;
+
 export const ExchangePlaidPublicTokenResponse = zod.object({
   itemId: zod.string(),
   institutionName: zod.string(),
   mask: zod.string(),
   accountType: zod.string(),
+  importedCards: zod.array(
+    zod.object({
+      brand: zod.string(),
+      balance: zod
+        .number()
+        .min(exchangePlaidPublicTokenResponseImportedCardsItemBalanceMin),
+      rate: zod
+        .number()
+        .min(exchangePlaidPublicTokenResponseImportedCardsItemRateMin)
+        .describe("Current APR as a percent (e.g. 24.99)"),
+      accountId: zod
+        .string()
+        .optional()
+        .describe("Plaid account_id for deduplication on the client"),
+    }),
+  ),
 });
 
 /**

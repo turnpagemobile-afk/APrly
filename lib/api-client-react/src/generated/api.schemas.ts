@@ -78,11 +78,25 @@ export interface PlaidExchangeInput {
   institutionName?: string;
 }
 
+export interface PlaidImportedCard {
+  brand: string;
+  /** @minimum 0 */
+  balance: number;
+  /**
+   * Current APR as a percent (e.g. 24.99)
+   * @minimum 0
+   */
+  rate: number;
+  /** Plaid account_id for deduplication on the client */
+  accountId?: string;
+}
+
 export interface PlaidLinkedAccount {
   itemId: string;
   institutionName: string;
   mask: string;
   accountType: string;
+  importedCards: PlaidImportedCard[];
 }
 
 export interface SubscribeInput {
