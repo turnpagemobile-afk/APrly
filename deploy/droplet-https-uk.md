@@ -351,6 +351,7 @@ sudo chmod 644 /etc/cron.d/certbot-aprly-ssl
 | TLS ok у curl, браузер скаржиться | Чи відкриваєте саме **`https://134-122-126-71.nip.io`**, а не IP |
 | nginx: `cannot load certificate key` | `privkey.pem` **не** `600` від `ubuntu` — поверніться до кроку 6 (`root:root`, `640`) |
 | ACME **403/404** | `chmod -R a+rX /var/www/aprly/certbot-www`, чи працює контейнер `frontend` на `:80` |
+| `relation "leads" already exists` у `db-migrate` | БД уже мала `leads` до SQL-міграцій. Оновіть репо (ідемпотентний `0000_auth_registration.sql`), `$COMPOSE --profile ops build db-migrate`, знову `db-migrate`. |
 | Stripe webhook не заходить | URL у Dashboard **https** + **`STRIPE_WEBHOOK_SECRET`** від цього endpoint |
 
 Англомовний короткий runbook далі в [README.md](./README.md).
