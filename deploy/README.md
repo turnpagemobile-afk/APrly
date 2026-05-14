@@ -120,11 +120,14 @@ env), follow with
   `DROPLET_SSH_KEY` GitHub secret with the new private key.
 - **`workflow_run` does not start deploy**: check that `validate` finished on
   `main` (head_branch matters). Manual re-run via `workflow_dispatch`.
-- **`ERR_PNPM_RECURSIVE_RUN_NO_SCRIPT` / no `migrate` script in `db-migrate`**:
-  the migrate image was never rebuilt with current `lib/db` (Compose often skips
-  `profile: ops` services on plain `compose build`). Run
-  `$COMPOSE --profile ops build db-migrate` (or `$COMPOSE --profile ops build`)
-  before `db-migrate` / `db-seed`.
+- **`relation "leads" already exists` during `db-migrate`**: production DB often
+  had `leads` created earlier via `drizzle-kit push` without the migrations
+  journal. The bundled `0000_auth_registration.sql` is **idempotent** (`IF NOT EXISTS`);
+  pull latest `main`, rebuild the migrate image, and re-run `db-migrate`.
+  If you changed `0000_*.sql` **after** it was already applied on a machine,
+  Drizzle may report a checksum mismatch — fix by restoring the file that was
+  applied or by manual intervention on `__drizzle_migrations` (avoid on prod
+  without a backup).
 - **Healthcheck times out**: usually means `api-server` is up but unable to
   reach `db`. Inspect `$COMPOSE logs api-server` for connection errors and
   `$COMPOSE logs db` for startup state.
