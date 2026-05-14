@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import healthRouter from "./health";
+import authRouter from "./auth";
 import leadsRouter from "./leads";
 import optimizerRouter from "./optimizer";
 import plaidRouter from "./plaid";
@@ -10,6 +11,7 @@ import voiceRouter from "./voice";
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(authRouter);
 router.use(leadsRouter);
 router.use(optimizerRouter);
 router.use(plaidRouter);

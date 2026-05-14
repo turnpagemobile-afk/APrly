@@ -2,7 +2,11 @@ import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { planContent } from "@/content/landing";
 
-export function PlanSection() {
+type PlanSectionProps = {
+  onActivateClick?: () => void;
+};
+
+export function PlanSection({ onActivateClick }: PlanSectionProps) {
   const { card } = planContent;
   return (
     <section id="plan" className="px-4 py-16 md:py-24 scroll-mt-24">
@@ -46,6 +50,9 @@ export function PlanSection() {
                 disabled={card.cta.disabled}
                 aria-disabled={card.cta.disabled}
                 className="w-full max-w-xs font-semibold"
+                onClick={() => {
+                  if (!card.cta.disabled) onActivateClick?.();
+                }}
               >
                 {card.cta.label}
               </Button>

@@ -1,9 +1,10 @@
 import { Router, type IRouter } from "express";
 import { GetDashboardSummaryResponse } from "@workspace/api-zod";
+import { requireAuth } from "../middleware/requireAuth";
 
 const router: IRouter = Router();
 
-router.get("/dashboard/summary", (_req, res, next) => {
+router.get("/dashboard/summary", requireAuth, (_req, res, next) => {
   try {
     const data = GetDashboardSummaryResponse.parse({
       creditScore: 712,

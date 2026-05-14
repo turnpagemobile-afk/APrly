@@ -65,9 +65,14 @@ RUN pnpm --filter @workspace/aprly run build
 # ─────────────────────────────────────────────────────────────────────
 FROM nginx:alpine AS runtime
 
-RUN rm /etc/nginx/conf.d/default.conf
+RUN rm /etc/nginx/conf.d/default.conf \
+ && apk add --no-cache openssl
+
+COPY docker/nginx/40-aprly-ssl-init.sh /docker-entrypoint.d/40-aprly-ssl-init.sh
+RUN chmod +x /docker-entrypoint.d/40-aprly-ssl-init.sh
 
 COPY nginx/aprly.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/artifacts/aprly/dist/public /usr/share/nginx/html
 
 EXPOSE 80
+EXPOSE 443

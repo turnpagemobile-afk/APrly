@@ -17,15 +17,23 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  CheckoutSessionStatusResponse,
   CreateLeadInput,
   DashboardSummary,
+  FieldErrorsResponse,
+  GetCheckoutSessionStatusParams,
   HealthStatus,
   Lead,
+  LoginInput,
+  MeResponse,
   OptimizerInput,
   OptimizerResult,
+  PatchMeInput,
   PlaidExchangeInput,
   PlaidLinkToken,
   PlaidLinkedAccount,
+  RegisterAndCheckoutInput,
+  RegisterAndCheckoutPayload,
   SubscribeInput,
   Subscription,
 } from "./api.schemas";
@@ -561,7 +569,7 @@ export const getGetDashboardSummaryQueryKey = () => {
 
 export const getGetDashboardSummaryQueryOptions = <
   TData = Awaited<ReturnType<typeof getDashboardSummary>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<void>,
 >(options?: {
   query?: UseQueryOptions<
     Awaited<ReturnType<typeof getDashboardSummary>>,
@@ -588,7 +596,7 @@ export const getGetDashboardSummaryQueryOptions = <
 export type GetDashboardSummaryQueryResult = NonNullable<
   Awaited<ReturnType<typeof getDashboardSummary>>
 >;
-export type GetDashboardSummaryQueryError = ErrorType<unknown>;
+export type GetDashboardSummaryQueryError = ErrorType<void>;
 
 /**
  * @summary Get dashboard data — credit score, rate reductions, hardship status
@@ -596,7 +604,7 @@ export type GetDashboardSummaryQueryError = ErrorType<unknown>;
 
 export function useGetDashboardSummary<
   TData = Awaited<ReturnType<typeof getDashboardSummary>>,
-  TError = ErrorType<unknown>,
+  TError = ErrorType<void>,
 >(options?: {
   query?: UseQueryOptions<
     Awaited<ReturnType<typeof getDashboardSummary>>,
@@ -613,3 +621,592 @@ export function useGetDashboardSummary<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Validate signup, store pending registration, create Stripe Checkout (subscription + setup fee + trial)
+ */
+export const getRegisterAndCheckoutUrl = () => {
+  return `/api/auth/register-and-checkout`;
+};
+
+export const registerAndCheckout = async (
+  registerAndCheckoutInput: RegisterAndCheckoutInput,
+  options?: RequestInit,
+): Promise<RegisterAndCheckoutPayload> => {
+  return customFetch<RegisterAndCheckoutPayload>(getRegisterAndCheckoutUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(registerAndCheckoutInput),
+  });
+};
+
+export const getRegisterAndCheckoutMutationOptions = <
+  TError = ErrorType<FieldErrorsResponse | void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof registerAndCheckout>>,
+    TError,
+    { data: BodyType<RegisterAndCheckoutInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof registerAndCheckout>>,
+  TError,
+  { data: BodyType<RegisterAndCheckoutInput> },
+  TContext
+> => {
+  const mutationKey = ["registerAndCheckout"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof registerAndCheckout>>,
+    { data: BodyType<RegisterAndCheckoutInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return registerAndCheckout(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RegisterAndCheckoutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof registerAndCheckout>>
+>;
+export type RegisterAndCheckoutMutationBody =
+  BodyType<RegisterAndCheckoutInput>;
+export type RegisterAndCheckoutMutationError =
+  ErrorType<FieldErrorsResponse | void>;
+
+/**
+ * @summary Validate signup, store pending registration, create Stripe Checkout (subscription + setup fee + trial)
+ */
+export const useRegisterAndCheckout = <
+  TError = ErrorType<FieldErrorsResponse | void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof registerAndCheckout>>,
+    TError,
+    { data: BodyType<RegisterAndCheckoutInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof registerAndCheckout>>,
+  TError,
+  { data: BodyType<RegisterAndCheckoutInput> },
+  TContext
+> => {
+  return useMutation(getRegisterAndCheckoutMutationOptions(options));
+};
+
+/**
+ * @summary Poll checkout completion; issues session cookies when payment is confirmed and the user exists
+ */
+export const getGetCheckoutSessionStatusUrl = (
+  params: GetCheckoutSessionStatusParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/auth/checkout/session-status?${stringifiedParams}`
+    : `/api/auth/checkout/session-status`;
+};
+
+export const getCheckoutSessionStatus = async (
+  params: GetCheckoutSessionStatusParams,
+  options?: RequestInit,
+): Promise<CheckoutSessionStatusResponse> => {
+  return customFetch<CheckoutSessionStatusResponse>(
+    getGetCheckoutSessionStatusUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getGetCheckoutSessionStatusQueryKey = (
+  params?: GetCheckoutSessionStatusParams,
+) => {
+  return [
+    `/api/auth/checkout/session-status`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getGetCheckoutSessionStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getCheckoutSessionStatus>>,
+  TError = ErrorType<void>,
+>(
+  params: GetCheckoutSessionStatusParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getCheckoutSessionStatus>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetCheckoutSessionStatusQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getCheckoutSessionStatus>>
+  > = ({ signal }) =>
+    getCheckoutSessionStatus(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getCheckoutSessionStatus>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetCheckoutSessionStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getCheckoutSessionStatus>>
+>;
+export type GetCheckoutSessionStatusQueryError = ErrorType<void>;
+
+/**
+ * @summary Poll checkout completion; issues session cookies when payment is confirmed and the user exists
+ */
+
+export function useGetCheckoutSessionStatus<
+  TData = Awaited<ReturnType<typeof getCheckoutSessionStatus>>,
+  TError = ErrorType<void>,
+>(
+  params: GetCheckoutSessionStatusParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getCheckoutSessionStatus>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetCheckoutSessionStatusQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Email and password login; sets HTTP-only cookies
+ */
+export const getLoginUrl = () => {
+  return `/api/auth/login`;
+};
+
+export const login = async (
+  loginInput: LoginInput,
+  options?: RequestInit,
+): Promise<MeResponse> => {
+  return customFetch<MeResponse>(getLoginUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(loginInput),
+  });
+};
+
+export const getLoginMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof login>>,
+    TError,
+    { data: BodyType<LoginInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof login>>,
+  TError,
+  { data: BodyType<LoginInput> },
+  TContext
+> => {
+  const mutationKey = ["login"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof login>>,
+    { data: BodyType<LoginInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return login(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type LoginMutationResult = NonNullable<
+  Awaited<ReturnType<typeof login>>
+>;
+export type LoginMutationBody = BodyType<LoginInput>;
+export type LoginMutationError = ErrorType<void>;
+
+/**
+ * @summary Email and password login; sets HTTP-only cookies
+ */
+export const useLogin = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof login>>,
+    TError,
+    { data: BodyType<LoginInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof login>>,
+  TError,
+  { data: BodyType<LoginInput> },
+  TContext
+> => {
+  return useMutation(getLoginMutationOptions(options));
+};
+
+/**
+ * @summary Revoke refresh token and clear cookies
+ */
+export const getLogoutUrl = () => {
+  return `/api/auth/logout`;
+};
+
+export const logout = async (options?: RequestInit): Promise<void> => {
+  return customFetch<void>(getLogoutUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getLogoutMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof logout>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof logout>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["logout"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof logout>>,
+    void
+  > = () => {
+    return logout(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type LogoutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof logout>>
+>;
+
+export type LogoutMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Revoke refresh token and clear cookies
+ */
+export const useLogout = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof logout>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof logout>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getLogoutMutationOptions(options));
+};
+
+/**
+ * @summary Rotate refresh token and re-issue access cookie
+ */
+export const getRefreshSessionUrl = () => {
+  return `/api/auth/refresh`;
+};
+
+export const refreshSession = async (
+  options?: RequestInit,
+): Promise<MeResponse> => {
+  return customFetch<MeResponse>(getRefreshSessionUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getRefreshSessionMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof refreshSession>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof refreshSession>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["refreshSession"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof refreshSession>>,
+    void
+  > = () => {
+    return refreshSession(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RefreshSessionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof refreshSession>>
+>;
+
+export type RefreshSessionMutationError = ErrorType<void>;
+
+/**
+ * @summary Rotate refresh token and re-issue access cookie
+ */
+export const useRefreshSession = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof refreshSession>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof refreshSession>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getRefreshSessionMutationOptions(options));
+};
+
+/**
+ * @summary Current user profile
+ */
+export const getGetMeUrl = () => {
+  return `/api/auth/me`;
+};
+
+export const getMe = async (options?: RequestInit): Promise<MeResponse> => {
+  return customFetch<MeResponse>(getGetMeUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetMeQueryKey = () => {
+  return [`/api/auth/me`] as const;
+};
+
+export const getGetMeQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMe>>,
+  TError = ErrorType<void>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMeQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMe>>> = ({
+    signal,
+  }) => getMe({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMe>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetMeQueryResult = NonNullable<Awaited<ReturnType<typeof getMe>>>;
+export type GetMeQueryError = ErrorType<void>;
+
+/**
+ * @summary Current user profile
+ */
+
+export function useGetMe<
+  TData = Awaited<ReturnType<typeof getMe>>,
+  TError = ErrorType<void>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof getMe>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetMeQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Update first and last name after checkout
+ */
+export const getPatchMeUrl = () => {
+  return `/api/auth/me`;
+};
+
+export const patchMe = async (
+  patchMeInput: PatchMeInput,
+  options?: RequestInit,
+): Promise<MeResponse> => {
+  return customFetch<MeResponse>(getPatchMeUrl(), {
+    ...options,
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(patchMeInput),
+  });
+};
+
+export const getPatchMeMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMe>>,
+    TError,
+    { data: BodyType<PatchMeInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchMe>>,
+  TError,
+  { data: BodyType<PatchMeInput> },
+  TContext
+> => {
+  const mutationKey = ["patchMe"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchMe>>,
+    { data: BodyType<PatchMeInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return patchMe(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PatchMeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchMe>>
+>;
+export type PatchMeMutationBody = BodyType<PatchMeInput>;
+export type PatchMeMutationError = ErrorType<void>;
+
+/**
+ * @summary Update first and last name after checkout
+ */
+export const usePatchMe = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMe>>,
+    TError,
+    { data: BodyType<PatchMeInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof patchMe>>,
+  TError,
+  { data: BodyType<PatchMeInput> },
+  TContext
+> => {
+  return useMutation(getPatchMeMutationOptions(options));
+};
