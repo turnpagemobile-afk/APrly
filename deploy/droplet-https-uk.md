@@ -137,8 +137,12 @@ FRONTEND_ORIGIN=https://134-122-126-71.nip.io
 ```bash
 cd /var/www/aprly
 export COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
-$COMPOSE build
+# Обов’язково `--profile ops build`, інакше образ `aprly-migrate:local` не
+# перезбирається і `db-migrate` може впасти з ERR_PNPM_RECURSIVE_RUN_NO_SCRIPT.
+$COMPOSE --profile ops build
 $COMPOSE up -d
+$COMPOSE --profile ops run --rm db-migrate
+$COMPOSE --profile ops run --rm db-seed
 ```
 
 Перевірка:

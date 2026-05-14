@@ -41,7 +41,7 @@ COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
   `petrychenko_dev`. Pragmatic typecheck and sanity builds.
 - `deploy` (`.github/workflows/deploy.yml`) auto-triggers when `validate`
   finishes successfully on `main`. Also exposed as `workflow_dispatch`.
-- Deploy script: `git fetch + reset --hard origin/main` -> `compose build` ->
+- Deploy script: `git fetch + reset --hard origin/main` -> `compose --profile ops build` (includes **`aprly-migrate`**) ->
   `up -d` -> `db-migrate` -> `db-seed` -> healthcheck `https://134-122-126-71.nip.io/api/healthz`.
 
 ## Manual deployment (when CI is unavailable)
@@ -51,7 +51,7 @@ cd /var/www/aprly
 git fetch --all --prune
 git checkout main
 git reset --hard origin/main
-$COMPOSE build
+$COMPOSE --profile ops build
 $COMPOSE up -d
 $COMPOSE --profile ops run --rm db-migrate
 $COMPOSE --profile ops run --rm db-seed
@@ -76,7 +76,7 @@ Two equivalent paths.
 cd /var/www/aprly
 git log --oneline -10                 # find the good commit
 git reset --hard <SHA>
-$COMPOSE build
+$COMPOSE --profile ops build
 $COMPOSE up -d
 ```
 
@@ -109,7 +109,9 @@ $COMPOSE up -d                          # re-reads env on container restart
 ```
 
 For changes that affect the build (rare; almost everything we use is runtime
-env), follow with `$COMPOSE build api-server frontend && $COMPOSE up -d`.
+env), follow with
+`$COMPOSE --profile ops build db-migrate && $COMPOSE build api-server frontend && $COMPOSE up -d`
+(or `$COMPOSE --profile ops build` to rebuild all images that have a `build:` section).
 
 ## Common failure modes
 
@@ -118,6 +120,11 @@ env), follow with `$COMPOSE build api-server frontend && $COMPOSE up -d`.
   `DROPLET_SSH_KEY` GitHub secret with the new private key.
 - **`workflow_run` does not start deploy**: check that `validate` finished on
   `main` (head_branch matters). Manual re-run via `workflow_dispatch`.
+- **`ERR_PNPM_RECURSIVE_RUN_NO_SCRIPT` / no `migrate` script in `db-migrate`**:
+  the migrate image was never rebuilt with current `lib/db` (Compose often skips
+  `profile: ops` services on plain `compose build`). Run
+  `$COMPOSE --profile ops build db-migrate` (or `$COMPOSE --profile ops build`)
+  before `db-migrate` / `db-seed`.
 - **Healthcheck times out**: usually means `api-server` is up but unable to
   reach `db`. Inspect `$COMPOSE logs api-server` for connection errors and
   `$COMPOSE logs db` for startup state.

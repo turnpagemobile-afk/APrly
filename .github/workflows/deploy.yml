@@ -48,8 +48,8 @@ jobs:
             git reset --hard origin/main
             git log -1 --oneline
 
-            echo "=== docker compose build ==="
-            docker compose -f docker-compose.prod.yml --env-file .env.prod build
+            echo "=== docker compose build (incl. ops / db-migrate image) ==="
+            docker compose -f docker-compose.prod.yml --env-file .env.prod --profile ops build
 
             echo "=== docker compose up -d ==="
             docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
