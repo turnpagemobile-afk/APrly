@@ -11,7 +11,9 @@ Quick reference for operating the production droplet.
   routes: `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV` (`sandbox` /
   `development` / `production`). Optional: `PLAID_REDIRECT_URI` (required for
   some Link flows once DNS/TLS is live).
-- Public listener: `nginx` container on TCP 80
+- Public listener: `nginx` container on **TCP 80** (legacy `http://<IP>/`) and **TCP 443** (HTTPS for `https://134-122-126-71.nip.io/` — Stripe / Plaid / cookies).
+- TLS files on host: `/var/www/aprly/nginx-ssl/` (`fullchain.pem`, `privkey.pem`). Until real certs exist, the image entrypoint drops a **short-lived self-signed** pair so nginx can bind `:443` (replace after Certbot; see **HTTPS** below).
+- ACME webroot on host: `/var/www/aprly/certbot-www/` — used for Let's Encrypt **HTTP-01** (mounted read-only into nginx).
 - Private services (docker network only): `db` (postgres:16), `api-server` (node)
 - Postgres data volume: `aprly-pgdata`
 
@@ -40,7 +42,7 @@ COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
 - `deploy` (`.github/workflows/deploy.yml`) auto-triggers when `validate`
   finishes successfully on `main`. Also exposed as `workflow_dispatch`.
 - Deploy script: `git fetch + reset --hard origin/main` -> `compose build` ->
-  `up -d` -> `db-migrate` -> `db-seed` -> healthcheck `http://134.122.126.71/api/healthz`.
+  `up -d` -> `db-migrate` -> `db-seed` -> healthcheck `https://134-122-126-71.nip.io/api/healthz`.
 
 ## Manual deployment (when CI is unavailable)
 
@@ -53,6 +55,8 @@ $COMPOSE build
 $COMPOSE up -d
 $COMPOSE --profile ops run --rm db-migrate
 $COMPOSE --profile ops run --rm db-seed
+curl -fsS https://134-122-126-71.nip.io/api/healthz && echo OK
+# Legacy HTTP by IP (still served on port 80 default_server):
 curl -fsS http://134.122.126.71/api/healthz && echo OK
 ```
 
@@ -84,7 +88,7 @@ After rollback, fix the bug on `petrychenko_dev` and merge a forward fix to
 | Action | Command |
 | --- | --- |
 | Open psql | `$COMPOSE exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"` |
-| Re-run migrations only | `$COMPOSE --profile ops run --rm db-migrate` |
+| Re-run migrations only | `$COMPOSE --profile ops run --rm db-migrate` (applies SQL from `lib/db/migrations/` via `drizzle-kit migrate`) |
 | Re-run seed only | `$COMPOSE --profile ops run --rm db-seed` |
 | Quick row count | `$COMPOSE exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c 'SELECT count(*) FROM leads;'` |
 | Backup (tar+psql dump) | `$COMPOSE exec db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > /var/www/aprly/backups/aprly-$(date -u +%Y%m%dT%H%M%SZ).sql` |
@@ -122,10 +126,70 @@ env), follow with `$COMPOSE build api-server frontend && $COMPOSE up -d`.
 - **Out-of-band git changes on the droplet**: `deploy.yml` resets hard, so
   any uncommitted edits in `/var/www/aprly` are wiped on next deploy. Make
   edits in the repo and push instead.
+- **Missing system libraries / `Error loading shared library` on the droplet**:
+  production `api-server` and `db-migrate` are meant to run **only inside Docker**
+  images built from the repo (`Dockerfile.api`, `Dockerfile.migrate`). Do not
+  install Node or `pnpm` on the host to run the API. Build stages install
+  `python3`, `make`, `g++` where **native npm addons** may compile; the runtime
+  stage is minimal `node:*-slim` with the bundled `dist/index.mjs` only. New
+  dependencies with native binaries must be validated in `docker compose … build`
+  (not only on a dev laptop). Auth passwords use **bcryptjs** (pure JS) to avoid
+  shipping `bcrypt` `.node` bindings into that minimal runtime.
+- **`ERR_MODULE_NOT_FOUND` for `plaid`, `stripe`, etc. inside `api-server` container**:
+  the production image has **no** `node_modules` — only the esbuild output under
+  `dist/`. If `artifacts/api-server/build.mjs` lists a runtime dependency under
+  `external`, it will not be bundled and the process will crash at import. Only
+  add names to `external` for packages that truly cannot be bundled; see the
+  comment block above `external` in `build.mjs`.
+
+## HTTPS (nip.io + Let’s Encrypt)
+
+Canonical production URL until the customer provides DNS: **`https://134-122-126-71.nip.io`**.
+
+**Full step-by-step commands (permissions, Certbot, PEM copy, Stripe, renewal)** — Ukrainian: **[deploy/droplet-https-uk.md](./droplet-https-uk.md)**.
+
+Short English notes were kept below for quick orientation only.
+
+### Host paths (recap)
+
+- ACME webroot: `/var/www/aprly/certbot-www` → mounted read-only into nginx as `/var/www/certbot`.
+- TLS PEMs: `/var/www/aprly/nginx-ssl/{fullchain.pem,privkey.pem}` — **must be readable by nginx in Docker** (after `cp -L` from `/etc/letsencrypt/live/...`, use **`root:root`** and **`chmod 644` / `640`**; see UA doc — `chown ubuntu:ubuntu` alone on `privkey.pem` often breaks TLS).
+
+### `.env.prod` (recap)
+
+```bash
+FRONTEND_ORIGIN=https://134-122-126-71.nip.io
+```
+
+### Install Certbot (host)
+
+```bash
+sudo apt update && sudo apt install -y certbot
+```
+
+### Issue cert (stack must be up for HTTP-01)
+
+```bash
+sudo certbot certonly --webroot -w /var/www/aprly/certbot-www -d 134-122-126-71.nip.io
+```
+
+### Copy PEMs + reload `frontend`
+
+See **[deploy/droplet-https-uk.md](./droplet-https-uk.md)** — sections 6–7 (exact `cp -L`, `chown`, `chmod`, `$COMPOSE … force-recreate frontend`).
+
+### Stripe webhook (recap)
+
+`https://134-122-126-71.nip.io/api/stripe/webhook` → signing secret → `STRIPE_WEBHOOK_SECRET` → recreate **`api-server`**.
+
+### Renewal
+
+Use `certbot renew` + re-copy PEMs + recreate `frontend`, or a `--deploy-hook`; full example in **[deploy/droplet-https-uk.md](./droplet-https-uk.md)** section 11.
+
+**Fix cron example:** files under `/etc/cron.d/` must include a user column, e.g.  
+`0 3 * * * root certbot renew -q --deploy-hook /usr/local/sbin/aprly-ssl-deploy.sh`
 
 ## What is NOT here yet
 
-- HTTPS / Let's Encrypt — pending domain.
 - Off-droplet backups (S3/Spaces).
 - Slack/Telegram deploy notifications.
 - Branch protection / required CI on `main` — pending Admin role.

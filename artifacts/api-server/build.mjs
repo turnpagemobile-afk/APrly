@@ -22,6 +22,11 @@ async function buildAll() {
     outdir: distDir,
     outExtension: { ".js": ".mjs" },
     logLevel: "info",
+    // ── Docker production (Dockerfile.api): runtime copies ONLY ./dist — no node_modules.
+    // Every import that stays external must exist on disk at runtime or Node throws
+    // ERR_MODULE_NOT_FOUND. Never externalize normal app deps (e.g. plaid, stripe,
+    // @workspace/*) unless you also change the image to ship those packages.
+    // Keep this list to known-unbundleable native / tooling packages only.
     // Some packages may not be bundleable, so we externalize them, we can add more here as needed.
     // Some of the packages below may not be imported or installed, but we're adding them in case they are in the future.
     // Examples of unbundleable packages:

@@ -201,3 +201,111 @@ export const GetDashboardSummaryResponse = zod.object({
   totalDebt: zod.number(),
   estimatedAnnualSavings: zod.number(),
 });
+
+/**
+ * @summary Validate signup, store pending registration, create Stripe Checkout (subscription + setup fee + trial)
+ */
+export const registerAndCheckoutBodyEmailMax = 254;
+
+export const registerAndCheckoutBodyPasswordMin = 8;
+export const registerAndCheckoutBodyPasswordMax = 20;
+
+export const registerAndCheckoutBodyConfirmPasswordMin = 8;
+export const registerAndCheckoutBodyConfirmPasswordMax = 20;
+
+export const RegisterAndCheckoutBody = zod.object({
+  email: zod.string().email().max(registerAndCheckoutBodyEmailMax),
+  password: zod
+    .string()
+    .min(registerAndCheckoutBodyPasswordMin)
+    .max(registerAndCheckoutBodyPasswordMax),
+  confirmPassword: zod
+    .string()
+    .min(registerAndCheckoutBodyConfirmPasswordMin)
+    .max(registerAndCheckoutBodyConfirmPasswordMax),
+  termsAccepted: zod.boolean(),
+});
+
+export const RegisterAndCheckoutResponse = zod.object({
+  checkoutUrl: zod.string().url(),
+  stripeSessionId: zod.string(),
+});
+
+/**
+ * @summary Poll checkout completion; issues session cookies when payment is confirmed and the user exists
+ */
+
+export const GetCheckoutSessionStatusQueryParams = zod.object({
+  stripeSessionId: zod.coerce.string().min(1),
+});
+
+export const GetCheckoutSessionStatusResponse = zod.object({
+  status: zod.enum(["pending", "processing", "paid", "failed", "expired"]),
+  user: zod
+    .object({
+      email: zod.string().email(),
+      firstName: zod.string().nullish(),
+      lastName: zod.string().nullish(),
+    })
+    .nullish(),
+});
+
+/**
+ * @summary Email and password login; sets HTTP-only cookies
+ */
+export const loginBodyPasswordMax = 200;
+
+export const LoginBody = zod.object({
+  email: zod.string().email(),
+  password: zod.string().min(1).max(loginBodyPasswordMax),
+});
+
+export const LoginResponse = zod.object({
+  id: zod.number(),
+  email: zod.string().email(),
+  firstName: zod.string().nullish(),
+  lastName: zod.string().nullish(),
+  role: zod.string(),
+});
+
+/**
+ * @summary Rotate refresh token and re-issue access cookie
+ */
+export const RefreshSessionResponse = zod.object({
+  id: zod.number(),
+  email: zod.string().email(),
+  firstName: zod.string().nullish(),
+  lastName: zod.string().nullish(),
+  role: zod.string(),
+});
+
+/**
+ * @summary Current user profile
+ */
+export const GetMeResponse = zod.object({
+  id: zod.number(),
+  email: zod.string().email(),
+  firstName: zod.string().nullish(),
+  lastName: zod.string().nullish(),
+  role: zod.string(),
+});
+
+/**
+ * @summary Update first and last name after checkout
+ */
+export const patchMeBodyFirstNameMax = 120;
+
+export const patchMeBodyLastNameMax = 120;
+
+export const PatchMeBody = zod.object({
+  firstName: zod.string().min(1).max(patchMeBodyFirstNameMax),
+  lastName: zod.string().min(1).max(patchMeBodyLastNameMax),
+});
+
+export const PatchMeResponse = zod.object({
+  id: zod.number(),
+  email: zod.string().email(),
+  firstName: zod.string().nullish(),
+  lastName: zod.string().nullish(),
+  role: zod.string(),
+});

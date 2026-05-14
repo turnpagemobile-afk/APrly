@@ -132,8 +132,8 @@ export const planContent = {
     ],
     cta: {
       label: "Activate APRly \u2014 $39/mo",
-      disabled: true,
-      note: "Available after stage launch (Stripe pending)",
+      disabled: false,
+      note: "Stripe Checkout: $39 setup + $19.99/mo after 30-day trial.",
     },
   },
 } as const;

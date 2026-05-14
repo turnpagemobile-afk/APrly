@@ -176,3 +176,89 @@ export interface DashboardSummary {
   totalDebt: number;
   estimatedAnnualSavings: number;
 }
+
+export interface RegisterAndCheckoutInput {
+  /** @maxLength 254 */
+  email: string;
+  /**
+   * @minLength 8
+   * @maxLength 20
+   */
+  password: string;
+  /**
+   * @minLength 8
+   * @maxLength 20
+   */
+  confirmPassword: string;
+  termsAccepted: boolean;
+}
+
+export interface RegisterAndCheckoutPayload {
+  checkoutUrl: string;
+  stripeSessionId: string;
+}
+
+export type CheckoutSessionStatusResponseStatus =
+  (typeof CheckoutSessionStatusResponseStatus)[keyof typeof CheckoutSessionStatusResponseStatus];
+
+export const CheckoutSessionStatusResponseStatus = {
+  pending: "pending",
+  processing: "processing",
+  paid: "paid",
+  failed: "failed",
+  expired: "expired",
+} as const;
+
+export interface AuthUserSummary {
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+}
+
+export interface CheckoutSessionStatusResponse {
+  status: CheckoutSessionStatusResponseStatus;
+  user?: AuthUserSummary | null;
+}
+
+export interface LoginInput {
+  email: string;
+  /**
+   * @minLength 1
+   * @maxLength 200
+   */
+  password: string;
+}
+
+export interface MeResponse {
+  id: number;
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  role: string;
+}
+
+export interface PatchMeInput {
+  /**
+   * @minLength 1
+   * @maxLength 120
+   */
+  firstName: string;
+  /**
+   * @minLength 1
+   * @maxLength 120
+   */
+  lastName: string;
+}
+
+export type FieldErrorsResponseFieldErrors = { [key: string]: string[] };
+
+export interface FieldErrorsResponse {
+  fieldErrors: FieldErrorsResponseFieldErrors;
+}
+
+export type GetCheckoutSessionStatusParams = {
+  /**
+   * @minLength 1
+   */
+  stripeSessionId: string;
+};

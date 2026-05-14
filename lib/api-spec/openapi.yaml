@@ -13,6 +13,7 @@ tags:
   - name: optimizer
   - name: plaid
   - name: stripe
+  - name: auth
   - name: dashboard
 paths:
   /healthz:
@@ -122,6 +123,8 @@ paths:
       operationId: getDashboardSummary
       tags: [dashboard]
       summary: Get dashboard data — credit score, rate reductions, hardship status
+      security:
+        - cookieAuth: []
       responses:
         "200":
           description: Dashboard summary
@@ -129,8 +132,154 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DashboardSummary"
+        "401":
+          description: Unauthorized
+
+  /auth/register-and-checkout:
+    post:
+      operationId: registerAndCheckout
+      tags: [auth]
+      summary: Validate signup, store pending registration, create Stripe Checkout (subscription + setup fee + trial)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterAndCheckoutInput"
+      responses:
+        "200":
+          description: Open Checkout in a new tab using checkoutUrl
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterAndCheckoutPayload"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FieldErrorsResponse"
+        "409":
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FieldErrorsResponse"
+        "503":
+          description: Stripe is not configured
+
+  /auth/checkout/session-status:
+    get:
+      operationId: getCheckoutSessionStatus
+      tags: [auth]
+      summary: Poll checkout completion; issues session cookies when payment is confirmed and the user exists
+      parameters:
+        - name: stripeSessionId
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Current checkout / auth state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutSessionStatusResponse"
+        "404":
+          description: Unknown session
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Email and password login; sets HTTP-only cookies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Revoke refresh token and clear cookies
+      responses:
+        "204":
+          description: Logged out
+
+  /auth/refresh:
+    post:
+      operationId: refreshSession
+      tags: [auth]
+      summary: Rotate refresh token and re-issue access cookie
+      responses:
+        "200":
+          description: New tokens issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          description: Missing or invalid refresh token
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Current user profile
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          description: Unauthorized
+
+    patch:
+      operationId: patchMe
+      tags: [auth]
+      summary: Update first and last name after checkout
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchMeInput"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          description: Unauthorized
 
 components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: aprly_access
   schemas:
     HealthStatus:
       type: object
@@ -411,3 +560,111 @@ components:
           type: number
         apr:
           type: number
+
+    RegisterAndCheckoutInput:
+      type: object
+      required: [email, password, confirmPassword, termsAccepted]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          minLength: 8
+          maxLength: 20
+        confirmPassword:
+          type: string
+          minLength: 8
+          maxLength: 20
+        termsAccepted:
+          type: boolean
+
+    RegisterAndCheckoutPayload:
+      type: object
+      required: [checkoutUrl, stripeSessionId]
+      properties:
+        checkoutUrl:
+          type: string
+          format: uri
+        stripeSessionId:
+          type: string
+
+    CheckoutSessionStatusResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, processing, paid, failed, expired]
+        user:
+          nullable: true
+          $ref: "#/components/schemas/AuthUserSummary"
+
+    AuthUserSummary:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 1
+          maxLength: 200
+
+    MeResponse:
+      type: object
+      required: [id, email, role]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        role:
+          type: string
+
+    PatchMeInput:
+      type: object
+      required: [firstName, lastName]
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 120
+
+    FieldErrorsResponse:
+      type: object
+      required: [fieldErrors]
+      properties:
+        fieldErrors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string

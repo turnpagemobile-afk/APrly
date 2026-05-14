@@ -1,13 +1,17 @@
 import express, { type Express } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import rateLimit from "express-rate-limit";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { handleStripeWebhook } from "./lib/stripe-webhook";
 
 const app: Express = express();
 
 app.set("trust proxy", 1);
+
+const frontendOrigin = process.env["FRONTEND_ORIGIN"] ?? "http://localhost:5173";
 
 app.use(
   pinoHttp({
@@ -28,7 +32,21 @@ app.use(
     },
   }),
 );
-app.use(cors());
+app.use(
+  cors({
+    origin: frontendOrigin.replace(/\/+$/, ""),
+    credentials: true,
+  }),
+);
+app.use(cookieParser());
+
+app.post(
+  "/api/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  (req, res, next) => {
+    void handleStripeWebhook(req, res).catch(next);
+  },
+);
 
 const skipVoice = (mw: express.RequestHandler): express.RequestHandler => (req, res, next) => {
   if (req.path.startsWith("/api/voice")) return next();

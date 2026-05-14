@@ -30,21 +30,52 @@ services:
     command: ["pnpm", "install", "--frozen-lockfile"]
     restart: "no"
 
-  api-server:
+  # Apply lib/db SQL migrations (users, registration_intents, refresh_tokens, …).
+  # Without this, Postgres is empty and auth routes fail with "relation users does not exist".
+  db-migrate:
     platform: linux/amd64
     build:
       context: .
     environment:
+      CI: "true"
+      DATABASE_URL: postgres://user:password@db:5432/aprly
+    volumes:
+      - .:/app
+      - app-node-modules:/app/node_modules
+    command: ["pnpm", "--filter", "@workspace/db", "run", "migrate"]
+    depends_on:
+      install-deps:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api-server:
+    platform: linux/amd64
+    build:
+      context: .
+    env_file:
+      - path: .env
+        required: false
+    environment:
       - DATABASE_URL=postgres://user:password@db:5432/aprly
       - PORT=5000
       - NODE_ENV=development
-      # Підставте реальні значення через .env у корені репо (Compose підхоплює для ${...})
+      - FRONTEND_ORIGIN=http://localhost:5173
+      # Do not set STRIPE_* here with ${VAR:-}. An empty string from compose substitution counts as
+      # "set" and prevents dotenv (and mounted .env) from filling secrets — register-and-checkout then
+      # sees missing keys. Stripe + price IDs must come from env_file (.env) only.
       - AI_INTEGRATIONS_OPENAI_BASE_URL=${AI_INTEGRATIONS_OPENAI_BASE_URL:-https://api.openai.com/v1}
       - AI_INTEGRATIONS_OPENAI_API_KEY=${AI_INTEGRATIONS_OPENAI_API_KEY:-docker-dev-placeholder}
+      - JWT_SECRET=${JWT_SECRET:-dev-insecure-change-me}
+      - JWT_ACCESS_TTL_SEC=${JWT_ACCESS_TTL_SEC:-900}
+      - JWT_REFRESH_TTL_DAYS=${JWT_REFRESH_TTL_DAYS:-30}
     ports:
       - "5000:5000"
     depends_on:
       install-deps:
+        condition: service_completed_successfully
+      db-migrate:
         condition: service_completed_successfully
       db:
         condition: service_healthy
@@ -59,7 +90,7 @@ services:
     build:
       context: .
     environment:
-      - VITE_API_URL=http://localhost:5000
+      - VITE_API_PROXY_TARGET=http://api-server:5000
       - PORT=5173
       - BASE_PATH=/
     ports:
