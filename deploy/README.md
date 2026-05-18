@@ -152,9 +152,13 @@ env), follow with
   add names to `external` for packages that truly cannot be bundled; see the
   comment block above `external` in `build.mjs`.
 
-## HTTPS (nip.io + Let’s Encrypt)
+## HTTPS (aprly.ai + Let’s Encrypt)
 
-Canonical production URL until the customer provides DNS: **`https://134-122-126-71.nip.io`**.
+Canonical production URL: **`https://aprly.ai`** (DNS A → droplet).
+
+**Step-by-step (Ukrainian):** [deploy/droplet-aprly-ai-uk.md](./droplet-aprly-ai-uk.md)
+
+Legacy nip.io URL (until decommissioned): **`https://134-122-126-71.nip.io`** — see [droplet-https-uk.md](./droplet-https-uk.md).
 
 **Full step-by-step commands (permissions, Certbot, PEM copy, Stripe, renewal)** — Ukrainian: **[deploy/droplet-https-uk.md](./droplet-https-uk.md)**.
 

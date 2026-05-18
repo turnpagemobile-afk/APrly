@@ -72,7 +72,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          URL="https://134-122-126-71.nip.io/api/healthz"
+          URL="https://aprly.ai/api/healthz"
           for i in 1 2 3 4 5; do
             echo "attempt $i: GET $URL"
             if curl -fsS --max-time 10 "$URL" >/dev/null; then
