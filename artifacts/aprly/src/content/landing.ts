@@ -18,7 +18,7 @@ export const navContent = {
     { id: "optimizer", label: "Verify My Savings", href: "#optimizer" },
     { id: "faq", label: "FAQ", href: "#faq" },
   ],
-  logIn: { label: "Log In", note: "Coming soon" },
+  logIn: { label: "Log In", href: "/login" },
   getStarted: { label: "Get Started", target: "#plan" },
 } as const;
 

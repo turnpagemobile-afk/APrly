@@ -1,9 +1,7 @@
 import { Link } from "wouter";
-import { useGetDashboardSummary, useLogout } from "@workspace/api-client-react";
-import { Button } from "@/components/ui/button";
+import { useGetDashboardSummary } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, Loader2 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 
 function formatCurrency(value: number): string {
   return value.toLocaleString(undefined, {
@@ -15,16 +13,6 @@ function formatCurrency(value: number): string {
 
 export default function DashboardPage() {
   const summary = useGetDashboardSummary();
-  const logout = useLogout();
-
-  const handleLogout = async () => {
-    try {
-      await logout.mutateAsync();
-      window.location.href = "/";
-    } catch {
-      toast({ title: "Sign out failed", variant: "destructive" });
-    }
-  };
 
   if (summary.isLoading) {
     return (
@@ -55,12 +43,7 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-10">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <Button type="button" variant="outline" onClick={() => void handleLogout()}>
-          Sign out
-        </Button>
-      </div>
+      <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
 
       <p className="mt-2 text-sm text-muted-foreground">
         Credit score {data?.creditScore} ({data?.creditScoreBand}). Estimated savings ~

@@ -17,6 +17,18 @@ const DEFAULT_JSON_ACCEPT = "application/json, application/problem+json";
 
 let _baseUrl: string | null = null;
 let _authTokenGetter: AuthTokenGetter | null = null;
+let _onSessionExpired: (() => void) | null = null;
+let _refreshInFlight: Promise<boolean> | null = null;
+
+export type SessionExpiredHandler = () => void;
+
+/**
+ * Register a callback when refresh fails after a 401 (cookie session expired).
+ * Pass `null` to clear.
+ */
+export function setOnSessionExpired(handler: SessionExpiredHandler | null): void {
+  _onSessionExpired = handler;
+}
 
 /**
  * Set a base URL that is prepended to every relative request URL
@@ -76,6 +88,49 @@ function resolveUrl(input: RequestInfo | URL): string {
   if (typeof input === "string") return input;
   if (isUrl(input)) return input.toString();
   return input.url;
+}
+
+function requestPath(url: string): string {
+  try {
+    if (url.includes("://")) return new URL(url).pathname;
+  } catch {
+    /* relative URL */
+  }
+  const q = url.indexOf("?");
+  return q === -1 ? url : url.slice(0, q);
+}
+
+function shouldAttemptRefresh(url: string): boolean {
+  const path = requestPath(url);
+  return (
+    !path.endsWith("/auth/login") &&
+    !path.endsWith("/auth/refresh") &&
+    !path.endsWith("/auth/logout")
+  );
+}
+
+async function refreshSessionCookies(): Promise<boolean> {
+  if (_refreshInFlight) return _refreshInFlight;
+
+  _refreshInFlight = (async () => {
+    try {
+      const refreshUrl = applyBaseUrl("/api/auth/refresh");
+      const resolved =
+        typeof refreshUrl === "string" ? refreshUrl : resolveUrl(refreshUrl);
+      const res = await fetch(resolved, {
+        method: "POST",
+        credentials: "include",
+        headers: { accept: DEFAULT_JSON_ACCEPT },
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  })().finally(() => {
+    _refreshInFlight = null;
+  });
+
+  return _refreshInFlight;
 }
 
 function mergeHeaders(...sources: Array<HeadersInit | undefined>): Headers {
@@ -359,15 +414,32 @@ export async function customFetch<T = unknown>(
   }
 
   const requestInfo = { method, url: resolveUrl(input) };
-
-  const response = await fetch(input, {
+  const fetchInit: RequestInit = {
     ...init,
     method,
     headers,
     credentials: init.credentials ?? "include",
-  });
+  };
+
+  let response = await fetch(input, fetchInit);
+  let retriedAfterRefresh = false;
+
+  if (
+    response.status === 401 &&
+    shouldAttemptRefresh(requestInfo.url) &&
+    !retriedAfterRefresh
+  ) {
+    const refreshed = await refreshSessionCookies();
+    if (refreshed) {
+      retriedAfterRefresh = true;
+      response = await fetch(input, fetchInit);
+    }
+  }
 
   if (!response.ok) {
+    if (response.status === 401 && shouldAttemptRefresh(requestInfo.url)) {
+      _onSessionExpired?.();
+    }
     const errorData = await parseErrorBody(response, method);
     throw new ApiError(response, errorData, requestInfo);
   }

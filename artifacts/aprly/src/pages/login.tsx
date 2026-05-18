@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { useEffect, useState } from "react";
+import { Link, useLocation, Redirect } from "wouter";
+import { useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@workspace/api-client-react/custom-fetch";
-import { useLogin } from "@workspace/api-client-react";
+import { getGetMeQueryKey, useLogin } from "@workspace/api-client-react";
+import { useAuth } from "@/lib/auth-session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,14 +12,27 @@ import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const [, navigate] = useLocation();
+  const queryClient = useQueryClient();
+  const { isAuthenticated, isLoading } = useAuth();
   const login = useLogin();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
+  if (!isLoading && isAuthenticated) {
+    return <Redirect to="/dashboard" />;
+  }
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await login.mutateAsync({ data: { email, password } });
+      await queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
       navigate("/dashboard");
     } catch (err: unknown) {
       const msg =
