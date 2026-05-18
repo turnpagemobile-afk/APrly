@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, Link } from "wouter";
 import { Mic, Loader2, Square } from "lucide-react";
+import { useAuth } from "@/lib/auth-session";
 import {
   useAudioPlayback,
   useVoiceRecorder,
@@ -238,8 +239,51 @@ export function VoiceAssistant() {
   );
 }
 
+function HeaderActions({
+  isDashboard,
+  onSignOut,
+  onGetStarted,
+}: {
+  isDashboard: boolean;
+  onSignOut: () => void;
+  onGetStarted: () => void;
+}) {
+  if (isDashboard) {
+    return (
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        className="font-semibold"
+        onClick={onSignOut}
+      >
+        Sign out
+      </Button>
+    );
+  }
+
+  return (
+    <>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        className="hidden sm:inline-flex font-semibold"
+        asChild
+      >
+        <Link href={navContent.logIn.href}>{navContent.logIn.label}</Link>
+      </Button>
+      <Button type="button" size="sm" onClick={onGetStarted} className="font-semibold">
+        {navContent.getStarted.label}
+      </Button>
+    </>
+  );
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
+  const { logout } = useAuth();
+  const isDashboard = location === "/dashboard";
 
   const goToAnchor = (href: string) => {
     if (!href.startsWith("#")) {
@@ -274,45 +318,35 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
 
-          <nav
-            className="hidden md:flex items-center gap-7 text-sm font-semibold text-primary"
-            aria-label="Primary"
-          >
-            {navContent.links.map((link) => (
-              <button
-                key={link.id}
-                type="button"
-                onClick={() => goToAnchor(link.href)}
-                className="hover:opacity-80 transition-opacity"
-              >
-                {link.label}
-              </button>
-            ))}
-          </nav>
+          {!isDashboard ? (
+            <nav
+              className="hidden md:flex items-center gap-7 text-sm font-semibold text-primary"
+              aria-label="Primary"
+            >
+              {navContent.links.map((link) => (
+                <button
+                  key={link.id}
+                  type="button"
+                  onClick={() => goToAnchor(link.href)}
+                  className="hover:opacity-80 transition-opacity"
+                >
+                  {link.label}
+                </button>
+              ))}
+            </nav>
+          ) : (
+            <div className="hidden md:block flex-1" aria-hidden="true" />
+          )}
 
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden" aria-hidden="true">
               <VoiceAssistant />
             </div>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              disabled
-              aria-disabled="true"
-              title={navContent.logIn.note}
-              className="hidden sm:inline-flex font-semibold"
-            >
-              {navContent.logIn.label}
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              onClick={() => goToAnchor(navContent.getStarted.target)}
-              className="font-semibold"
-            >
-              {navContent.getStarted.label}
-            </Button>
+            <HeaderActions
+              isDashboard={isDashboard}
+              onSignOut={() => void logout()}
+              onGetStarted={() => goToAnchor(navContent.getStarted.target)}
+            />
           </div>
         </div>
       </header>
