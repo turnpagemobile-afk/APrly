@@ -11,7 +11,7 @@ Quick reference for operating the production droplet.
   routes: `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV` (`sandbox` /
   `development` / `production`). Optional: `PLAID_REDIRECT_URI` (required for
   some Link flows once DNS/TLS is live).
-- Public listener: `nginx` container on **TCP 80** (legacy `http://<IP>/`) and **TCP 443** (HTTPS for **`https://aprly.ai`** — Stripe / Plaid / cookies).
+- Public listener: `nginx` container on **TCP 80** (legacy `http://<IP>/`) and **TCP 443** (HTTPS for `https://134-122-126-71.nip.io/` — Stripe / Plaid / cookies).
 - TLS files on host: `/var/www/aprly/nginx-ssl/` (`fullchain.pem`, `privkey.pem`). Until real certs exist, the image entrypoint drops a **short-lived self-signed** pair so nginx can bind `:443` (replace after Certbot; see **HTTPS** below).
 - ACME webroot on host: `/var/www/aprly/certbot-www/` — used for Let's Encrypt **HTTP-01** (mounted read-only into nginx).
 - Private services (docker network only): `db` (postgres:16), `api-server` (node)
@@ -42,7 +42,7 @@ COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
 - `deploy` (`.github/workflows/deploy.yml`) auto-triggers when `validate`
   finishes successfully on `main`. Also exposed as `workflow_dispatch`.
 - Deploy script: `git fetch + reset --hard origin/main` -> `compose --profile ops build` (includes **`aprly-migrate`**) ->
-  `up -d` -> `db-migrate` -> `db-seed` -> healthcheck `https://aprly.ai/api/healthz`.
+  `up -d` -> `db-migrate` -> `db-seed` -> healthcheck `https://134-122-126-71.nip.io/api/healthz`.
 
 ## Manual deployment (when CI is unavailable)
 
@@ -55,7 +55,7 @@ $COMPOSE --profile ops build
 $COMPOSE up -d
 $COMPOSE --profile ops run --rm db-migrate
 $COMPOSE --profile ops run --rm db-seed
-curl -fsS https://aprly.ai/api/healthz && echo OK
+curl -fsS https://134-122-126-71.nip.io/api/healthz && echo OK
 # Legacy HTTP by IP (still served on port 80 default_server):
 curl -fsS http://134.122.126.71/api/healthz && echo OK
 ```
@@ -152,15 +152,13 @@ env), follow with
   add names to `external` for packages that truly cannot be bundled; see the
   comment block above `external` in `build.mjs`.
 
-## HTTPS (aprly.ai + Let’s Encrypt)
+## HTTPS (nip.io + Let’s Encrypt)
 
-Canonical production URL: **`https://aprly.ai`**.
+Canonical production URL until the customer provides DNS: **`https://134-122-126-71.nip.io`**.
 
-**Migration from nip.io (commands on droplet):** **[deploy/droplet-aprly-ai-uk.md](./droplet-aprly-ai-uk.md)** (Ukrainian).
+**Full step-by-step commands (permissions, Certbot, PEM copy, Stripe, renewal)** — Ukrainian: **[deploy/droplet-https-uk.md](./droplet-https-uk.md)**.
 
-**Original nip.io runbook (archive):** [deploy/droplet-https-uk.md](./droplet-https-uk.md).
-
-Short English notes below.
+Short English notes were kept below for quick orientation only.
 
 ### Host paths (recap)
 
@@ -170,7 +168,7 @@ Short English notes below.
 ### `.env.prod` (recap)
 
 ```bash
-FRONTEND_ORIGIN=https://aprly.ai
+FRONTEND_ORIGIN=https://134-122-126-71.nip.io
 ```
 
 ### Install Certbot (host)
@@ -182,20 +180,20 @@ sudo apt update && sudo apt install -y certbot
 ### Issue cert (stack must be up for HTTP-01)
 
 ```bash
-sudo certbot certonly --webroot -w /var/www/aprly/certbot-www -d aprly.ai -d www.aprly.ai
+sudo certbot certonly --webroot -w /var/www/aprly/certbot-www -d 134-122-126-71.nip.io
 ```
 
 ### Copy PEMs + reload `frontend`
 
-See **[deploy/droplet-aprly-ai-uk.md](./droplet-aprly-ai-uk.md)** (PEM paths under `/etc/letsencrypt/live/aprly.ai/`).
+See **[deploy/droplet-https-uk.md](./droplet-https-uk.md)** — sections 6–7 (exact `cp -L`, `chown`, `chmod`, `$COMPOSE … force-recreate frontend`).
 
 ### Stripe webhook (recap)
 
-`https://aprly.ai/api/stripe/webhook` → signing secret → `STRIPE_WEBHOOK_SECRET` → recreate **`api-server`**.
+`https://134-122-126-71.nip.io/api/stripe/webhook` → signing secret → `STRIPE_WEBHOOK_SECRET` → recreate **`api-server`**.
 
 ### Renewal
 
-Use `certbot renew` + re-copy PEMs + recreate `frontend`, or a `--deploy-hook`; paths in **[deploy/droplet-aprly-ai-uk.md](./droplet-aprly-ai-uk.md)** section 9.
+Use `certbot renew` + re-copy PEMs + recreate `frontend`, or a `--deploy-hook`; full example in **[deploy/droplet-https-uk.md](./droplet-https-uk.md)** section 11.
 
 **Fix cron example:** files under `/etc/cron.d/` must include a user column, e.g.  
 `0 3 * * * root certbot renew -q --deploy-hook /usr/local/sbin/aprly-ssl-deploy.sh`
