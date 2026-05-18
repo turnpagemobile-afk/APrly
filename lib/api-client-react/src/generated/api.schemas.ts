@@ -177,6 +177,38 @@ export interface DashboardSummary {
   estimatedAnnualSavings: number;
 }
 
+export type ImportCardItemSource =
+  (typeof ImportCardItemSource)[keyof typeof ImportCardItemSource];
+
+export const ImportCardItemSource = {
+  manual: "manual",
+  plaid: "plaid",
+} as const;
+
+export interface ImportCardItem {
+  /** @minLength 1 */
+  brand: string;
+  /** @minimum 0 */
+  balance: number;
+  /**
+   * @minimum 0
+   * @maximum 100
+   */
+  rate: number;
+  accountId?: string;
+  source?: ImportCardItemSource;
+}
+
+export interface ImportCardsInput {
+  /** @minItems 1 */
+  cards: ImportCardItem[];
+}
+
+export interface ImportCardsResponse {
+  /** @minimum 0 */
+  importedCount: number;
+}
+
 export interface RegisterAndCheckoutInput {
   /** @maxLength 254 */
   email: string;

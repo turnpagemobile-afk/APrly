@@ -64,6 +64,8 @@ export interface OptimizerStep3Props {
   totalDebtAmount: number;
   isPending: boolean;
   onBack: () => void;
+  /** Scroll to #plan (same as Get Started in nav) */
+  onActivateClick: () => void;
 }
 
 export function OptimizerStep3({
@@ -71,6 +73,7 @@ export function OptimizerStep3({
   totalDebtAmount,
   isPending,
   onBack,
+  onActivateClick,
 }: OptimizerStep3Props) {
   const showSkeleton = isPending && !res;
 
@@ -175,36 +178,15 @@ export function OptimizerStep3({
         <Button variant="ghost" onClick={onBack} className="font-bold sm:w-auto">
           <ChevronLeft className="mr-1 h-5 w-5" /> Back
         </Button>
-        <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
-          <div className="flex flex-col items-stretch sm:items-end">
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              disabled
-              aria-disabled="true"
-              className="font-black uppercase tracking-wider text-base px-6 h-14"
-            >
-              Save My Plan
-            </Button>
-            <p className="mt-1 text-xs text-muted-foreground sm:text-right">
-              Available after stage launch
-            </p>
-          </div>
-          <div className="flex flex-col items-stretch sm:items-end">
-            <Button
-              type="button"
-              size="lg"
-              disabled
-              aria-disabled="true"
-              className="font-black uppercase tracking-wider text-base px-8 h-14 shadow-[0_0_18px_rgba(59,130,246,0.55)] disabled:shadow-none"
-            >
-              Activate APRly — $39/mo
-            </Button>
-            <p className="mt-1 text-xs text-muted-foreground sm:text-right">
-              Available after stage launch (Stripe pending)
-            </p>
-          </div>
+        <div className="flex flex-col items-stretch sm:items-end">
+          <Button
+            type="button"
+            size="lg"
+            onClick={onActivateClick}
+            className="font-black uppercase tracking-wider text-base px-8 h-14 shadow-[0_0_18px_rgba(59,130,246,0.55)] hover:shadow-[0_0_24px_rgba(59,130,246,0.8)] transition-shadow"
+          >
+            Activate APRly — $39/mo
+          </Button>
         </div>
       </div>
     </motion.div>

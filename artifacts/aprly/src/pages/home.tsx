@@ -6,12 +6,19 @@ import { OptimizerSection } from "../components/landing/OptimizerSection";
 import { FaqSection } from "../components/landing/FaqSection";
 import { PlanSection } from "../components/landing/PlanSection";
 import { SignupCheckoutWizard } from "../components/auth/SignupCheckoutWizard";
+import { loadOptimizerSnapshot } from "@/lib/optimizerSnapshot";
 import { toast } from "@/hooks/use-toast";
 
 export default function Home() {
   const optimizerRef = useRef<HTMLElement>(null);
   const [signupOpen, setSignupOpen] = useState(false);
   const [stripeReturnSessionId, setStripeReturnSessionId] = useState<string | null>(null);
+  const [signupInitialEmail, setSignupInitialEmail] = useState<string | null>(null);
+  const [signupInitialName, setSignupInitialName] = useState<string | null>(null);
+
+  const scrollToPlan = () => {
+    document.getElementById("plan")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -59,17 +66,26 @@ export default function Home() {
         open={signupOpen}
         onOpenChange={(open) => {
           setSignupOpen(open);
-          if (!open) setStripeReturnSessionId(null);
+          if (!open) {
+            setStripeReturnSessionId(null);
+            setSignupInitialEmail(null);
+            setSignupInitialName(null);
+          }
         }}
         initialStripeSessionId={stripeReturnSessionId}
+        initialEmail={signupInitialEmail}
+        initialName={signupInitialName}
       />
       <HeroSection onSeeOptimizer={handleSeeOptimizer} />
       <StatsSection />
       <HowItWorksSection />
-      <OptimizerSection ref={optimizerRef} />
+      <OptimizerSection ref={optimizerRef} onActivateClick={scrollToPlan} />
       <FaqSection />
       <PlanSection
         onActivateClick={() => {
+          const snap = loadOptimizerSnapshot();
+          setSignupInitialEmail(snap?.email?.trim() || null);
+          setSignupInitialName(snap?.name?.trim() || null);
           setStripeReturnSessionId(null);
           setSignupOpen(true);
         }}

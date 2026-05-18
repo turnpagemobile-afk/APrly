@@ -23,6 +23,8 @@ import type {
   FieldErrorsResponse,
   GetCheckoutSessionStatusParams,
   HealthStatus,
+  ImportCardsInput,
+  ImportCardsResponse,
   Lead,
   LoginInput,
   MeResponse,
@@ -1209,4 +1211,90 @@ export const usePatchMe = <
   TContext
 > => {
   return useMutation(getPatchMeMutationOptions(options));
+};
+
+/**
+ * @summary Import optimizer calculator cards for the authenticated user
+ */
+export const getImportMyCardsUrl = () => {
+  return `/api/me/cards/import`;
+};
+
+export const importMyCards = async (
+  importCardsInput: ImportCardsInput,
+  options?: RequestInit,
+): Promise<ImportCardsResponse> => {
+  return customFetch<ImportCardsResponse>(getImportMyCardsUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(importCardsInput),
+  });
+};
+
+export const getImportMyCardsMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof importMyCards>>,
+    TError,
+    { data: BodyType<ImportCardsInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof importMyCards>>,
+  TError,
+  { data: BodyType<ImportCardsInput> },
+  TContext
+> => {
+  const mutationKey = ["importMyCards"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof importMyCards>>,
+    { data: BodyType<ImportCardsInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return importMyCards(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ImportMyCardsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof importMyCards>>
+>;
+export type ImportMyCardsMutationBody = BodyType<ImportCardsInput>;
+export type ImportMyCardsMutationError = ErrorType<void>;
+
+/**
+ * @summary Import optimizer calculator cards for the authenticated user
+ */
+export const useImportMyCards = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof importMyCards>>,
+    TError,
+    { data: BodyType<ImportCardsInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof importMyCards>>,
+  TError,
+  { data: BodyType<ImportCardsInput> },
+  TContext
+> => {
+  return useMutation(getImportMyCardsMutationOptions(options));
 };
