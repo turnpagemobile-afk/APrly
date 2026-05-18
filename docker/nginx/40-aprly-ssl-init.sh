@@ -9,5 +9,5 @@ if [ ! -s /etc/nginx/ssl/fullchain.pem ] || [ ! -s /etc/nginx/ssl/privkey.pem ];
   openssl req -x509 -nodes -newkey rsa:2048 -days 2 \
     -keyout /etc/nginx/ssl/privkey.pem \
     -out /etc/nginx/ssl/fullchain.pem \
-    -subj "/CN=134-122-126-71.nip.io"
+    -subj "/CN=aprly.ai"
 fi
