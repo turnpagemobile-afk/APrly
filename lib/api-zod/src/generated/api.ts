@@ -309,3 +309,35 @@ export const PatchMeResponse = zod.object({
   lastName: zod.string().nullish(),
   role: zod.string(),
 });
+
+/**
+ * @summary Import optimizer calculator cards for the authenticated user
+ */
+
+export const importMyCardsBodyCardsItemBalanceMin = 0;
+
+export const importMyCardsBodyCardsItemRateMin = 0;
+export const importMyCardsBodyCardsItemRateMax = 100;
+
+export const ImportMyCardsBody = zod.object({
+  cards: zod
+    .array(
+      zod.object({
+        brand: zod.string().min(1),
+        balance: zod.number().min(importMyCardsBodyCardsItemBalanceMin),
+        rate: zod
+          .number()
+          .min(importMyCardsBodyCardsItemRateMin)
+          .max(importMyCardsBodyCardsItemRateMax),
+        accountId: zod.string().optional(),
+        source: zod.enum(["manual", "plaid"]).optional(),
+      }),
+    )
+    .min(1),
+});
+
+export const importMyCardsResponseImportedCountMin = 0;
+
+export const ImportMyCardsResponse = zod.object({
+  importedCount: zod.number().min(importMyCardsResponseImportedCountMin),
+});

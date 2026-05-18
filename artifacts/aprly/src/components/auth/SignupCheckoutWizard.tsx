@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
@@ -6,9 +6,15 @@ import { ApiError } from "@workspace/api-client-react/custom-fetch";
 import {
   getCheckoutSessionStatus,
   getGetCheckoutSessionStatusQueryKey,
+  useImportMyCards,
   usePatchMe,
   useRegisterAndCheckout,
 } from "@workspace/api-client-react";
+import {
+  clearOptimizerSnapshot,
+  loadOptimizerSnapshot,
+  snapshotCardsForImport,
+} from "@/lib/optimizerSnapshot";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -64,12 +70,16 @@ type SignupCheckoutWizardProps = {
   onOpenChange: (open: boolean) => void;
   /** When set (e.g. from ?stripe_session=), start at payment wait step */
   initialStripeSessionId?: string | null;
+  initialEmail?: string | null;
+  initialName?: string | null;
 };
 
 export function SignupCheckoutWizard({
   open,
   onOpenChange,
   initialStripeSessionId,
+  initialEmail,
+  initialName,
 }: SignupCheckoutWizardProps) {
   const [, navigate] = useLocation();
   const [step, setStep] = useState<Step>(1);
@@ -83,6 +93,8 @@ export function SignupCheckoutWizard({
 
   const registerMutation = useRegisterAndCheckout();
   const patchMutation = usePatchMe();
+  const importCardsMutation = useImportMyCards();
+  const cardsImportStartedRef = useRef(false);
 
   const step1Parsed = useMemo(
     () =>
@@ -125,6 +137,7 @@ export function SignupCheckoutWizard({
     setFieldErrors({});
     setStripeSessionId(null);
     setCheckoutUserEmail(null);
+    cardsImportStartedRef.current = false;
   }, []);
 
   useEffect(() => {
@@ -135,8 +148,12 @@ export function SignupCheckoutWizard({
     if (initialStripeSessionId) {
       setStripeSessionId(initialStripeSessionId);
       setStep(2);
+      return;
     }
-  }, [open, initialStripeSessionId, resetForm]);
+    if (initialEmail?.trim()) {
+      setEmail(initialEmail.trim());
+    }
+  }, [open, initialStripeSessionId, initialEmail, resetForm]);
 
   useEffect(() => {
     if (!open || step !== 2) return;
@@ -147,6 +164,33 @@ export function SignupCheckoutWizard({
       setStep(3);
     }
   }, [open, step, sessionQuery.data]);
+
+  useEffect(() => {
+    if (!open || sessionQuery.data?.status !== "paid") return;
+    if (cardsImportStartedRef.current) return;
+
+    const snapshot = loadOptimizerSnapshot();
+    if (!snapshot) return;
+
+    const cards = snapshotCardsForImport(snapshot);
+    if (!cards.length) {
+      clearOptimizerSnapshot();
+      return;
+    }
+
+    cardsImportStartedRef.current = true;
+    void importCardsMutation
+      .mutateAsync({ data: { cards } })
+      .then(() => clearOptimizerSnapshot())
+      .catch(() => {
+        cardsImportStartedRef.current = false;
+        toast({
+          title: "Could not save your cards",
+          description: "Your account is active, but calculator cards were not imported. Try again from the dashboard later.",
+          variant: "destructive",
+        });
+      });
+  }, [open, sessionQuery.data?.status, importCardsMutation]);
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,11 +232,17 @@ export function SignupCheckoutWizard({
   const [profileLast, setProfileLast] = useState("");
 
   useEffect(() => {
-    if (step === 3 && checkoutUserEmail) {
-      setProfileFirst("");
-      setProfileLast("");
+    if (step !== 3 || !checkoutUserEmail) return;
+    const trimmed = initialName?.trim();
+    if (trimmed) {
+      const parts = trimmed.split(/\s+/);
+      setProfileFirst(parts[0] ?? "");
+      setProfileLast(parts.slice(1).join(" "));
+      return;
     }
-  }, [step, checkoutUserEmail]);
+    setProfileFirst("");
+    setProfileLast("");
+  }, [step, checkoutUserEmail, initialName]);
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

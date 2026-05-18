@@ -8,14 +8,17 @@ import { OptimizerStep2 } from "./OptimizerStep2";
 import { OptimizerStep3 } from "./OptimizerStep3";
 import type { CardEntry } from "./types";
 import { aggregateCardBalances } from "./optimizerAccounts";
+import { saveOptimizerSnapshot } from "@/lib/optimizerSnapshot";
 import { optimizerContent } from "@/content/landing";
 
 const TARGET_APR = 8;
 
-export const OptimizerSection = forwardRef<HTMLElement>(function OptimizerSection(
-  _props,
-  ref,
-) {
+type OptimizerSectionProps = {
+  onActivateClick: () => void;
+};
+
+export const OptimizerSection = forwardRef<HTMLElement, OptimizerSectionProps>(
+  function OptimizerSection({ onActivateClick }, ref) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [totalDebt, setTotalDebt] = useState<string>("15000");
   const [interestRate, setInterestRate] = useState<string>("24.99");
@@ -89,6 +92,22 @@ export const OptimizerSection = forwardRef<HTMLElement>(function OptimizerSectio
     return Number.isNaN(fallback) ? 0 : fallback;
   }, [accounts, totalDebt]);
 
+  const goToStep3 = useCallback(() => {
+    const agg = aggregateCardBalances(accounts);
+    const fallbackDebt = parseFloat(totalDebt);
+    saveOptimizerSnapshot({
+      name,
+      email,
+      accounts,
+      totalDebt: agg?.totalDebt ?? (Number.isNaN(fallbackDebt) ? 0 : fallbackDebt),
+      blendedRate: agg?.blendedRate,
+      dailyInterestWaste: res?.dailyInterestWaste,
+      monthlySavings: res?.monthlySavings,
+      annualSavings: res?.annualSavings,
+    });
+    setStep(3);
+  }, [accounts, name, email, totalDebt, res]);
+
   return (
     <section
       ref={ref}
@@ -154,7 +173,7 @@ export const OptimizerSection = forwardRef<HTMLElement>(function OptimizerSectio
               email={email}
               setEmail={setEmail}
               onBack={() => setStep(1)}
-              onNext={() => setStep(3)}
+              onNext={goToStep3}
             />
           )}
           {step === 3 && (
@@ -164,10 +183,12 @@ export const OptimizerSection = forwardRef<HTMLElement>(function OptimizerSectio
               totalDebtAmount={step3TotalDebt}
               isPending={calculateOpt.isPending}
               onBack={() => setStep(2)}
+              onActivateClick={onActivateClick}
             />
           )}
         </AnimatePresence>
       </div>
     </section>
   );
-});
+  },
+);
