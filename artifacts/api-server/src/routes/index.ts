@@ -10,6 +10,9 @@ import meRouter from "./me";
 import planLeadsRouter from "./plan-leads";
 import subscriptionRouter from "./subscription";
 import voiceRouter from "./voice";
+import adminAuthRouter from "./admin-auth";
+import adminDashboardRouter from "./admin-dashboard";
+import adminPartnersRouter from "./admin-partners";
 
 const router: IRouter = Router();
 
@@ -24,5 +27,8 @@ router.use(plaidRouter);
 router.use(stripeRouter);
 router.use(dashboardRouter);
 router.use(voiceRouter);
+router.use(adminAuthRouter);
+router.use(adminDashboardRouter);
+router.use(adminPartnersRouter);
 
 export default router;

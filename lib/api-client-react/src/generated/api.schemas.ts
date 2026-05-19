@@ -404,6 +404,106 @@ export interface FieldErrorsResponse {
   fieldErrors: FieldErrorsResponseFieldErrors;
 }
 
+export interface AdminLoginInput {
+  email: string;
+  /** @minLength 1 */
+  password: string;
+}
+
+export interface AdminLoginChallengeResponse {
+  challengeToken: string;
+  email: string;
+  /** @minimum 1 */
+  expiresInSeconds: number;
+}
+
+export interface AdminVerifyOtpInput {
+  challengeToken: string;
+  /**
+   * @minLength 6
+   * @maxLength 6
+   */
+  code: string;
+}
+
+export interface AdminResendOtpInput {
+  challengeToken: string;
+}
+
+export interface AdminMeResponse {
+  id: number;
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  role: string;
+}
+
+export interface AdminDashboardUsersSummary {
+  total: number;
+  subscribed: number;
+  unsubscribed: number;
+  subscribedPercent: number;
+  unsubscribedPercent: number;
+}
+
+export interface AdminRegistrationPoint {
+  date: string;
+  count: number;
+}
+
+export type AdminTrendCardChangeDirection =
+  (typeof AdminTrendCardChangeDirection)[keyof typeof AdminTrendCardChangeDirection];
+
+export const AdminTrendCardChangeDirection = {
+  up: "up",
+  down: "down",
+} as const;
+
+export interface AdminTrendCard {
+  label: string;
+  value: string;
+  changePercent: number;
+  changeDirection: AdminTrendCardChangeDirection;
+}
+
+export interface AdminMrrPoint {
+  month: string;
+  value: number;
+}
+
+export interface AdminDashboardSummary {
+  users: AdminDashboardUsersSummary;
+  newRegistrations: AdminRegistrationPoint[];
+  /** v1 mock until Stripe analytics */
+  revenueTrends: AdminTrendCard[];
+  /** v1 mock until Stripe analytics */
+  churnTrends: AdminTrendCard[];
+  /** v1 mock until Stripe analytics */
+  mrrSeries: AdminMrrPoint[];
+}
+
+export interface AdminPartnerListResponse {
+  partners: Partner[];
+}
+
+export interface AdminPartnerPlanLead {
+  id: number;
+  brand: string;
+  balance: number;
+  currentApr: number;
+  targetApr: number;
+  estimatedAnnualSavings?: number;
+  status: PlanLeadStatus;
+  userEmail: string;
+  sentToPartnerAt?: string | null;
+  createdAt: string;
+}
+
+export interface AdminPartnerPlanLeadsResponse {
+  partner: Partner;
+  planLeads: AdminPartnerPlanLead[];
+}
+
 export type GetCheckoutSessionStatusParams = {
   /**
    * @minLength 1
@@ -417,3 +517,16 @@ export type GetSubscriptionCheckoutSessionStatusParams = {
    */
   stripeSessionId: string;
 };
+
+export type GetAdminDashboardSummaryParams = {
+  period?: GetAdminDashboardSummaryPeriod;
+};
+
+export type GetAdminDashboardSummaryPeriod =
+  (typeof GetAdminDashboardSummaryPeriod)[keyof typeof GetAdminDashboardSummaryPeriod];
+
+export const GetAdminDashboardSummaryPeriod = {
+  "7d": "7d",
+  "30d": "30d",
+  "12m": "12m",
+} as const;

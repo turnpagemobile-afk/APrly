@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-session";
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { isAuthenticated, isAuthPending } = useAuth();
+  const { isAuthenticated, isAuthPending, user } = useAuth();
 
   if (isAuthPending) {
     return (
@@ -17,6 +17,10 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
   if (!isAuthenticated) {
     return <Redirect to="/login" />;
+  }
+
+  if (user?.role === "admin") {
+    return <Redirect to="/admin/dashboard" />;
   }
 
   return <>{children}</>;

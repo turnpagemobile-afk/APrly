@@ -611,3 +611,160 @@ export const GetSubscriptionCheckoutSessionStatusResponse = zod.object({
   status: zod.enum(["pending", "processing", "paid", "failed", "expired"]),
   subscriptionActive: zod.boolean(),
 });
+
+/**
+ * @summary Admin sign-in step 1 (password)
+ */
+
+export const AdminLoginBody = zod.object({
+  email: zod.string().email(),
+  password: zod.string().min(1),
+});
+
+export const AdminLoginResponse = zod.object({
+  challengeToken: zod.string(),
+  email: zod.string().email(),
+  expiresInSeconds: zod.number().min(1),
+});
+
+/**
+ * @summary Admin sign-in step 2 (OTP)
+ */
+export const adminVerifyOtpBodyCodeMin = 6;
+export const adminVerifyOtpBodyCodeMax = 6;
+
+export const AdminVerifyOtpBody = zod.object({
+  challengeToken: zod.string(),
+  code: zod
+    .string()
+    .min(adminVerifyOtpBodyCodeMin)
+    .max(adminVerifyOtpBodyCodeMax),
+});
+
+export const AdminVerifyOtpResponse = zod.object({
+  id: zod.number(),
+  email: zod.string().email(),
+  firstName: zod.string().nullish(),
+  lastName: zod.string().nullish(),
+  role: zod.string(),
+});
+
+/**
+ * @summary Re-issue OTP challenge (v1 logs code, no email)
+ */
+export const AdminResendOtpBody = zod.object({
+  challengeToken: zod.string(),
+});
+
+export const AdminResendOtpResponse = zod.object({
+  challengeToken: zod.string(),
+  email: zod.string().email(),
+  expiresInSeconds: zod.number().min(1),
+});
+
+/**
+ * @summary Current admin profile
+ */
+export const GetAdminMeResponse = zod.object({
+  id: zod.number(),
+  email: zod.string().email(),
+  firstName: zod.string().nullish(),
+  lastName: zod.string().nullish(),
+  role: zod.string(),
+});
+
+/**
+ * @summary Admin dashboard metrics
+ */
+export const getAdminDashboardSummaryQueryPeriodDefault = `30d`;
+
+export const GetAdminDashboardSummaryQueryParams = zod.object({
+  period: zod
+    .enum(["7d", "30d", "12m"])
+    .default(getAdminDashboardSummaryQueryPeriodDefault),
+});
+
+export const GetAdminDashboardSummaryResponse = zod.object({
+  users: zod.object({
+    total: zod.number(),
+    subscribed: zod.number(),
+    unsubscribed: zod.number(),
+    subscribedPercent: zod.number(),
+    unsubscribedPercent: zod.number(),
+  }),
+  newRegistrations: zod.array(
+    zod.object({
+      date: zod.string(),
+      count: zod.number(),
+    }),
+  ),
+  revenueTrends: zod
+    .array(
+      zod.object({
+        label: zod.string(),
+        value: zod.string(),
+        changePercent: zod.number(),
+        changeDirection: zod.enum(["up", "down"]),
+      }),
+    )
+    .describe("v1 mock until Stripe analytics"),
+  churnTrends: zod
+    .array(
+      zod.object({
+        label: zod.string(),
+        value: zod.string(),
+        changePercent: zod.number(),
+        changeDirection: zod.enum(["up", "down"]),
+      }),
+    )
+    .describe("v1 mock until Stripe analytics"),
+  mrrSeries: zod
+    .array(
+      zod.object({
+        month: zod.string(),
+        value: zod.number(),
+      }),
+    )
+    .describe("v1 mock until Stripe analytics"),
+});
+
+/**
+ * @summary List partners
+ */
+export const GetAdminPartnersResponse = zod.object({
+  partners: zod.array(
+    zod.object({
+      id: zod.number(),
+      name: zod.string(),
+    }),
+  ),
+});
+
+/**
+ * @summary Plan leads sent to a partner
+ */
+
+export const GetAdminPartnerPlanLeadsParams = zod.object({
+  id: zod.coerce.number().min(1),
+});
+
+export const GetAdminPartnerPlanLeadsResponse = zod.object({
+  partner: zod.object({
+    id: zod.number(),
+    name: zod.string(),
+  }),
+  planLeads: zod.array(
+    zod.object({
+      id: zod.number(),
+      brand: zod.string(),
+      balance: zod.number(),
+      currentApr: zod.number(),
+      targetApr: zod.number(),
+      estimatedAnnualSavings: zod.number().optional(),
+      status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+      userEmail: zod.string().email(),
+      sentToPartnerAt: zod.coerce.date().nullish(),
+      createdAt: zod.coerce.date(),
+    }),
+  ),
+});
