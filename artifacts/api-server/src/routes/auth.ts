@@ -10,9 +10,9 @@ import {
   GetCheckoutSessionStatusResponse,
   LoginBody,
   LoginResponse,
-  GetMeResponse,
   PatchMeBody,
   PatchMeResponse,
+  PatchMePasswordBody,
   RefreshSessionResponse,
 } from "@workspace/api-zod";
 import {
@@ -33,6 +33,7 @@ import {
 } from "../lib/auth-tokens";
 import { requireAuth } from "../middleware/requireAuth";
 import { logger } from "../lib/logger";
+import { buildMeResponse } from "../lib/subscription-status";
 
 const router: IRouter = Router();
 
@@ -65,16 +66,6 @@ function stripeConfigured(): boolean {
 
 function frontendOrigin(): string {
   return (process.env["FRONTEND_ORIGIN"] ?? "http://localhost:5173").replace(/\/+$/, "");
-}
-
-function meRowResponse(row: typeof usersTable.$inferSelect) {
-  return GetMeResponse.parse({
-    id: row.id,
-    email: row.email,
-    firstName: row.firstName,
-    lastName: row.lastName,
-    role: row.role,
-  });
 }
 
 router.post("/auth/register-and-checkout", async (req, res, next) => {
@@ -356,7 +347,7 @@ router.post("/auth/login", async (req, res, next) => {
     }
 
     await issueAuthCookies(res, row.id, row.role);
-    res.json(LoginResponse.parse(meRowResponse(row)));
+    res.json(LoginResponse.parse(await buildMeResponse(row)));
   } catch (err) {
     next(err);
   }
@@ -418,7 +409,7 @@ router.post("/auth/refresh", async (req, res, next) => {
     }
 
     await issueAuthCookies(res, user.id, user.role);
-    res.json(RefreshSessionResponse.parse(meRowResponse(user)));
+    res.json(RefreshSessionResponse.parse(await buildMeResponse(user)));
   } catch (err) {
     next(err);
   }
@@ -432,7 +423,7 @@ router.get("/auth/me", requireAuth, async (req, res, next) => {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
-    res.json(GetMeResponse.parse(meRowResponse(row)));
+    res.json(await buildMeResponse(row));
   } catch (err) {
     next(err);
   }
@@ -459,7 +450,68 @@ router.patch("/auth/me", requireAuth, async (req, res, next) => {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
-    res.json(PatchMeResponse.parse(meRowResponse(updated)));
+    res.json(PatchMeResponse.parse(await buildMeResponse(updated)));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.patch("/auth/me/password", requireAuth, async (req, res, next) => {
+  try {
+    const parsed = PatchMePasswordBody.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid request" });
+      return;
+    }
+    const { password, confirmPassword } = parsed.data;
+    if (password !== confirmPassword) {
+      fieldErrorsResponse(
+        { confirmPassword: ["Passwords must match."] },
+        400,
+        res,
+      );
+      return;
+    }
+    const id = req.userId!;
+    const passwordHash = await bcrypt.hash(password, 10);
+    const [updated] = await db
+      .update(usersTable)
+      .set({ passwordHash })
+      .where(eq(usersTable.id, id))
+      .returning({ id: usersTable.id });
+
+    if (!updated) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete("/auth/me", requireAuth, async (req, res, next) => {
+  try {
+    const id = req.userId!;
+    const [row] = await db.select().from(usersTable).where(eq(usersTable.id, id)).limit(1);
+    if (!row) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const subId = row.stripeSubscriptionId?.trim();
+    if (subId) {
+      try {
+        const stripe = getStripe();
+        await stripe.subscriptions.cancel(subId);
+      } catch (stripeErr) {
+        logger.warn({ err: stripeErr, userId: id, subId }, "Stripe subscription cancel failed during account delete");
+      }
+    }
+
+    await db.delete(usersTable).where(eq(usersTable.id, id));
+    clearAuthCookies(res);
+    res.status(204).send();
   } catch (err) {
     next(err);
   }

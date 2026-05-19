@@ -8,11 +8,11 @@ export interface HeroSectionProps {
 
 export function HeroSection({ onSeeOptimizer }: HeroSectionProps) {
   return (
-    <section className="relative px-4 py-16 md:py-24 lg:py-28">
-      <div className="container mx-auto max-w-6xl">
-        <div className="grid items-center gap-10 md:gap-14 lg:grid-cols-[1.2fr_1fr]">
-          <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-            <h1 className="font-black tracking-tight leading-[1.05] text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
+    <section className="relative px-4 py-16 cabinet:py-24">
+      <div className="app-page-marketing">
+        <div className="grid items-center gap-10 cabinet:grid-cols-[1.2fr_1fr] cabinet:gap-14">
+          <div className="flex min-w-0 flex-col items-center text-center cabinet:items-start cabinet:text-left">
+            <h1 className="font-black leading-[1.05] tracking-tight text-4xl cabinet:text-5xl cabinet:text-6xl">
               {heroContent.taglineLines.map((line, i) => (
                 <span key={i} className="block">
                   <span
@@ -29,7 +29,7 @@ export function HeroSection({ onSeeOptimizer }: HeroSectionProps) {
               ))}
             </h1>
 
-            <p className="mt-8 md:mt-10 max-w-xl text-base md:text-lg font-semibold text-foreground/90">
+            <p className="mt-8 max-w-xl text-base font-semibold text-foreground/90 cabinet:mt-10 cabinet:text-lg">
               {heroContent.subtitle}
             </p>
 
@@ -37,7 +37,7 @@ export function HeroSection({ onSeeOptimizer }: HeroSectionProps) {
               <Button
                 size="lg"
                 onClick={onSeeOptimizer}
-                className="font-semibold"
+                className="w-full font-semibold cabinet:w-auto"
               >
                 {heroContent.cta.label}
               </Button>
@@ -47,7 +47,7 @@ export function HeroSection({ onSeeOptimizer }: HeroSectionProps) {
           <div
             role="img"
             aria-label={heroContent.imageAlt}
-            className="relative aspect-[4/3] w-full rounded-2xl bg-[var(--info-theme-200)]/40 border border-border/40 flex items-center justify-center"
+            className="relative flex aspect-[4/3] w-full min-w-0 items-center justify-center rounded-2xl border border-border/40 bg-[var(--info-theme-200)]/40"
           >
             <ImageIcon
               className="h-12 w-12 text-muted-foreground/40"

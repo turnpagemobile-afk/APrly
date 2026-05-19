@@ -4,9 +4,9 @@ import { Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-session";
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isAuthPending } = useAuth();
 
-  if (isLoading) {
+  if (isAuthPending) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center gap-2 text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin" />

@@ -10,33 +10,27 @@ const ICONS: Record<HowIconKey, LucideIcon> = {
 
 export function HowItWorksSection() {
   return (
-    <section id="how" className="px-4 py-16 md:py-24 scroll-mt-24">
-      <div className="container mx-auto max-w-6xl">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+    <section id="how" className="scroll-mt-24 px-4 py-16 cabinet:py-24">
+      <div className="app-page-marketing">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-2xl font-extrabold tracking-tight cabinet:text-3xl">
             {howItWorksContent.title}
           </h2>
-          <p className="mt-3 text-sm md:text-base text-muted-foreground">
+          <p className="mt-3 text-sm text-muted-foreground cabinet:text-base">
             {howItWorksContent.subtitle}
           </p>
         </div>
 
-        <div className="mt-10 md:mt-14 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+        <div className="mt-10 grid grid-cols-1 gap-8 cabinet:mt-14 cabinet:grid-cols-3 cabinet:gap-10">
           {howItWorksContent.items.map((item, i) => {
             const Icon = ICONS[item.iconKey];
             return (
-              <div
-                key={i}
-                className="flex flex-col items-center text-center px-2"
-              >
-                <Icon
-                  className="h-10 w-10 text-foreground"
-                  aria-hidden="true"
-                />
-                <h3 className="mt-5 text-base md:text-lg font-bold text-primary">
+              <div key={i} className="flex flex-col items-center px-2 text-center">
+                <Icon className="h-10 w-10 text-foreground" aria-hidden="true" />
+                <h3 className="mt-5 text-base font-bold text-primary cabinet:text-lg">
                   {item.title}
                 </h3>
-                <p className="mt-3 text-sm md:text-[15px] text-muted-foreground leading-relaxed">
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground cabinet:text-[15px]">
                   {item.body}
                 </p>
               </div>

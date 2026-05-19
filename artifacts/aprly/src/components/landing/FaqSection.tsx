@@ -5,18 +5,29 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { faqContent } from "@/content/landing";
+import { cn } from "@/lib/utils";
 
-export function FaqSection() {
-  const firstId = faqContent.items[0]?.id;
+export type FaqContent = typeof faqContent;
+
+type FaqSectionProps = {
+  content?: FaqContent;
+  className?: string;
+};
+
+export function FaqSection({ content = faqContent, className }: FaqSectionProps) {
+  const firstId = content.items[0]?.id;
   return (
-    <section id="faq" className="px-4 py-16 md:py-24 scroll-mt-24">
-      <div className="container mx-auto max-w-3xl">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-            {faqContent.title}
+    <section
+      id="faq"
+      className={cn("scroll-mt-24 px-4 py-16 cabinet:py-24", className)}
+    >
+      <div className="app-page-marketing max-w-3xl">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-2xl font-extrabold tracking-tight cabinet:text-3xl">
+            {content.title}
           </h2>
-          <p className="mt-3 text-sm md:text-base text-muted-foreground">
-            {faqContent.subtitle}
+          <p className="mt-3 text-sm text-muted-foreground cabinet:text-base">
+            {content.subtitle}
           </p>
         </div>
 
@@ -24,18 +35,18 @@ export function FaqSection() {
           type="single"
           collapsible
           defaultValue={firstId}
-          className="mt-10 md:mt-14 w-full"
+          className="mt-10 w-full cabinet:mt-14"
         >
-          {faqContent.items.map((item) => (
+          {content.items.map((item) => (
             <AccordionItem
               key={item.id}
               value={item.id}
               className="border-b border-border/60"
             >
-              <AccordionTrigger className="text-left text-sm md:text-base font-bold text-primary hover:no-underline">
+              <AccordionTrigger className="text-left text-sm font-bold text-primary hover:no-underline cabinet:text-base">
                 {item.q}
               </AccordionTrigger>
-              <AccordionContent className="text-sm md:text-[15px] text-muted-foreground leading-relaxed">
+              <AccordionContent className="text-sm leading-relaxed text-muted-foreground cabinet:text-[15px]">
                 {item.a}
               </AccordionContent>
             </AccordionItem>

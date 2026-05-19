@@ -1,4 +1,4 @@
-import { db, leadsTable, pool } from "./index";
+import { db, leadsTable, partnersTable, pool } from "./index";
 
 const SEED_LEADS = [
   {
@@ -22,6 +22,16 @@ const SEED_LEADS = [
 ] as const;
 
 async function main(): Promise<void> {
+  const partnerRows = await db
+    .insert(partnersTable)
+    .values({ name: "Custom partner" })
+    .onConflictDoNothing({ target: partnersTable.name })
+    .returning({ id: partnersTable.id, name: partnersTable.name });
+
+  if (partnerRows.length > 0) {
+    console.log(`[seed] inserted partner id=${partnerRows[0]!.id}`);
+  }
+
   console.log(`[seed] inserting ${SEED_LEADS.length} demo leads (ON CONFLICT DO NOTHING)`);
 
   const inserted = await db

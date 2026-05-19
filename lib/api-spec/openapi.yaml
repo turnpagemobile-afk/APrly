@@ -135,6 +135,23 @@ paths:
         "401":
           description: Unauthorized
 
+  /dashboard/tab:
+    get:
+      operationId: getDashboardTab
+      tags: [dashboard]
+      summary: Dashboard tab context — subscription state and whether the user has leads
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Tab context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardTabContext"
+        "401":
+          description: Unauthorized
+
   /auth/register-and-checkout:
     post:
       operationId: registerAndCheckout
@@ -274,6 +291,43 @@ paths:
         "401":
           description: Unauthorized
 
+    delete:
+      operationId: deleteMe
+      tags: [auth]
+      summary: Delete the authenticated user account
+      security:
+        - cookieAuth: []
+      responses:
+        "204":
+          description: Account deleted
+        "401":
+          description: Unauthorized
+
+  /auth/me/password:
+    patch:
+      operationId: patchMePassword
+      tags: [auth]
+      summary: Change password for the authenticated user
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchMePasswordInput"
+      responses:
+        "204":
+          description: Password updated
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FieldErrorsResponse"
+        "401":
+          description: Unauthorized
+
   /me/cards/import:
     post:
       operationId: importMyCards
@@ -298,6 +352,188 @@ paths:
           description: Validation error
         "401":
           description: Unauthorized
+
+  /me/detailed-plan:
+    post:
+      operationId: createDetailedPlan
+      tags: [me]
+      summary: Import cabinet cards and create plan leads from optimizer calculation
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportCardsInput"
+      responses:
+        "200":
+          description: Plan leads created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateDetailedPlanResponse"
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+
+  /me/partners:
+    get:
+      operationId: getPartners
+      tags: [me]
+      summary: List partners available for plan lead submission
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Partner list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PartnerListResponse"
+        "401":
+          description: Unauthorized
+
+  /me/plan-leads/{id}:
+    get:
+      operationId: getPlanLead
+      tags: [me]
+      summary: Get plan lead detail with partner and hardship portal
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Plan lead detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanLeadDetail"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Plan lead not found
+
+    patch:
+      operationId: updatePlanLeadStatus
+      tags: [me]
+      summary: Update plan lead lifecycle status
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePlanLeadStatusInput"
+      responses:
+        "200":
+          description: Updated plan lead
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanLead"
+        "400":
+          description: Invalid status transition
+        "401":
+          description: Unauthorized
+        "404":
+          description: Plan lead not found
+
+  /me/plan-leads/{id}/send:
+    post:
+      operationId: sendPlanLead
+      tags: [me]
+      summary: Send plan lead to partner (simulated v1)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendPlanLeadInput"
+      responses:
+        "200":
+          description: Plan lead sent to partner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanLeadDetail"
+        "400":
+          description: Invalid request or status
+        "401":
+          description: Unauthorized
+        "404":
+          description: Plan lead or partner not found
+
+  /me/subscription/checkout:
+    post:
+      operationId: createSubscriptionCheckout
+      tags: [me]
+      summary: Start Stripe Checkout for subscription renewal (subscription only, no setup fee)
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Checkout session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionCheckoutPayload"
+        "401":
+          description: Unauthorized
+        "503":
+          description: Stripe is not configured
+
+  /me/subscription/session-status:
+    get:
+      operationId: getSubscriptionCheckoutSessionStatus
+      tags: [me]
+      summary: Poll subscription checkout; updates user subscription when paid
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: stripeSessionId
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Checkout status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionCheckoutStatusResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Session does not belong to this user
+        "404":
+          description: Unknown session
 
 components:
   securitySchemes:
@@ -624,6 +860,176 @@ components:
           type: integer
           minimum: 0
 
+    PlanLeadStatus:
+      type: string
+      enum: [recommended, in_progress, won, denied]
+
+    PlanLead:
+      type: object
+      required:
+        - id
+        - brand
+        - balance
+        - currentApr
+        - targetApr
+        - estimatedAnnualSavings
+        - status
+        - createdAt
+      properties:
+        id:
+          type: integer
+        brand:
+          type: string
+        balance:
+          type: number
+        currentApr:
+          type: number
+        targetApr:
+          type: number
+        estimatedAnnualSavings:
+          type: number
+        status:
+          $ref: "#/components/schemas/PlanLeadStatus"
+        createdAt:
+          type: string
+          format: date-time
+
+    DashboardPlansSummary:
+      type: object
+      required: [totalDebt, estimatedAnnualSavings]
+      properties:
+        totalDebt:
+          type: number
+        estimatedAnnualSavings:
+          type: number
+
+    CreateDetailedPlanResponse:
+      type: object
+      required: [createdCount, plans]
+      properties:
+        createdCount:
+          type: integer
+          minimum: 0
+        plans:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlanLead"
+
+    UpdatePlanLeadStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status:
+          $ref: "#/components/schemas/PlanLeadStatus"
+
+    Partner:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    PartnerListResponse:
+      type: object
+      required: [partners]
+      properties:
+        partners:
+          type: array
+          items:
+            $ref: "#/components/schemas/Partner"
+
+    SendPlanLeadInput:
+      type: object
+      required: [partnerId]
+      properties:
+        partnerId:
+          type: integer
+          minimum: 1
+
+    PlanLeadDetail:
+      type: object
+      required:
+        - id
+        - brand
+        - balance
+        - currentApr
+        - targetApr
+        - estimatedAnnualSavings
+        - status
+        - createdAt
+      properties:
+        id:
+          type: integer
+        brand:
+          type: string
+        balance:
+          type: number
+        currentApr:
+          type: number
+        targetApr:
+          type: number
+        estimatedAnnualSavings:
+          type: number
+        status:
+          $ref: "#/components/schemas/PlanLeadStatus"
+        createdAt:
+          type: string
+          format: date-time
+        partnerId:
+          type: integer
+          nullable: true
+        sentToPartnerAt:
+          type: string
+          format: date-time
+          nullable: true
+        partner:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/Partner"
+        hardshipPortal:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/HardshipPortal"
+
+    DashboardTabContext:
+      type: object
+      required: [subscriptionActive, hasLeads, plans, summary]
+      properties:
+        subscriptionActive:
+          type: boolean
+          description: True when Stripe subscription is active or trialing
+        hasLeads:
+          type: boolean
+          description: True when the user has at least one plan lead
+        plans:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlanLead"
+        summary:
+          $ref: "#/components/schemas/DashboardPlansSummary"
+
+    SubscriptionCheckoutPayload:
+      type: object
+      required: [checkoutUrl, stripeSessionId]
+      properties:
+        checkoutUrl:
+          type: string
+          format: uri
+        stripeSessionId:
+          type: string
+
+    SubscriptionCheckoutStatusResponse:
+      type: object
+      required: [status, subscriptionActive]
+      properties:
+        status:
+          type: string
+          enum: [pending, processing, paid, failed, expired]
+        subscriptionActive:
+          type: boolean
+
     RegisterAndCheckoutInput:
       type: object
       required: [email, password, confirmPassword, termsAccepted]
@@ -692,7 +1098,7 @@ components:
 
     MeResponse:
       type: object
-      required: [id, email, role]
+      required: [id, email, role, hasActiveSubscription]
       properties:
         id:
           type: integer
@@ -707,6 +1113,9 @@ components:
           nullable: true
         role:
           type: string
+        hasActiveSubscription:
+          type: boolean
+          description: True when the user has an active Stripe subscription on file
 
     PatchMeInput:
       type: object
@@ -720,6 +1129,19 @@ components:
           type: string
           minLength: 1
           maxLength: 120
+
+    PatchMePasswordInput:
+      type: object
+      required: [password, confirmPassword]
+      properties:
+        password:
+          type: string
+          minLength: 8
+          maxLength: 20
+        confirmPassword:
+          type: string
+          minLength: 8
+          maxLength: 20
 
     FieldErrorsResponse:
       type: object

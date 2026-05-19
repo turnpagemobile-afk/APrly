@@ -112,14 +112,14 @@ export const OptimizerSection = forwardRef<HTMLElement, OptimizerSectionProps>(
     <section
       ref={ref}
       id="optimizer"
-      className="px-4 py-16 md:py-24 scroll-mt-24"
+      className="scroll-mt-24 px-4 py-16 cabinet:py-24"
     >
-      <div className="container mx-auto max-w-3xl space-y-8">
+      <div className="app-page-marketing min-w-0 max-w-3xl space-y-8">
         <div className="text-center max-w-2xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+          <h2 className="text-2xl font-extrabold tracking-tight cabinet:text-3xl">
             {optimizerContent.title}
           </h2>
-          <p className="mt-3 text-sm md:text-base text-muted-foreground">
+          <p className="mt-3 text-sm text-muted-foreground cabinet:text-base">
             {optimizerContent.subtitle}
           </p>
         </div>
@@ -139,7 +139,7 @@ export const OptimizerSection = forwardRef<HTMLElement, OptimizerSectionProps>(
                 </div>
                 {n < 3 && (
                   <div
-                    className={`h-px w-8 md:w-12 border-t border-dotted ${
+                    className={`h-px w-8 cabinet:w-12 border-t border-dotted ${
                       step > n ? "border-primary" : "border-border/60"
                     }`}
                   />
@@ -147,7 +147,7 @@ export const OptimizerSection = forwardRef<HTMLElement, OptimizerSectionProps>(
               </div>
             ))}
           </div>
-          <p className="text-xs md:text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground cabinet:text-sm">
             {optimizerContent.stepLabels[step]}
           </p>
         </div>

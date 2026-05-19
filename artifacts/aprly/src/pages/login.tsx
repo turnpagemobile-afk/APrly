@@ -50,7 +50,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-md px-4 py-16">
+    <div className="app-page-narrow py-16">
       <h1 className="text-2xl font-bold tracking-tight">Sign in</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         No account yet?{" "}

@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { ApiError } from "@workspace/api-client-react/custom-fetch";
 import {
   getCheckoutSessionStatus,
   getGetCheckoutSessionStatusQueryKey,
+  getGetMeQueryKey,
+  getMe,
   useImportMyCards,
   usePatchMe,
   useRegisterAndCheckout,
@@ -82,6 +84,15 @@ export function SignupCheckoutWizard({
   initialName,
 }: SignupCheckoutWizardProps) {
   const [, navigate] = useLocation();
+  const queryClient = useQueryClient();
+
+  const syncAuthSession = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
+    await queryClient.fetchQuery({
+      queryKey: getGetMeQueryKey(),
+      queryFn: ({ signal }) => getMe({ signal }),
+    });
+  }, [queryClient]);
   const [step, setStep] = useState<Step>(1);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -95,6 +106,8 @@ export function SignupCheckoutWizard({
   const patchMutation = usePatchMe();
   const importCardsMutation = useImportMyCards();
   const cardsImportStartedRef = useRef(false);
+  const sessionSyncedRef = useRef(false);
+  const pendingDashboardNavRef = useRef(false);
 
   const step1Parsed = useMemo(
     () =>
@@ -138,7 +151,15 @@ export function SignupCheckoutWizard({
     setStripeSessionId(null);
     setCheckoutUserEmail(null);
     cardsImportStartedRef.current = false;
+    sessionSyncedRef.current = false;
   }, []);
+
+  useEffect(() => {
+    if (!open && pendingDashboardNavRef.current) {
+      pendingDashboardNavRef.current = false;
+      navigate("/dashboard");
+    }
+  }, [open, navigate]);
 
   useEffect(() => {
     if (!open) {
@@ -162,8 +183,14 @@ export function SignupCheckoutWizard({
     if (d.status === "paid" && d.user?.email) {
       setCheckoutUserEmail(d.user.email);
       setStep(3);
+      if (!sessionSyncedRef.current) {
+        sessionSyncedRef.current = true;
+        void syncAuthSession().catch(() => {
+          sessionSyncedRef.current = false;
+        });
+      }
     }
-  }, [open, step, sessionQuery.data]);
+  }, [open, step, sessionQuery.data, syncAuthSession]);
 
   useEffect(() => {
     if (!open || sessionQuery.data?.status !== "paid") return;
@@ -250,8 +277,9 @@ export function SignupCheckoutWizard({
       await patchMutation.mutateAsync({
         data: { firstName: profileFirst.trim(), lastName: profileLast.trim() },
       });
+      await syncAuthSession();
+      pendingDashboardNavRef.current = true;
       onOpenChange(false);
-      navigate("/dashboard");
     } catch (err: unknown) {
       toast({
         title: "Could not save profile",
@@ -270,7 +298,7 @@ export function SignupCheckoutWizard({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-md">
         <DialogHeader>
           <DialogTitle>
             {step === 1 && "Create account"}
