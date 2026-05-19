@@ -12,4 +12,6 @@ export interface MeResponse {
   firstName?: string | null;
   lastName?: string | null;
   role: string;
+  /** True when the user has an active Stripe subscription on file */
+  hasActiveSubscription: boolean;
 }

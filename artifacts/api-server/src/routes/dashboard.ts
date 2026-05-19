@@ -1,7 +1,9 @@
 import { Router, type IRouter } from "express";
-import { eq } from "drizzle-orm";
-import { GetDashboardSummaryResponse } from "@workspace/api-zod";
-import { db, userCardsTable } from "@workspace/db";
+import { asc, eq } from "drizzle-orm";
+import { GetDashboardSummaryResponse, GetDashboardTabResponse } from "@workspace/api-zod";
+import { db, planLeadsTable, userCardsTable, usersTable } from "@workspace/db";
+import { resolveSubscriptionActive } from "../lib/subscription-status";
+import { mapPlanLeadRow } from "../lib/plan-lead-mapper";
 import { requireAuth } from "../middleware/requireAuth";
 
 const router: IRouter = Router();
@@ -92,6 +94,51 @@ router.get("/dashboard/summary", requireAuth, async (req, res, next) => {
       linkedAccounts,
     });
     res.json(data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/dashboard/tab", requireAuth, async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
+    if (!user) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const subscriptionActive = await resolveSubscriptionActive(user);
+
+    const plans = await db
+      .select()
+      .from(planLeadsTable)
+      .where(eq(planLeadsTable.userId, userId))
+      .orderBy(asc(planLeadsTable.createdAt));
+
+    const mappedPlans = plans.map(mapPlanLeadRow);
+    const totalDebt = mappedPlans.reduce((sum, p) => sum + p.balance, 0);
+    const estimatedAnnualSavings = mappedPlans.reduce(
+      (sum, p) => sum + p.estimatedAnnualSavings,
+      0,
+    );
+
+    res.json(
+      GetDashboardTabResponse.parse({
+        subscriptionActive,
+        hasLeads: mappedPlans.length > 0,
+        plans: mappedPlans,
+        summary: {
+          totalDebt: Math.round(totalDebt * 100) / 100,
+          estimatedAnnualSavings: Math.round(estimatedAnnualSavings * 100) / 100,
+        },
+      }),
+    );
   } catch (err) {
     next(err);
   }

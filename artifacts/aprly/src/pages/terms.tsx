@@ -8,12 +8,12 @@ export default function Terms() {
   }, []);
 
   return (
-    <article className="container mx-auto px-4 py-16 md:py-24 max-w-3xl space-y-8">
+    <article className="app-page-marketing max-w-3xl space-y-8 py-16 cabinet:py-24">
       <header className="space-y-3">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary">
           Legal
         </p>
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight">
+        <h1 className="text-4xl font-black tracking-tight cabinet:text-5xl">
           Terms of Service
         </h1>
         <p className="text-sm text-muted-foreground">

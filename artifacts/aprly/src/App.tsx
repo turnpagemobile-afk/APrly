@@ -11,6 +11,9 @@ import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
+import CreateDetailedPlan from "@/pages/dashboard/create-plan";
+import PlanLeadDetailPage from "@/pages/dashboard/plan-lead-detail";
+import DashboardProfile from "@/pages/dashboard/profile";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +23,21 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/login" component={Login} />
+        <Route path="/dashboard/create-plan">
+          <ProtectedRoute>
+            <CreateDetailedPlan />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/dashboard/profile">
+          <ProtectedRoute>
+            <DashboardProfile />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/dashboard/plan-leads/:id">
+          <ProtectedRoute>
+            <PlanLeadDetailPage />
+          </ProtectedRoute>
+        </Route>
         <Route path="/dashboard">
           <ProtectedRoute>
             <Dashboard />

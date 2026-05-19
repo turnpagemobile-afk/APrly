@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import Stripe from "stripe";
 import { getStripe } from "./stripe-client";
 import { finalizeCheckoutSessionIfNeeded } from "./stripe-checkout-finalize";
+import { finalizeSubscriptionRenewalIfNeeded } from "./stripe-subscription-renewal";
+import { syncUserSubscriptionFromStripe } from "./subscription-status";
 
 export async function handleStripeWebhook(req: Request, res: Response): Promise<void> {
   const secret = process.env["STRIPE_WEBHOOK_SECRET"];
@@ -27,11 +29,16 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    try {
-      await finalizeCheckoutSessionIfNeeded(session);
-    } catch (err) {
-      throw err;
-    }
+    await finalizeCheckoutSessionIfNeeded(session);
+    await finalizeSubscriptionRenewalIfNeeded(session);
+  }
+
+  if (
+    event.type === "customer.subscription.updated" ||
+    event.type === "customer.subscription.deleted"
+  ) {
+    const subscription = event.data.object as Stripe.Subscription;
+    await syncUserSubscriptionFromStripe(subscription);
   }
 
   res.json({ received: true });

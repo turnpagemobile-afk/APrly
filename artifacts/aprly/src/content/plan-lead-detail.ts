@@ -1,0 +1,31 @@
+export const planLeadDetailContent = {
+  backAriaLabel: "Back to dashboard",
+  selectPartner: "Select Partner",
+  sendInfo: "Send info",
+  sending: "Sending…",
+  sendSuccessTitle: "Proposal sent",
+  sendSuccessDescription: "Your hardship proposal was sent to the partner.",
+  sendErrorTitle: "Could not send",
+  sendErrorDescription: "Please try again.",
+  status: {
+    waiting: "Waiting",
+    waitingDescription:
+      "Your plan is ready. Choose a partner and send your hardship package to start negotiation.",
+    inProgress: "In Progress",
+    inProgressDescription: "Your partner is working with the issuer on your hardship request.",
+    won: "Won",
+    denied: "Denied",
+    deniedDescription: "This plan lead was closed. Return to your dashboard to review other accounts.",
+  },
+  metrics: {
+    debt: "Debt",
+    currentRate: "Current rate",
+    estimatedSavings: "Est. Savings",
+    targetRate: "Rate",
+  },
+  partnerSent: (date: string) => `The proposal was sent on ${date}.`,
+  hardshipCtaSoon: "Coming soon",
+  hardshipCtaSoonDescription: "This action will be available in a future release.",
+  loadError: "Could not load this plan.",
+  notFound: "Plan not found.",
+} as const;

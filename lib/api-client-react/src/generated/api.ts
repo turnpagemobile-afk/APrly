@@ -18,10 +18,13 @@ import type {
 
 import type {
   CheckoutSessionStatusResponse,
+  CreateDetailedPlanResponse,
   CreateLeadInput,
   DashboardSummary,
+  DashboardTabContext,
   FieldErrorsResponse,
   GetCheckoutSessionStatusParams,
+  GetSubscriptionCheckoutSessionStatusParams,
   HealthStatus,
   ImportCardsInput,
   ImportCardsResponse,
@@ -30,14 +33,22 @@ import type {
   MeResponse,
   OptimizerInput,
   OptimizerResult,
+  PartnerListResponse,
   PatchMeInput,
+  PatchMePasswordInput,
   PlaidExchangeInput,
   PlaidLinkToken,
   PlaidLinkedAccount,
+  PlanLead,
+  PlanLeadDetail,
   RegisterAndCheckoutInput,
   RegisterAndCheckoutPayload,
+  SendPlanLeadInput,
   SubscribeInput,
   Subscription,
+  SubscriptionCheckoutPayload,
+  SubscriptionCheckoutStatusResponse,
+  UpdatePlanLeadStatusInput,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -616,6 +627,81 @@ export function useGetDashboardSummary<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetDashboardSummaryQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Dashboard tab context — subscription state and whether the user has leads
+ */
+export const getGetDashboardTabUrl = () => {
+  return `/api/dashboard/tab`;
+};
+
+export const getDashboardTab = async (
+  options?: RequestInit,
+): Promise<DashboardTabContext> => {
+  return customFetch<DashboardTabContext>(getGetDashboardTabUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetDashboardTabQueryKey = () => {
+  return [`/api/dashboard/tab`] as const;
+};
+
+export const getGetDashboardTabQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDashboardTab>>,
+  TError = ErrorType<void>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getDashboardTab>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetDashboardTabQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboardTab>>> = ({
+    signal,
+  }) => getDashboardTab({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDashboardTab>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetDashboardTabQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDashboardTab>>
+>;
+export type GetDashboardTabQueryError = ErrorType<void>;
+
+/**
+ * @summary Dashboard tab context — subscription state and whether the user has leads
+ */
+
+export function useGetDashboardTab<
+  TData = Awaited<ReturnType<typeof getDashboardTab>>,
+  TError = ErrorType<void>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getDashboardTab>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetDashboardTabQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -1214,6 +1300,172 @@ export const usePatchMe = <
 };
 
 /**
+ * @summary Delete the authenticated user account
+ */
+export const getDeleteMeUrl = () => {
+  return `/api/auth/me`;
+};
+
+export const deleteMe = async (options?: RequestInit): Promise<void> => {
+  return customFetch<void>(getDeleteMeUrl(), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteMeMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMe>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMe>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["deleteMe"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMe>>,
+    void
+  > = () => {
+    return deleteMe(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteMeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMe>>
+>;
+
+export type DeleteMeMutationError = ErrorType<void>;
+
+/**
+ * @summary Delete the authenticated user account
+ */
+export const useDeleteMe = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMe>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteMe>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getDeleteMeMutationOptions(options));
+};
+
+/**
+ * @summary Change password for the authenticated user
+ */
+export const getPatchMePasswordUrl = () => {
+  return `/api/auth/me/password`;
+};
+
+export const patchMePassword = async (
+  patchMePasswordInput: PatchMePasswordInput,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getPatchMePasswordUrl(), {
+    ...options,
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(patchMePasswordInput),
+  });
+};
+
+export const getPatchMePasswordMutationOptions = <
+  TError = ErrorType<FieldErrorsResponse | void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMePassword>>,
+    TError,
+    { data: BodyType<PatchMePasswordInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchMePassword>>,
+  TError,
+  { data: BodyType<PatchMePasswordInput> },
+  TContext
+> => {
+  const mutationKey = ["patchMePassword"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchMePassword>>,
+    { data: BodyType<PatchMePasswordInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return patchMePassword(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PatchMePasswordMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchMePassword>>
+>;
+export type PatchMePasswordMutationBody = BodyType<PatchMePasswordInput>;
+export type PatchMePasswordMutationError =
+  ErrorType<FieldErrorsResponse | void>;
+
+/**
+ * @summary Change password for the authenticated user
+ */
+export const usePatchMePassword = <
+  TError = ErrorType<FieldErrorsResponse | void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchMePassword>>,
+    TError,
+    { data: BodyType<PatchMePasswordInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof patchMePassword>>,
+  TError,
+  { data: BodyType<PatchMePasswordInput> },
+  TContext
+> => {
+  return useMutation(getPatchMePasswordMutationOptions(options));
+};
+
+/**
  * @summary Import optimizer calculator cards for the authenticated user
  */
 export const getImportMyCardsUrl = () => {
@@ -1298,3 +1550,620 @@ export const useImportMyCards = <
 > => {
   return useMutation(getImportMyCardsMutationOptions(options));
 };
+
+/**
+ * @summary Import cabinet cards and create plan leads from optimizer calculation
+ */
+export const getCreateDetailedPlanUrl = () => {
+  return `/api/me/detailed-plan`;
+};
+
+export const createDetailedPlan = async (
+  importCardsInput: ImportCardsInput,
+  options?: RequestInit,
+): Promise<CreateDetailedPlanResponse> => {
+  return customFetch<CreateDetailedPlanResponse>(getCreateDetailedPlanUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(importCardsInput),
+  });
+};
+
+export const getCreateDetailedPlanMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createDetailedPlan>>,
+    TError,
+    { data: BodyType<ImportCardsInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createDetailedPlan>>,
+  TError,
+  { data: BodyType<ImportCardsInput> },
+  TContext
+> => {
+  const mutationKey = ["createDetailedPlan"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createDetailedPlan>>,
+    { data: BodyType<ImportCardsInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createDetailedPlan(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateDetailedPlanMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createDetailedPlan>>
+>;
+export type CreateDetailedPlanMutationBody = BodyType<ImportCardsInput>;
+export type CreateDetailedPlanMutationError = ErrorType<void>;
+
+/**
+ * @summary Import cabinet cards and create plan leads from optimizer calculation
+ */
+export const useCreateDetailedPlan = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createDetailedPlan>>,
+    TError,
+    { data: BodyType<ImportCardsInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createDetailedPlan>>,
+  TError,
+  { data: BodyType<ImportCardsInput> },
+  TContext
+> => {
+  return useMutation(getCreateDetailedPlanMutationOptions(options));
+};
+
+/**
+ * @summary List partners available for plan lead submission
+ */
+export const getGetPartnersUrl = () => {
+  return `/api/me/partners`;
+};
+
+export const getPartners = async (
+  options?: RequestInit,
+): Promise<PartnerListResponse> => {
+  return customFetch<PartnerListResponse>(getGetPartnersUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetPartnersQueryKey = () => {
+  return [`/api/me/partners`] as const;
+};
+
+export const getGetPartnersQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPartners>>,
+  TError = ErrorType<void>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getPartners>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPartnersQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPartners>>> = ({
+    signal,
+  }) => getPartners({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPartners>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetPartnersQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPartners>>
+>;
+export type GetPartnersQueryError = ErrorType<void>;
+
+/**
+ * @summary List partners available for plan lead submission
+ */
+
+export function useGetPartners<
+  TData = Awaited<ReturnType<typeof getPartners>>,
+  TError = ErrorType<void>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getPartners>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPartnersQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get plan lead detail with partner and hardship portal
+ */
+export const getGetPlanLeadUrl = (id: number) => {
+  return `/api/me/plan-leads/${id}`;
+};
+
+export const getPlanLead = async (
+  id: number,
+  options?: RequestInit,
+): Promise<PlanLeadDetail> => {
+  return customFetch<PlanLeadDetail>(getGetPlanLeadUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetPlanLeadQueryKey = (id: number) => {
+  return [`/api/me/plan-leads/${id}`] as const;
+};
+
+export const getGetPlanLeadQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPlanLead>>,
+  TError = ErrorType<void>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPlanLead>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPlanLeadQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPlanLead>>> = ({
+    signal,
+  }) => getPlanLead(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPlanLead>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetPlanLeadQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPlanLead>>
+>;
+export type GetPlanLeadQueryError = ErrorType<void>;
+
+/**
+ * @summary Get plan lead detail with partner and hardship portal
+ */
+
+export function useGetPlanLead<
+  TData = Awaited<ReturnType<typeof getPlanLead>>,
+  TError = ErrorType<void>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getPlanLead>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetPlanLeadQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Update plan lead lifecycle status
+ */
+export const getUpdatePlanLeadStatusUrl = (id: number) => {
+  return `/api/me/plan-leads/${id}`;
+};
+
+export const updatePlanLeadStatus = async (
+  id: number,
+  updatePlanLeadStatusInput: UpdatePlanLeadStatusInput,
+  options?: RequestInit,
+): Promise<PlanLead> => {
+  return customFetch<PlanLead>(getUpdatePlanLeadStatusUrl(id), {
+    ...options,
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(updatePlanLeadStatusInput),
+  });
+};
+
+export const getUpdatePlanLeadStatusMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updatePlanLeadStatus>>,
+    TError,
+    { id: number; data: BodyType<UpdatePlanLeadStatusInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updatePlanLeadStatus>>,
+  TError,
+  { id: number; data: BodyType<UpdatePlanLeadStatusInput> },
+  TContext
+> => {
+  const mutationKey = ["updatePlanLeadStatus"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updatePlanLeadStatus>>,
+    { id: number; data: BodyType<UpdatePlanLeadStatusInput> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updatePlanLeadStatus(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdatePlanLeadStatusMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updatePlanLeadStatus>>
+>;
+export type UpdatePlanLeadStatusMutationBody =
+  BodyType<UpdatePlanLeadStatusInput>;
+export type UpdatePlanLeadStatusMutationError = ErrorType<void>;
+
+/**
+ * @summary Update plan lead lifecycle status
+ */
+export const useUpdatePlanLeadStatus = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updatePlanLeadStatus>>,
+    TError,
+    { id: number; data: BodyType<UpdatePlanLeadStatusInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updatePlanLeadStatus>>,
+  TError,
+  { id: number; data: BodyType<UpdatePlanLeadStatusInput> },
+  TContext
+> => {
+  return useMutation(getUpdatePlanLeadStatusMutationOptions(options));
+};
+
+/**
+ * @summary Send plan lead to partner (simulated v1)
+ */
+export const getSendPlanLeadUrl = (id: number) => {
+  return `/api/me/plan-leads/${id}/send`;
+};
+
+export const sendPlanLead = async (
+  id: number,
+  sendPlanLeadInput: SendPlanLeadInput,
+  options?: RequestInit,
+): Promise<PlanLeadDetail> => {
+  return customFetch<PlanLeadDetail>(getSendPlanLeadUrl(id), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(sendPlanLeadInput),
+  });
+};
+
+export const getSendPlanLeadMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof sendPlanLead>>,
+    TError,
+    { id: number; data: BodyType<SendPlanLeadInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof sendPlanLead>>,
+  TError,
+  { id: number; data: BodyType<SendPlanLeadInput> },
+  TContext
+> => {
+  const mutationKey = ["sendPlanLead"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof sendPlanLead>>,
+    { id: number; data: BodyType<SendPlanLeadInput> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return sendPlanLead(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SendPlanLeadMutationResult = NonNullable<
+  Awaited<ReturnType<typeof sendPlanLead>>
+>;
+export type SendPlanLeadMutationBody = BodyType<SendPlanLeadInput>;
+export type SendPlanLeadMutationError = ErrorType<void>;
+
+/**
+ * @summary Send plan lead to partner (simulated v1)
+ */
+export const useSendPlanLead = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof sendPlanLead>>,
+    TError,
+    { id: number; data: BodyType<SendPlanLeadInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof sendPlanLead>>,
+  TError,
+  { id: number; data: BodyType<SendPlanLeadInput> },
+  TContext
+> => {
+  return useMutation(getSendPlanLeadMutationOptions(options));
+};
+
+/**
+ * @summary Start Stripe Checkout for subscription renewal (subscription only, no setup fee)
+ */
+export const getCreateSubscriptionCheckoutUrl = () => {
+  return `/api/me/subscription/checkout`;
+};
+
+export const createSubscriptionCheckout = async (
+  options?: RequestInit,
+): Promise<SubscriptionCheckoutPayload> => {
+  return customFetch<SubscriptionCheckoutPayload>(
+    getCreateSubscriptionCheckoutUrl(),
+    {
+      ...options,
+      method: "POST",
+    },
+  );
+};
+
+export const getCreateSubscriptionCheckoutMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createSubscriptionCheckout>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createSubscriptionCheckout>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["createSubscriptionCheckout"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createSubscriptionCheckout>>,
+    void
+  > = () => {
+    return createSubscriptionCheckout(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateSubscriptionCheckoutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createSubscriptionCheckout>>
+>;
+
+export type CreateSubscriptionCheckoutMutationError = ErrorType<void>;
+
+/**
+ * @summary Start Stripe Checkout for subscription renewal (subscription only, no setup fee)
+ */
+export const useCreateSubscriptionCheckout = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createSubscriptionCheckout>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createSubscriptionCheckout>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getCreateSubscriptionCheckoutMutationOptions(options));
+};
+
+/**
+ * @summary Poll subscription checkout; updates user subscription when paid
+ */
+export const getGetSubscriptionCheckoutSessionStatusUrl = (
+  params: GetSubscriptionCheckoutSessionStatusParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/me/subscription/session-status?${stringifiedParams}`
+    : `/api/me/subscription/session-status`;
+};
+
+export const getSubscriptionCheckoutSessionStatus = async (
+  params: GetSubscriptionCheckoutSessionStatusParams,
+  options?: RequestInit,
+): Promise<SubscriptionCheckoutStatusResponse> => {
+  return customFetch<SubscriptionCheckoutStatusResponse>(
+    getGetSubscriptionCheckoutSessionStatusUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getGetSubscriptionCheckoutSessionStatusQueryKey = (
+  params?: GetSubscriptionCheckoutSessionStatusParams,
+) => {
+  return [
+    `/api/me/subscription/session-status`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getGetSubscriptionCheckoutSessionStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getSubscriptionCheckoutSessionStatus>>,
+  TError = ErrorType<void>,
+>(
+  params: GetSubscriptionCheckoutSessionStatusParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getSubscriptionCheckoutSessionStatus>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetSubscriptionCheckoutSessionStatusQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getSubscriptionCheckoutSessionStatus>>
+  > = ({ signal }) =>
+    getSubscriptionCheckoutSessionStatus(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getSubscriptionCheckoutSessionStatus>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetSubscriptionCheckoutSessionStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getSubscriptionCheckoutSessionStatus>>
+>;
+export type GetSubscriptionCheckoutSessionStatusQueryError = ErrorType<void>;
+
+/**
+ * @summary Poll subscription checkout; updates user subscription when paid
+ */
+
+export function useGetSubscriptionCheckoutSessionStatus<
+  TData = Awaited<ReturnType<typeof getSubscriptionCheckoutSessionStatus>>,
+  TError = ErrorType<void>,
+>(
+  params: GetSubscriptionCheckoutSessionStatusParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getSubscriptionCheckoutSessionStatus>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetSubscriptionCheckoutSessionStatusQueryOptions(
+    params,
+    options,
+  );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}

@@ -209,6 +209,101 @@ export interface ImportCardsResponse {
   importedCount: number;
 }
 
+export type PlanLeadStatus =
+  (typeof PlanLeadStatus)[keyof typeof PlanLeadStatus];
+
+export const PlanLeadStatus = {
+  recommended: "recommended",
+  in_progress: "in_progress",
+  won: "won",
+  denied: "denied",
+} as const;
+
+export interface PlanLead {
+  id: number;
+  brand: string;
+  balance: number;
+  currentApr: number;
+  targetApr: number;
+  estimatedAnnualSavings: number;
+  status: PlanLeadStatus;
+  createdAt: string;
+}
+
+export interface DashboardPlansSummary {
+  totalDebt: number;
+  estimatedAnnualSavings: number;
+}
+
+export interface CreateDetailedPlanResponse {
+  /** @minimum 0 */
+  createdCount: number;
+  plans: PlanLead[];
+}
+
+export interface UpdatePlanLeadStatusInput {
+  status: PlanLeadStatus;
+}
+
+export interface Partner {
+  id: number;
+  name: string;
+}
+
+export interface PartnerListResponse {
+  partners: Partner[];
+}
+
+export interface SendPlanLeadInput {
+  /** @minimum 1 */
+  partnerId: number;
+}
+
+export interface PlanLeadDetail {
+  id: number;
+  brand: string;
+  balance: number;
+  currentApr: number;
+  targetApr: number;
+  estimatedAnnualSavings: number;
+  status: PlanLeadStatus;
+  createdAt: string;
+  partnerId?: number | null;
+  sentToPartnerAt?: string | null;
+  partner?: Partner | null;
+  hardshipPortal?: HardshipPortal | null;
+}
+
+export interface DashboardTabContext {
+  /** True when Stripe subscription is active or trialing */
+  subscriptionActive: boolean;
+  /** True when the user has at least one plan lead */
+  hasLeads: boolean;
+  plans: PlanLead[];
+  summary: DashboardPlansSummary;
+}
+
+export interface SubscriptionCheckoutPayload {
+  checkoutUrl: string;
+  stripeSessionId: string;
+}
+
+export type SubscriptionCheckoutStatusResponseStatus =
+  (typeof SubscriptionCheckoutStatusResponseStatus)[keyof typeof SubscriptionCheckoutStatusResponseStatus];
+
+export const SubscriptionCheckoutStatusResponseStatus = {
+  pending: "pending",
+  processing: "processing",
+  paid: "paid",
+  failed: "failed",
+  expired: "expired",
+} as const;
+
+export interface SubscriptionCheckoutStatusResponse {
+  status: SubscriptionCheckoutStatusResponseStatus;
+  subscriptionActive: boolean;
+}
+
 export interface RegisterAndCheckoutInput {
   /** @maxLength 254 */
   email: string;
@@ -267,6 +362,8 @@ export interface MeResponse {
   firstName?: string | null;
   lastName?: string | null;
   role: string;
+  /** True when the user has an active Stripe subscription on file */
+  hasActiveSubscription: boolean;
 }
 
 export interface PatchMeInput {
@@ -282,6 +379,19 @@ export interface PatchMeInput {
   lastName: string;
 }
 
+export interface PatchMePasswordInput {
+  /**
+   * @minLength 8
+   * @maxLength 20
+   */
+  password: string;
+  /**
+   * @minLength 8
+   * @maxLength 20
+   */
+  confirmPassword: string;
+}
+
 export type FieldErrorsResponseFieldErrors = { [key: string]: string[] };
 
 export interface FieldErrorsResponse {
@@ -289,6 +399,13 @@ export interface FieldErrorsResponse {
 }
 
 export type GetCheckoutSessionStatusParams = {
+  /**
+   * @minLength 1
+   */
+  stripeSessionId: string;
+};
+
+export type GetSubscriptionCheckoutSessionStatusParams = {
   /**
    * @minLength 1
    */

@@ -64,6 +64,9 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* 460px = mobile (<460) vs desktop-like (>=460). Not a content max-width. */
+  --breakpoint-cabinet: 28.75rem;
 }
 
 /**
@@ -164,8 +167,15 @@
     @apply border-border;
   }
 
+  html,
+  body,
+  #root {
+    overflow-x: clip;
+    min-width: 0;
+  }
+
   body {
-    @apply font-sans antialiased bg-background text-foreground text-base md:text-[17px];
+    @apply font-sans antialiased bg-background text-foreground text-base cabinet:text-[17px];
   }
 
   .dark body {
@@ -202,6 +212,20 @@
  * Even without handling focused or not, this is six possible combinations that
  * need to be distinguished from eachother visually.
  */
+@layer components {
+  .app-page-cabinet {
+    @apply mx-auto w-full min-w-0 max-w-full px-4 cabinet:max-w-3xl;
+  }
+
+  .app-page-marketing {
+    @apply mx-auto w-full min-w-0 max-w-full px-4 cabinet:max-w-6xl;
+  }
+
+  .app-page-narrow {
+    @apply mx-auto w-full min-w-0 max-w-full px-4 cabinet:max-w-md;
+  }
+}
+
 @layer utilities {
   /* Hide ugly search cancel button in Chrome until we can style it properly */
   input[type="search"]::-webkit-search-cancel-button {

@@ -283,7 +283,7 @@ function HeaderActions({
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const { logout } = useAuth();
-  const isDashboard = location === "/dashboard";
+  const isDashboard = location === "/dashboard" || location.startsWith("/dashboard/");
 
   const goToAnchor = (href: string) => {
     if (!href.startsWith("#")) {
@@ -306,6 +306,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background text-foreground">
+      {!isDashboard ? (
       <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <Link
@@ -318,9 +319,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
 
-          {!isDashboard ? (
-            <nav
-              className="hidden md:flex items-center gap-7 text-sm font-semibold text-primary"
+          <nav
+              className="hidden cabinet:flex items-center gap-7 text-sm font-semibold text-primary"
               aria-label="Primary"
             >
               {navContent.links.map((link) => (
@@ -334,28 +334,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </button>
               ))}
             </nav>
-          ) : (
-            <div className="hidden md:block flex-1" aria-hidden="true" />
-          )}
 
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden" aria-hidden="true">
               <VoiceAssistant />
             </div>
             <HeaderActions
-              isDashboard={isDashboard}
+              isDashboard={false}
               onSignOut={() => void logout()}
               onGetStarted={() => goToAnchor(navContent.getStarted.target)}
             />
           </div>
         </div>
       </header>
+      ) : null}
 
       <main className="flex-1">{children}</main>
 
-      <footer className="border-t border-border/60 bg-card text-card-foreground py-8 mt-16">
+      <footer
+        className={`border-t border-border/60 bg-card text-card-foreground py-8 ${isDashboard ? "mt-0" : "mt-16"}`}
+      >
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-muted-foreground text-sm">
+          <div className="flex flex-col cabinet:flex-row justify-between items-center gap-4 text-muted-foreground text-sm">
             <nav
               className="flex items-center gap-6 text-primary font-semibold"
               aria-label="Footer"
@@ -370,7 +370,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
               ))}
             </nav>
-            <div className="text-center md:text-right">{copyright}</div>
+            <div className="text-center cabinet:text-right">{copyright}</div>
           </div>
         </div>
       </footer>

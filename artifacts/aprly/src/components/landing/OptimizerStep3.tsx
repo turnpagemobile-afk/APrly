@@ -85,31 +85,31 @@ export function OptimizerStep3({
       transition={{ duration: 0.35 }}
       className="space-y-8"
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 cabinet:grid-cols-3 gap-6">
         <Card className="bg-card border-border/50 @container min-w-0">
-          <CardContent className="p-6 md:p-8 flex items-center justify-between gap-3 min-w-0">
+          <CardContent className="p-6 cabinet:p-8 flex items-center justify-between gap-3 min-w-0">
             <div className="min-w-0 flex-1 pr-1">
               <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-2">
                 Total Debt
               </p>
-              <p className="text-[clamp(1.35rem,4cqi+0.85rem,3.1rem)] md:text-[clamp(1.5rem,5cqi+0.75rem,3.25rem)] font-black leading-[1.05]">
+              <p className="text-[clamp(1.35rem,4cqi+0.85rem,3.1rem)] cabinet:text-[clamp(1.5rem,5cqi+0.75rem,3.25rem)] font-black leading-[1.05]">
                 <AnimatedNumber value={totalDebtAmount} />
               </p>
             </div>
-            <div className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-              <CreditCard className="h-6 w-6 md:h-7 md:w-7 text-destructive" />
+            <div className="h-12 w-12 cabinet:h-14 cabinet:w-14 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+              <CreditCard className="h-6 w-6 cabinet:h-7 cabinet:w-7 text-destructive" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-destructive/30 md:col-span-2 relative overflow-hidden min-w-0 @container">
+        <Card className="bg-card border-destructive/30 cabinet:col-span-2 relative overflow-hidden min-w-0 @container">
           <div className="absolute inset-0 bg-destructive/5" />
-          <CardContent className="p-6 md:p-8 flex items-center justify-between relative z-10 gap-4 min-w-0">
+          <CardContent className="p-6 cabinet:p-8 flex items-center justify-between relative z-10 gap-4 min-w-0">
             <div className="min-w-0 flex-1">
               <p className="text-xs font-bold text-destructive uppercase tracking-[0.2em] mb-2">
                 Daily Interest Waste
               </p>
-              <p className="text-[clamp(1.5rem,3.5cqi+1.1rem,3.75rem)] md:text-[clamp(1.75rem,4cqi+1rem,3.85rem)] font-black leading-none">
+              <p className="text-[clamp(1.5rem,3.5cqi+1.1rem,3.75rem)] cabinet:text-[clamp(1.75rem,4cqi+1rem,3.85rem)] font-black leading-none">
                 {showSkeleton ? (
                   <Skeleton className="h-14 w-56 max-w-full bg-card/60" />
                 ) : (
@@ -130,7 +130,7 @@ export function OptimizerStep3({
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 cabinet:grid-cols-2 gap-6">
         <Card className="bg-card border-primary/30 relative overflow-hidden min-w-0 @container">
           <div className="absolute inset-0 bg-primary/5" />
           <CardContent className="p-6 relative z-10 flex items-center justify-between gap-4 min-w-0">
@@ -138,7 +138,7 @@ export function OptimizerStep3({
               <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-2">
                 Monthly Savings
               </p>
-              <p className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] md:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
+              <p className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] cabinet:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
                 {showSkeleton ? (
                   <Skeleton className="h-9 w-40 max-w-full bg-card/60" />
                 ) : (
@@ -159,7 +159,7 @@ export function OptimizerStep3({
               <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-2">
                 Annual Savings
               </p>
-              <p className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] md:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
+              <p className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] cabinet:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
                 {showSkeleton ? (
                   <Skeleton className="h-9 w-40 max-w-full bg-card/60" />
                 ) : (

@@ -7,6 +7,9 @@ services:
       POSTGRES_DB: aprly
     ports:
       - "5433:5432"
+    volumes:
+      # Without this, `docker compose down` / recreate `db` wipes all users and data.
+      - aprly-pgdata-dev:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d aprly"]
       interval: 5s
@@ -108,3 +111,4 @@ services:
 
 volumes:
   app-node-modules:
+  aprly-pgdata-dev:

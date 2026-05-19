@@ -21,12 +21,14 @@ type AuthUser = {
   firstName: string | null;
   lastName: string | null;
   role: string;
+  hasActiveSubscription: boolean;
 };
 
 type AuthContextValue = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isAuthPending: boolean;
   logout: () => Promise<void>;
 };
 
@@ -83,13 +85,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         firstName: meQuery.data.firstName ?? null,
         lastName: meQuery.data.lastName ?? null,
         role: meQuery.data.role,
+        hasActiveSubscription: meQuery.data.hasActiveSubscription,
       }
     : null;
+
+  // Only block routes on the initial session load. Background refetches (e.g. from
+  // dashboard subscription refresh) must not unmount protected pages — that caused
+  // an invalidate → isFetching → loader → remount loop.
+  const isAuthPending = meQuery.isLoading && !meQuery.data;
 
   const value: AuthContextValue = {
     user,
     isAuthenticated: Boolean(meQuery.data),
     isLoading: meQuery.isLoading,
+    isAuthPending,
     logout,
   };
 

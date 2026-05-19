@@ -15,6 +15,20 @@
       "when": 1778800000000,
       "tag": "0001_user_cards",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779000000000,
+      "tag": "0002_plan_leads",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1779100000000,
+      "tag": "0003_partners_and_plan_lead_send",
+      "breakpoints": true
     }
   ]
 }
