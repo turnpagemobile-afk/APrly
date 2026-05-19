@@ -10,11 +10,11 @@ import type { ImportCardItemSource } from "./importCardItemSource";
 export interface ImportCardItem {
   /** @minLength 1 */
   brand: string;
-  /** @minimum 0 */
+  /** @exclusiveMinimum 0 */
   balance: number;
   /**
-   * @minimum 0
    * @maximum 100
+   * @exclusiveMinimum 0
    */
   rate: number;
   accountId?: string;

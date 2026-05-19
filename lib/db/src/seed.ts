@@ -1,4 +1,6 @@
-import { db, leadsTable, partnersTable, pool } from "./index";
+import "./load-env.js";
+import bcrypt from "bcryptjs";
+import { db, leadsTable, partnersTable, usersTable, pool } from "./index";
 
 const SEED_LEADS = [
   {
@@ -21,6 +23,43 @@ const SEED_LEADS = [
   },
 ] as const;
 
+const ADMIN_EMAIL = (process.env["ADMIN_SEED_EMAIL"] ?? "super.admin@aprly.ai")
+  .trim()
+  .toLowerCase();
+const ADMIN_PASSWORD = process.env["ADMIN_SEED_PASSWORD"] ?? "";
+
+async function seedAdmin(): Promise<void> {
+  if (!ADMIN_PASSWORD) {
+    console.log("[seed] skip admin user (set ADMIN_SEED_PASSWORD in .env)");
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
+  const [row] = await db
+    .insert(usersTable)
+    .values({
+      email: ADMIN_EMAIL,
+      passwordHash,
+      firstName: "Super",
+      lastName: "Admin",
+      role: "admin",
+    })
+    .onConflictDoUpdate({
+      target: usersTable.email,
+      set: {
+        firstName: "Super",
+        lastName: "Admin",
+        role: "admin",
+        passwordHash,
+      },
+    })
+    .returning({ id: usersTable.id, email: usersTable.email });
+
+  if (row) {
+    console.log(`[seed] admin user id=${row.id} email=${row.email}`);
+  }
+}
+
 async function main(): Promise<void> {
   const partnerRows = await db
     .insert(partnersTable)
@@ -31,6 +70,8 @@ async function main(): Promise<void> {
   if (partnerRows.length > 0) {
     console.log(`[seed] inserted partner id=${partnerRows[0]!.id}`);
   }
+
+  await seedAdmin();
 
   console.log(`[seed] inserting ${SEED_LEADS.length} demo leads (ON CONFLICT DO NOTHING)`);
 
@@ -48,7 +89,7 @@ async function main(): Promise<void> {
     }
   }
 
-  console.log(`[seed] done (${inserted.length} new lead(s))`);
+  console.log(`[seed] done (${inserted.length} new marketing lead(s))`);
 }
 
 main()

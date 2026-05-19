@@ -9,6 +9,12 @@ import type { HardshipPortal } from "./hardshipPortal";
 import type { Partner } from "./partner";
 import type { PlanLeadStatus } from "./planLeadStatus";
 
+/**
+ * Plan lead snapshot. For status `recommended`, partner fields are null.
+After POST .../send (`in_progress` or later `won`), partnerId, sentToPartnerAt,
+and partner are always set; hardshipPortal is included for in_progress and won.
+
+ */
 export interface PlanLeadDetail {
   id: number;
   brand: string;

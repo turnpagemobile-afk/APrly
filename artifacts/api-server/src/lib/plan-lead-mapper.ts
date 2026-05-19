@@ -1,4 +1,5 @@
 import type { HardshipPortal } from "./build-hardship-portal";
+import { warnIfSentLeadMissingPartnerFields } from "./plan-lead-validation";
 import type { PlanLead as PlanLeadRow } from "@workspace/db";
 
 type Partner = { id: number; name: string };
@@ -23,6 +24,8 @@ export function mapPlanLeadDetail(
     hardshipPortal?: HardshipPortal | null;
   },
 ) {
+  warnIfSentLeadMissingPartnerFields(row, options?.partner ?? null);
+
   return {
     ...mapPlanLeadRow(row),
     partnerId: row.partnerId ?? null,

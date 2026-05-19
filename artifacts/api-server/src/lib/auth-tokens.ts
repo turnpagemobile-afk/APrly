@@ -27,6 +27,39 @@ export function signAccessToken(userId: number, role: string): string {
   });
 }
 
+const ADMIN_OTP_TTL_SEC = 600;
+
+export function signAdminOtpChallengeToken(userId: number): string {
+  return jwt.sign({ sub: String(userId), typ: "admin_otp_pending" }, jwtSecret(), {
+    expiresIn: ADMIN_OTP_TTL_SEC,
+    algorithm: "HS256",
+  });
+}
+
+export function verifyAdminOtpChallengeToken(
+  token: string,
+): { userId: number } | null {
+  try {
+    const payload = jwt.verify(token, jwtSecret(), {
+      algorithms: ["HS256"],
+    }) as jwt.JwtPayload;
+    if (payload["typ"] !== "admin_otp_pending" || typeof payload["sub"] !== "string") {
+      return null;
+    }
+    const userId = Number(payload["sub"]);
+    if (!Number.isFinite(userId) || userId < 1) {
+      return null;
+    }
+    return { userId };
+  } catch {
+    return null;
+  }
+}
+
+export function adminOtpExpiresInSeconds(): number {
+  return ADMIN_OTP_TTL_SEC;
+}
+
 export function verifyAccessToken(token: string): { userId: number; role: string } | null {
   try {
     const payload = jwt.verify(token, jwtSecret(), {
