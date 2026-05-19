@@ -188,11 +188,11 @@ export const ImportCardItemSource = {
 export interface ImportCardItem {
   /** @minLength 1 */
   brand: string;
-  /** @minimum 0 */
+  /** @exclusiveMinimum 0 */
   balance: number;
   /**
-   * @minimum 0
    * @maximum 100
+   * @exclusiveMinimum 0
    */
   rate: number;
   accountId?: string;
@@ -259,6 +259,12 @@ export interface SendPlanLeadInput {
   partnerId: number;
 }
 
+/**
+ * Plan lead snapshot. For status `recommended`, partner fields are null.
+After POST .../send (`in_progress` or later `won`), partnerId, sentToPartnerAt,
+and partner are always set; hardshipPortal is included for in_progress and won.
+
+ */
 export interface PlanLeadDetail {
   id: number;
   brand: string;

@@ -15,6 +15,7 @@ import { requireAuth } from "../middleware/requireAuth";
 import { CABINET_TARGET_APR, calculateAnnualSavings } from "../lib/optimizer-math";
 import { buildHardshipPortal } from "../lib/build-hardship-portal";
 import { mapPlanLeadDetail, mapPlanLeadRow } from "../lib/plan-lead-mapper";
+import { isValidImportCardForPlanLead } from "../lib/plan-lead-validation";
 
 const router: IRouter = Router();
 
@@ -212,6 +213,16 @@ router.post("/me/detailed-plan", requireAuth, async (req, res, next) => {
     }
 
     const { cards } = parsed.data;
+
+    for (const card of cards) {
+      if (!isValidImportCardForPlanLead(card)) {
+        res.status(400).json({
+          error: "Each card must have a non-empty brand, balance greater than 0, and rate greater than 0",
+        });
+        return;
+      }
+    }
+
     let createdCount = 0;
 
     await db.transaction(async (tx) => {

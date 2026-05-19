@@ -831,10 +831,10 @@ components:
           minLength: 1
         balance:
           type: number
-          minimum: 0
+          exclusiveMinimum: 0
         rate:
           type: number
-          minimum: 0
+          exclusiveMinimum: 0
           maximum: 100
         accountId:
           type: string
@@ -950,6 +950,10 @@ components:
 
     PlanLeadDetail:
       type: object
+      description: |
+        Plan lead snapshot. For status `recommended`, partner fields are null.
+        After POST .../send (`in_progress` or later `won`), partnerId, sentToPartnerAt,
+        and partner are always set; hardshipPortal is included for in_progress and won.
       required:
         - id
         - brand
