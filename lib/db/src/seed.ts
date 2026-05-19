@@ -30,7 +30,9 @@ const ADMIN_PASSWORD = process.env["ADMIN_SEED_PASSWORD"] ?? "";
 
 async function seedAdmin(): Promise<void> {
   if (!ADMIN_PASSWORD) {
-    console.log("[seed] skip admin user (set ADMIN_SEED_PASSWORD in .env)");
+    console.log(
+      "[seed] skip admin user (ADMIN_SEED_PASSWORD is empty — set it in .env.prod and pass it to the db-seed container)",
+    );
     return;
   }
 

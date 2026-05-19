@@ -11,6 +11,9 @@ Quick reference for operating the production droplet.
   routes: `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV` (`sandbox` /
   `development` / `production`). Optional: `PLAID_REDIRECT_URI` (required for
   some Link flows once DNS/TLS is live).
+- Super admin seed (passed into the `db-seed` container via compose):
+  `ADMIN_SEED_EMAIL` (default `super.admin@aprly.ai`) and **`ADMIN_SEED_PASSWORD`**
+  (required — if empty, seed skips admin and `/admin/login` will always 401).
 - Public listener: `nginx` container on **TCP 80** (legacy `http://<IP>/`) and **TCP 443** (HTTPS for `https://134-122-126-71.nip.io/` — Stripe / Plaid / cookies).
 - TLS files on host: `/var/www/aprly/nginx-ssl/` (`fullchain.pem`, `privkey.pem`). Until real certs exist, the image entrypoint drops a **short-lived self-signed** pair so nginx can bind `:443` (replace after Certbot; see **HTTPS** below).
 - ACME webroot on host: `/var/www/aprly/certbot-www/` — used for Let's Encrypt **HTTP-01** (mounted read-only into nginx).
@@ -89,7 +92,7 @@ After rollback, fix the bug on `petrychenko_dev` and merge a forward fix to
 | --- | --- |
 | Open psql | `$COMPOSE exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"` |
 | Re-run migrations only | `$COMPOSE --profile ops run --rm db-migrate` (applies SQL from `lib/db/migrations/` via `drizzle-kit migrate`) |
-| Re-run seed only | `$COMPOSE --profile ops run --rm db-seed` |
+| Re-run seed only | `$COMPOSE --profile ops run --rm db-seed` (check logs for `[seed] admin user id=…`; `skip admin user` means `ADMIN_SEED_PASSWORD` was not passed into the container) |
 | Quick row count | `$COMPOSE exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c 'SELECT count(*) FROM leads;'` |
 | Backup (tar+psql dump) | `$COMPOSE exec db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > /var/www/aprly/backups/aprly-$(date -u +%Y%m%dT%H%M%SZ).sql` |
 
