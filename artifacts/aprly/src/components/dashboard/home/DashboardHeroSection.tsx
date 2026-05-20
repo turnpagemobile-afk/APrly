@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { dashboardHeroContent } from "@/content/dashboard-home";
+import { useCabinetPwaContext } from "@/lib/pwa/cabinet-pwa-context";
 import { createPlanHref } from "@/lib/create-plan-navigation";
 import { Button } from "@/components/ui/button";
 
@@ -8,6 +9,14 @@ type DashboardHeroSectionProps = {
 };
 
 export function DashboardHeroSection({ subscriptionActive }: DashboardHeroSectionProps) {
+  const { isOffline } = useCabinetPwaContext();
+  const auditDisabled = !subscriptionActive || isOffline;
+  const auditDisabledTitle = !subscriptionActive
+    ? dashboardHeroContent.disabledNoSubscription
+    : isOffline
+      ? dashboardHeroContent.disabledOffline
+      : undefined;
+
   return (
     <section className="px-4 py-10 text-center">
       <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-foreground sm:text-4xl">
@@ -17,7 +26,7 @@ export function DashboardHeroSection({ subscriptionActive }: DashboardHeroSectio
       <p className="mx-auto mt-6 max-w-sm text-sm font-medium leading-relaxed text-foreground/90">
         {dashboardHeroContent.subtitle}
       </p>
-      {subscriptionActive ? (
+      {subscriptionActive && !isOffline ? (
         <Button
           type="button"
           size="lg"
@@ -31,8 +40,8 @@ export function DashboardHeroSection({ subscriptionActive }: DashboardHeroSectio
           type="button"
           size="lg"
           className="mt-8 w-full min-w-0 font-semibold cabinet:w-auto cabinet:min-w-[10rem]"
-          disabled
-          title={dashboardHeroContent.disabledNoSubscription}
+          disabled={auditDisabled}
+          title={auditDisabledTitle}
         >
           {dashboardHeroContent.cta.label}
         </Button>

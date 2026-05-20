@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { DashboardTabBar, type DashboardTab } from "@/components/dashboard/DashboardTabBar";
 import { DashboardUserMenu } from "@/components/dashboard/DashboardUserMenu";
 import { createPlanHref } from "@/lib/create-plan-navigation";
+import { CabinetPwaProvider, useCabinetPwaContext } from "@/lib/pwa/cabinet-pwa-context";
+import { CabinetOfflineBanner } from "@/components/dashboard/CabinetOfflineBanner";
 
 type DashboardShellProps = {
   activeTab: DashboardTab;
@@ -16,7 +18,7 @@ type DashboardShellProps = {
   children: ReactNode;
 };
 
-export function DashboardShell({
+function DashboardShellInner({
   activeTab,
   onTabChange,
   showTabs = true,
@@ -25,8 +27,11 @@ export function DashboardShell({
   isCheckoutLoading = false,
   children,
 }: DashboardShellProps) {
+  const { isOffline } = useCabinetPwaContext();
+
   return (
     <div className="flex w-full flex-col bg-background text-foreground">
+      <CabinetOfflineBanner visible={isOffline} />
       <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="app-page-cabinet flex h-14 items-center justify-between gap-3">
           <Link
@@ -85,5 +90,13 @@ export function DashboardShell({
         {children}
       </div>
     </div>
+  );
+}
+
+export function DashboardShell(props: DashboardShellProps) {
+  return (
+    <CabinetPwaProvider>
+      <DashboardShellInner {...props} />
+    </CabinetPwaProvider>
   );
 }

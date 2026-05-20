@@ -4,10 +4,22 @@
 
 export const dashboardPromoContent = {
   title: "APRly. Sync Everywhere.",
-  body: "Full APRly experience on both iOS and Android. Get easy access to APRly in a way that works best for you.",
-  cta: { label: "Download APRly App" },
-  disabledNoSubscription: "Activate your APRly subscription to download the app.",
-  disabledComingSoon: "App store links coming soon",
+  body: "Install APRly on your home screen for quick access to your wealth cockpit — no app store required.",
+  cta: { label: "Install APRly App" },
+  ctaInstalled: "Installed on this device",
+  ctaIos: "Add to Home Screen",
+  disabledNoSubscription: "Activate your APRly subscription to install the app.",
+  disabledOffline: "Connect to the internet to install the app.",
+  disabledInstallUnavailable:
+    "Install is not available in this browser yet. Try Chrome or Edge on desktop, or Safari on iPhone.",
+  offlineBanner:
+    "You are offline. Reconnect to use audits, plans, and partner tools.",
+  iosInstallTitle: "Install on iPhone or iPad",
+  iosInstallSteps: [
+    "Tap the Share button in Safari (square with an arrow).",
+    'Choose "Add to Home Screen".',
+    "Tap Add — APRly opens from your home screen like an app.",
+  ],
 } as const;
 
 export const dashboardHeroContent = {
@@ -17,6 +29,7 @@ export const dashboardHeroContent = {
     "APRly is the wealth cockpit that hunts down credit card and personal loan interest — and gives it back.",
   cta: { label: "Start Audit" },
   disabledNoSubscription: "Activate your APRly subscription to start an audit.",
+  disabledOffline: "Connect to the internet to start an audit.",
 } as const;
 
 export const dashboardStatsContent = [

@@ -16,6 +16,8 @@ import { accountsAreComplete } from "@/components/landing/optimizerAccounts";
 import { createPlanContent } from "@/content/create-plan";
 import { dashboardSummaryContent } from "@/content/dashboard-home";
 import { useDashboardSubscription } from "@/lib/use-dashboard-subscription";
+import { requireOnlineForCabinetAction } from "@/lib/pwa/use-cabinet-pwa";
+import { dashboardPromoContent } from "@/content/dashboard-home";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 
@@ -59,6 +61,13 @@ export default function CreateDetailedPlanPage() {
   };
 
   const onContinue = async () => {
+    if (!requireOnlineForCabinetAction()) {
+      toast({
+        title: dashboardPromoContent.offlineBanner,
+        variant: "destructive",
+      });
+      return;
+    }
     const cards = mapCardEntriesToImportItems(accounts);
     if (!cards.length) return;
 
@@ -118,7 +127,16 @@ export default function CreateDetailedPlanPage() {
             variant="outline"
             className="w-full max-w-md font-semibold"
             disabled={plaidBusy}
-            onClick={() => void startPlaid()}
+            onClick={() => {
+              if (!requireOnlineForCabinetAction()) {
+                toast({
+                  title: dashboardPromoContent.offlineBanner,
+                  variant: "destructive",
+                });
+                return;
+              }
+              void startPlaid();
+            }}
           >
             {plaidBusy ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
