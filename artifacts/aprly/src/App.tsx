@@ -1,4 +1,6 @@
-import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
+import { useEffect } from "react";
+import { Switch, Route, Router as WouterRouter, Redirect, useLocation } from "wouter";
+import { releaseDialogScrollLock } from "@/lib/release-dialog-scroll-lock";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +27,14 @@ import AdminPlanLeadDetailPage from "@/pages/admin/plan-lead-detail";
 import AdminSubscriptionPage from "@/pages/admin/subscription";
 
 const queryClient = new QueryClient();
+
+function ScrollLockRouteGuard() {
+  const [location] = useLocation();
+  useEffect(() => {
+    releaseDialogScrollLock();
+  }, [location]);
+  return null;
+}
 
 function Router() {
   return (
@@ -86,6 +96,7 @@ function App() {
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <AuthProvider>
+            <ScrollLockRouteGuard />
             <Router />
           </AuthProvider>
         </WouterRouter>

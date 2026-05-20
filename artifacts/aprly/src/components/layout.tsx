@@ -268,7 +268,7 @@ function HeaderActions({
         type="button"
         size="sm"
         variant="outline"
-        className="hidden sm:inline-flex font-semibold"
+        className="inline-flex font-semibold"
         asChild
       >
         <Link href={navContent.logIn.href}>{navContent.logIn.label}</Link>
