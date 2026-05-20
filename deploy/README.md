@@ -44,24 +44,46 @@ COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
   `petrychenko_dev`. Pragmatic typecheck and sanity builds.
 - `deploy` (`.github/workflows/deploy.yml`) auto-triggers when `validate`
   finishes successfully on `main`. Also exposed as `workflow_dispatch`.
-- Deploy script: `git fetch + reset --hard origin/main` -> `compose --profile ops build` (includes **`aprly-migrate`**) ->
-  `up -d` -> `db-migrate` -> `db-seed` -> healthcheck `https://134-122-126-71.nip.io/api/healthz`.
+- Deploy script: `git fetch + reset --hard origin/main` -> sequential `build` (`api-server`, `frontend`, `db-migrate`) with
+  `COMPOSE_PARALLEL_LIMIT=1` -> `up -d` -> `db-migrate` -> `db-seed` -> healthcheck `https://aprly.ai/api/healthz`.
+- SSH step timeout **45m** (job **50m**). Full log append: `/var/www/aprly/.deploy-last.log`.
 
 ## Manual deployment (when CI is unavailable)
 
+**Always update git before `compose build`** — Docker builds whatever is on disk; without `git reset` you rebuild old code.
+
 ```bash
 cd /var/www/aprly
+export COMPOSE_PARALLEL_LIMIT=1
+COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
+
 git fetch --all --prune
 git checkout main
 git reset --hard origin/main
-$COMPOSE --profile ops build
+git log -1 --oneline
+
+$COMPOSE build api-server
+$COMPOSE build frontend
+$COMPOSE --profile ops build db-migrate
 $COMPOSE up -d
 $COMPOSE --profile ops run --rm db-migrate
 $COMPOSE --profile ops run --rm db-seed
-curl -fsS https://134-122-126-71.nip.io/api/healthz && echo OK
+curl -fsS https://aprly.ai/api/healthz && echo OK
 # Legacy HTTP by IP (still served on port 80 default_server):
 curl -fsS http://134.122.126.71/api/healthz && echo OK
 ```
+
+## Troubleshooting deploy
+
+| Symptom | What to do |
+| --- | --- |
+| GitHub Actions SSH step failed; UI log won't expand / no Download archive | SSH to droplet: `tail -100 /var/www/aprly/.deploy-last.log` |
+| `ERR_PNPM_META_FETCH_FAIL`, `ECONNRESET` during `api-server` build | Unstable npm from droplet; retry `$COMPOSE build api-server`. Check `curl -I https://registry.npmjs.org` |
+| Build succeeded but site old | You skipped `git reset --hard origin/main` before build |
+| `Killed` / exit 137 during build | OOM on 1 vCPU / 2 GB VPS; use `COMPOSE_PARALLEL_LIMIT=1`, retry off-peak |
+| Missing PDF logo | Not `local_docs/` (gitignored). Asset: `artifacts/api-server/assets/aprly-logo.png` on `main` |
+
+First prod build after a Dockerfile change can take **30–45+ minutes** on the small droplet; later builds use Docker layer cache.
 
 ## Rolling back
 
@@ -77,9 +99,13 @@ Two equivalent paths.
 
 ```bash
 cd /var/www/aprly
+export COMPOSE_PARALLEL_LIMIT=1
+COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
 git log --oneline -10                 # find the good commit
 git reset --hard <SHA>
-$COMPOSE --profile ops build
+$COMPOSE build api-server
+$COMPOSE build frontend
+$COMPOSE --profile ops build db-migrate
 $COMPOSE up -d
 ```
 

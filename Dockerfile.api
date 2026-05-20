@@ -48,6 +48,8 @@ NODE
 # Root package.json preinstall checks npm_config_user_agent for "pnpm/*"; some
 # Corepack/Docker combinations omit it when spawning the preinstall shell.
 ENV npm_config_user_agent="pnpm/10.33.4 npm/? node/v24.0.0"
+ENV npm_config_fetch_retries=5
+ENV npm_config_fetch_timeout=600000
 
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile
@@ -62,14 +64,13 @@ COPY . .
 
 RUN pnpm --filter @workspace/api-server run build
 
-# pdfkit/fontkit are esbuild-externals; ship their runtime deps beside the bundle.
-FROM deps AS deploy
-WORKDIR /app
-COPY . .
-RUN pnpm --filter @workspace/api-server deploy --prod --legacy /deploy/api-server
+# pdfkit/fontkit are esbuild-externals; ship prod runtime deps beside the bundle.
+# Reuse the pnpm store cache from deps — avoids a second full registry resolve.
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm --filter @workspace/api-server deploy --prod --legacy /deploy/api-server
 
 # ─────────────────────────────────────────────────────────────────────
-# runtime: bundle + externals (pdfkit) from deploy output
+# runtime: bundle + externals (pdfkit) from builder output
 # ─────────────────────────────────────────────────────────────────────
 FROM node:24-slim AS runtime
 
@@ -81,7 +82,7 @@ RUN groupadd --system --gid 10001 app \
 
 WORKDIR /app
 
-COPY --from=deploy --chown=app:app /deploy/api-server/node_modules ./node_modules
+COPY --from=builder --chown=app:app /deploy/api-server/node_modules ./node_modules
 COPY --from=builder --chown=app:app /app/artifacts/api-server/dist ./dist
 COPY --from=builder --chown=app:app /app/artifacts/api-server/assets/aprly-logo.png ./assets/aprly-logo.png
 
