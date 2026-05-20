@@ -59,6 +59,8 @@ export function mapAdminPlanLeadDetail(
     status: row.status,
     displayStatus,
     createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+    displayStatusChangedAt: row.displayStatusChangedAt.toISOString(),
     sentToPartnerAt: row.sentToPartnerAt?.toISOString() ?? null,
     partnerAcceptedAt: row.partnerAcceptedAt?.toISOString() ?? null,
     hardshipStepsCompleted: row.hardshipStepsCompleted,

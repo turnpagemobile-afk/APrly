@@ -10,6 +10,7 @@ import {
 } from "@workspace/api-zod";
 import { db, partnersTable, planLeadsTable, usersTable } from "@workspace/db";
 import { mapAdminPlanLeadDetail } from "../lib/admin-plan-lead-mapper";
+import { buildPlanLeadPdfBuffer } from "../lib/plan-lead-pdf";
 import { HARDSHIP_STEPS_TOTAL } from "../lib/hardship-steps";
 import { USER_ROLE } from "../lib/user-roles";
 import { requireAdmin } from "../middleware/requireAdmin";
@@ -114,6 +115,36 @@ router.get("/admin/partners/:partnerId/leads/:planId", ...requireAdmin, async (r
   }
 });
 
+router.get("/admin/plan-leads/:planId/pdf", ...requireAdmin, async (req, res, next) => {
+  try {
+    const planId = Number(req.params.planId);
+    if (!Number.isInteger(planId) || planId < 1) {
+      res.status(400).json({ error: "Invalid plan id" });
+      return;
+    }
+    const row = await loadPlanLead(planId);
+    if (!row) {
+      res.status(404).json({ error: "Plan lead not found" });
+      return;
+    }
+    const user = await loadUser(row.userId);
+    if (!user) {
+      res.status(404).json({ error: "Plan lead not found" });
+      return;
+    }
+    const partner = await loadPartner(row.partnerId);
+    const pdf = await buildPlanLeadPdfBuffer({ lead: row, user, partner });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="aprly-plan-lead-${planId}.pdf"`,
+    );
+    res.send(pdf);
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post("/admin/plan-leads/:planId/start-working", ...requireAdmin, async (req, res, next) => {
   try {
     const parsed = PostAdminPlanLeadStartWorkingParams.safeParse({ planId: req.params.planId });
@@ -142,6 +173,7 @@ router.post("/admin/plan-leads/:planId/start-working", ...requireAdmin, async (r
       .set({
         partnerAcceptedAt: now,
         hardshipStepsCompleted: 0,
+        displayStatusChangedAt: now,
         updatedAt: now,
       })
       .where(eq(planLeadsTable.id, planId));
@@ -183,7 +215,12 @@ router.post("/admin/plan-leads/:planId/complete-step", ...requireAdmin, async (r
     const now = new Date();
     const updates =
       nextSteps >= HARDSHIP_STEPS_TOTAL
-        ? { hardshipStepsCompleted: HARDSHIP_STEPS_TOTAL, status: "won" as const, updatedAt: now }
+        ? {
+            hardshipStepsCompleted: HARDSHIP_STEPS_TOTAL,
+            status: "won" as const,
+            displayStatusChangedAt: now,
+            updatedAt: now,
+          }
         : { hardshipStepsCompleted: nextSteps, updatedAt: now };
 
     await db.update(planLeadsTable).set(updates).where(eq(planLeadsTable.id, planId));
@@ -220,7 +257,7 @@ router.post("/admin/plan-leads/:planId/reject", ...requireAdmin, async (req, res
     const now = new Date();
     await db
       .update(planLeadsTable)
-      .set({ status: "denied", updatedAt: now })
+      .set({ status: "denied", displayStatusChangedAt: now, updatedAt: now })
       .where(eq(planLeadsTable.id, planId));
 
     const detail = await buildDetailResponse(planId);

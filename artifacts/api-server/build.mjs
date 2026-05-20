@@ -105,6 +105,13 @@ async function buildAll() {
       "puppeteer",
       "puppeteer-core",
       "electron",
+      // pdfkit → fontkit/brotli use dynamic CJS requires; bundling breaks at runtime
+      "pdfkit",
+      "fontkit",
+      "brotli",
+      "restructure",
+      "jpeg-exif",
+      "@swc/helpers",
     ],
     sourcemap: "linked",
     plugins: [

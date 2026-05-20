@@ -31,6 +31,7 @@ import {
 import { adminContent } from "@/content/admin";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { openAdminPlanLeadPdf } from "@/lib/admin-plan-lead-pdf";
 
 type PlanDetailContext =
   | { kind: "user"; userId: number; planId: number }
@@ -74,6 +75,7 @@ function AdminPlanLeadDetailContent({ ctx }: { ctx: PlanDetailContext }) {
   const queryClient = useQueryClient();
   const copy = adminContent.adminPlanDetail;
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [printPending, setPrintPending] = useState(false);
 
   const userQuery = useGetAdminUserPlan(ctx.kind === "user" ? ctx.userId : 0, ctx.planId, {
     query: {
@@ -201,6 +203,23 @@ function AdminPlanLeadDetailContent({ ctx }: { ctx: PlanDetailContext }) {
   const isMutating =
     startWorking.isPending || completeStep.isPending || rejectLead.isPending;
 
+  const onPrint = async () => {
+    setPrintPending(true);
+    try {
+      await openAdminPlanLeadPdf(ctx.planId);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "";
+      toast({
+        title: message === "Popup blocked" ? copy.printPopupBlocked : copy.printError,
+        description:
+          message === "Popup blocked" ? undefined : copy.printErrorDescription,
+        variant: "destructive",
+      });
+    } finally {
+      setPrintPending(false);
+    }
+  };
+
   const showPartnerBar =
     detail.partner != null &&
     (detail.displayStatus === "on_review" ||
@@ -241,14 +260,14 @@ function AdminPlanLeadDetailContent({ ctx }: { ctx: PlanDetailContext }) {
           size="icon"
           className="h-9 w-9 text-primary"
           aria-label={copy.printAria}
-          onClick={() =>
-            toast({
-              title: copy.printComingSoon,
-              description: copy.printComingSoonDescription,
-            })
-          }
+          disabled={printPending || isMutating}
+          onClick={() => void onPrint()}
         >
-          <Printer className="h-5 w-5" />
+          {printPending ? (
+            <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+          ) : (
+            <Printer className="h-5 w-5" />
+          )}
         </Button>
       </div>
 

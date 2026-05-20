@@ -953,6 +953,8 @@ export const GetAdminUserPlanResponse = zod.object({
       "Admin user-detail Plans tab label (distinct from user dashboard copy)",
     ),
   createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+  displayStatusChangedAt: zod.coerce.date(),
   sentToPartnerAt: zod.coerce.date().nullish(),
   partnerAcceptedAt: zod.coerce.date().nullish(),
   hardshipStepsCompleted: zod
@@ -1030,6 +1032,8 @@ export const GetAdminPartnerPlanLeadResponse = zod.object({
       "Admin user-detail Plans tab label (distinct from user dashboard copy)",
     ),
   createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+  displayStatusChangedAt: zod.coerce.date(),
   sentToPartnerAt: zod.coerce.date().nullish(),
   partnerAcceptedAt: zod.coerce.date().nullish(),
   hardshipStepsCompleted: zod
@@ -1080,6 +1084,14 @@ export const GetAdminPartnerPlanLeadResponse = zod.object({
 });
 
 /**
+ * @summary Export plan lead as PDF (admin)
+ */
+
+export const GetAdminPlanLeadPdfParams = zod.object({
+  planId: zod.coerce.number().min(1),
+});
+
+/**
  * @summary Accept plan lead for partner processing (admin simulation)
  */
 
@@ -1106,6 +1118,8 @@ export const PostAdminPlanLeadStartWorkingResponse = zod.object({
       "Admin user-detail Plans tab label (distinct from user dashboard copy)",
     ),
   createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+  displayStatusChangedAt: zod.coerce.date(),
   sentToPartnerAt: zod.coerce.date().nullish(),
   partnerAcceptedAt: zod.coerce.date().nullish(),
   hardshipStepsCompleted: zod
@@ -1182,6 +1196,8 @@ export const PostAdminPlanLeadCompleteStepResponse = zod.object({
       "Admin user-detail Plans tab label (distinct from user dashboard copy)",
     ),
   createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+  displayStatusChangedAt: zod.coerce.date(),
   sentToPartnerAt: zod.coerce.date().nullish(),
   partnerAcceptedAt: zod.coerce.date().nullish(),
   hardshipStepsCompleted: zod
@@ -1258,6 +1274,8 @@ export const PostAdminPlanLeadRejectResponse = zod.object({
       "Admin user-detail Plans tab label (distinct from user dashboard copy)",
     ),
   createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+  displayStatusChangedAt: zod.coerce.date(),
   sentToPartnerAt: zod.coerce.date().nullish(),
   partnerAcceptedAt: zod.coerce.date().nullish(),
   hardshipStepsCompleted: zod

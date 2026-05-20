@@ -50,6 +50,13 @@
       "when": 1779400000000,
       "tag": "0006_plan_leads_hardship_steps",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1779500000000,
+      "tag": "0007_plan_leads_display_status_changed_at",
+      "breakpoints": true
     }
   ]
 }

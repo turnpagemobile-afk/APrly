@@ -47,6 +47,9 @@ export const planLeadsTable = pgTable(
     sentToPartnerAt: timestamp("sent_to_partner_at", { withTimezone: true }),
     partnerAcceptedAt: timestamp("partner_accepted_at", { withTimezone: true }),
     hardshipStepsCompleted: integer("hardship_steps_completed").notNull().default(0),
+    displayStatusChangedAt: timestamp("display_status_changed_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },

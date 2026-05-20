@@ -21,6 +21,8 @@ export interface AdminPlanLeadDetailResponse {
   status: PlanLeadStatus;
   displayStatus: AdminUserPlanDisplayStatus;
   createdAt: Date;
+  updatedAt: Date;
+  displayStatusChangedAt: Date;
   sentToPartnerAt?: Date | null;
   partnerAcceptedAt?: Date | null;
   /** @minimum 0 */
