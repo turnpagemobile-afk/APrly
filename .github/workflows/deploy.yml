@@ -22,7 +22,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 50
     if: >-
       ${{ github.event_name == 'workflow_dispatch' ||
           (github.event.workflow_run.conclusion == 'success' &&
@@ -36,11 +36,14 @@ jobs:
           username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
           port: 22
-          command_timeout: 25m
+          command_timeout: 45m
           script_stop: true
           script: |
             set -euo pipefail
+            exec > >(tee -a /var/www/aprly/.deploy-last.log) 2>&1
             cd /var/www/aprly
+            export COMPOSE_PARALLEL_LIMIT=1
+            COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
 
             echo "=== git fetch + reset to origin/main ==="
             git fetch --all --prune
@@ -48,25 +51,29 @@ jobs:
             git reset --hard origin/main
             git log -1 --oneline
 
-            echo "=== docker compose build (incl. ops / db-migrate image) ==="
-            docker compose -f docker-compose.prod.yml --env-file .env.prod --profile ops build
+            echo "=== build api-server ==="
+            $COMPOSE build api-server
+
+            echo "=== build frontend ==="
+            $COMPOSE build frontend
+
+            echo "=== build db-migrate (ops profile) ==="
+            $COMPOSE --profile ops build db-migrate
 
             echo "=== docker compose up -d ==="
-            docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+            $COMPOSE up -d
 
             echo "=== db-migrate (drizzle-kit migrate) ==="
-            docker compose -f docker-compose.prod.yml --env-file .env.prod \
-              --profile ops run --rm db-migrate
+            $COMPOSE --profile ops run --rm db-migrate
 
             echo "=== db-seed (idempotent) ==="
-            docker compose -f docker-compose.prod.yml --env-file .env.prod \
-              --profile ops run --rm db-seed
+            $COMPOSE --profile ops run --rm db-seed
 
             echo "=== prune dangling images ==="
             docker image prune -f
 
             echo "=== running services ==="
-            docker compose -f docker-compose.prod.yml --env-file .env.prod ps
+            $COMPOSE ps
 
       - name: Post-deploy healthcheck
         shell: bash
