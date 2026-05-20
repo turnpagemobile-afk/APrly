@@ -643,6 +643,8 @@ export interface AdminPlanLeadDetailResponse {
   status: PlanLeadStatus;
   displayStatus: AdminUserPlanDisplayStatus;
   createdAt: string;
+  updatedAt: string;
+  displayStatusChangedAt: string;
   sentToPartnerAt?: string | null;
   partnerAcceptedAt?: string | null;
   /** @minimum 0 */

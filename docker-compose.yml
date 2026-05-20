@@ -73,8 +73,10 @@ services:
       - JWT_SECRET=${JWT_SECRET:-dev-insecure-change-me}
       - JWT_ACCESS_TTL_SEC=${JWT_ACCESS_TTL_SEC:-900}
       - JWT_REFRESH_TTL_DAYS=${JWT_REFRESH_TTL_DAYS:-30}
+    # Host port defaults to 5001 to avoid macOS AirPlay / local `pnpm api-server dev` on 5000.
+    # Inside the compose network the API still listens on 5000 (frontend proxy unchanged).
     ports:
-      - "5000:5000"
+      - "${API_HOST_PORT:-5001}:5000"
     depends_on:
       install-deps:
         condition: service_completed_successfully

@@ -62,8 +62,14 @@ COPY . .
 
 RUN pnpm --filter @workspace/api-server run build
 
+# pdfkit/fontkit are esbuild-externals; ship their runtime deps beside the bundle.
+FROM deps AS deploy
+WORKDIR /app
+COPY . .
+RUN pnpm --filter @workspace/api-server deploy --prod --legacy /deploy/api-server
+
 # ─────────────────────────────────────────────────────────────────────
-# runtime: minimal node image, non-root user, only the bundle
+# runtime: bundle + externals (pdfkit) from deploy output
 # ─────────────────────────────────────────────────────────────────────
 FROM node:24-slim AS runtime
 
@@ -75,7 +81,9 @@ RUN groupadd --system --gid 10001 app \
 
 WORKDIR /app
 
+COPY --from=deploy --chown=app:app /deploy/api-server/node_modules ./node_modules
 COPY --from=builder --chown=app:app /app/artifacts/api-server/dist ./dist
+COPY --from=builder --chown=app:app /app/artifacts/api-server/assets/aprly-logo.png ./assets/aprly-logo.png
 
 USER app
 

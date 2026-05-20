@@ -3199,6 +3199,95 @@ export function useGetAdminPartnerPlanLead<
 }
 
 /**
+ * @summary Export plan lead as PDF (admin)
+ */
+export const getGetAdminPlanLeadPdfUrl = (planId: number) => {
+  return `/api/admin/plan-leads/${planId}/pdf`;
+};
+
+export const getAdminPlanLeadPdf = async (
+  planId: number,
+  options?: RequestInit,
+): Promise<Blob> => {
+  return customFetch<Blob>(getGetAdminPlanLeadPdfUrl(planId), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAdminPlanLeadPdfQueryKey = (planId: number) => {
+  return [`/api/admin/plan-leads/${planId}/pdf`] as const;
+};
+
+export const getGetAdminPlanLeadPdfQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAdminPlanLeadPdf>>,
+  TError = ErrorType<void>,
+>(
+  planId: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAdminPlanLeadPdf>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetAdminPlanLeadPdfQueryKey(planId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAdminPlanLeadPdf>>
+  > = ({ signal }) =>
+    getAdminPlanLeadPdf(planId, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!planId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminPlanLeadPdf>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAdminPlanLeadPdfQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAdminPlanLeadPdf>>
+>;
+export type GetAdminPlanLeadPdfQueryError = ErrorType<void>;
+
+/**
+ * @summary Export plan lead as PDF (admin)
+ */
+
+export function useGetAdminPlanLeadPdf<
+  TData = Awaited<ReturnType<typeof getAdminPlanLeadPdf>>,
+  TError = ErrorType<void>,
+>(
+  planId: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAdminPlanLeadPdf>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAdminPlanLeadPdfQueryOptions(planId, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
  * @summary Accept plan lead for partner processing (admin simulation)
  */
 export const getPostAdminPlanLeadStartWorkingUrl = (planId: number) => {

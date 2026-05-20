@@ -184,6 +184,7 @@ router.post("/me/plan-leads/:id/send", requireAuth, async (req, res, next) => {
         partnerId: partner.id,
         sentToPartnerAt: sentAt,
         status: "in_progress",
+        displayStatusChangedAt: sentAt,
         updatedAt: sentAt,
       })
       .where(eq(planLeadsTable.id, id))
@@ -314,6 +315,7 @@ router.post("/me/detailed-plan", requireAuth, async (req, res, next) => {
 
         const annualSavings = calculateAnnualSavings(balance, rate, CABINET_TARGET_APR);
 
+        const createdAt = new Date();
         await tx.insert(planLeadsTable).values({
           userId,
           userCardId,
@@ -324,7 +326,8 @@ router.post("/me/detailed-plan", requireAuth, async (req, res, next) => {
           targetApr: CABINET_TARGET_APR.toString(),
           estimatedAnnualSavings: annualSavings.toString(),
           status: "recommended",
-          updatedAt: new Date(),
+          displayStatusChangedAt: createdAt,
+          updatedAt: createdAt,
         });
         createdCount += 1;
       }
@@ -386,9 +389,14 @@ router.patch("/me/plan-leads/:id", requireAuth, async (req, res, next) => {
       return;
     }
 
+    const now = new Date();
     const [updated] = await db
       .update(planLeadsTable)
-      .set({ status: parsed.data.status, updatedAt: new Date() })
+      .set({
+        status: parsed.data.status,
+        displayStatusChangedAt: now,
+        updatedAt: now,
+      })
       .where(eq(planLeadsTable.id, id))
       .returning();
 
