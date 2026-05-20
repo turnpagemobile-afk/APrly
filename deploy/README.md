@@ -85,6 +85,34 @@ curl -fsS http://134.122.126.71/api/healthz && echo OK
 
 First prod build after a Dockerfile change can take **30–45+ minutes** on the small droplet; later builds use Docker layer cache.
 
+## Cabinet PWA (scoped `/dashboard/`)
+
+Install is intended **only from the logged-in user cabinet**, not the marketing landing page.
+
+| Asset | Purpose |
+| --- | --- |
+| `artifacts/aprly/public/manifest-cabinet.webmanifest` | `scope: /dashboard/`, `start_url: /dashboard?tab=dashboard` |
+| `artifacts/aprly/public/icons/*.png` | Install icons (192, 512, Apple 180) |
+| Service worker | Generated at build via `vite-plugin-pwa`; registered from `DashboardShell` |
+| `/var/www/aprly/.deploy-last.log` | CI deploy log on droplet (not PWA-specific) |
+
+After a failed deploy or PWA issue on prod:
+
+```bash
+tail -100 /var/www/aprly/.deploy-last.log   # CI
+# Browser: install from /dashboard Home tab; offline banner when navigator.onLine is false
+curl -fsS https://aprly.ai/api/healthz
+```
+
+**Smoke checklist**
+
+- [ ] `/` does not offer site-wide install (no global manifest link in `index.html`)
+- [ ] `/dashboard` with active subscription: Install / Add to Home Screen works
+- [ ] Installed app opens dashboard; `/api/*` is not cached offline (banner + blocked Plaid/create plan)
+- [ ] `sw.js` returns `Cache-Control: no-cache` from nginx
+
+Regenerate icons: `pnpm --filter @workspace/aprly run pwa:icons` (requires `pnpm approve-builds sharp` or macOS `sips`).
+
 ## Rolling back
 
 Two equivalent paths.

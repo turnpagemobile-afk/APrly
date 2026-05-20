@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
@@ -31,6 +32,32 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    VitePWA({
+      manifest: false,
+      injectRegister: false,
+      registerType: "autoUpdate",
+      includeAssets: [
+        "favicon.svg",
+        "icons/icon-192.png",
+        "icons/icon-512.png",
+        "icons/apple-touch-icon-180.png",
+        "manifest-cabinet.webmanifest",
+        "offline-dashboard.html",
+      ],
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,webmanifest}"],
+        navigateFallback: "/index.html",
+        navigateFallbackAllowlist: [/^\/dashboard/],
+        navigateFallbackDenylist: [/^\/api/],
+        runtimeCaching: [
+          {
+            urlPattern: ({ request, url }) =>
+              request.method === "GET" && url.pathname.startsWith("/api/"),
+            handler: "NetworkOnly",
+          },
+        ],
+      },
+    }),
     runtimeErrorOverlay(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined

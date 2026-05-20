@@ -1,0 +1,31 @@
+{
+  "id": "/dashboard/",
+  "name": "APRly",
+  "short_name": "APRly",
+  "description": "Your APRly wealth cockpit",
+  "start_url": "/dashboard?tab=dashboard",
+  "scope": "/dashboard/",
+  "display": "standalone",
+  "background_color": "#0c0c0e",
+  "theme_color": "#151619",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
