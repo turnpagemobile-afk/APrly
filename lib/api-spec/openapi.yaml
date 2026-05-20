@@ -657,13 +657,309 @@ paths:
         "403":
           description: Forbidden
 
+  /admin/users:
+    get:
+      operationId: getAdminUsers
+      tags: [admin]
+      summary: List users for admin (subscribed vs unsubscribed)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: tab
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [subscribed, unsubscribed]
+        - name: search
+          in: query
+          schema:
+            type: string
+            default: ""
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        "200":
+          description: Paginated users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUsersListResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+
+  /admin/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+    get:
+      operationId: getAdminUser
+      tags: [admin]
+      summary: Admin user profile and summary
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: User detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUserDetailResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: User not found
+
+  /admin/users/{id}/plans:
+    get:
+      operationId: getAdminUserPlans
+      tags: [admin]
+      summary: Plan leads for a user
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        "200":
+          description: User plan leads
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUserPlansResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: User not found
+
+  /admin/users/{userId}/plans/{planId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      - name: planId
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+    get:
+      operationId: getAdminUserPlan
+      tags: [admin]
+      summary: Admin plan lead detail (user context)
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Plan lead detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminPlanLeadDetailResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+
+  /admin/partners/{partnerId}/leads/{planId}:
+    parameters:
+      - name: partnerId
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      - name: planId
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+    get:
+      operationId: getAdminPartnerPlanLead
+      tags: [admin]
+      summary: Admin plan lead detail (partner context)
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Plan lead detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminPlanLeadDetailResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+
+  /admin/plan-leads/{planId}/start-working:
+    post:
+      operationId: postAdminPlanLeadStartWorking
+      tags: [admin]
+      summary: Accept plan lead for partner processing (admin simulation)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Updated plan lead
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminPlanLeadDetailResponse"
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+        "409":
+          description: Conflict
+
+  /admin/plan-leads/{planId}/complete-step:
+    post:
+      operationId: postAdminPlanLeadCompleteStep
+      tags: [admin]
+      summary: Complete current hardship step (admin simulation)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Updated plan lead
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminPlanLeadDetailResponse"
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+        "409":
+          description: Conflict
+
+  /admin/plan-leads/{planId}/reject:
+    post:
+      operationId: postAdminPlanLeadReject
+      tags: [admin]
+      summary: Reject plan lead (admin simulation)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Updated plan lead
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminPlanLeadDetailResponse"
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+        "409":
+          description: Conflict
+
   /admin/partners:
     get:
       operationId: getAdminPartners
       tags: [admin]
-      summary: List partners
+      summary: List partners (paginated)
       security:
         - cookieAuth: []
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+            default: ""
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
       responses:
         "200":
           description: Partner list
@@ -675,6 +971,84 @@ paths:
           description: Unauthorized
         "403":
           description: Forbidden
+    post:
+      operationId: postAdminPartner
+      tags: [admin]
+      summary: Create partner
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminCreatePartnerInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminPartnerListItem"
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "409":
+          description: Partner name already exists
+
+  /admin/partners/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+    patch:
+      operationId: patchAdminPartner
+      tags: [admin]
+      summary: Update partner
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminPatchPartnerInput"
+      responses:
+        "200":
+          description: Updated partner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminPartnerListItem"
+        "400":
+          description: Invalid request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Partner not found
+    delete:
+      operationId: deleteAdminPartner
+      tags: [admin]
+      summary: Delete partner
+      security:
+        - cookieAuth: []
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Partner not found
 
   /admin/partners/{id}/plan-leads:
     get:
@@ -690,6 +1064,25 @@ paths:
           schema:
             type: integer
             minimum: 1
+        - name: leadTab
+          in: query
+          schema:
+            type: string
+            enum: [all, on_review, in_progress, won, rejected]
+            default: all
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
       responses:
         "200":
           description: Plan leads for partner
@@ -1099,6 +1492,128 @@ components:
           type: integer
         name:
           type: string
+        createdAt:
+          type: string
+          format: date-time
+          description: Included in admin partner payloads
+        isActive:
+          type: boolean
+          description: Included in admin partner payloads
+
+    AdminPartnerListItem:
+      type: object
+      required: [id, name, createdAt, isActive, onReviewCount, inProgressCount]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        isActive:
+          type: boolean
+        onReviewCount:
+          type: integer
+          minimum: 0
+        inProgressCount:
+          type: integer
+          minimum: 0
+
+    AdminPartnerListResponse:
+      type: object
+      required: [partners, total, page, pageSize]
+      properties:
+        partners:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminPartnerListItem"
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+
+    AdminCreatePartnerInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+
+    AdminPatchPartnerInput:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isActive:
+          type: boolean
+
+    AdminUserRow:
+      type: object
+      required: [id, email, level, planCount, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        level:
+          type: integer
+          minimum: 0
+          description: Active plan leads (in_progress), v1
+        planCount:
+          type: integer
+          minimum: 0
+        createdAt:
+          type: string
+          format: date-time
+
+    AdminUserTabCounts:
+      type: object
+      required: [subscribed, unsubscribed]
+      properties:
+        subscribed:
+          type: integer
+          minimum: 0
+        unsubscribed:
+          type: integer
+          minimum: 0
+
+    AdminUsersListResponse:
+      type: object
+      required: [users, tabCounts, total, page, pageSize]
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminUserRow"
+        tabCounts:
+          $ref: "#/components/schemas/AdminUserTabCounts"
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
 
     PartnerListResponse:
       type: object
@@ -1460,16 +1975,66 @@ components:
           items:
             $ref: "#/components/schemas/AdminMrrPoint"
 
-    AdminPartnerListResponse:
-      type: object
-      required: [partners]
-      properties:
-        partners:
-          type: array
-          items:
-            $ref: "#/components/schemas/Partner"
 
-    AdminPartnerPlanLead:
+    AdminPartnerLeadCounts:
+      type: object
+      required: [onReview, inProgress, won, rejected]
+      properties:
+        onReview:
+          type: integer
+          minimum: 0
+        inProgress:
+          type: integer
+          minimum: 0
+        won:
+          type: integer
+          minimum: 0
+        rejected:
+          type: integer
+          minimum: 0
+
+    AdminUserDetailSummary:
+      type: object
+      required: [registeredMonthsAgo, currentPlansCount, createdPlansCount]
+      properties:
+        registeredMonthsAgo:
+          type: integer
+          minimum: 0
+        currentPlansCount:
+          type: integer
+          minimum: 0
+        createdPlansCount:
+          type: integer
+          minimum: 0
+
+    AdminUserSubscriptionInfo:
+      type: object
+      required: [active]
+      properties:
+        active:
+          type: boolean
+        nextRenewalAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    AdminUserDetailResponse:
+      type: object
+      required: [user, summary, subscription]
+      properties:
+        user:
+          $ref: "#/components/schemas/AdminUserRow"
+        summary:
+          $ref: "#/components/schemas/AdminUserDetailSummary"
+        subscription:
+          $ref: "#/components/schemas/AdminUserSubscriptionInfo"
+
+    AdminUserPlanDisplayStatus:
+      type: string
+      enum: [not_sent, on_review, in_progress, won, rejected]
+      description: Admin user-detail Plans tab label (distinct from user dashboard copy)
+
+    AdminUserPlanLeadRow:
       type: object
       required:
         - id
@@ -1477,8 +2042,9 @@ components:
         - balance
         - currentApr
         - targetApr
+        - estimatedAnnualSavings
         - status
-        - userEmail
+        - displayStatus
         - createdAt
       properties:
         id:
@@ -1495,9 +2061,158 @@ components:
           type: number
         status:
           $ref: "#/components/schemas/PlanLeadStatus"
+        displayStatus:
+          $ref: "#/components/schemas/AdminUserPlanDisplayStatus"
+        partnerName:
+          type: string
+          nullable: true
+        hardshipPortal:
+          $ref: "#/components/schemas/HardshipPortal"
+        createdAt:
+          type: string
+          format: date-time
+
+    AdminUserPlansResponse:
+      type: object
+      required: [plans, total, page, pageSize]
+      properties:
+        plans:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminUserPlanLeadRow"
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+
+    AdminPlanLeadUserSummary:
+      type: object
+      required: [id, email]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+
+    AdminPlanLeadDetailResponse:
+      type: object
+      required:
+        - id
+        - brand
+        - balance
+        - currentApr
+        - targetApr
+        - estimatedAnnualSavings
+        - status
+        - displayStatus
+        - createdAt
+        - hardshipStepsCompleted
+        - hardshipStepsTotal
+        - user
+        - canStartWorking
+        - canCompleteStep
+        - canReject
+      properties:
+        id:
+          type: integer
+        brand:
+          type: string
+        balance:
+          type: number
+        currentApr:
+          type: number
+        targetApr:
+          type: number
+        estimatedAnnualSavings:
+          type: number
+        status:
+          $ref: "#/components/schemas/PlanLeadStatus"
+        displayStatus:
+          $ref: "#/components/schemas/AdminUserPlanDisplayStatus"
+        createdAt:
+          type: string
+          format: date-time
+        sentToPartnerAt:
+          type: string
+          format: date-time
+          nullable: true
+        partnerAcceptedAt:
+          type: string
+          format: date-time
+          nullable: true
+        hardshipStepsCompleted:
+          type: integer
+          minimum: 0
+        hardshipStepsTotal:
+          type: integer
+          minimum: 1
+        user:
+          $ref: "#/components/schemas/AdminPlanLeadUserSummary"
+        partner:
+          $ref: "#/components/schemas/Partner"
+        hardshipPortal:
+          $ref: "#/components/schemas/HardshipPortal"
+        canStartWorking:
+          type: boolean
+        canCompleteStep:
+          type: boolean
+        canReject:
+          type: boolean
+
+    AdminPartnerPlanLead:
+      type: object
+      required:
+        - id
+        - userId
+        - brand
+        - balance
+        - currentApr
+        - targetApr
+        - estimatedAnnualSavings
+        - status
+        - displayStatus
+        - userEmail
+        - createdAt
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        brand:
+          type: string
+        balance:
+          type: number
+        currentApr:
+          type: number
+        targetApr:
+          type: number
+        estimatedAnnualSavings:
+          type: number
+        status:
+          $ref: "#/components/schemas/PlanLeadStatus"
+        displayStatus:
+          $ref: "#/components/schemas/AdminUserPlanDisplayStatus"
         userEmail:
           type: string
           format: email
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
         sentToPartnerAt:
           type: string
           format: date-time
@@ -1508,11 +2223,22 @@ components:
 
     AdminPartnerPlanLeadsResponse:
       type: object
-      required: [partner, planLeads]
+      required: [partner, leadCounts, planLeads, total, page, pageSize]
       properties:
         partner:
           $ref: "#/components/schemas/Partner"
+        leadCounts:
+          $ref: "#/components/schemas/AdminPartnerLeadCounts"
         planLeads:
           type: array
           items:
             $ref: "#/components/schemas/AdminPartnerPlanLead"
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1

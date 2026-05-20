@@ -9,4 +9,8 @@
 export interface Partner {
   id: number;
   name: string;
+  /** Included in admin partner payloads */
+  createdAt?: Date;
+  /** Included in admin partner payloads */
+  isActive?: boolean;
 }

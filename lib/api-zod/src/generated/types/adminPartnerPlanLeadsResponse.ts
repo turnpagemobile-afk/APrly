@@ -5,10 +5,18 @@
  * APRly API
  * OpenAPI spec version: 0.1.0
  */
+import type { AdminPartnerLeadCounts } from "./adminPartnerLeadCounts";
 import type { AdminPartnerPlanLead } from "./adminPartnerPlanLead";
 import type { Partner } from "./partner";
 
 export interface AdminPartnerPlanLeadsResponse {
   partner: Partner;
+  leadCounts: AdminPartnerLeadCounts;
   planLeads: AdminPartnerPlanLead[];
+  /** @minimum 0 */
+  total: number;
+  /** @minimum 1 */
+  page: number;
+  /** @minimum 1 */
+  pageSize: number;
 }

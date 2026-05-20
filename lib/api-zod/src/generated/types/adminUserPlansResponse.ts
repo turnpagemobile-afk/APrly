@@ -5,10 +5,10 @@
  * APRly API
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminPartnerListItem } from "./adminPartnerListItem";
+import type { AdminUserPlanLeadRow } from "./adminUserPlanLeadRow";
 
-export interface AdminPartnerListResponse {
-  partners: AdminPartnerListItem[];
+export interface AdminUserPlansResponse {
+  plans: AdminUserPlanLeadRow[];
   /** @minimum 0 */
   total: number;
   /** @minimum 1 */

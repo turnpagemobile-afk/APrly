@@ -45,6 +45,8 @@ export const planLeadsTable = pgTable(
       onDelete: "set null",
     }),
     sentToPartnerAt: timestamp("sent_to_partner_at", { withTimezone: true }),
+    partnerAcceptedAt: timestamp("partner_accepted_at", { withTimezone: true }),
+    hardshipStepsCompleted: integer("hardship_steps_completed").notNull().default(0),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
