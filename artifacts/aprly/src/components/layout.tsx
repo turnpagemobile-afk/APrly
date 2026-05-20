@@ -263,20 +263,25 @@ function HeaderActions({
   }
 
   return (
-    <>
+    <div className="flex shrink-0 items-center gap-2">
       <Button
         type="button"
         size="sm"
-        variant="outline"
-        className="inline-flex font-semibold"
+        variant="secondary"
+        className="font-semibold shrink-0"
         asChild
       >
         <Link href={navContent.logIn.href}>{navContent.logIn.label}</Link>
       </Button>
-      <Button type="button" size="sm" onClick={onGetStarted} className="font-semibold">
+      <Button
+        type="button"
+        size="sm"
+        onClick={onGetStarted}
+        className="font-semibold shrink-0"
+      >
         {navContent.getStarted.label}
       </Button>
-    </>
+    </div>
   );
 }
 
@@ -335,7 +340,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               ))}
             </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <div className="hidden" aria-hidden="true">
               <VoiceAssistant />
             </div>
