@@ -12,7 +12,9 @@ import subscriptionRouter from "./subscription";
 import voiceRouter from "./voice";
 import adminAuthRouter from "./admin-auth";
 import adminDashboardRouter from "./admin-dashboard";
+import adminPlanLeadsRouter from "./admin-plan-leads";
 import adminPartnersRouter from "./admin-partners";
+import adminUsersRouter from "./admin-users";
 
 const router: IRouter = Router();
 
@@ -29,6 +31,8 @@ router.use(dashboardRouter);
 router.use(voiceRouter);
 router.use(adminAuthRouter);
 router.use(adminDashboardRouter);
+router.use(adminPlanLeadsRouter);
+router.use(adminUsersRouter);
 router.use(adminPartnersRouter);
 
 export default router;

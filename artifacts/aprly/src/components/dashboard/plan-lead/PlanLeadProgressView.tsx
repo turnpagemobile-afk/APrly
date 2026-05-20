@@ -56,6 +56,11 @@ export function PlanLeadProgressView({ detail }: PlanLeadProgressViewProps) {
               {sentLabel ? (
                 <p className="mt-1 text-sm text-muted-foreground">{sentLabel}</p>
               ) : null}
+              {detail.status === "in_progress" && !detail.hardshipPortal ? (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {planLeadDetailContent.status.awaitingPartnerReview}
+                </p>
+              ) : null}
             </div>
           </div>
         </article>

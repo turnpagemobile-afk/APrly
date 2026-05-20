@@ -5,10 +5,12 @@
  * APRly API
  * OpenAPI spec version: 0.1.0
  */
-import type { AdminPartnerListItem } from "./adminPartnerListItem";
+import type { AdminUserRow } from "./adminUserRow";
+import type { AdminUserTabCounts } from "./adminUserTabCounts";
 
-export interface AdminPartnerListResponse {
-  partners: AdminPartnerListItem[];
+export interface AdminUsersListResponse {
+  users: AdminUserRow[];
+  tabCounts: AdminUserTabCounts;
   /** @minimum 0 */
   total: number;
   /** @minimum 1 */

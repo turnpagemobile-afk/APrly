@@ -13,6 +13,7 @@ export const planLeadDetailContent = {
       "Your plan is ready. Choose a partner and send your hardship package to start negotiation.",
     inProgress: "In Progress",
     inProgressDescription: "Your partner is working with the issuer on your hardship request.",
+    awaitingPartnerReview: "Your proposal was sent to the partner and is awaiting review.",
     won: "Won",
     denied: "Denied",
     deniedDescription: "This plan lead was closed. Return to your dashboard to review other accounts.",

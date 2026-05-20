@@ -92,7 +92,11 @@ async function loadPlanLeadDetail(userId: number, id: number) {
   }
 
   const hardshipPortal =
-    row.status === "in_progress" || row.status === "won" ? buildHardshipPortal() : null;
+    row.partnerAcceptedAt != null && row.status === "in_progress"
+      ? buildHardshipPortal(row.hardshipStepsCompleted)
+      : row.status === "won"
+        ? buildHardshipPortal(8)
+        : null;
 
   return mapPlanLeadDetail(row, { partner, hardshipPortal });
 }
@@ -194,7 +198,6 @@ router.post("/me/plan-leads/:id/send", requireAuth, async (req, res, next) => {
       SendPlanLeadResponse.parse(
         mapPlanLeadDetail(updated, {
           partner: { id: partner.id, name: partner.name },
-          hardshipPortal: buildHardshipPortal(),
         }),
       ),
     );

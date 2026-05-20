@@ -456,6 +456,14 @@ export const GetPartnersResponse = zod.object({
     zod.object({
       id: zod.number(),
       name: zod.string(),
+      createdAt: zod.coerce
+        .date()
+        .optional()
+        .describe("Included in admin partner payloads"),
+      isActive: zod
+        .boolean()
+        .optional()
+        .describe("Included in admin partner payloads"),
     }),
   ),
 });
@@ -487,6 +495,14 @@ export const GetPlanLeadResponse = zod
       .object({
         id: zod.number(),
         name: zod.string(),
+        createdAt: zod.coerce
+          .date()
+          .optional()
+          .describe("Included in admin partner payloads"),
+        isActive: zod
+          .boolean()
+          .optional()
+          .describe("Included in admin partner payloads"),
       })
       .nullish(),
     hardshipPortal: zod
@@ -566,6 +582,14 @@ export const SendPlanLeadResponse = zod
       .object({
         id: zod.number(),
         name: zod.string(),
+        createdAt: zod.coerce
+          .date()
+          .optional()
+          .describe("Included in admin partner payloads"),
+        isActive: zod
+          .boolean()
+          .optional()
+          .describe("Included in admin partner payloads"),
       })
       .nullish(),
     hardshipPortal: zod
@@ -729,15 +753,650 @@ export const GetAdminDashboardSummaryResponse = zod.object({
 });
 
 /**
- * @summary List partners
+ * @summary List users for admin (subscribed vs unsubscribed)
  */
+export const getAdminUsersQuerySearchDefault = ``;
+export const getAdminUsersQueryPageDefault = 1;
+
+export const getAdminUsersQueryPageSizeDefault = 10;
+export const getAdminUsersQueryPageSizeMax = 50;
+
+export const GetAdminUsersQueryParams = zod.object({
+  tab: zod.enum(["subscribed", "unsubscribed"]),
+  search: zod.coerce.string().default(getAdminUsersQuerySearchDefault),
+  page: zod.coerce.number().min(1).default(getAdminUsersQueryPageDefault),
+  pageSize: zod.coerce
+    .number()
+    .min(1)
+    .max(getAdminUsersQueryPageSizeMax)
+    .default(getAdminUsersQueryPageSizeDefault),
+});
+
+export const getAdminUsersResponseUsersItemLevelMin = 0;
+
+export const getAdminUsersResponseUsersItemPlanCountMin = 0;
+
+export const getAdminUsersResponseTabCountsSubscribedMin = 0;
+
+export const getAdminUsersResponseTabCountsUnsubscribedMin = 0;
+
+export const getAdminUsersResponseTotalMin = 0;
+
+export const GetAdminUsersResponse = zod.object({
+  users: zod.array(
+    zod.object({
+      id: zod.number(),
+      email: zod.string().email(),
+      firstName: zod.string().nullish(),
+      lastName: zod.string().nullish(),
+      level: zod
+        .number()
+        .min(getAdminUsersResponseUsersItemLevelMin)
+        .describe("Active plan leads (in_progress), v1"),
+      planCount: zod.number().min(getAdminUsersResponseUsersItemPlanCountMin),
+      createdAt: zod.coerce.date(),
+    }),
+  ),
+  tabCounts: zod.object({
+    subscribed: zod.number().min(getAdminUsersResponseTabCountsSubscribedMin),
+    unsubscribed: zod
+      .number()
+      .min(getAdminUsersResponseTabCountsUnsubscribedMin),
+  }),
+  total: zod.number().min(getAdminUsersResponseTotalMin),
+  page: zod.number().min(1),
+  pageSize: zod.number().min(1),
+});
+
+/**
+ * @summary Admin user profile and summary
+ */
+
+export const GetAdminUserParams = zod.object({
+  id: zod.coerce.number().min(1),
+});
+
+export const getAdminUserResponseUserLevelMin = 0;
+
+export const getAdminUserResponseUserPlanCountMin = 0;
+
+export const getAdminUserResponseSummaryRegisteredMonthsAgoMin = 0;
+
+export const getAdminUserResponseSummaryCurrentPlansCountMin = 0;
+
+export const getAdminUserResponseSummaryCreatedPlansCountMin = 0;
+
+export const GetAdminUserResponse = zod.object({
+  user: zod.object({
+    id: zod.number(),
+    email: zod.string().email(),
+    firstName: zod.string().nullish(),
+    lastName: zod.string().nullish(),
+    level: zod
+      .number()
+      .min(getAdminUserResponseUserLevelMin)
+      .describe("Active plan leads (in_progress), v1"),
+    planCount: zod.number().min(getAdminUserResponseUserPlanCountMin),
+    createdAt: zod.coerce.date(),
+  }),
+  summary: zod.object({
+    registeredMonthsAgo: zod
+      .number()
+      .min(getAdminUserResponseSummaryRegisteredMonthsAgoMin),
+    currentPlansCount: zod
+      .number()
+      .min(getAdminUserResponseSummaryCurrentPlansCountMin),
+    createdPlansCount: zod
+      .number()
+      .min(getAdminUserResponseSummaryCreatedPlansCountMin),
+  }),
+  subscription: zod.object({
+    active: zod.boolean(),
+    nextRenewalAt: zod.coerce.date().nullish(),
+  }),
+});
+
+/**
+ * @summary Plan leads for a user
+ */
+
+export const GetAdminUserPlansParams = zod.object({
+  id: zod.coerce.number().min(1),
+});
+
+export const getAdminUserPlansQueryPageDefault = 1;
+
+export const getAdminUserPlansQueryPageSizeDefault = 10;
+export const getAdminUserPlansQueryPageSizeMax = 50;
+
+export const GetAdminUserPlansQueryParams = zod.object({
+  page: zod.coerce.number().min(1).default(getAdminUserPlansQueryPageDefault),
+  pageSize: zod.coerce
+    .number()
+    .min(1)
+    .max(getAdminUserPlansQueryPageSizeMax)
+    .default(getAdminUserPlansQueryPageSizeDefault),
+});
+
+export const getAdminUserPlansResponsePlansItemHardshipPortalProgressMin = 0;
+export const getAdminUserPlansResponsePlansItemHardshipPortalProgressMax = 100;
+
+export const getAdminUserPlansResponseTotalMin = 0;
+
+export const GetAdminUserPlansResponse = zod.object({
+  plans: zod.array(
+    zod.object({
+      id: zod.number(),
+      brand: zod.string(),
+      balance: zod.number(),
+      currentApr: zod.number(),
+      targetApr: zod.number(),
+      estimatedAnnualSavings: zod.number(),
+      status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+      displayStatus: zod
+        .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
+        .describe(
+          "Admin user-detail Plans tab label (distinct from user dashboard copy)",
+        ),
+      partnerName: zod.string().nullish(),
+      hardshipPortal: zod
+        .object({
+          stage: zod.string(),
+          progress: zod
+            .number()
+            .min(getAdminUserPlansResponsePlansItemHardshipPortalProgressMin)
+            .max(getAdminUserPlansResponsePlansItemHardshipPortalProgressMax),
+          etaDays: zod.number(),
+          steps: zod.array(
+            zod.object({
+              name: zod.string(),
+              status: zod.enum(["done", "active", "pending"]),
+              description: zod.string().optional(),
+              cta: zod.string().optional(),
+            }),
+          ),
+        })
+        .optional(),
+      createdAt: zod.coerce.date(),
+    }),
+  ),
+  total: zod.number().min(getAdminUserPlansResponseTotalMin),
+  page: zod.number().min(1),
+  pageSize: zod.number().min(1),
+});
+
+/**
+ * @summary Admin plan lead detail (user context)
+ */
+
+export const GetAdminUserPlanParams = zod.object({
+  userId: zod.coerce.number().min(1),
+  planId: zod.coerce.number().min(1),
+});
+
+export const getAdminUserPlanResponseHardshipStepsCompletedMin = 0;
+
+export const getAdminUserPlanResponseHardshipPortalProgressMin = 0;
+export const getAdminUserPlanResponseHardshipPortalProgressMax = 100;
+
+export const GetAdminUserPlanResponse = zod.object({
+  id: zod.number(),
+  brand: zod.string(),
+  balance: zod.number(),
+  currentApr: zod.number(),
+  targetApr: zod.number(),
+  estimatedAnnualSavings: zod.number(),
+  status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+  displayStatus: zod
+    .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
+    .describe(
+      "Admin user-detail Plans tab label (distinct from user dashboard copy)",
+    ),
+  createdAt: zod.coerce.date(),
+  sentToPartnerAt: zod.coerce.date().nullish(),
+  partnerAcceptedAt: zod.coerce.date().nullish(),
+  hardshipStepsCompleted: zod
+    .number()
+    .min(getAdminUserPlanResponseHardshipStepsCompletedMin),
+  hardshipStepsTotal: zod.number().min(1),
+  user: zod.object({
+    id: zod.number(),
+    email: zod.string().email(),
+    firstName: zod.string().nullish(),
+    lastName: zod.string().nullish(),
+  }),
+  partner: zod
+    .object({
+      id: zod.number(),
+      name: zod.string(),
+      createdAt: zod.coerce
+        .date()
+        .optional()
+        .describe("Included in admin partner payloads"),
+      isActive: zod
+        .boolean()
+        .optional()
+        .describe("Included in admin partner payloads"),
+    })
+    .optional(),
+  hardshipPortal: zod
+    .object({
+      stage: zod.string(),
+      progress: zod
+        .number()
+        .min(getAdminUserPlanResponseHardshipPortalProgressMin)
+        .max(getAdminUserPlanResponseHardshipPortalProgressMax),
+      etaDays: zod.number(),
+      steps: zod.array(
+        zod.object({
+          name: zod.string(),
+          status: zod.enum(["done", "active", "pending"]),
+          description: zod.string().optional(),
+          cta: zod.string().optional(),
+        }),
+      ),
+    })
+    .optional(),
+  canStartWorking: zod.boolean(),
+  canCompleteStep: zod.boolean(),
+  canReject: zod.boolean(),
+});
+
+/**
+ * @summary Admin plan lead detail (partner context)
+ */
+
+export const GetAdminPartnerPlanLeadParams = zod.object({
+  partnerId: zod.coerce.number().min(1),
+  planId: zod.coerce.number().min(1),
+});
+
+export const getAdminPartnerPlanLeadResponseHardshipStepsCompletedMin = 0;
+
+export const getAdminPartnerPlanLeadResponseHardshipPortalProgressMin = 0;
+export const getAdminPartnerPlanLeadResponseHardshipPortalProgressMax = 100;
+
+export const GetAdminPartnerPlanLeadResponse = zod.object({
+  id: zod.number(),
+  brand: zod.string(),
+  balance: zod.number(),
+  currentApr: zod.number(),
+  targetApr: zod.number(),
+  estimatedAnnualSavings: zod.number(),
+  status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+  displayStatus: zod
+    .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
+    .describe(
+      "Admin user-detail Plans tab label (distinct from user dashboard copy)",
+    ),
+  createdAt: zod.coerce.date(),
+  sentToPartnerAt: zod.coerce.date().nullish(),
+  partnerAcceptedAt: zod.coerce.date().nullish(),
+  hardshipStepsCompleted: zod
+    .number()
+    .min(getAdminPartnerPlanLeadResponseHardshipStepsCompletedMin),
+  hardshipStepsTotal: zod.number().min(1),
+  user: zod.object({
+    id: zod.number(),
+    email: zod.string().email(),
+    firstName: zod.string().nullish(),
+    lastName: zod.string().nullish(),
+  }),
+  partner: zod
+    .object({
+      id: zod.number(),
+      name: zod.string(),
+      createdAt: zod.coerce
+        .date()
+        .optional()
+        .describe("Included in admin partner payloads"),
+      isActive: zod
+        .boolean()
+        .optional()
+        .describe("Included in admin partner payloads"),
+    })
+    .optional(),
+  hardshipPortal: zod
+    .object({
+      stage: zod.string(),
+      progress: zod
+        .number()
+        .min(getAdminPartnerPlanLeadResponseHardshipPortalProgressMin)
+        .max(getAdminPartnerPlanLeadResponseHardshipPortalProgressMax),
+      etaDays: zod.number(),
+      steps: zod.array(
+        zod.object({
+          name: zod.string(),
+          status: zod.enum(["done", "active", "pending"]),
+          description: zod.string().optional(),
+          cta: zod.string().optional(),
+        }),
+      ),
+    })
+    .optional(),
+  canStartWorking: zod.boolean(),
+  canCompleteStep: zod.boolean(),
+  canReject: zod.boolean(),
+});
+
+/**
+ * @summary Accept plan lead for partner processing (admin simulation)
+ */
+
+export const PostAdminPlanLeadStartWorkingParams = zod.object({
+  planId: zod.coerce.number().min(1),
+});
+
+export const postAdminPlanLeadStartWorkingResponseHardshipStepsCompletedMin = 0;
+
+export const postAdminPlanLeadStartWorkingResponseHardshipPortalProgressMin = 0;
+export const postAdminPlanLeadStartWorkingResponseHardshipPortalProgressMax = 100;
+
+export const PostAdminPlanLeadStartWorkingResponse = zod.object({
+  id: zod.number(),
+  brand: zod.string(),
+  balance: zod.number(),
+  currentApr: zod.number(),
+  targetApr: zod.number(),
+  estimatedAnnualSavings: zod.number(),
+  status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+  displayStatus: zod
+    .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
+    .describe(
+      "Admin user-detail Plans tab label (distinct from user dashboard copy)",
+    ),
+  createdAt: zod.coerce.date(),
+  sentToPartnerAt: zod.coerce.date().nullish(),
+  partnerAcceptedAt: zod.coerce.date().nullish(),
+  hardshipStepsCompleted: zod
+    .number()
+    .min(postAdminPlanLeadStartWorkingResponseHardshipStepsCompletedMin),
+  hardshipStepsTotal: zod.number().min(1),
+  user: zod.object({
+    id: zod.number(),
+    email: zod.string().email(),
+    firstName: zod.string().nullish(),
+    lastName: zod.string().nullish(),
+  }),
+  partner: zod
+    .object({
+      id: zod.number(),
+      name: zod.string(),
+      createdAt: zod.coerce
+        .date()
+        .optional()
+        .describe("Included in admin partner payloads"),
+      isActive: zod
+        .boolean()
+        .optional()
+        .describe("Included in admin partner payloads"),
+    })
+    .optional(),
+  hardshipPortal: zod
+    .object({
+      stage: zod.string(),
+      progress: zod
+        .number()
+        .min(postAdminPlanLeadStartWorkingResponseHardshipPortalProgressMin)
+        .max(postAdminPlanLeadStartWorkingResponseHardshipPortalProgressMax),
+      etaDays: zod.number(),
+      steps: zod.array(
+        zod.object({
+          name: zod.string(),
+          status: zod.enum(["done", "active", "pending"]),
+          description: zod.string().optional(),
+          cta: zod.string().optional(),
+        }),
+      ),
+    })
+    .optional(),
+  canStartWorking: zod.boolean(),
+  canCompleteStep: zod.boolean(),
+  canReject: zod.boolean(),
+});
+
+/**
+ * @summary Complete current hardship step (admin simulation)
+ */
+
+export const PostAdminPlanLeadCompleteStepParams = zod.object({
+  planId: zod.coerce.number().min(1),
+});
+
+export const postAdminPlanLeadCompleteStepResponseHardshipStepsCompletedMin = 0;
+
+export const postAdminPlanLeadCompleteStepResponseHardshipPortalProgressMin = 0;
+export const postAdminPlanLeadCompleteStepResponseHardshipPortalProgressMax = 100;
+
+export const PostAdminPlanLeadCompleteStepResponse = zod.object({
+  id: zod.number(),
+  brand: zod.string(),
+  balance: zod.number(),
+  currentApr: zod.number(),
+  targetApr: zod.number(),
+  estimatedAnnualSavings: zod.number(),
+  status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+  displayStatus: zod
+    .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
+    .describe(
+      "Admin user-detail Plans tab label (distinct from user dashboard copy)",
+    ),
+  createdAt: zod.coerce.date(),
+  sentToPartnerAt: zod.coerce.date().nullish(),
+  partnerAcceptedAt: zod.coerce.date().nullish(),
+  hardshipStepsCompleted: zod
+    .number()
+    .min(postAdminPlanLeadCompleteStepResponseHardshipStepsCompletedMin),
+  hardshipStepsTotal: zod.number().min(1),
+  user: zod.object({
+    id: zod.number(),
+    email: zod.string().email(),
+    firstName: zod.string().nullish(),
+    lastName: zod.string().nullish(),
+  }),
+  partner: zod
+    .object({
+      id: zod.number(),
+      name: zod.string(),
+      createdAt: zod.coerce
+        .date()
+        .optional()
+        .describe("Included in admin partner payloads"),
+      isActive: zod
+        .boolean()
+        .optional()
+        .describe("Included in admin partner payloads"),
+    })
+    .optional(),
+  hardshipPortal: zod
+    .object({
+      stage: zod.string(),
+      progress: zod
+        .number()
+        .min(postAdminPlanLeadCompleteStepResponseHardshipPortalProgressMin)
+        .max(postAdminPlanLeadCompleteStepResponseHardshipPortalProgressMax),
+      etaDays: zod.number(),
+      steps: zod.array(
+        zod.object({
+          name: zod.string(),
+          status: zod.enum(["done", "active", "pending"]),
+          description: zod.string().optional(),
+          cta: zod.string().optional(),
+        }),
+      ),
+    })
+    .optional(),
+  canStartWorking: zod.boolean(),
+  canCompleteStep: zod.boolean(),
+  canReject: zod.boolean(),
+});
+
+/**
+ * @summary Reject plan lead (admin simulation)
+ */
+
+export const PostAdminPlanLeadRejectParams = zod.object({
+  planId: zod.coerce.number().min(1),
+});
+
+export const postAdminPlanLeadRejectResponseHardshipStepsCompletedMin = 0;
+
+export const postAdminPlanLeadRejectResponseHardshipPortalProgressMin = 0;
+export const postAdminPlanLeadRejectResponseHardshipPortalProgressMax = 100;
+
+export const PostAdminPlanLeadRejectResponse = zod.object({
+  id: zod.number(),
+  brand: zod.string(),
+  balance: zod.number(),
+  currentApr: zod.number(),
+  targetApr: zod.number(),
+  estimatedAnnualSavings: zod.number(),
+  status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+  displayStatus: zod
+    .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
+    .describe(
+      "Admin user-detail Plans tab label (distinct from user dashboard copy)",
+    ),
+  createdAt: zod.coerce.date(),
+  sentToPartnerAt: zod.coerce.date().nullish(),
+  partnerAcceptedAt: zod.coerce.date().nullish(),
+  hardshipStepsCompleted: zod
+    .number()
+    .min(postAdminPlanLeadRejectResponseHardshipStepsCompletedMin),
+  hardshipStepsTotal: zod.number().min(1),
+  user: zod.object({
+    id: zod.number(),
+    email: zod.string().email(),
+    firstName: zod.string().nullish(),
+    lastName: zod.string().nullish(),
+  }),
+  partner: zod
+    .object({
+      id: zod.number(),
+      name: zod.string(),
+      createdAt: zod.coerce
+        .date()
+        .optional()
+        .describe("Included in admin partner payloads"),
+      isActive: zod
+        .boolean()
+        .optional()
+        .describe("Included in admin partner payloads"),
+    })
+    .optional(),
+  hardshipPortal: zod
+    .object({
+      stage: zod.string(),
+      progress: zod
+        .number()
+        .min(postAdminPlanLeadRejectResponseHardshipPortalProgressMin)
+        .max(postAdminPlanLeadRejectResponseHardshipPortalProgressMax),
+      etaDays: zod.number(),
+      steps: zod.array(
+        zod.object({
+          name: zod.string(),
+          status: zod.enum(["done", "active", "pending"]),
+          description: zod.string().optional(),
+          cta: zod.string().optional(),
+        }),
+      ),
+    })
+    .optional(),
+  canStartWorking: zod.boolean(),
+  canCompleteStep: zod.boolean(),
+  canReject: zod.boolean(),
+});
+
+/**
+ * @summary List partners (paginated)
+ */
+export const getAdminPartnersQuerySearchDefault = ``;
+export const getAdminPartnersQueryPageDefault = 1;
+
+export const getAdminPartnersQueryPageSizeDefault = 10;
+export const getAdminPartnersQueryPageSizeMax = 50;
+
+export const GetAdminPartnersQueryParams = zod.object({
+  search: zod.coerce.string().default(getAdminPartnersQuerySearchDefault),
+  page: zod.coerce.number().min(1).default(getAdminPartnersQueryPageDefault),
+  pageSize: zod.coerce
+    .number()
+    .min(1)
+    .max(getAdminPartnersQueryPageSizeMax)
+    .default(getAdminPartnersQueryPageSizeDefault),
+});
+
+export const getAdminPartnersResponsePartnersItemOnReviewCountMin = 0;
+
+export const getAdminPartnersResponsePartnersItemInProgressCountMin = 0;
+
+export const getAdminPartnersResponseTotalMin = 0;
+
 export const GetAdminPartnersResponse = zod.object({
   partners: zod.array(
     zod.object({
       id: zod.number(),
       name: zod.string(),
+      createdAt: zod.coerce.date(),
+      isActive: zod.boolean(),
+      onReviewCount: zod
+        .number()
+        .min(getAdminPartnersResponsePartnersItemOnReviewCountMin),
+      inProgressCount: zod
+        .number()
+        .min(getAdminPartnersResponsePartnersItemInProgressCountMin),
     }),
   ),
+  total: zod.number().min(getAdminPartnersResponseTotalMin),
+  page: zod.number().min(1),
+  pageSize: zod.number().min(1),
+});
+
+/**
+ * @summary Create partner
+ */
+export const postAdminPartnerBodyNameMax = 200;
+
+export const PostAdminPartnerBody = zod.object({
+  name: zod.string().min(1).max(postAdminPartnerBodyNameMax),
+});
+
+/**
+ * @summary Update partner
+ */
+
+export const PatchAdminPartnerParams = zod.object({
+  id: zod.coerce.number().min(1),
+});
+
+export const patchAdminPartnerBodyNameMax = 200;
+
+export const PatchAdminPartnerBody = zod.object({
+  name: zod.string().min(1).max(patchAdminPartnerBodyNameMax).optional(),
+  isActive: zod.boolean().optional(),
+});
+
+export const patchAdminPartnerResponseOnReviewCountMin = 0;
+
+export const patchAdminPartnerResponseInProgressCountMin = 0;
+
+export const PatchAdminPartnerResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  createdAt: zod.coerce.date(),
+  isActive: zod.boolean(),
+  onReviewCount: zod.number().min(patchAdminPartnerResponseOnReviewCountMin),
+  inProgressCount: zod
+    .number()
+    .min(patchAdminPartnerResponseInProgressCountMin),
+});
+
+/**
+ * @summary Delete partner
+ */
+
+export const DeleteAdminPartnerParams = zod.object({
+  id: zod.coerce.number().min(1),
 });
 
 /**
@@ -748,23 +1407,85 @@ export const GetAdminPartnerPlanLeadsParams = zod.object({
   id: zod.coerce.number().min(1),
 });
 
+export const getAdminPartnerPlanLeadsQueryLeadTabDefault = `all`;
+export const getAdminPartnerPlanLeadsQueryPageDefault = 1;
+
+export const getAdminPartnerPlanLeadsQueryPageSizeDefault = 10;
+export const getAdminPartnerPlanLeadsQueryPageSizeMax = 50;
+
+export const GetAdminPartnerPlanLeadsQueryParams = zod.object({
+  leadTab: zod
+    .enum(["all", "on_review", "in_progress", "won", "rejected"])
+    .default(getAdminPartnerPlanLeadsQueryLeadTabDefault),
+  page: zod.coerce
+    .number()
+    .min(1)
+    .default(getAdminPartnerPlanLeadsQueryPageDefault),
+  pageSize: zod.coerce
+    .number()
+    .min(1)
+    .max(getAdminPartnerPlanLeadsQueryPageSizeMax)
+    .default(getAdminPartnerPlanLeadsQueryPageSizeDefault),
+});
+
+export const getAdminPartnerPlanLeadsResponseLeadCountsOnReviewMin = 0;
+
+export const getAdminPartnerPlanLeadsResponseLeadCountsInProgressMin = 0;
+
+export const getAdminPartnerPlanLeadsResponseLeadCountsWonMin = 0;
+
+export const getAdminPartnerPlanLeadsResponseLeadCountsRejectedMin = 0;
+
+export const getAdminPartnerPlanLeadsResponseTotalMin = 0;
+
 export const GetAdminPartnerPlanLeadsResponse = zod.object({
   partner: zod.object({
     id: zod.number(),
     name: zod.string(),
+    createdAt: zod.coerce
+      .date()
+      .optional()
+      .describe("Included in admin partner payloads"),
+    isActive: zod
+      .boolean()
+      .optional()
+      .describe("Included in admin partner payloads"),
+  }),
+  leadCounts: zod.object({
+    onReview: zod
+      .number()
+      .min(getAdminPartnerPlanLeadsResponseLeadCountsOnReviewMin),
+    inProgress: zod
+      .number()
+      .min(getAdminPartnerPlanLeadsResponseLeadCountsInProgressMin),
+    won: zod.number().min(getAdminPartnerPlanLeadsResponseLeadCountsWonMin),
+    rejected: zod
+      .number()
+      .min(getAdminPartnerPlanLeadsResponseLeadCountsRejectedMin),
   }),
   planLeads: zod.array(
     zod.object({
       id: zod.number(),
+      userId: zod.number(),
       brand: zod.string(),
       balance: zod.number(),
       currentApr: zod.number(),
       targetApr: zod.number(),
-      estimatedAnnualSavings: zod.number().optional(),
+      estimatedAnnualSavings: zod.number(),
       status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+      displayStatus: zod
+        .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
+        .describe(
+          "Admin user-detail Plans tab label (distinct from user dashboard copy)",
+        ),
       userEmail: zod.string().email(),
+      firstName: zod.string().nullish(),
+      lastName: zod.string().nullish(),
       sentToPartnerAt: zod.coerce.date().nullish(),
       createdAt: zod.coerce.date(),
     }),
   ),
+  total: zod.number().min(getAdminPartnerPlanLeadsResponseTotalMin),
+  page: zod.number().min(1),
+  pageSize: zod.number().min(1),
 });

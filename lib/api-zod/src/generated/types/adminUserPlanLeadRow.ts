@@ -6,11 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AdminUserPlanDisplayStatus } from "./adminUserPlanDisplayStatus";
+import type { HardshipPortal } from "./hardshipPortal";
 import type { PlanLeadStatus } from "./planLeadStatus";
 
-export interface AdminPartnerPlanLead {
+export interface AdminUserPlanLeadRow {
   id: number;
-  userId: number;
   brand: string;
   balance: number;
   currentApr: number;
@@ -18,9 +18,7 @@ export interface AdminPartnerPlanLead {
   estimatedAnnualSavings: number;
   status: PlanLeadStatus;
   displayStatus: AdminUserPlanDisplayStatus;
-  userEmail: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  sentToPartnerAt?: Date | null;
+  partnerName?: string | null;
+  hardshipPortal?: HardshipPortal;
   createdAt: Date;
 }

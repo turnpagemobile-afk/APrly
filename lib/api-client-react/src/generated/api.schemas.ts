@@ -248,6 +248,81 @@ export interface UpdatePlanLeadStatusInput {
 export interface Partner {
   id: number;
   name: string;
+  /** Included in admin partner payloads */
+  createdAt?: string;
+  /** Included in admin partner payloads */
+  isActive?: boolean;
+}
+
+export interface AdminPartnerListItem {
+  id: number;
+  name: string;
+  createdAt: string;
+  isActive: boolean;
+  /** @minimum 0 */
+  onReviewCount: number;
+  /** @minimum 0 */
+  inProgressCount: number;
+}
+
+export interface AdminPartnerListResponse {
+  partners: AdminPartnerListItem[];
+  /** @minimum 0 */
+  total: number;
+  /** @minimum 1 */
+  page: number;
+  /** @minimum 1 */
+  pageSize: number;
+}
+
+export interface AdminCreatePartnerInput {
+  /**
+   * @minLength 1
+   * @maxLength 200
+   */
+  name: string;
+}
+
+export interface AdminPatchPartnerInput {
+  /**
+   * @minLength 1
+   * @maxLength 200
+   */
+  name?: string;
+  isActive?: boolean;
+}
+
+export interface AdminUserRow {
+  id: number;
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  /**
+   * Active plan leads (in_progress), v1
+   * @minimum 0
+   */
+  level: number;
+  /** @minimum 0 */
+  planCount: number;
+  createdAt: string;
+}
+
+export interface AdminUserTabCounts {
+  /** @minimum 0 */
+  subscribed: number;
+  /** @minimum 0 */
+  unsubscribed: number;
+}
+
+export interface AdminUsersListResponse {
+  users: AdminUserRow[];
+  tabCounts: AdminUserTabCounts;
+  /** @minimum 0 */
+  total: number;
+  /** @minimum 1 */
+  page: number;
+  /** @minimum 1 */
+  pageSize: number;
 }
 
 export interface PartnerListResponse {
@@ -482,26 +557,133 @@ export interface AdminDashboardSummary {
   mrrSeries: AdminMrrPoint[];
 }
 
-export interface AdminPartnerListResponse {
-  partners: Partner[];
+export interface AdminPartnerLeadCounts {
+  /** @minimum 0 */
+  onReview: number;
+  /** @minimum 0 */
+  inProgress: number;
+  /** @minimum 0 */
+  won: number;
+  /** @minimum 0 */
+  rejected: number;
 }
 
-export interface AdminPartnerPlanLead {
+export interface AdminUserDetailSummary {
+  /** @minimum 0 */
+  registeredMonthsAgo: number;
+  /** @minimum 0 */
+  currentPlansCount: number;
+  /** @minimum 0 */
+  createdPlansCount: number;
+}
+
+export interface AdminUserSubscriptionInfo {
+  active: boolean;
+  nextRenewalAt?: string | null;
+}
+
+export interface AdminUserDetailResponse {
+  user: AdminUserRow;
+  summary: AdminUserDetailSummary;
+  subscription: AdminUserSubscriptionInfo;
+}
+
+/**
+ * Admin user-detail Plans tab label (distinct from user dashboard copy)
+ */
+export type AdminUserPlanDisplayStatus =
+  (typeof AdminUserPlanDisplayStatus)[keyof typeof AdminUserPlanDisplayStatus];
+
+export const AdminUserPlanDisplayStatus = {
+  not_sent: "not_sent",
+  on_review: "on_review",
+  in_progress: "in_progress",
+  won: "won",
+  rejected: "rejected",
+} as const;
+
+export interface AdminUserPlanLeadRow {
   id: number;
   brand: string;
   balance: number;
   currentApr: number;
   targetApr: number;
-  estimatedAnnualSavings?: number;
+  estimatedAnnualSavings: number;
   status: PlanLeadStatus;
+  displayStatus: AdminUserPlanDisplayStatus;
+  partnerName?: string | null;
+  hardshipPortal?: HardshipPortal;
+  createdAt: string;
+}
+
+export interface AdminUserPlansResponse {
+  plans: AdminUserPlanLeadRow[];
+  /** @minimum 0 */
+  total: number;
+  /** @minimum 1 */
+  page: number;
+  /** @minimum 1 */
+  pageSize: number;
+}
+
+export interface AdminPlanLeadUserSummary {
+  id: number;
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+}
+
+export interface AdminPlanLeadDetailResponse {
+  id: number;
+  brand: string;
+  balance: number;
+  currentApr: number;
+  targetApr: number;
+  estimatedAnnualSavings: number;
+  status: PlanLeadStatus;
+  displayStatus: AdminUserPlanDisplayStatus;
+  createdAt: string;
+  sentToPartnerAt?: string | null;
+  partnerAcceptedAt?: string | null;
+  /** @minimum 0 */
+  hardshipStepsCompleted: number;
+  /** @minimum 1 */
+  hardshipStepsTotal: number;
+  user: AdminPlanLeadUserSummary;
+  partner?: Partner;
+  hardshipPortal?: HardshipPortal;
+  canStartWorking: boolean;
+  canCompleteStep: boolean;
+  canReject: boolean;
+}
+
+export interface AdminPartnerPlanLead {
+  id: number;
+  userId: number;
+  brand: string;
+  balance: number;
+  currentApr: number;
+  targetApr: number;
+  estimatedAnnualSavings: number;
+  status: PlanLeadStatus;
+  displayStatus: AdminUserPlanDisplayStatus;
   userEmail: string;
+  firstName?: string | null;
+  lastName?: string | null;
   sentToPartnerAt?: string | null;
   createdAt: string;
 }
 
 export interface AdminPartnerPlanLeadsResponse {
   partner: Partner;
+  leadCounts: AdminPartnerLeadCounts;
   planLeads: AdminPartnerPlanLead[];
+  /** @minimum 0 */
+  total: number;
+  /** @minimum 1 */
+  page: number;
+  /** @minimum 1 */
+  pageSize: number;
 }
 
 export type GetCheckoutSessionStatusParams = {
@@ -529,4 +711,75 @@ export const GetAdminDashboardSummaryPeriod = {
   "7d": "7d",
   "30d": "30d",
   "12m": "12m",
+} as const;
+
+export type GetAdminUsersParams = {
+  tab: GetAdminUsersTab;
+  search?: string;
+  /**
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * @minimum 1
+   * @maximum 50
+   */
+  pageSize?: number;
+};
+
+export type GetAdminUsersTab =
+  (typeof GetAdminUsersTab)[keyof typeof GetAdminUsersTab];
+
+export const GetAdminUsersTab = {
+  subscribed: "subscribed",
+  unsubscribed: "unsubscribed",
+} as const;
+
+export type GetAdminUserPlansParams = {
+  /**
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * @minimum 1
+   * @maximum 50
+   */
+  pageSize?: number;
+};
+
+export type GetAdminPartnersParams = {
+  search?: string;
+  /**
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * @minimum 1
+   * @maximum 50
+   */
+  pageSize?: number;
+};
+
+export type GetAdminPartnerPlanLeadsParams = {
+  leadTab?: GetAdminPartnerPlanLeadsLeadTab;
+  /**
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * @minimum 1
+   * @maximum 50
+   */
+  pageSize?: number;
+};
+
+export type GetAdminPartnerPlanLeadsLeadTab =
+  (typeof GetAdminPartnerPlanLeadsLeadTab)[keyof typeof GetAdminPartnerPlanLeadsLeadTab];
+
+export const GetAdminPartnerPlanLeadsLeadTab = {
+  all: "all",
+  on_review: "on_review",
+  in_progress: "in_progress",
+  won: "won",
+  rejected: "rejected",
 } as const;

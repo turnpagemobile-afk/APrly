@@ -18,8 +18,10 @@ import AdminLoginPage from "@/pages/admin/login";
 import AdminVerifyPage from "@/pages/admin/verify";
 import AdminDashboardPage from "@/pages/admin/dashboard";
 import AdminUsersPage from "@/pages/admin/users";
+import AdminUserDetailPage from "@/pages/admin/user-detail";
 import AdminPartnersPage from "@/pages/admin/partners";
-import AdminPartnerLeadsPage from "@/pages/admin/partner-leads";
+import AdminPartnerDetailPage from "@/pages/admin/partner-detail";
+import AdminPlanLeadDetailPage from "@/pages/admin/plan-lead-detail";
 import AdminSubscriptionPage from "@/pages/admin/subscription";
 
 const queryClient = new QueryClient();
@@ -30,8 +32,14 @@ function Router() {
       <Route path="/admin/login" component={AdminLoginPage} />
       <Route path="/admin/verify" component={AdminVerifyPage} />
       <Route path="/admin/dashboard" component={AdminDashboardPage} />
+      <Route path="/admin/users/:userId/plans/:planId" component={AdminPlanLeadDetailPage} />
+      <Route path="/admin/users/:id" component={AdminUserDetailPage} />
       <Route path="/admin/users" component={AdminUsersPage} />
-      <Route path="/admin/partners/:id" component={AdminPartnerLeadsPage} />
+      <Route
+        path="/admin/partners/:partnerId/leads/:planId"
+        component={AdminPlanLeadDetailPage}
+      />
+      <Route path="/admin/partners/:id" component={AdminPartnerDetailPage} />
       <Route path="/admin/partners" component={AdminPartnersPage} />
       <Route path="/admin/subscription" component={AdminSubscriptionPage} />
       <Route path="/admin">
