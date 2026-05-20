@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
+import { cn } from "@/lib/utils";
+import { releaseDialogScrollLock } from "@/lib/release-dialog-scroll-lock";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { ApiError } from "@workspace/api-client-react/custom-fetch";
@@ -107,7 +109,7 @@ export function SignupCheckoutWizard({
   const importCardsMutation = useImportMyCards();
   const cardsImportStartedRef = useRef(false);
   const sessionSyncedRef = useRef(false);
-  const pendingDashboardNavRef = useRef(false);
+  const [isFinishing, setIsFinishing] = useState(false);
 
   const step1Parsed = useMemo(
     () =>
@@ -152,14 +154,14 @@ export function SignupCheckoutWizard({
     setCheckoutUserEmail(null);
     cardsImportStartedRef.current = false;
     sessionSyncedRef.current = false;
+    setIsFinishing(false);
   }, []);
 
   useEffect(() => {
-    if (!open && pendingDashboardNavRef.current) {
-      pendingDashboardNavRef.current = false;
-      navigate("/dashboard");
-    }
-  }, [open, navigate]);
+    return () => {
+      releaseDialogScrollLock();
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -273,14 +275,18 @@ export function SignupCheckoutWizard({
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsFinishing(true);
     try {
       await patchMutation.mutateAsync({
         data: { firstName: profileFirst.trim(), lastName: profileLast.trim() },
       });
       await syncAuthSession();
-      pendingDashboardNavRef.current = true;
+      releaseDialogScrollLock();
       onOpenChange(false);
+      releaseDialogScrollLock();
+      navigate("/dashboard");
     } catch (err: unknown) {
+      setIsFinishing(false);
       toast({
         title: "Could not save profile",
         description: err instanceof Error ? err.message : "Please try again.",
@@ -288,6 +294,19 @@ export function SignupCheckoutWizard({
       });
     }
   };
+
+  const handleDialogOpenChange = (next: boolean) => {
+    if (!next && step >= 2 && !isFinishing) return;
+    onOpenChange(next);
+  };
+
+  const blockDismiss =
+    step >= 2 && !isFinishing
+      ? {
+          onInteractOutside: (e: Event) => e.preventDefault(),
+          onEscapeKeyDown: (e: KeyboardEvent) => e.preventDefault(),
+        }
+      : {};
 
   const status = sessionQuery.data?.status;
   const showStep2Error =
@@ -297,8 +316,18 @@ export function SignupCheckoutWizard({
       (sessionQuery.isFetched && sessionQuery.isError));
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-md">
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
+      <DialogContent
+        className={cn(
+          "w-[calc(100%-2rem)] max-w-md max-h-[min(90dvh,100%)] overflow-y-auto overscroll-contain pb-[env(safe-area-inset-bottom)]",
+          "top-auto bottom-0 left-[50%] translate-x-[-50%] translate-y-0 rounded-t-2xl",
+          "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+          "sm:top-[50%] sm:bottom-auto sm:max-h-none sm:translate-y-[-50%] sm:rounded-lg sm:pb-6",
+          "sm:data-[state=closed]:slide-out-to-left-1/2 sm:data-[state=closed]:slide-out-to-top-[48%]",
+          "sm:data-[state=open]:slide-in-from-left-1/2 sm:data-[state=open]:slide-in-from-top-[48%]",
+        )}
+        {...blockDismiss}
+      >
         <DialogHeader>
           <DialogTitle>
             {step === 1 && "Create account"}
@@ -429,7 +458,14 @@ export function SignupCheckoutWizard({
           </div>
         )}
 
-        {step === 3 && (
+        {step === 3 && isFinishing && (
+          <div className="flex items-center gap-2 py-6 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+            Finishing your account…
+          </div>
+        )}
+
+        {step === 3 && !isFinishing && (
           <form className="grid gap-4 pt-2" onSubmit={handleProfileSubmit}>
             <div className="grid gap-2">
               <Label>Email</Label>
