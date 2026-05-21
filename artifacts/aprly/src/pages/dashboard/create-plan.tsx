@@ -48,7 +48,7 @@ export default function CreateDetailedPlanPage() {
         description: dashboardSummaryContent.subscriptionRequiredBody,
         variant: "destructive",
       });
-      navigate("/dashboard");
+      navigate("/dashboard?tab=home");
     }
   }, [
     subscription.isSubscriptionLoading,

@@ -3,6 +3,7 @@ import {
   isBeforeInstallPromptEvent,
   type BeforeInstallPromptEvent,
 } from "@/lib/pwa/before-install-prompt";
+import { setCabinetSwNeedRefreshHandler } from "@/lib/pwa/cabinet-sw-refresh";
 import { registerCabinetSw } from "@/lib/pwa/register-cabinet-sw";
 import { setupCabinetPwaHead } from "@/lib/pwa/setup-cabinet-pwa-head";
 
@@ -36,10 +37,16 @@ export function useCabinetPwa() {
   const [isOffline, setIsOffline] = useState(
     () => typeof navigator !== "undefined" && !navigator.onLine,
   );
+  const [updateAvailable, setUpdateAvailable] = useState(false);
 
   useEffect(() => {
     setupCabinetPwaHead();
     registerCabinetSw();
+  }, []);
+
+  useEffect(() => {
+    setCabinetSwNeedRefreshHandler(() => setUpdateAvailable(true));
+    return () => setCabinetSwNeedRefreshHandler(null);
   }, []);
 
   useEffect(() => {
@@ -87,6 +94,7 @@ export function useCabinetPwa() {
   return {
     isStandalone,
     isOffline,
+    updateAvailable,
     canInstall,
     showIosInstallHint,
     promptInstall,

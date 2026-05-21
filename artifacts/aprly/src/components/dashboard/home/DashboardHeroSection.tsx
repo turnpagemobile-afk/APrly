@@ -33,7 +33,9 @@ export function DashboardHeroSection({ subscriptionActive }: DashboardHeroSectio
           className="mt-8 w-full min-w-0 font-semibold cabinet:w-auto cabinet:min-w-[10rem]"
           asChild
         >
-          <Link href={createPlanHref("/dashboard")}>{dashboardHeroContent.cta.label}</Link>
+          <Link href={createPlanHref("/dashboard?tab=home")}>
+            {dashboardHeroContent.cta.label}
+          </Link>
         </Button>
       ) : (
         <Button

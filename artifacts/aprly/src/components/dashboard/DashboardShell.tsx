@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { DashboardTabBar, type DashboardTab } from "@/components/dashboard/DashboardTabBar";
 import { DashboardUserMenu } from "@/components/dashboard/DashboardUserMenu";
 import { createPlanHref } from "@/lib/create-plan-navigation";
+import { dashboardTabPath } from "@/lib/dashboard-tab-url";
 import { CabinetPwaProvider, useCabinetPwaContext } from "@/lib/pwa/cabinet-pwa-context";
 import { CabinetOfflineBanner } from "@/components/dashboard/CabinetOfflineBanner";
+import { CabinetUpdateBanner } from "@/components/dashboard/CabinetUpdateBanner";
 
 type DashboardShellProps = {
   activeTab: DashboardTab;
@@ -27,10 +29,11 @@ function DashboardShellInner({
   isCheckoutLoading = false,
   children,
 }: DashboardShellProps) {
-  const { isOffline } = useCabinetPwaContext();
+  const { isOffline, updateAvailable } = useCabinetPwaContext();
 
   return (
     <div className="flex w-full flex-col bg-background text-foreground">
+      <CabinetUpdateBanner visible={updateAvailable} />
       <CabinetOfflineBanner visible={isOffline} />
       <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="app-page-cabinet flex h-14 items-center justify-between gap-3">
@@ -52,13 +55,7 @@ function DashboardShellInner({
                   className="font-semibold"
                   asChild
                 >
-                  <Link
-                    href={createPlanHref(
-                      activeTab === "dashboard"
-                        ? "/dashboard?tab=dashboard"
-                        : "/dashboard",
-                    )}
-                  >
+                  <Link href={createPlanHref(dashboardTabPath(activeTab))}>
                     <span className="hidden cabinet:inline">Add bank account</span>
                     <span className="cabinet:hidden">Add bank</span>
                   </Link>

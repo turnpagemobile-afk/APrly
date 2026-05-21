@@ -14,6 +14,8 @@ export const dashboardPromoContent = {
     "Install is not available in this browser yet. Try Chrome or Edge on desktop, or Safari on iPhone.",
   offlineBanner:
     "You are offline. Reconnect to use audits, plans, and partner tools.",
+  updateAvailable: "A new version of APRly is ready.",
+  updateRefresh: "Refresh app",
   iosInstallTitle: "Install on iPhone or iPad",
   iosInstallSteps: [
     "Tap the Share button in Safari (square with an arrow).",
