@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { Loader2 } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { CabinetPageLoader } from "@/components/dashboard/CabinetPageLoader";
 import type { DashboardTab } from "@/components/dashboard/DashboardTabBar";
 import { DashboardHomeTab } from "@/components/dashboard/home/DashboardHomeTab";
 import { DashboardDetailTab } from "@/components/dashboard/DashboardDetailTab";
@@ -97,12 +97,7 @@ export default function DashboardPage() {
   );
 
   if (subscription.isSubscriptionLoading) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center gap-2 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
-        Loading…
-      </div>
-    );
+    return <CabinetPageLoader />;
   }
 
   if (subscription.isSubscriptionError && !subscription.tabQuery.data) {

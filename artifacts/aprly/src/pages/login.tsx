@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, Redirect } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@workspace/api-client-react/custom-fetch";
-import { getGetMeQueryKey, useLogin } from "@workspace/api-client-react";
-import { useAuth } from "@/lib/auth-session";
+import { useLogin } from "@workspace/api-client-react";
+import { syncAuthSession, useAuth } from "@/lib/auth-session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,7 +32,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       await login.mutateAsync({ data: { email, password } });
-      await queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
+      await syncAuthSession(queryClient);
       navigate("/dashboard?tab=home");
     } catch (err: unknown) {
       const msg =
