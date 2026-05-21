@@ -1,20 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { HeroSection } from "../components/landing/HeroSection";
 import { StatsSection } from "../components/landing/StatsSection";
 import { HowItWorksSection } from "../components/landing/HowItWorksSection";
 import { OptimizerSection } from "../components/landing/OptimizerSection";
 import { FaqSection } from "../components/landing/FaqSection";
 import { PlanSection } from "../components/landing/PlanSection";
-import { SignupCheckoutWizard } from "../components/auth/SignupCheckoutWizard";
 import { loadOptimizerSnapshot } from "@/lib/optimizerSnapshot";
+import { useSignupCheckout } from "@/lib/signup-checkout-context";
 import { toast } from "@/hooks/use-toast";
 
 export default function Home() {
   const optimizerRef = useRef<HTMLElement>(null);
-  const [signupOpen, setSignupOpen] = useState(false);
-  const [stripeReturnSessionId, setStripeReturnSessionId] = useState<string | null>(null);
-  const [signupInitialEmail, setSignupInitialEmail] = useState<string | null>(null);
-  const [signupInitialName, setSignupInitialName] = useState<string | null>(null);
+  const { openSignup } = useSignupCheckout();
 
   const scrollToPlan = () => {
     document.getElementById("plan")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -26,8 +23,7 @@ export default function Home() {
     const sid = params.get("stripe_session");
     const cancelled = params.get("stripe_cancel");
     if (sid) {
-      setStripeReturnSessionId(sid);
-      setSignupOpen(true);
+      openSignup({ stripeSessionId: sid });
       const clean = `${window.location.pathname}${window.location.hash}`;
       window.history.replaceState({}, "", clean);
     }
@@ -39,7 +35,7 @@ export default function Home() {
       const clean = `${window.location.pathname}${window.location.hash}`;
       window.history.replaceState({}, "", clean);
     }
-  }, []);
+  }, [openSignup]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -62,20 +58,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
-      <SignupCheckoutWizard
-        open={signupOpen}
-        onOpenChange={(open) => {
-          setSignupOpen(open);
-          if (!open) {
-            setStripeReturnSessionId(null);
-            setSignupInitialEmail(null);
-            setSignupInitialName(null);
-          }
-        }}
-        initialStripeSessionId={stripeReturnSessionId}
-        initialEmail={signupInitialEmail}
-        initialName={signupInitialName}
-      />
       <HeroSection onSeeOptimizer={handleSeeOptimizer} />
       <StatsSection />
       <HowItWorksSection />
@@ -84,10 +66,10 @@ export default function Home() {
       <PlanSection
         onActivateClick={() => {
           const snap = loadOptimizerSnapshot();
-          setSignupInitialEmail(snap?.email?.trim() || null);
-          setSignupInitialName(snap?.name?.trim() || null);
-          setStripeReturnSessionId(null);
-          setSignupOpen(true);
+          openSignup({
+            email: snap?.email?.trim() || null,
+            name: snap?.name?.trim() || null,
+          });
         }}
       />
     </div>
