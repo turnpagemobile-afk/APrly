@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { releaseDialogScrollLock } from "@/lib/release-dialog-scroll-lock";
+import {
+  releaseDialogScrollLock,
+  scheduleHardNavigation,
+} from "@/lib/release-dialog-scroll-lock";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { ApiError } from "@workspace/api-client-react/custom-fetch";
@@ -22,13 +25,7 @@ import {
 } from "@/lib/optimizerSnapshot";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { SignupCheckoutModal } from "@/components/auth/SignupCheckoutModal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
@@ -73,6 +70,8 @@ function readFieldErrors(err: unknown): FieldErrors | null {
 type SignupCheckoutWizardProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Keeps host mounted while redirecting to Stripe after dialog closes */
+  onBeginStripeRedirect?: () => void;
   /** When set (e.g. from ?stripe_session=), start at payment wait step */
   initialStripeSessionId?: string | null;
   initialEmail?: string | null;
@@ -82,6 +81,7 @@ type SignupCheckoutWizardProps = {
 export function SignupCheckoutWizard({
   open,
   onOpenChange,
+  onBeginStripeRedirect,
   initialStripeSessionId,
   initialEmail,
   initialName,
@@ -107,7 +107,14 @@ export function SignupCheckoutWizard({
   const importCardsMutation = useImportMyCards();
   const cardsImportStartedRef = useRef(false);
   const sessionSyncedRef = useRef(false);
+  const step2AdvanceStartedRef = useRef(false);
+  const advanceGenerationRef = useRef(0);
+  const checkoutPaidRef = useRef(false);
+  const step3SideEffectsStartedRef = useRef(false);
+  const [isAdvancingToStep3, setIsAdvancingToStep3] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
+  const [pendingCheckoutUrl, setPendingCheckoutUrl] = useState<string | null>(null);
+  const isRedirectingToCheckout = pendingCheckoutUrl !== null;
 
   const step1Parsed = useMemo(
     () =>
@@ -152,80 +159,108 @@ export function SignupCheckoutWizard({
     setCheckoutUserEmail(null);
     cardsImportStartedRef.current = false;
     sessionSyncedRef.current = false;
+    step2AdvanceStartedRef.current = false;
+    advanceGenerationRef.current += 1;
+    checkoutPaidRef.current = false;
+    step3SideEffectsStartedRef.current = false;
+    setIsAdvancingToStep3(false);
     setIsFinishing(false);
+    setPendingCheckoutUrl(null);
   }, []);
 
+  const paidCheckoutEmail = sessionQuery.data?.status === "paid" ? sessionQuery.data.user?.email : undefined;
+
   useEffect(() => {
-    return () => {
-      releaseDialogScrollLock();
-    };
-  }, []);
+    if (!open && pendingCheckoutUrl) {
+      scheduleHardNavigation(pendingCheckoutUrl);
+    }
+  }, [open, pendingCheckoutUrl]);
 
   useEffect(() => {
     if (!open) {
+      if (pendingCheckoutUrl) return undefined;
       resetForm();
-      return;
+      return undefined;
     }
     if (initialStripeSessionId) {
       setStripeSessionId(initialStripeSessionId);
       setStep(2);
-      return;
+      return undefined;
     }
     if (initialEmail?.trim()) {
       setEmail(initialEmail.trim());
     }
-  }, [open, initialStripeSessionId, initialEmail, resetForm]);
+    return undefined;
+  }, [open, initialStripeSessionId, initialEmail, resetForm, navigate]);
 
   useEffect(() => {
-    if (!open || step !== 2) return;
-    const d = sessionQuery.data;
-    if (!d) return;
-    if (d.status === "paid" && d.user?.email) {
-      setCheckoutUserEmail(d.user.email);
-      setStep(3);
+    if (!open || step !== 2 || !paidCheckoutEmail) return;
+    if (step2AdvanceStartedRef.current) return;
+
+    step2AdvanceStartedRef.current = true;
+    const generation = ++advanceGenerationRef.current;
+    setCheckoutUserEmail(paidCheckoutEmail);
+    setIsAdvancingToStep3(true);
+    checkoutPaidRef.current = true;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (generation !== advanceGenerationRef.current) return;
+        setIsAdvancingToStep3(false);
+        setStep(3);
+      });
+    });
+  }, [open, step, paidCheckoutEmail]);
+
+  useEffect(() => {
+    if (!open || step !== 3 || !checkoutPaidRef.current) return undefined;
+    if (step3SideEffectsStartedRef.current) return undefined;
+    step3SideEffectsStartedRef.current = true;
+
+    const id = window.setTimeout(() => {
       if (!sessionSyncedRef.current) {
         sessionSyncedRef.current = true;
         void refreshAuthSession().catch(() => {
           sessionSyncedRef.current = false;
         });
       }
-    }
-  }, [open, step, sessionQuery.data, refreshAuthSession]);
 
-  useEffect(() => {
-    if (!open || sessionQuery.data?.status !== "paid") return;
-    if (cardsImportStartedRef.current) return;
+      if (cardsImportStartedRef.current) return;
 
-    const guestSessionId = readGuestSessionId();
-    if (guestSessionId) {
+      const guestSessionId = readGuestSessionId();
+      if (guestSessionId) {
+        cardsImportStartedRef.current = true;
+        clearOptimizerSnapshot();
+        void queryClient.invalidateQueries({ queryKey: getGetDashboardTabQueryKey() });
+        return;
+      }
+
+      const snapshot = loadOptimizerSnapshot();
+      if (!snapshot) return;
+
+      const cards = snapshotCardsForImport(snapshot);
+      if (!cards.length) {
+        clearOptimizerSnapshot();
+        return;
+      }
+
       cardsImportStartedRef.current = true;
-      clearOptimizerSnapshot();
-      void queryClient.invalidateQueries({ queryKey: getGetDashboardTabQueryKey() });
-      return;
-    }
-
-    const snapshot = loadOptimizerSnapshot();
-    if (!snapshot) return;
-
-    const cards = snapshotCardsForImport(snapshot);
-    if (!cards.length) {
-      clearOptimizerSnapshot();
-      return;
-    }
-
-    cardsImportStartedRef.current = true;
-    void importCardsMutation
-      .mutateAsync({ data: { cards } })
-      .then(() => clearOptimizerSnapshot())
-      .catch(() => {
-        cardsImportStartedRef.current = false;
-        toast({
-          title: "Could not save your cards",
-          description: "Your account is active, but calculator cards were not imported. Try again from the dashboard later.",
-          variant: "destructive",
+      void importCardsMutation
+        .mutateAsync({ data: { cards } })
+        .then(() => clearOptimizerSnapshot())
+        .catch(() => {
+          cardsImportStartedRef.current = false;
+          toast({
+            title: "Could not save your cards",
+            description:
+              "Your account is active, but calculator cards were not imported. Try again from the dashboard later.",
+            variant: "destructive",
+          });
         });
-      });
-  }, [open, sessionQuery.data?.status, importCardsMutation, queryClient]);
+    }, 400);
+
+    return () => clearTimeout(id);
+  }, [open, step, refreshAuthSession, importCardsMutation, queryClient]);
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -241,7 +276,9 @@ export function SignupCheckoutWizard({
           guestSessionId: readGuestSessionId() ?? undefined,
         },
       });
-      window.location.assign(res.checkoutUrl);
+      releaseDialogScrollLock();
+      setPendingCheckoutUrl(res.checkoutUrl);
+      onBeginStripeRedirect?.();
     } catch (err: unknown) {
       const fe = readFieldErrors(err);
       if (fe) {
@@ -288,7 +325,6 @@ export function SignupCheckoutWizard({
         data: { firstName: profileFirst.trim(), lastName: profileLast.trim() },
       });
       await refreshAuthSession();
-      releaseDialogScrollLock();
       onOpenChange(false);
       releaseDialogScrollLock();
       navigate("/dashboard?tab=home");
@@ -302,18 +338,15 @@ export function SignupCheckoutWizard({
     }
   };
 
-  const handleDialogOpenChange = (next: boolean) => {
-    if (!next && step >= 2 && !isFinishing) return;
-    onOpenChange(next);
-  };
+  const allowDismiss =
+    !isRedirectingToCheckout &&
+    !registerMutation.isPending &&
+    !(step >= 2 && !isFinishing && !isAdvancingToStep3);
 
-  const blockDismiss =
-    step >= 2 && !isFinishing
-      ? {
-          onInteractOutside: (e: Event) => e.preventDefault(),
-          onEscapeKeyDown: (e: KeyboardEvent) => e.preventDefault(),
-        }
-      : {};
+  const handleRequestClose = () => {
+    if (!allowDismiss) return;
+    onOpenChange(false);
+  };
 
   const status = sessionQuery.data?.status;
   const showStep2Error =
@@ -322,35 +355,51 @@ export function SignupCheckoutWizard({
       status === "expired" ||
       (sessionQuery.isFetched && sessionQuery.isError));
 
-  return (
-    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
-      <DialogContent
-        className={cn(
-          "w-[calc(100%-2rem)] max-w-md max-h-[min(90dvh,100%)] overflow-y-auto overscroll-contain pb-[env(safe-area-inset-bottom)]",
-          "top-auto bottom-0 left-[50%] translate-x-[-50%] translate-y-0 rounded-t-2xl",
-          "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
-          "sm:top-[50%] sm:bottom-auto sm:max-h-none sm:translate-y-[-50%] sm:rounded-lg sm:pb-6",
-          "sm:data-[state=closed]:slide-out-to-left-1/2 sm:data-[state=closed]:slide-out-to-top-[48%]",
-          "sm:data-[state=open]:slide-in-from-left-1/2 sm:data-[state=open]:slide-in-from-top-[48%]",
-        )}
-        {...blockDismiss}
+  if (isRedirectingToCheckout && !open) {
+    return (
+      <div
+        className="notranslate fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-background/95"
+        role="status"
+        aria-live="polite"
+        translate="no"
+        lang="en"
       >
-        <DialogHeader>
-          <DialogTitle>
-            {step === 1 && "Create account"}
-            {step === 2 && "Pay with Stripe"}
-            {step === 3 && "Your profile"}
-          </DialogTitle>
-          <DialogDescription>
-            {step === 1 &&
-              "All fields are required. You will continue to secure Stripe Checkout in this window."}
-            {step === 2 &&
-              "After you pay, you will return here automatically while we finish your account."}
-            {step === 3 && "Add your first and last name — email cannot be changed here."}
-          </DialogDescription>
-        </DialogHeader>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">Redirecting to Stripe…</p>
+      </div>
+    );
+  }
 
-        {step === 1 && (
+  return (
+    <SignupCheckoutModal
+      open={open}
+      onRequestClose={handleRequestClose}
+      allowDismiss={allowDismiss}
+    >
+        <div className="flex flex-col space-y-1.5 text-center sm:text-left">
+          <h2 className="text-lg font-semibold leading-none tracking-tight">
+            {step === 1
+              ? "Create account"
+              : step === 2 || isAdvancingToStep3
+                ? "Pay with Stripe"
+                : "Your profile"}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {step === 1
+              ? "All fields are required. You will continue to secure Stripe Checkout in this window."
+              : step === 2 || isAdvancingToStep3
+                ? "After you pay, you will return here automatically while we finish your account."
+                : "Add your first and last name — email cannot be changed here."}
+          </p>
+        </div>
+
+        <div
+          className={cn(
+            step !== 1 && "hidden",
+            step === 1 && "block",
+          )}
+          aria-hidden={step !== 1}
+        >
           <form className="grid gap-4 pt-2" onSubmit={handleRegisterSubmit}>
             <div className="grid gap-2">
               <Label htmlFor="su-email">Email</Label>
@@ -434,17 +483,29 @@ export function SignupCheckoutWizard({
               )}
             </Button>
           </form>
-        )}
+        </div>
 
-        {step === 2 && (
+        <div
+          className={cn(
+            step !== 2 && !isAdvancingToStep3 && "hidden",
+            (step === 2 || isAdvancingToStep3) && "block",
+          )}
+          aria-hidden={step !== 2 && !isAdvancingToStep3}
+        >
           <div className="grid gap-4 pt-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {(status === "pending" || status === "processing" || sessionQuery.isLoading) && (
+              {(isAdvancingToStep3 ||
+                status === "pending" ||
+                status === "processing" ||
+                status === "paid" ||
+                sessionQuery.isLoading) && (
                 <Loader2 className="h-4 w-4 animate-spin shrink-0" />
               )}
-              {status === "pending" && "Waiting for payment to complete…"}
-              {status === "processing" && "Payment received, finishing your account…"}
-              {!status && sessionQuery.isLoading && "Checking status…"}
+              {isAdvancingToStep3 && "Finishing your account…"}
+              {!isAdvancingToStep3 && status === "pending" && "Waiting for payment to complete…"}
+              {!isAdvancingToStep3 && status === "processing" && "Payment received, finishing your account…"}
+              {!isAdvancingToStep3 && status === "paid" && "Payment received, finishing your account…"}
+              {!isAdvancingToStep3 && !status && sessionQuery.isLoading && "Checking status…"}
             </div>
             {showStep2Error ? (
               <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
@@ -454,25 +515,32 @@ export function SignupCheckoutWizard({
                 </p>
               </div>
             ) : null}
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="secondary" onClick={() => void sessionQuery.refetch()}>
-                Check again
-              </Button>
-              <Button type="button" variant="outline" onClick={() => setStep(1)}>
-                Back
-              </Button>
+            {!isAdvancingToStep3 ? (
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" variant="secondary" onClick={() => void sessionQuery.refetch()}>
+                  Check again
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setStep(1)}>
+                  Back
+                </Button>
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            step !== 3 && "hidden",
+            step === 3 && "block",
+          )}
+          aria-hidden={step !== 3}
+        >
+          {isFinishing ? (
+            <div className="flex items-center gap-2 py-6 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+              Finishing your account…
             </div>
-          </div>
-        )}
-
-        {step === 3 && isFinishing && (
-          <div className="flex items-center gap-2 py-6 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin shrink-0" />
-            Finishing your account…
-          </div>
-        )}
-
-        {step === 3 && !isFinishing && (
+          ) : (
           <form className="grid gap-4 pt-2" onSubmit={handleProfileSubmit}>
             <div className="grid gap-2">
               <Label>Email</Label>
@@ -509,8 +577,8 @@ export function SignupCheckoutWizard({
               )}
             </Button>
           </form>
-        )}
-      </DialogContent>
-    </Dialog>
+          )}
+        </div>
+    </SignupCheckoutModal>
   );
 }
