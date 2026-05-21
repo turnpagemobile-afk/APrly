@@ -1,3 +1,7 @@
+# Дроплет: aprly.ai + Let's Encrypt (застаріло)
+
+> **Актуальний runbook:** [droplet-dev-aprly-ai-uk.md](./droplet-dev-aprly-ai-uk.md) — прод на **`dev.aprly.ai`**, apex на GoDaddy parking.
+
 # Дроплет: aprly.ai + Let's Encrypt (крок 2 після DNS)
 
 **Передумова:** у GoDaddy A `@` → `134.122.126.71`, CNAME `www` → `aprly.ai`; `dig +short aprly.ai A` показує IP дроплета.

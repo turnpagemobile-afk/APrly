@@ -1,4 +1,6 @@
 export const planLeadDetailContent = {
+  packageTitle: "Debt plan",
+  cardsSection: "Cards in this plan",
   backAriaLabel: "Back to dashboard",
   selectPartner: "Select Partner",
   sendInfo: "Send info",

@@ -1,14 +1,15 @@
 import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
-import { useCalculateOptimization } from "@workspace/api-client-react";
+import { useCalculateOptimization, useUpsertGuestLead } from "@workspace/api-client-react";
 import { VoiceStore } from "../layout";
 import { OptimizerStep1 } from "./OptimizerStep1";
 import { OptimizerStep2 } from "./OptimizerStep2";
 import { OptimizerStep3 } from "./OptimizerStep3";
 import type { CardEntry } from "./types";
 import { aggregateCardBalances } from "./optimizerAccounts";
-import { saveOptimizerSnapshot } from "@/lib/optimizerSnapshot";
+import { getOrCreateGuestSessionId } from "@/lib/guest-session";
+import { saveOptimizerSnapshot, snapshotCardsForImport } from "@/lib/optimizerSnapshot";
 import { optimizerContent } from "@/content/landing";
 
 const TARGET_APR = 8;
@@ -29,6 +30,7 @@ export const OptimizerSection = forwardRef<HTMLElement, OptimizerSectionProps>(
   ]);
 
   const calculateOpt = useCalculateOptimization();
+  const upsertGuestLead = useUpsertGuestLead();
 
   const goToStep2 = useCallback(() => {
     setAccounts((prev) => {
@@ -95,7 +97,7 @@ export const OptimizerSection = forwardRef<HTMLElement, OptimizerSectionProps>(
   const goToStep3 = useCallback(() => {
     const agg = aggregateCardBalances(accounts);
     const fallbackDebt = parseFloat(totalDebt);
-    saveOptimizerSnapshot({
+    const snapshot = {
       name,
       email,
       accounts,
@@ -104,9 +106,23 @@ export const OptimizerSection = forwardRef<HTMLElement, OptimizerSectionProps>(
       dailyInterestWaste: res?.dailyInterestWaste,
       monthlySavings: res?.monthlySavings,
       annualSavings: res?.annualSavings,
-    });
+    };
+    saveOptimizerSnapshot(snapshot);
+
+    const cards = snapshotCardsForImport(snapshot);
+    if (cards.length) {
+      void upsertGuestLead.mutateAsync({
+        data: {
+          guestSessionId: getOrCreateGuestSessionId(),
+          name: name.trim() || undefined,
+          email: email.trim() || undefined,
+          cards,
+        },
+      });
+    }
+
     setStep(3);
-  }, [accounts, name, email, totalDebt, res]);
+  }, [accounts, name, email, totalDebt, res, upsertGuestLead]);
 
   return (
     <section

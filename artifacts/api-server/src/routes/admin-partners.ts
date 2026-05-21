@@ -12,7 +12,9 @@ import {
   PatchAdminPartnerResponse,
   PostAdminPartnerBody,
 } from "@workspace/api-zod";
-import { db, partnersTable, planLeadsTable, usersTable } from "@workspace/db";
+import { db, debtLeadsTable, partnersTable, usersTable } from "@workspace/db";
+import { loadLeadCards } from "../lib/debt-lead-service";
+import { aggregateLeadCards } from "../lib/lead-mapper";
 import { resolveAdminUserPlanDisplayStatus } from "../lib/plan-lead-display-status";
 import { requireAdmin } from "../middleware/requireAdmin";
 
@@ -22,82 +24,82 @@ type LeadTab = "all" | "on_review" | "in_progress" | "won" | "rejected";
 
 function onReviewCountExpr() {
   return sql<number>`(
-    SELECT count(*)::int FROM ${planLeadsTable}
-    WHERE ${planLeadsTable.partnerId} = ${partnersTable.id}
-      AND ${planLeadsTable.status} = 'in_progress'
-      AND ${planLeadsTable.partnerAcceptedAt} IS NULL
+    SELECT count(*)::int FROM ${debtLeadsTable}
+    WHERE ${debtLeadsTable.partnerId} = ${partnersTable.id}
+      AND ${debtLeadsTable.status} = 'in_progress'
+      AND ${debtLeadsTable.partnerAcceptedAt} IS NULL
   )`.mapWith(Number);
 }
 
 function inProgressCountExpr() {
   return sql<number>`(
-    SELECT count(*)::int FROM ${planLeadsTable}
-    WHERE ${planLeadsTable.partnerId} = ${partnersTable.id}
-      AND ${planLeadsTable.status} = 'in_progress'
-      AND ${planLeadsTable.partnerAcceptedAt} IS NOT NULL
+    SELECT count(*)::int FROM ${debtLeadsTable}
+    WHERE ${debtLeadsTable.partnerId} = ${partnersTable.id}
+      AND ${debtLeadsTable.status} = 'in_progress'
+      AND ${debtLeadsTable.partnerAcceptedAt} IS NOT NULL
   )`.mapWith(Number);
 }
 
 function leadTabFilter(partnerId: number, leadTab: LeadTab): SQL | undefined {
-  const base = eq(planLeadsTable.partnerId, partnerId);
+  const base = eq(debtLeadsTable.partnerId, partnerId);
   switch (leadTab) {
     case "on_review":
       return and(
         base,
-        eq(planLeadsTable.status, "in_progress"),
-        isNull(planLeadsTable.partnerAcceptedAt),
+        eq(debtLeadsTable.status, "in_progress"),
+        isNull(debtLeadsTable.partnerAcceptedAt),
       );
     case "in_progress":
       return and(
         base,
-        eq(planLeadsTable.status, "in_progress"),
-        isNotNull(planLeadsTable.partnerAcceptedAt),
+        eq(debtLeadsTable.status, "in_progress"),
+        isNotNull(debtLeadsTable.partnerAcceptedAt),
       );
     case "all":
       return base;
     case "won":
-      return and(base, eq(planLeadsTable.status, "won"));
+      return and(base, eq(debtLeadsTable.status, "won"));
     case "rejected":
-      return and(base, eq(planLeadsTable.status, "denied"));
+      return and(base, eq(debtLeadsTable.status, "denied"));
     default:
       return base;
   }
 }
 
 async function fetchLeadCounts(partnerId: number) {
-  const partnerCond = eq(planLeadsTable.partnerId, partnerId);
+  const partnerCond = eq(debtLeadsTable.partnerId, partnerId);
 
   const [{ value: onReview }] = await db
     .select({ value: count() })
-    .from(planLeadsTable)
+    .from(debtLeadsTable)
     .where(
       and(
         partnerCond,
-        eq(planLeadsTable.status, "in_progress"),
-        isNull(planLeadsTable.partnerAcceptedAt),
+        eq(debtLeadsTable.status, "in_progress"),
+        isNull(debtLeadsTable.partnerAcceptedAt),
       ),
     );
 
   const [{ value: inProgress }] = await db
     .select({ value: count() })
-    .from(planLeadsTable)
+    .from(debtLeadsTable)
     .where(
       and(
         partnerCond,
-        eq(planLeadsTable.status, "in_progress"),
-        isNotNull(planLeadsTable.partnerAcceptedAt),
+        eq(debtLeadsTable.status, "in_progress"),
+        isNotNull(debtLeadsTable.partnerAcceptedAt),
       ),
     );
 
   const [{ value: won }] = await db
     .select({ value: count() })
-    .from(planLeadsTable)
-    .where(and(partnerCond, eq(planLeadsTable.status, "won")));
+    .from(debtLeadsTable)
+    .where(and(partnerCond, eq(debtLeadsTable.status, "won")));
 
   const [{ value: rejected }] = await db
     .select({ value: count() })
-    .from(planLeadsTable)
-    .where(and(partnerCond, eq(planLeadsTable.status, "denied")));
+    .from(debtLeadsTable)
+    .where(and(partnerCond, eq(debtLeadsTable.status, "denied")));
 
   return { onReview, inProgress, won, rejected };
 }
@@ -140,40 +142,35 @@ router.get("/admin/partners/:id/plan-leads", ...requireAdmin, async (req, res, n
 
     const [{ value: total }] = await db
       .select({ value: count() })
-      .from(planLeadsTable)
+      .from(debtLeadsTable)
       .where(where);
 
     const rows = await db
       .select({
-        lead: planLeadsTable,
+        lead: debtLeadsTable,
         userEmail: usersTable.email,
         firstName: usersTable.firstName,
         lastName: usersTable.lastName,
       })
-      .from(planLeadsTable)
-      .innerJoin(usersTable, eq(planLeadsTable.userId, usersTable.id))
+      .from(debtLeadsTable)
+      .innerJoin(usersTable, eq(debtLeadsTable.userId, usersTable.id))
       .where(where)
-      .orderBy(desc(planLeadsTable.createdAt))
+      .orderBy(desc(debtLeadsTable.createdAt))
       .limit(pageSize)
       .offset(offset);
 
-    res.json(
-      GetAdminPartnerPlanLeadsResponse.parse({
-        partner: {
-          id: partner.id,
-          name: partner.name,
-          createdAt: partner.createdAt.toISOString(),
-          isActive: partner.isActive,
-        },
-        leadCounts,
-        planLeads: rows.map(({ lead, userEmail, firstName, lastName }) => ({
+    const planLeads = await Promise.all(
+      rows.map(async ({ lead, userEmail, firstName, lastName }) => {
+        const cards = await loadLeadCards(lead.id);
+        const agg = aggregateLeadCards(cards);
+        return {
           id: lead.id,
-          userId: lead.userId,
-          brand: lead.brand,
-          balance: Number(lead.balance),
-          currentApr: Number(lead.currentApr),
-          targetApr: Number(lead.targetApr),
-          estimatedAnnualSavings: Number(lead.estimatedAnnualSavings),
+          userId: lead.userId!,
+          brand: agg.cardCount > 1 ? `${agg.primaryBrand} (+${agg.cardCount - 1})` : agg.primaryBrand,
+          balance: agg.totalBalance,
+          currentApr: agg.weightedCurrentApr,
+          targetApr: agg.targetApr,
+          estimatedAnnualSavings: agg.totalEstimatedSavings,
           status: lead.status,
           displayStatus: resolveAdminUserPlanDisplayStatus({
             status: lead.status,
@@ -185,7 +182,20 @@ router.get("/admin/partners/:id/plan-leads", ...requireAdmin, async (req, res, n
           lastName,
           sentToPartnerAt: lead.sentToPartnerAt?.toISOString() ?? null,
           createdAt: lead.createdAt.toISOString(),
-        })),
+        };
+      }),
+    );
+
+    res.json(
+      GetAdminPartnerPlanLeadsResponse.parse({
+        partner: {
+          id: partner.id,
+          name: partner.name,
+          createdAt: partner.createdAt.toISOString(),
+          isActive: partner.isActive,
+        },
+        leadCounts,
+        planLeads,
         total,
         page,
         pageSize,

@@ -9,8 +9,9 @@ import {
   GetAdminUsersQueryParams,
   GetAdminUsersResponse,
 } from "@workspace/api-zod";
-import { db, partnersTable, planLeadsTable, usersTable } from "@workspace/db";
+import { db, debtLeadsTable, partnersTable, usersTable } from "@workspace/db";
 import { mapAdminPlanLeadListRow } from "../lib/admin-plan-lead-mapper";
+import { loadLeadCards } from "../lib/debt-lead-service";
 import { USER_ROLE } from "../lib/user-roles";
 import { requireAdmin } from "../middleware/requireAdmin";
 
@@ -19,14 +20,14 @@ const router: IRouter = Router();
 const subscribedCond = sql`coalesce(trim(${usersTable.stripeSubscriptionId}), '') <> ''`;
 
 const levelExpr = sql<number>`(
-  SELECT count(*)::int FROM ${planLeadsTable}
-  WHERE ${planLeadsTable.userId} = ${usersTable.id}
-    AND ${planLeadsTable.status} = 'in_progress'
+  SELECT count(*)::int FROM ${debtLeadsTable}
+  WHERE ${debtLeadsTable.userId} = ${usersTable.id}
+    AND ${debtLeadsTable.status} = 'in_progress'
 )`.mapWith(Number);
 
 const planCountExpr = sql<number>`(
-  SELECT count(*)::int FROM ${planLeadsTable}
-  WHERE ${planLeadsTable.userId} = ${usersTable.id}
+  SELECT count(*)::int FROM ${debtLeadsTable}
+  WHERE ${debtLeadsTable.userId} = ${usersTable.id}
 )`.mapWith(Number);
 
 function monthsSince(createdAt: Date): number {
@@ -81,30 +82,35 @@ router.get("/admin/users/:id/plans", ...requireAdmin, async (req, res, next) => 
     }
     const { page, pageSize } = queryParsed.data;
     const offset = (page - 1) * pageSize;
-    const listWhere = eq(planLeadsTable.userId, userId);
+    const listWhere = eq(debtLeadsTable.userId, userId);
 
     const [{ value: total }] = await db
       .select({ value: count() })
-      .from(planLeadsTable)
+      .from(debtLeadsTable)
       .where(listWhere);
 
     const rows = await db
       .select({
-        lead: planLeadsTable,
+        lead: debtLeadsTable,
         partnerName: partnersTable.name,
       })
-      .from(planLeadsTable)
-      .leftJoin(partnersTable, eq(planLeadsTable.partnerId, partnersTable.id))
+      .from(debtLeadsTable)
+      .leftJoin(partnersTable, eq(debtLeadsTable.partnerId, partnersTable.id))
       .where(listWhere)
-      .orderBy(desc(planLeadsTable.createdAt))
+      .orderBy(desc(debtLeadsTable.createdAt))
       .limit(pageSize)
       .offset(offset);
 
+    const plans = await Promise.all(
+      rows.map(async (r) => {
+        const cards = await loadLeadCards(r.lead.id);
+        return mapAdminPlanLeadListRow(r.lead, cards, r.partnerName);
+      }),
+    );
+
     res.json(
       GetAdminUserPlansResponse.parse({
-        plans: rows.map((r) =>
-          mapAdminPlanLeadListRow({ ...r.lead, partnerName: r.partnerName }),
-        ),
+        plans,
         total,
         page,
         pageSize,
@@ -132,15 +138,15 @@ router.get("/admin/users/:id", ...requireAdmin, async (req, res, next) => {
 
     const [{ value: currentPlansCount }] = await db
       .select({ value: count() })
-      .from(planLeadsTable)
+      .from(debtLeadsTable)
       .where(
-        and(eq(planLeadsTable.userId, userId), eq(planLeadsTable.status, "in_progress")),
+        and(eq(debtLeadsTable.userId, userId), eq(debtLeadsTable.status, "in_progress")),
       );
 
     const [{ value: createdPlansCount }] = await db
       .select({ value: count() })
-      .from(planLeadsTable)
-      .where(eq(planLeadsTable.userId, userId));
+      .from(debtLeadsTable)
+      .where(eq(debtLeadsTable.userId, userId));
 
     res.json(
       GetAdminUserResponse.parse({

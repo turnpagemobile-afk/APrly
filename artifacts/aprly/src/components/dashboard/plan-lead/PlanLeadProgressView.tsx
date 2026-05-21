@@ -1,6 +1,7 @@
 import { CreditCard, Handshake } from "lucide-react";
 import type { PlanLeadDetail } from "@workspace/api-client-react";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
+import { LeadCardsList } from "@/components/dashboard/plan-lead/LeadCardsList";
 import { PlanLeadMetricsGrid } from "@/components/dashboard/plan-lead/PlanLeadMetricsGrid";
 import { HardshipPortalStepper } from "@/components/dashboard/plan-lead/HardshipPortalStepper";
 
@@ -31,7 +32,11 @@ export function PlanLeadProgressView({ detail }: PlanLeadProgressViewProps) {
           <CreditCard className="h-6 w-6 text-primary" aria-hidden="true" />
         </div>
         <div>
-          <h1 className="text-xl font-black text-foreground">{detail.brand}</h1>
+          <h1 className="text-xl font-black text-foreground">
+            {detail.cardCount > 1
+              ? `${planLeadDetailContent.packageTitle} · ${detail.cardCount} cards`
+              : detail.brand}
+          </h1>
         </div>
       </div>
 
@@ -44,6 +49,15 @@ export function PlanLeadProgressView({ detail }: PlanLeadProgressViewProps) {
       </section>
 
       <PlanLeadMetricsGrid detail={detail} />
+
+      {detail.cards.length > 0 ? (
+        <section className="space-y-3">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+            {planLeadDetailContent.cardsSection}
+          </h2>
+          <LeadCardsList cards={detail.cards} />
+        </section>
+      ) : null}
 
       {detail.partner ? (
         <article className="rounded-lg border border-border/60 bg-card p-5 shadow-sm">

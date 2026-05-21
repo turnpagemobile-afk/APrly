@@ -69,6 +69,8 @@ import type {
   SubscriptionCheckoutPayload,
   SubscriptionCheckoutStatusResponse,
   UpdatePlanLeadStatusInput,
+  UpsertGuestLeadInput,
+  UpsertGuestLeadResponse,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -325,6 +327,77 @@ export const useCalculateOptimization = <
   TContext
 > => {
   return useMutation(getCalculateOptimizationMutationOptions(options));
+};
+
+export const getUpsertGuestLeadUrl = () => `/api/optimizer/guest-lead`;
+
+export const upsertGuestLead = async (
+  upsertGuestLeadInput: UpsertGuestLeadInput,
+  options?: RequestInit,
+): Promise<UpsertGuestLeadResponse> => {
+  return customFetch<UpsertGuestLeadResponse>(getUpsertGuestLeadUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(upsertGuestLeadInput),
+  });
+};
+
+export const getUpsertGuestLeadMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof upsertGuestLead>>,
+    TError,
+    { data: BodyType<UpsertGuestLeadInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof upsertGuestLead>>,
+  TError,
+  { data: BodyType<UpsertGuestLeadInput> },
+  TContext
+> => {
+  const mutationKey = ["upsertGuestLead"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof upsertGuestLead>>,
+    { data: BodyType<UpsertGuestLeadInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+    return upsertGuestLead(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export const useUpsertGuestLead = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof upsertGuestLead>>,
+    TError,
+    { data: BodyType<UpsertGuestLeadInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof upsertGuestLead>>,
+  TError,
+  { data: BodyType<UpsertGuestLeadInput> },
+  TContext
+> => {
+  return useMutation(getUpsertGuestLeadMutationOptions(options));
 };
 
 /**

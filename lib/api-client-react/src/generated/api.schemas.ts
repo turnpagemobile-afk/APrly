@@ -219,6 +219,15 @@ export const PlanLeadStatus = {
   denied: "denied",
 } as const;
 
+export interface LeadCardItem {
+  id: number;
+  brand: string;
+  balance: number;
+  currentApr: number;
+  targetApr: number;
+  estimatedAnnualSavings: number;
+}
+
 export interface PlanLead {
   id: number;
   brand: string;
@@ -227,6 +236,8 @@ export interface PlanLead {
   targetApr: number;
   estimatedAnnualSavings: number;
   status: PlanLeadStatus;
+  /** @minimum 0 */
+  cardCount: number;
   createdAt: string;
 }
 
@@ -348,6 +359,9 @@ export interface PlanLeadDetail {
   targetApr: number;
   estimatedAnnualSavings: number;
   status: PlanLeadStatus;
+  /** @minimum 0 */
+  cardCount: number;
+  cards: LeadCardItem[];
   createdAt: string;
   partnerId?: number | null;
   sentToPartnerAt?: string | null;
@@ -399,6 +413,31 @@ export interface RegisterAndCheckoutInput {
    */
   confirmPassword: string;
   termsAccepted: boolean;
+  /** @maxLength 64 */
+  guestSessionId?: string;
+}
+
+export interface UpsertGuestLeadInput {
+  /** @minLength 8 @maxLength 64 */
+  guestSessionId: string;
+  /** @maxLength 200 */
+  name?: string;
+  /** @maxLength 254 */
+  email?: string;
+  cards: ImportCardItem[];
+}
+
+export interface UpsertGuestLeadResponse {
+  leadId: number;
+  id: number;
+  status: PlanLeadStatus;
+  cardCount: number;
+  totalBalance: number;
+  totalEstimatedSavings: number;
+  primaryBrand: string;
+  currentApr: number;
+  targetApr: number;
+  createdAt: string;
 }
 
 export interface RegisterAndCheckoutPayload {

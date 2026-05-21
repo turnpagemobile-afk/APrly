@@ -1,9 +1,9 @@
 import { Router, type IRouter } from "express";
-import { asc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { GetDashboardSummaryResponse, GetDashboardTabResponse } from "@workspace/api-zod";
-import { db, planLeadsTable, userCardsTable, usersTable } from "@workspace/db";
+import { db, userCardsTable, usersTable } from "@workspace/db";
+import { listPlanLeadRowsForUser } from "../lib/debt-lead-service";
 import { resolveSubscriptionActive } from "../lib/subscription-status";
-import { mapPlanLeadRow } from "../lib/plan-lead-mapper";
 import { requireAuth } from "../middleware/requireAuth";
 
 const router: IRouter = Router();
@@ -115,13 +115,7 @@ router.get("/dashboard/tab", requireAuth, async (req, res, next) => {
 
     const subscriptionActive = await resolveSubscriptionActive(user);
 
-    const plans = await db
-      .select()
-      .from(planLeadsTable)
-      .where(eq(planLeadsTable.userId, userId))
-      .orderBy(asc(planLeadsTable.createdAt));
-
-    const mappedPlans = plans.map(mapPlanLeadRow);
+    const mappedPlans = await listPlanLeadRowsForUser(userId);
     const totalDebt = mappedPlans.reduce((sum, p) => sum + p.balance, 0);
     const estimatedAnnualSavings = mappedPlans.reduce(
       (sum, p) => sum + p.estimatedAnnualSavings,

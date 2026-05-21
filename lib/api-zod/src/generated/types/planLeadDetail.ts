@@ -6,11 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { HardshipPortal } from "./hardshipPortal";
+import type { LeadCardItem } from "./leadCardItem";
 import type { Partner } from "./partner";
 import type { PlanLeadStatus } from "./planLeadStatus";
 
 /**
- * Plan lead snapshot. For status `recommended`, partner fields are null.
+ * Debt lead package with card breakdown. For status `recommended`, partner fields are null.
 After POST .../send (`in_progress` or later `won`), partnerId, sentToPartnerAt,
 and partner are always set; hardshipPortal is included for in_progress and won.
 
@@ -22,6 +23,9 @@ export interface PlanLeadDetail {
   currentApr: number;
   targetApr: number;
   estimatedAnnualSavings: number;
+  /** @minimum 0 */
+  cardCount: number;
+  cards: LeadCardItem[];
   status: PlanLeadStatus;
   createdAt: Date;
   partnerId?: number | null;

@@ -45,7 +45,7 @@ COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
 - `deploy` (`.github/workflows/deploy.yml`) auto-triggers when `validate`
   finishes successfully on `main`. Also exposed as `workflow_dispatch`.
 - Deploy script: `git fetch + reset --hard origin/main` -> sequential `build` (`api-server`, `frontend`, `db-migrate`) with
-  `COMPOSE_PARALLEL_LIMIT=1` -> `up -d` -> `db-migrate` -> `db-seed` -> healthcheck `https://aprly.ai/api/healthz`.
+  `COMPOSE_PARALLEL_LIMIT=1` -> `up -d` -> `db-migrate` -> `db-seed` -> healthcheck `https://dev.aprly.ai/api/healthz`.
 - SSH step timeout **45m** (job **50m**). Full log append: `/var/www/aprly/.deploy-last.log`.
 
 ## Manual deployment (when CI is unavailable)
@@ -68,7 +68,7 @@ $COMPOSE --profile ops build db-migrate
 $COMPOSE up -d
 $COMPOSE --profile ops run --rm db-migrate
 $COMPOSE --profile ops run --rm db-seed
-curl -fsS https://aprly.ai/api/healthz && echo OK
+curl -fsS https://dev.aprly.ai/api/healthz && echo OK
 # Legacy HTTP by IP (still served on port 80 default_server):
 curl -fsS http://134.122.126.71/api/healthz && echo OK
 ```
@@ -110,7 +110,7 @@ After a failed deploy or PWA issue on prod:
 ```bash
 tail -100 /var/www/aprly/.deploy-last.log   # CI
 # Browser: install from /dashboard Home tab; offline banner when navigator.onLine is false
-curl -fsS https://aprly.ai/api/healthz
+curl -fsS https://dev.aprly.ai/api/healthz
 ```
 
 **Smoke checklist**
@@ -157,6 +157,7 @@ After rollback, fix the bug on `petrychenko_dev` and merge a forward fix to
 | --- | --- |
 | Open psql | `$COMPOSE exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"` |
 | Re-run migrations only | `$COMPOSE --profile ops run --rm db-migrate` (applies SQL from `lib/db/migrations/` via `drizzle-kit migrate`) |
+| Local dev (repo root) | `pnpm run db:migrate` with `DATABASE_URL`, or `docker compose run --rm db-migrate` after new files in `lib/db/migrations/` |
 | Re-run seed only | `$COMPOSE --profile ops run --rm db-seed` (check logs for `[seed] admin user id=…`; `skip admin user` means `ADMIN_SEED_PASSWORD` was not passed into the container) |
 | Quick row count | `$COMPOSE exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c 'SELECT count(*) FROM leads;'` |
 | Backup (tar+psql dump) | `$COMPOSE exec db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > /var/www/aprly/backups/aprly-$(date -u +%Y%m%dT%H%M%SZ).sql` |
@@ -220,11 +221,13 @@ env), follow with
   add names to `external` for packages that truly cannot be bundled; see the
   comment block above `external` in `build.mjs`.
 
-## HTTPS (aprly.ai + Let’s Encrypt)
+## HTTPS (dev.aprly.ai + Let’s Encrypt)
 
-Canonical production URL: **`https://aprly.ai`** (DNS A → droplet).
+Canonical production URL: **`https://dev.aprly.ai`** (DNS A `dev` → droplet). Apex **`aprly.ai`** / **`www`** stay on GoDaddy parking (not this nginx).
 
-**Step-by-step (Ukrainian):** [deploy/droplet-aprly-ai-uk.md](./droplet-aprly-ai-uk.md)
+**Step-by-step (Ukrainian):** [deploy/droplet-dev-aprly-ai-uk.md](./droplet-dev-aprly-ai-uk.md)
+
+Legacy apex runbook (superseded): [deploy/droplet-aprly-ai-uk.md](./droplet-aprly-ai-uk.md)
 
 Legacy nip.io URL (until decommissioned): **`https://134-122-126-71.nip.io`** — see [droplet-https-uk.md](./droplet-https-uk.md).
 

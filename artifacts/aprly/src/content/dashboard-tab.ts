@@ -25,6 +25,7 @@ export const dashboardTabContent = {
     addAriaLabel: "Add bank account",
   },
   planCard: {
+    cardsLabel: "cards",
     estimatedSavings: "Est. Savings",
     perYear: "/yr",
     negotiate: "Negotiate",

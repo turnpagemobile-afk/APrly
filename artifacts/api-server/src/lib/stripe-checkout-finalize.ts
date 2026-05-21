@@ -5,6 +5,7 @@ import {
   registrationIntentsTable,
   usersTable,
 } from "@workspace/db";
+import { attachGuestLeadsToUser } from "./debt-lead-service";
 
 function isDuplicateKeyError(err: unknown): boolean {
   return (
@@ -46,6 +47,7 @@ export async function finalizeCheckoutSessionIfNeeded(
       .update(registrationIntentsTable)
       .set({ status: "paid" })
       .where(eq(registrationIntentsTable.id, intentId));
+    await attachGuestLeadsToUser(existingUser.id, intent.guestSessionId);
     return;
   }
 
@@ -58,15 +60,21 @@ export async function finalizeCheckoutSessionIfNeeded(
       ? session.subscription
       : session.subscription?.id ?? null;
 
+  let newUserId: number | undefined;
+
   try {
     await db.transaction(async (tx) => {
-      await tx.insert(usersTable).values({
-        email,
-        passwordHash: intent.passwordHash,
-        role: "user",
-        stripeCustomerId: customerId,
-        stripeSubscriptionId: subscriptionId,
-      });
+      const [inserted] = await tx
+        .insert(usersTable)
+        .values({
+          email,
+          passwordHash: intent.passwordHash,
+          role: "user",
+          stripeCustomerId: customerId,
+          stripeSubscriptionId: subscriptionId,
+        })
+        .returning({ id: usersTable.id });
+      newUserId = inserted?.id;
       await tx
         .update(registrationIntentsTable)
         .set({ status: "paid" })
@@ -74,12 +82,24 @@ export async function finalizeCheckoutSessionIfNeeded(
     });
   } catch (err) {
     if (isDuplicateKeyError(err)) {
+      const [user] = await db
+        .select({ id: usersTable.id })
+        .from(usersTable)
+        .where(eq(usersTable.email, email))
+        .limit(1);
       await db
         .update(registrationIntentsTable)
         .set({ status: "paid" })
         .where(eq(registrationIntentsTable.id, intentId));
+      if (user) {
+        await attachGuestLeadsToUser(user.id, intent.guestSessionId);
+      }
       return;
     }
     throw err;
+  }
+
+  if (newUserId) {
+    await attachGuestLeadsToUser(newUserId, intent.guestSessionId);
   }
 }

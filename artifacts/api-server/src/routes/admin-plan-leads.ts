@@ -8,8 +8,9 @@ import {
   PostAdminPlanLeadRejectParams,
   PostAdminPlanLeadStartWorkingParams,
 } from "@workspace/api-zod";
-import { db, partnersTable, planLeadsTable, usersTable } from "@workspace/db";
+import { db, debtLeadsTable, partnersTable, usersTable } from "@workspace/db";
 import { mapAdminPlanLeadDetail } from "../lib/admin-plan-lead-mapper";
+import { loadDebtLeadById, loadLeadCards } from "../lib/debt-lead-service";
 import { buildPlanLeadPdfBuffer } from "../lib/plan-lead-pdf";
 import { HARDSHIP_STEPS_TOTAL } from "../lib/hardship-steps";
 import { USER_ROLE } from "../lib/user-roles";
@@ -18,12 +19,7 @@ import { requireAdmin } from "../middleware/requireAdmin";
 const router: IRouter = Router();
 
 async function loadPlanLead(planId: number) {
-  const [row] = await db
-    .select()
-    .from(planLeadsTable)
-    .where(eq(planLeadsTable.id, planId))
-    .limit(1);
-  return row ?? null;
+  return loadDebtLeadById(planId);
 }
 
 async function loadUser(userId: number) {
@@ -52,12 +48,13 @@ async function loadPartner(partnerId: number | null) {
 
 async function buildDetailResponse(planId: number) {
   const row = await loadPlanLead(planId);
-  if (!row) return null;
+  if (!row?.userId) return null;
   const user = await loadUser(row.userId);
   if (!user) return null;
+  const cards = await loadLeadCards(planId);
   const partner = await loadPartner(row.partnerId);
   return GetAdminUserPlanResponse.parse(
-    mapAdminPlanLeadDetail(row, user, partner),
+    mapAdminPlanLeadDetail(row, cards, user, partner),
   );
 }
 
@@ -127,13 +124,18 @@ router.get("/admin/plan-leads/:planId/pdf", ...requireAdmin, async (req, res, ne
       res.status(404).json({ error: "Plan lead not found" });
       return;
     }
+    if (!row.userId) {
+      res.status(404).json({ error: "Plan lead not found" });
+      return;
+    }
     const user = await loadUser(row.userId);
     if (!user) {
       res.status(404).json({ error: "Plan lead not found" });
       return;
     }
+    const cards = await loadLeadCards(planId);
     const partner = await loadPartner(row.partnerId);
-    const pdf = await buildPlanLeadPdfBuffer({ lead: row, user, partner });
+    const pdf = await buildPlanLeadPdfBuffer({ lead: row, cards, user, partner });
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
@@ -169,14 +171,14 @@ router.post("/admin/plan-leads/:planId/start-working", ...requireAdmin, async (r
 
     const now = new Date();
     await db
-      .update(planLeadsTable)
+      .update(debtLeadsTable)
       .set({
         partnerAcceptedAt: now,
         hardshipStepsCompleted: 0,
         displayStatusChangedAt: now,
         updatedAt: now,
       })
-      .where(eq(planLeadsTable.id, planId));
+      .where(eq(debtLeadsTable.id, planId));
 
     const detail = await buildDetailResponse(planId);
     if (!detail) {
@@ -223,7 +225,7 @@ router.post("/admin/plan-leads/:planId/complete-step", ...requireAdmin, async (r
           }
         : { hardshipStepsCompleted: nextSteps, updatedAt: now };
 
-    await db.update(planLeadsTable).set(updates).where(eq(planLeadsTable.id, planId));
+    await db.update(debtLeadsTable).set(updates).where(eq(debtLeadsTable.id, planId));
 
     const detail = await buildDetailResponse(planId);
     if (!detail) {
@@ -256,9 +258,9 @@ router.post("/admin/plan-leads/:planId/reject", ...requireAdmin, async (req, res
 
     const now = new Date();
     await db
-      .update(planLeadsTable)
+      .update(debtLeadsTable)
       .set({ status: "denied", displayStatusChangedAt: now, updatedAt: now })
-      .where(eq(planLeadsTable.id, planId));
+      .where(eq(debtLeadsTable.id, planId));
 
     const detail = await buildDetailResponse(planId);
     if (!detail) {
