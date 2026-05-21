@@ -8,12 +8,11 @@ import { ApiError } from "@workspace/api-client-react/custom-fetch";
 import {
   getCheckoutSessionStatus,
   getGetCheckoutSessionStatusQueryKey,
-  getGetMeQueryKey,
-  getMe,
   useImportMyCards,
   usePatchMe,
   useRegisterAndCheckout,
 } from "@workspace/api-client-react";
+import { syncAuthSession } from "@/lib/auth-session";
 import {
   clearOptimizerSnapshot,
   loadOptimizerSnapshot,
@@ -88,13 +87,10 @@ export function SignupCheckoutWizard({
   const [, navigate] = useLocation();
   const queryClient = useQueryClient();
 
-  const syncAuthSession = useCallback(async () => {
-    await queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
-    await queryClient.fetchQuery({
-      queryKey: getGetMeQueryKey(),
-      queryFn: ({ signal }) => getMe({ signal }),
-    });
-  }, [queryClient]);
+  const refreshAuthSession = useCallback(
+    () => syncAuthSession(queryClient),
+    [queryClient],
+  );
   const [step, setStep] = useState<Step>(1);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -187,12 +183,12 @@ export function SignupCheckoutWizard({
       setStep(3);
       if (!sessionSyncedRef.current) {
         sessionSyncedRef.current = true;
-        void syncAuthSession().catch(() => {
+        void refreshAuthSession().catch(() => {
           sessionSyncedRef.current = false;
         });
       }
     }
-  }, [open, step, sessionQuery.data, syncAuthSession]);
+  }, [open, step, sessionQuery.data, refreshAuthSession]);
 
   useEffect(() => {
     if (!open || sessionQuery.data?.status !== "paid") return;
@@ -280,7 +276,7 @@ export function SignupCheckoutWizard({
       await patchMutation.mutateAsync({
         data: { firstName: profileFirst.trim(), lastName: profileLast.trim() },
       });
-      await syncAuthSession();
+      await refreshAuthSession();
       releaseDialogScrollLock();
       onOpenChange(false);
       releaseDialogScrollLock();

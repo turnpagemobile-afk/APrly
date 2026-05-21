@@ -7,9 +7,10 @@ import {
   type ReactNode,
 } from "react";
 import { useLocation } from "wouter";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import {
   getGetMeQueryKey,
+  getMe,
   useGetMe,
   useLogout,
 } from "@workspace/api-client-react";
@@ -33,6 +34,15 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+
+/** Refresh `/me` after login or checkout so protected routes have session data before navigate. */
+export async function syncAuthSession(queryClient: QueryClient): Promise<void> {
+  await queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
+  await queryClient.fetchQuery({
+    queryKey: getGetMeQueryKey(),
+    queryFn: ({ signal }) => getMe({ signal }),
+  });
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [, navigate] = useLocation();
@@ -92,7 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Only block routes on the initial session load. Background refetches (e.g. from
   // dashboard subscription refresh) must not unmount protected pages — that caused
   // an invalidate → isFetching → loader → remount loop.
-  const isAuthPending = meQuery.isLoading && !meQuery.data;
+  const isAuthPending =
+    !meQuery.data && (meQuery.isPending || meQuery.isLoading);
 
   const value: AuthContextValue = {
     user,

@@ -41,7 +41,22 @@ export function useCabinetPwa() {
 
   useEffect(() => {
     setupCabinetPwaHead();
-    registerCabinetSw();
+
+    const scheduleRegister = () => {
+      if (typeof requestIdleCallback === "function") {
+        requestIdleCallback(() => registerCabinetSw(), { timeout: 3000 });
+      } else {
+        window.setTimeout(() => registerCabinetSw(), 0);
+      }
+    };
+
+    if (document.readyState === "complete") {
+      scheduleRegister();
+      return;
+    }
+
+    window.addEventListener("load", scheduleRegister, { once: true });
+    return () => window.removeEventListener("load", scheduleRegister);
   }, []);
 
   useEffect(() => {

@@ -3,8 +3,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getGetDashboardTabQueryKey,
   getGetDashboardTabQueryOptions,
-  getGetMeQueryKey,
-  getMe,
 } from "@workspace/api-client-react";
 import { useSubscriptionRenewalCheckout } from "@/lib/use-subscription-renewal-checkout";
 
@@ -19,10 +17,6 @@ export function useDashboardSubscription(stripeSessionId: string | null = null) 
   useEffect(() => {
     if (invalidatedRef.current) return;
     invalidatedRef.current = true;
-    void queryClient.fetchQuery({
-      queryKey: getGetMeQueryKey(),
-      queryFn: ({ signal }) => getMe({ signal }),
-    });
     void queryClient.invalidateQueries({ queryKey: getGetDashboardTabQueryKey() });
   }, [queryClient]);
 
@@ -39,7 +33,8 @@ export function useDashboardSubscription(stripeSessionId: string | null = null) 
   const hasLeads = tabQuery.data?.hasLeads ?? false;
   const plans = tabQuery.data?.plans ?? [];
   const summary = tabQuery.data?.summary;
-  const isSubscriptionLoading = tabQuery.isLoading && !tabQuery.data;
+  const isSubscriptionLoading =
+    (tabQuery.isPending || tabQuery.isLoading) && !tabQuery.data;
 
   return {
     subscriptionActive,
