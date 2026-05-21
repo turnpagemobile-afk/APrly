@@ -20,12 +20,12 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      navigate("/dashboard");
+      navigate("/dashboard?tab=home");
     }
   }, [isAuthenticated, isLoading, navigate]);
 
   if (!isLoading && isAuthenticated) {
-    return <Redirect to="/dashboard" />;
+    return <Redirect to="/dashboard?tab=home" />;
   }
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -33,7 +33,7 @@ export default function LoginPage() {
     try {
       await login.mutateAsync({ data: { email, password } });
       await queryClient.invalidateQueries({ queryKey: getGetMeQueryKey() });
-      navigate("/dashboard");
+      navigate("/dashboard?tab=home");
     } catch (err: unknown) {
       const msg =
         err instanceof ApiError && typeof err.data === "object" && err.data && "error" in err.data

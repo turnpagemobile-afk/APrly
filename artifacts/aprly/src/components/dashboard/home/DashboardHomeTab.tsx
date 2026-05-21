@@ -1,4 +1,8 @@
-import { useGetDashboardSummary } from "@workspace/api-client-react";
+import {
+  getGetDashboardSummaryQueryKey,
+  useGetDashboardSummary,
+} from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { FaqSection } from "@/components/landing/FaqSection";
 import { dashboardFaqContent } from "@/content/dashboard-home";
@@ -17,9 +21,21 @@ export function DashboardHomeTab({
   subscriptionActive,
   onGoToDashboard,
 }: DashboardHomeTabProps) {
-  const summary = useGetDashboardSummary();
+  const queryClient = useQueryClient();
+  const {
+    data: summaryData,
+    isPending,
+    isLoading,
+    isError,
+    isFetched,
+  } = useGetDashboardSummary();
 
-  if (summary.isLoading) {
+  const retrySummary = () =>
+    queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
+
+  const showLoading = isPending || isLoading;
+
+  if (showLoading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center gap-2 text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
@@ -28,10 +44,32 @@ export function DashboardHomeTab({
     );
   }
 
-  if (summary.isError) {
+  if (isError) {
     return (
       <div className="app-page-cabinet py-16 text-center">
         <p className="text-destructive">Could not load your dashboard.</p>
+        <button
+          type="button"
+          className="mt-6 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+          onClick={() => void retrySummary()}
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (isFetched && !summaryData) {
+    return (
+      <div className="app-page-cabinet py-16 text-center">
+        <p className="text-muted-foreground">No summary data available yet.</p>
+        <button
+          type="button"
+          className="mt-6 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+          onClick={() => void retrySummary()}
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -43,7 +81,7 @@ export function DashboardHomeTab({
       <DashboardStatsRow />
       <DashboardHowItWorksSection />
       <DashboardSummarySection
-        summary={summary.data}
+        summary={summaryData}
         hasActiveSubscription={subscriptionActive}
         onGoToDashboard={onGoToDashboard}
       />

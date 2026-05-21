@@ -1,4 +1,5 @@
 import { registerSW } from "virtual:pwa-register";
+import { notifyCabinetSwNeedRefresh } from "@/lib/pwa/cabinet-sw-refresh";
 
 let registered = false;
 
@@ -8,5 +9,10 @@ export function registerCabinetSw(): void {
   if (!("serviceWorker" in navigator)) return;
 
   registered = true;
-  registerSW({ immediate: true });
+  registerSW({
+    immediate: true,
+    onNeedRefresh() {
+      notifyCabinetSwNeedRefresh();
+    },
+  });
 }

@@ -11,6 +11,7 @@ import { ProfileYourProfileForm } from "@/components/dashboard/profile/ProfileYo
 import { ProfilePasswordForm } from "@/components/dashboard/profile/ProfilePasswordForm";
 import { dashboardProfileContent } from "@/content/dashboard-profile";
 import { useDashboardSubscription } from "@/lib/use-dashboard-subscription";
+import { dashboardTabPath } from "@/lib/dashboard-tab-url";
 
 function readSectionFromUrl(): ProfileSection {
   if (typeof window === "undefined") return "profile";
@@ -44,7 +45,7 @@ export default function DashboardProfilePage() {
 
   const onDashboardTabChange = useCallback(
     (tab: DashboardTab) => {
-      setLocation(tab === "dashboard" ? "/dashboard?tab=dashboard" : "/dashboard");
+      setLocation(dashboardTabPath(tab));
     },
     [setLocation],
   );

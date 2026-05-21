@@ -5,18 +5,18 @@ import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import type { DashboardTab } from "@/components/dashboard/DashboardTabBar";
 import { DashboardHomeTab } from "@/components/dashboard/home/DashboardHomeTab";
 import { DashboardDetailTab } from "@/components/dashboard/DashboardDetailTab";
+import { DashboardTabErrorBoundary } from "@/components/dashboard/DashboardTabErrorBoundary";
 import { useDashboardSubscription } from "@/lib/use-dashboard-subscription";
 import { toast } from "@/hooks/use-toast";
 import { dashboardTabContent } from "@/content/dashboard-tab";
-
-function parseTab(search: string): DashboardTab {
-  const params = new URLSearchParams(search);
-  return params.get("tab") === "dashboard" ? "dashboard" : "home";
-}
+import {
+  dashboardTabPath,
+  parseDashboardTab,
+} from "@/lib/dashboard-tab-url";
 
 function readTabFromUrl(): DashboardTab {
   if (typeof window === "undefined") return "home";
-  return parseTab(window.location.search);
+  return parseDashboardTab(window.location.search);
 }
 
 function readStripeSessionFromUrl(): string | null {
@@ -37,6 +37,17 @@ export default function DashboardPage() {
     const onPopState = () => setActiveTab(readTabFromUrl());
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const tab = readTabFromUrl();
+    const expected = dashboardTabPath(tab);
+    const current = `${window.location.pathname}${window.location.search}`;
+    if (current !== expected) {
+      window.history.replaceState({}, "", expected);
+    }
+    setActiveTab(tab);
   }, []);
 
   useEffect(() => {
@@ -80,7 +91,7 @@ export default function DashboardPage() {
   const setTab = useCallback(
     (tab: DashboardTab) => {
       setActiveTab(tab);
-      setLocation(tab === "dashboard" ? "/dashboard?tab=dashboard" : "/dashboard");
+      setLocation(dashboardTabPath(tab));
     },
     [setLocation],
   );
@@ -120,23 +131,25 @@ export default function DashboardPage() {
       onActivateSubscription={() => void subscription.startCheckout()}
       isCheckoutLoading={subscription.isCheckoutLoading}
     >
-      {activeTab === "dashboard" ? (
-        <DashboardDetailTab
-          subscriptionActive={subscription.subscriptionActive}
-          hasLeads={subscription.hasLeads}
-          plans={subscription.plans}
-          summary={subscription.summary}
-          isSubscriptionError={subscription.isSubscriptionError}
-          onActivateSubscription={() => void subscription.startCheckout()}
-          isCheckoutLoading={subscription.isCheckoutLoading}
-          isPollingReturn={subscription.isPollingReturn}
-        />
-      ) : (
-        <DashboardHomeTab
-          subscriptionActive={subscription.subscriptionActive}
-          onGoToDashboard={() => setTab("dashboard")}
-        />
-      )}
+      <DashboardTabErrorBoundary>
+        {activeTab === "dashboard" ? (
+          <DashboardDetailTab
+            subscriptionActive={subscription.subscriptionActive}
+            hasLeads={subscription.hasLeads}
+            plans={subscription.plans}
+            summary={subscription.summary}
+            isSubscriptionError={subscription.isSubscriptionError}
+            onActivateSubscription={() => void subscription.startCheckout()}
+            isCheckoutLoading={subscription.isCheckoutLoading}
+            isPollingReturn={subscription.isPollingReturn}
+          />
+        ) : (
+          <DashboardHomeTab
+            subscriptionActive={subscription.subscriptionActive}
+            onGoToDashboard={() => setTab("dashboard")}
+          />
+        )}
+      </DashboardTabErrorBoundary>
     </DashboardShell>
   );
 }

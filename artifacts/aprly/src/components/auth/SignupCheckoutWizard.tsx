@@ -284,7 +284,7 @@ export function SignupCheckoutWizard({
       releaseDialogScrollLock();
       onOpenChange(false);
       releaseDialogScrollLock();
-      navigate("/dashboard");
+      navigate("/dashboard?tab=home");
     } catch (err: unknown) {
       setIsFinishing(false);
       toast({

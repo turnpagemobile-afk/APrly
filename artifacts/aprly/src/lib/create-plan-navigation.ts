@@ -6,7 +6,7 @@ export function createPlanHref(returnTo: string): string {
 
 export function readCreatePlanReturnTo(search: string): string {
   const raw = new URLSearchParams(search).get("returnTo");
-  const fallback = "/dashboard";
+  const fallback = "/dashboard?tab=home";
   if (!raw || !raw.startsWith("/dashboard")) return fallback;
   return raw;
 }
