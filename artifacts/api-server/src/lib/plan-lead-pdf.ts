@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import PDFDocument from "pdfkit";
-import type { PlanLead } from "@workspace/db";
+import type { DebtLead, LeadCard } from "@workspace/db";
+import { aggregateLeadCards } from "./lead-mapper";
 import { buildHardshipPortal } from "./build-hardship-portal";
 import { HARDSHIP_STEPS_TOTAL } from "./hardship-steps";
 import {
@@ -25,7 +26,7 @@ const DISPLAY_STATUS_LABELS: Record<AdminUserPlanDisplayStatus, string> = {
   rejected: "Rejected",
 };
 
-const MAIN_STATUS_LABELS: Record<PlanLead["status"], string> = {
+const MAIN_STATUS_LABELS: Record<DebtLead["status"], string> = {
   recommended: "Recommended",
   in_progress: "In progress",
   won: "Won",
@@ -33,7 +34,8 @@ const MAIN_STATUS_LABELS: Record<PlanLead["status"], string> = {
 };
 
 type PdfInput = {
-  lead: PlanLead;
+  lead: DebtLead;
+  cards: LeadCard[];
   user: {
     id: number;
     email: string;
@@ -87,7 +89,7 @@ function resolveAprlyLogoPath(): string | null {
   return null;
 }
 
-function drawPdfHeader(doc: PdfDoc, lead: PlanLead) {
+function drawPdfHeader(doc: PdfDoc, lead: DebtLead, titleBrand: string) {
   const logoPath = resolveAprlyLogoPath();
   let contentTop = MARGIN;
 
@@ -104,7 +106,7 @@ function drawPdfHeader(doc: PdfDoc, lead: PlanLead) {
   }
 
   doc.fillColor("#111111").fontSize(16).font("Helvetica-Bold").text(
-    `Lead #${lead.id} — ${lead.brand}`,
+    `Lead #${lead.id} — ${titleBrand}`,
     MARGIN,
     contentTop,
   );
@@ -136,48 +138,40 @@ type RequiredRow = {
 };
 
 function buildRequiredRows(input: PdfInput): RequiredRow[] {
-  const { lead, partner } = input;
-  const balance = Number(lead.balance);
-  const currentApr = Number(lead.currentApr);
+  const { lead, cards, partner } = input;
+  const agg = aggregateLeadCards(cards);
   const sent = lead.status === "in_progress" || lead.status === "won";
-
-  const source =
-    lead.plaidAccountId != null
-      ? `Plaid account ${lead.plaidAccountId}`
-      : lead.userCardId != null
-        ? `Linked card #${lead.userCardId}`
-        : "Manual entry";
 
   const rows: RequiredRow[] = [
     {
-      field: "Brand",
-      value: lead.brand,
-      required: "Non-empty",
-      ok: lead.brand.trim().length > 0,
+      field: "Cards in package",
+      value: String(agg.cardCount),
+      required: ">= 1",
+      ok: agg.cardCount >= 1,
     },
     {
-      field: "Balance",
-      value: formatCurrency(balance),
+      field: "Total balance",
+      value: formatCurrency(agg.totalBalance),
       required: "> 0",
-      ok: balance > 0,
+      ok: agg.totalBalance > 0,
     },
     {
-      field: "Current APR",
-      value: `${currentApr.toFixed(2)}%`,
+      field: "Weighted APR",
+      value: `${agg.weightedCurrentApr.toFixed(2)}%`,
       required: "> 0",
-      ok: currentApr > 0,
+      ok: agg.weightedCurrentApr > 0,
     },
     {
       field: "Target APR",
-      value: `${Number(lead.targetApr).toFixed(1)}%`,
+      value: `${agg.targetApr.toFixed(1)}%`,
       required: "Set",
-      ok: Number.isFinite(Number(lead.targetApr)),
+      ok: Number.isFinite(agg.targetApr),
     },
     {
       field: "Est. annual savings",
-      value: formatCurrency(Number(lead.estimatedAnnualSavings)),
+      value: formatCurrency(agg.totalEstimatedSavings),
       required: "Set",
-      ok: Number.isFinite(Number(lead.estimatedAnnualSavings)),
+      ok: Number.isFinite(agg.totalEstimatedSavings),
     },
     {
       field: "Main status",
@@ -191,25 +185,26 @@ function buildRequiredRows(input: PdfInput): RequiredRow[] {
       required: "Set",
       ok: true,
     },
-    {
-      field: "Data source",
-      value: source,
-      required: "Identified",
-      ok: true,
-    },
-    {
-      field: "Import validation",
-      value: isValidImportCardForPlanLead({
-        brand: lead.brand,
-        balance,
-        rate: currentApr,
-      })
-        ? "Pass"
-        : "Fail",
-      required: "brand, balance > 0, rate > 0",
-      ok: isValidImportCardForPlanLead({ brand: lead.brand, balance, rate: currentApr }),
-    },
   ];
+
+  for (const card of cards) {
+    const balance = Number(card.balance);
+    const currentApr = Number(card.currentApr);
+    const source =
+      card.plaidAccountId != null
+        ? `Plaid ${card.plaidAccountId}`
+        : card.userCardId != null
+          ? `Card #${card.userCardId}`
+          : "Manual";
+    rows.push(
+      {
+        field: `Card: ${card.brand}`,
+        value: `${formatCurrency(balance)} @ ${currentApr.toFixed(2)}%`,
+        required: source,
+        ok: isValidImportCardForPlanLead({ brand: card.brand, balance, rate: currentApr }),
+      },
+    );
+  }
 
   if (sent) {
     rows.push(
@@ -309,7 +304,8 @@ export function buildPlanLeadPdfBuffer(input: PdfInput): Promise<Buffer> {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    const { lead, user, partner } = input;
+    const { lead, cards, user, partner } = input;
+    const agg = aggregateLeadCards(cards);
     const displayStatus = resolveAdminUserPlanDisplayStatus({
       status: lead.status,
       partnerId: lead.partnerId,
@@ -325,7 +321,11 @@ export function buildPlanLeadPdfBuffer(input: PdfInput): Promise<Buffer> {
 
     const activeStep = hardshipPortal?.steps.find((s) => s.status === "active");
 
-    drawPdfHeader(doc, lead);
+    const headerBrand =
+      agg.cardCount > 1
+        ? `${agg.primaryBrand} (+${agg.cardCount - 1} cards)`
+        : agg.primaryBrand;
+    drawPdfHeader(doc, lead, headerBrand);
 
     drawSectionTitle(doc, "Partner");
     if (partner) {
@@ -356,15 +356,11 @@ export function buildPlanLeadPdfBuffer(input: PdfInput): Promise<Buffer> {
     drawKeyValue(doc, "Last updated", formatDateTime(lead.updatedAt));
 
     drawSectionTitle(doc, "Lead financials");
-    drawKeyValue(doc, "Brand", lead.brand);
-    drawKeyValue(doc, "Debt balance", formatCurrency(Number(lead.balance)));
-    drawKeyValue(doc, "Current APR", `${Number(lead.currentApr).toFixed(2)}%`);
-    drawKeyValue(doc, "Target APR", `${Number(lead.targetApr).toFixed(1)}%`);
-    drawKeyValue(
-      doc,
-      "Est. annual savings",
-      formatCurrency(Number(lead.estimatedAnnualSavings)),
-    );
+    drawKeyValue(doc, "Cards", String(agg.cardCount));
+    drawKeyValue(doc, "Total debt balance", formatCurrency(agg.totalBalance));
+    drawKeyValue(doc, "Weighted APR", `${agg.weightedCurrentApr.toFixed(2)}%`);
+    drawKeyValue(doc, "Target APR", `${agg.targetApr.toFixed(1)}%`);
+    drawKeyValue(doc, "Est. annual savings", formatCurrency(agg.totalEstimatedSavings));
     drawKeyValue(
       doc,
       "Hardship steps",

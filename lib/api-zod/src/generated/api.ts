@@ -92,6 +92,59 @@ export const CalculateOptimizationResponse = zod.object({
 });
 
 /**
+ * @summary Persist pre-registration calculator cards as one guest debt lead
+ */
+export const upsertGuestLeadBodyGuestSessionIdMin = 8;
+export const upsertGuestLeadBodyGuestSessionIdMax = 64;
+
+export const upsertGuestLeadBodyNameMax = 200;
+
+export const upsertGuestLeadBodyEmailMax = 254;
+
+export const upsertGuestLeadBodyCardsItemBalanceExclusiveMin = 0;
+
+export const upsertGuestLeadBodyCardsItemRateExclusiveMin = 0;
+export const upsertGuestLeadBodyCardsItemRateMax = 100;
+
+export const UpsertGuestLeadBody = zod.object({
+  guestSessionId: zod
+    .string()
+    .min(upsertGuestLeadBodyGuestSessionIdMin)
+    .max(upsertGuestLeadBodyGuestSessionIdMax),
+  name: zod.string().max(upsertGuestLeadBodyNameMax).optional(),
+  email: zod.string().email().max(upsertGuestLeadBodyEmailMax).optional(),
+  cards: zod
+    .array(
+      zod.object({
+        brand: zod.string().min(1),
+        balance: zod
+          .number()
+          .gt(upsertGuestLeadBodyCardsItemBalanceExclusiveMin),
+        rate: zod
+          .number()
+          .gt(upsertGuestLeadBodyCardsItemRateExclusiveMin)
+          .max(upsertGuestLeadBodyCardsItemRateMax),
+        accountId: zod.string().optional(),
+        source: zod.enum(["manual", "plaid"]).optional(),
+      }),
+    )
+    .min(1),
+});
+
+export const UpsertGuestLeadResponse = zod.object({
+  leadId: zod.number(),
+  id: zod.number(),
+  status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+  cardCount: zod.number(),
+  totalBalance: zod.number(),
+  totalEstimatedSavings: zod.number(),
+  primaryBrand: zod.string(),
+  currentApr: zod.number(),
+  targetApr: zod.number(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
  * @summary Create a Plaid Link sandbox token
  */
 export const CreatePlaidLinkTokenResponse = zod.object({
@@ -205,6 +258,8 @@ export const GetDashboardSummaryResponse = zod.object({
 /**
  * @summary Dashboard tab context — subscription state and whether the user has leads
  */
+export const getDashboardTabResponsePlansItemCardCountMin = 0;
+
 export const GetDashboardTabResponse = zod.object({
   subscriptionActive: zod
     .boolean()
@@ -213,16 +268,25 @@ export const GetDashboardTabResponse = zod.object({
     .boolean()
     .describe("True when the user has at least one plan lead"),
   plans: zod.array(
-    zod.object({
-      id: zod.number(),
-      brand: zod.string(),
-      balance: zod.number(),
-      currentApr: zod.number(),
-      targetApr: zod.number(),
-      estimatedAnnualSavings: zod.number(),
-      status: zod.enum(["recommended", "in_progress", "won", "denied"]),
-      createdAt: zod.coerce.date(),
-    }),
+    zod
+      .object({
+        id: zod.number(),
+        brand: zod
+          .string()
+          .describe("Primary card brand or label for the lead package"),
+        balance: zod.number().describe("Total balance across cards"),
+        currentApr: zod.number().describe("Balance-weighted average APR"),
+        targetApr: zod.number(),
+        estimatedAnnualSavings: zod
+          .number()
+          .describe("Sum of estimated savings across cards"),
+        cardCount: zod
+          .number()
+          .min(getDashboardTabResponsePlansItemCardCountMin),
+        status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+        createdAt: zod.coerce.date(),
+      })
+      .describe("Debt lead summary (aggregated across cards in the package)"),
   ),
   summary: zod.object({
     totalDebt: zod.number(),
@@ -241,6 +305,8 @@ export const registerAndCheckoutBodyPasswordMax = 20;
 export const registerAndCheckoutBodyConfirmPasswordMin = 8;
 export const registerAndCheckoutBodyConfirmPasswordMax = 20;
 
+export const registerAndCheckoutBodyGuestSessionIdMax = 64;
+
 export const RegisterAndCheckoutBody = zod.object({
   email: zod.string().email().max(registerAndCheckoutBodyEmailMax),
   password: zod
@@ -252,6 +318,11 @@ export const RegisterAndCheckoutBody = zod.object({
     .min(registerAndCheckoutBodyConfirmPasswordMin)
     .max(registerAndCheckoutBodyConfirmPasswordMax),
   termsAccepted: zod.boolean(),
+  guestSessionId: zod
+    .string()
+    .max(registerAndCheckoutBodyGuestSessionIdMax)
+    .optional()
+    .describe("Links pre-registration calculator debt lead to the new user"),
 });
 
 export const RegisterAndCheckoutResponse = zod.object({
@@ -432,19 +503,30 @@ export const CreateDetailedPlanBody = zod.object({
 
 export const createDetailedPlanResponseCreatedCountMin = 0;
 
+export const createDetailedPlanResponsePlansItemCardCountMin = 0;
+
 export const CreateDetailedPlanResponse = zod.object({
   createdCount: zod.number().min(createDetailedPlanResponseCreatedCountMin),
   plans: zod.array(
-    zod.object({
-      id: zod.number(),
-      brand: zod.string(),
-      balance: zod.number(),
-      currentApr: zod.number(),
-      targetApr: zod.number(),
-      estimatedAnnualSavings: zod.number(),
-      status: zod.enum(["recommended", "in_progress", "won", "denied"]),
-      createdAt: zod.coerce.date(),
-    }),
+    zod
+      .object({
+        id: zod.number(),
+        brand: zod
+          .string()
+          .describe("Primary card brand or label for the lead package"),
+        balance: zod.number().describe("Total balance across cards"),
+        currentApr: zod.number().describe("Balance-weighted average APR"),
+        targetApr: zod.number(),
+        estimatedAnnualSavings: zod
+          .number()
+          .describe("Sum of estimated savings across cards"),
+        cardCount: zod
+          .number()
+          .min(createDetailedPlanResponsePlansItemCardCountMin),
+        status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+        createdAt: zod.coerce.date(),
+      })
+      .describe("Debt lead summary (aggregated across cards in the package)"),
   ),
 });
 
@@ -476,6 +558,8 @@ export const GetPlanLeadParams = zod.object({
   id: zod.coerce.number().min(1),
 });
 
+export const getPlanLeadResponseCardCountMin = 0;
+
 export const getPlanLeadResponseHardshipPortalOneProgressMin = 0;
 export const getPlanLeadResponseHardshipPortalOneProgressMax = 100;
 
@@ -487,6 +571,17 @@ export const GetPlanLeadResponse = zod
     currentApr: zod.number(),
     targetApr: zod.number(),
     estimatedAnnualSavings: zod.number(),
+    cardCount: zod.number().min(getPlanLeadResponseCardCountMin),
+    cards: zod.array(
+      zod.object({
+        id: zod.number(),
+        brand: zod.string(),
+        balance: zod.number(),
+        currentApr: zod.number(),
+        targetApr: zod.number(),
+        estimatedAnnualSavings: zod.number(),
+      }),
+    ),
     status: zod.enum(["recommended", "in_progress", "won", "denied"]),
     createdAt: zod.coerce.date(),
     partnerId: zod.number().nullish(),
@@ -525,7 +620,7 @@ export const GetPlanLeadResponse = zod
       .nullish(),
   })
   .describe(
-    "Plan lead snapshot. For status `recommended`, partner fields are null.\nAfter POST ...\/send (`in_progress` or later `won`), partnerId, sentToPartnerAt,\nand partner are always set; hardshipPortal is included for in_progress and won.\n",
+    "Debt lead package with card breakdown. For status `recommended`, partner fields are null.\nAfter POST ...\/send (`in_progress` or later `won`), partnerId, sentToPartnerAt,\nand partner are always set; hardshipPortal is included for in_progress and won.\n",
   );
 
 /**
@@ -540,16 +635,25 @@ export const UpdatePlanLeadStatusBody = zod.object({
   status: zod.enum(["recommended", "in_progress", "won", "denied"]),
 });
 
-export const UpdatePlanLeadStatusResponse = zod.object({
-  id: zod.number(),
-  brand: zod.string(),
-  balance: zod.number(),
-  currentApr: zod.number(),
-  targetApr: zod.number(),
-  estimatedAnnualSavings: zod.number(),
-  status: zod.enum(["recommended", "in_progress", "won", "denied"]),
-  createdAt: zod.coerce.date(),
-});
+export const updatePlanLeadStatusResponseCardCountMin = 0;
+
+export const UpdatePlanLeadStatusResponse = zod
+  .object({
+    id: zod.number(),
+    brand: zod
+      .string()
+      .describe("Primary card brand or label for the lead package"),
+    balance: zod.number().describe("Total balance across cards"),
+    currentApr: zod.number().describe("Balance-weighted average APR"),
+    targetApr: zod.number(),
+    estimatedAnnualSavings: zod
+      .number()
+      .describe("Sum of estimated savings across cards"),
+    cardCount: zod.number().min(updatePlanLeadStatusResponseCardCountMin),
+    status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+    createdAt: zod.coerce.date(),
+  })
+  .describe("Debt lead summary (aggregated across cards in the package)");
 
 /**
  * @summary Send plan lead to partner (simulated v1)
@@ -563,6 +667,8 @@ export const SendPlanLeadBody = zod.object({
   partnerId: zod.number().min(1),
 });
 
+export const sendPlanLeadResponseCardCountMin = 0;
+
 export const sendPlanLeadResponseHardshipPortalOneProgressMin = 0;
 export const sendPlanLeadResponseHardshipPortalOneProgressMax = 100;
 
@@ -574,6 +680,17 @@ export const SendPlanLeadResponse = zod
     currentApr: zod.number(),
     targetApr: zod.number(),
     estimatedAnnualSavings: zod.number(),
+    cardCount: zod.number().min(sendPlanLeadResponseCardCountMin),
+    cards: zod.array(
+      zod.object({
+        id: zod.number(),
+        brand: zod.string(),
+        balance: zod.number(),
+        currentApr: zod.number(),
+        targetApr: zod.number(),
+        estimatedAnnualSavings: zod.number(),
+      }),
+    ),
     status: zod.enum(["recommended", "in_progress", "won", "denied"]),
     createdAt: zod.coerce.date(),
     partnerId: zod.number().nullish(),
@@ -612,7 +729,7 @@ export const SendPlanLeadResponse = zod
       .nullish(),
   })
   .describe(
-    "Plan lead snapshot. For status `recommended`, partner fields are null.\nAfter POST ...\/send (`in_progress` or later `won`), partnerId, sentToPartnerAt,\nand partner are always set; hardshipPortal is included for in_progress and won.\n",
+    "Debt lead package with card breakdown. For status `recommended`, partner fields are null.\nAfter POST ...\/send (`in_progress` or later `won`), partnerId, sentToPartnerAt,\nand partner are always set; hardshipPortal is included for in_progress and won.\n",
   );
 
 /**

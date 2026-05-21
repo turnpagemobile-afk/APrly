@@ -68,6 +68,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/OptimizerResult"
 
+  /optimizer/guest-lead:
+    post:
+      operationId: upsertGuestLead
+      tags: [optimizer]
+      summary: Persist pre-registration calculator cards as one guest debt lead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpsertGuestLeadInput"
+      responses:
+        "200":
+          description: Guest lead upserted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpsertGuestLeadResponse"
+        "400":
+          description: Validation error
+
   /plaid/link-token:
     post:
       operationId: createPlaidLinkToken
@@ -1455,7 +1476,7 @@ components:
       type: string
       enum: [recommended, in_progress, won, denied]
 
-    PlanLead:
+    LeadCardItem:
       type: object
       required:
         - id
@@ -1464,8 +1485,6 @@ components:
         - currentApr
         - targetApr
         - estimatedAnnualSavings
-        - status
-        - createdAt
       properties:
         id:
           type: integer
@@ -1479,8 +1498,99 @@ components:
           type: number
         estimatedAnnualSavings:
           type: number
+
+    PlanLead:
+      type: object
+      description: Debt lead summary (aggregated across cards in the package)
+      required:
+        - id
+        - brand
+        - balance
+        - currentApr
+        - targetApr
+        - estimatedAnnualSavings
+        - status
+        - cardCount
+        - createdAt
+      properties:
+        id:
+          type: integer
+        brand:
+          type: string
+          description: Primary card brand or label for the lead package
+        balance:
+          type: number
+          description: Total balance across cards
+        currentApr:
+          type: number
+          description: Balance-weighted average APR
+        targetApr:
+          type: number
+        estimatedAnnualSavings:
+          type: number
+          description: Sum of estimated savings across cards
+        cardCount:
+          type: integer
+          minimum: 0
         status:
           $ref: "#/components/schemas/PlanLeadStatus"
+        createdAt:
+          type: string
+          format: date-time
+
+    UpsertGuestLeadInput:
+      type: object
+      required: [guestSessionId, cards]
+      properties:
+        guestSessionId:
+          type: string
+          minLength: 8
+          maxLength: 64
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        cards:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ImportCardItem"
+
+    UpsertGuestLeadResponse:
+      type: object
+      required:
+        - leadId
+        - id
+        - status
+        - cardCount
+        - totalBalance
+        - totalEstimatedSavings
+        - primaryBrand
+        - currentApr
+        - targetApr
+        - createdAt
+      properties:
+        leadId:
+          type: integer
+        id:
+          type: integer
+        status:
+          $ref: "#/components/schemas/PlanLeadStatus"
+        cardCount:
+          type: integer
+        totalBalance:
+          type: number
+        totalEstimatedSavings:
+          type: number
+        primaryBrand:
+          type: string
+        currentApr:
+          type: number
+        targetApr:
+          type: number
         createdAt:
           type: string
           format: date-time
@@ -1664,7 +1774,7 @@ components:
     PlanLeadDetail:
       type: object
       description: |
-        Plan lead snapshot. For status `recommended`, partner fields are null.
+        Debt lead package with card breakdown. For status `recommended`, partner fields are null.
         After POST .../send (`in_progress` or later `won`), partnerId, sentToPartnerAt,
         and partner are always set; hardshipPortal is included for in_progress and won.
       required:
@@ -1675,6 +1785,8 @@ components:
         - targetApr
         - estimatedAnnualSavings
         - status
+        - cardCount
+        - cards
         - createdAt
       properties:
         id:
@@ -1689,6 +1801,13 @@ components:
           type: number
         estimatedAnnualSavings:
           type: number
+        cardCount:
+          type: integer
+          minimum: 0
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeadCardItem"
         status:
           $ref: "#/components/schemas/PlanLeadStatus"
         createdAt:
@@ -1765,6 +1884,10 @@ components:
           maxLength: 20
         termsAccepted:
           type: boolean
+        guestSessionId:
+          type: string
+          maxLength: 64
+          description: Links pre-registration calculator debt lead to the new user
 
     RegisterAndCheckoutPayload:
       type: object

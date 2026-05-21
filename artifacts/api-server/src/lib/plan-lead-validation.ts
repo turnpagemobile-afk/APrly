@@ -1,4 +1,4 @@
-import type { PlanLead as PlanLeadRow, PlanLeadStatus } from "@workspace/db";
+import type { DebtLead as PlanLeadRow, DebtLeadStatus as PlanLeadStatus } from "@workspace/db";
 
 const SENT_STATUSES: PlanLeadStatus[] = ["in_progress", "won"];
 
@@ -30,7 +30,7 @@ export function warnIfSentLeadMissingPartnerFields(
     console.warn(
       "[plan-lead] sent lead missing partner fields",
       JSON.stringify({
-        planLeadId: row.id,
+        debtLeadId: row.id,
         status: row.status,
         partnerId: row.partnerId,
         sentToPartnerAt: row.sentToPartnerAt?.toISOString() ?? null,

@@ -3,6 +3,9 @@ import {
   CalculateOptimizationBody,
   CalculateOptimizationResponse,
 } from "@workspace/api-zod";
+import { parseUpsertGuestLeadBody } from "../lib/upsert-guest-lead-schema";
+import { upsertGuestDebtLead } from "../lib/debt-lead-service";
+import { mapDebtLeadSummary } from "../lib/lead-mapper";
 
 const router: IRouter = Router();
 
@@ -56,6 +59,35 @@ router.post("/optimizer/calculate", (req, res, next) => {
       targetRate,
     });
     res.json(data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/optimizer/guest-lead", async (req, res, next) => {
+  try {
+    const parsed = parseUpsertGuestLeadBody(req.body);
+    if (!parsed.ok) {
+      res.status(400).json({ error: "Invalid request body" });
+      return;
+    }
+
+    const { guestSessionId, name, email, cards } = parsed.data;
+    const { lead, cards: cardRows } = await upsertGuestDebtLead({
+      guestSessionId,
+      name,
+      email,
+      cards,
+    });
+
+    const summary = mapDebtLeadSummary(lead, cardRows);
+    res.json({
+      leadId: lead.id,
+      ...summary,
+      totalBalance: summary.totalBalance,
+      totalEstimatedSavings: summary.totalEstimatedSavings,
+      primaryBrand: summary.primaryBrand,
+    });
   } catch (err) {
     next(err);
   }

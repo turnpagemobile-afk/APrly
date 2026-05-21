@@ -7,13 +7,22 @@
  */
 import type { PlanLeadStatus } from "./planLeadStatus";
 
+/**
+ * Debt lead summary (aggregated across cards in the package)
+ */
 export interface PlanLead {
   id: number;
+  /** Primary card brand or label for the lead package */
   brand: string;
+  /** Total balance across cards */
   balance: number;
+  /** Balance-weighted average APR */
   currentApr: number;
   targetApr: number;
+  /** Sum of estimated savings across cards */
   estimatedAnnualSavings: number;
+  /** @minimum 0 */
+  cardCount: number;
   status: PlanLeadStatus;
   createdAt: Date;
 }

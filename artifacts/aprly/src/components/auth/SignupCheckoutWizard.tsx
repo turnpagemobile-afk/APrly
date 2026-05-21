@@ -8,10 +8,12 @@ import { ApiError } from "@workspace/api-client-react/custom-fetch";
 import {
   getCheckoutSessionStatus,
   getGetCheckoutSessionStatusQueryKey,
+  getGetDashboardTabQueryKey,
   useImportMyCards,
   usePatchMe,
   useRegisterAndCheckout,
 } from "@workspace/api-client-react";
+import { readGuestSessionId } from "@/lib/guest-session";
 import { syncAuthSession } from "@/lib/auth-session";
 import {
   clearOptimizerSnapshot,
@@ -194,6 +196,14 @@ export function SignupCheckoutWizard({
     if (!open || sessionQuery.data?.status !== "paid") return;
     if (cardsImportStartedRef.current) return;
 
+    const guestSessionId = readGuestSessionId();
+    if (guestSessionId) {
+      cardsImportStartedRef.current = true;
+      clearOptimizerSnapshot();
+      void queryClient.invalidateQueries({ queryKey: getGetDashboardTabQueryKey() });
+      return;
+    }
+
     const snapshot = loadOptimizerSnapshot();
     if (!snapshot) return;
 
@@ -215,7 +225,7 @@ export function SignupCheckoutWizard({
           variant: "destructive",
         });
       });
-  }, [open, sessionQuery.data?.status, importCardsMutation]);
+  }, [open, sessionQuery.data?.status, importCardsMutation, queryClient]);
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -228,6 +238,7 @@ export function SignupCheckoutWizard({
           password,
           confirmPassword,
           termsAccepted,
+          guestSessionId: readGuestSessionId() ?? undefined,
         },
       });
       window.location.assign(res.checkoutUrl);

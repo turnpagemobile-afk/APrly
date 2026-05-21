@@ -35,6 +35,9 @@ services:
 
   # Apply lib/db SQL migrations (users, registration_intents, refresh_tokens, …).
   # Without this, Postgres is empty and auth routes fail with "relation users does not exist".
+  # After adding files under lib/db/migrations/, re-run:
+  #   docker compose run --rm db-migrate
+  # (a plain `docker compose up` does not re-apply new migrations once db-migrate succeeded).
   db-migrate:
     platform: linux/amd64
     build:

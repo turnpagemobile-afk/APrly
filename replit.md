@@ -32,7 +32,9 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
+- `pnpm run db:migrate` — apply SQL migrations from `lib/db/migrations/` (set `DATABASE_URL`; with Docker db: `postgres://user:password@127.0.0.1:5433/aprly`)
+- `docker compose run --rm db-migrate` — same, inside compose network (re-run after new migration files; `docker compose up` alone does not)
+- `pnpm --filter @workspace/db run push` — push schema without migration journal (avoid on DBs that use `migrate`)
 - `pnpm --filter @workspace/api-server run dev` — run API server locally
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.

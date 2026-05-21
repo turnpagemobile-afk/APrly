@@ -20,4 +20,9 @@ export interface RegisterAndCheckoutInput {
    */
   confirmPassword: string;
   termsAccepted: boolean;
+  /**
+   * Links pre-registration calculator debt lead to the new user
+   * @maxLength 64
+   */
+  guestSessionId?: string;
 }

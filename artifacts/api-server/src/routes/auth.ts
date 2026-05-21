@@ -87,6 +87,9 @@ router.post("/auth/register-and-checkout", async (req, res, next) => {
       return;
     }
     const { email, password, confirmPassword, termsAccepted } = parsed.data;
+    const guestSessionId = (
+      parsed.data as { guestSessionId?: string | undefined }
+    ).guestSessionId;
     if (password !== confirmPassword) {
       fieldErrorsResponse(
         { confirmPassword: ["Passwords must match."] },
@@ -134,6 +137,7 @@ router.post("/auth/register-and-checkout", async (req, res, next) => {
       email: normalizedEmail,
       passwordHash,
       termsAcceptedAt,
+      guestSessionId: guestSessionId?.trim() || null,
       status: "pending",
     });
 

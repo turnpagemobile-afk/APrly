@@ -1,6 +1,7 @@
-import type { PlanLead } from "@workspace/db";
+import type { DebtLead, LeadCard } from "@workspace/db";
 import { buildHardshipPortal } from "./build-hardship-portal";
 import { HARDSHIP_STEPS_TOTAL } from "./hardship-steps";
+import { aggregateLeadCards } from "./lead-mapper";
 import {
   resolveAdminUserPlanDisplayStatus,
   type AdminUserPlanDisplayStatus,
@@ -15,55 +16,57 @@ type User = {
 };
 
 export function mapAdminPlanLeadDetail(
-  row: PlanLead,
+  lead: DebtLead,
+  cards: LeadCard[],
   user: User,
   partner: Partner | null,
 ) {
+  const agg = aggregateLeadCards(cards);
   const displayStatus = resolveAdminUserPlanDisplayStatus({
-    status: row.status,
-    partnerId: row.partnerId,
-    partnerAcceptedAt: row.partnerAcceptedAt,
+    status: lead.status,
+    partnerId: lead.partnerId,
+    partnerAcceptedAt: lead.partnerAcceptedAt,
   });
 
   const showPortal =
-    row.partnerAcceptedAt != null &&
-    row.status === "in_progress" &&
+    lead.partnerAcceptedAt != null &&
+    lead.status === "in_progress" &&
     displayStatus === "in_progress";
 
   const hardshipPortal = showPortal
-    ? buildHardshipPortal(row.hardshipStepsCompleted)
-    : row.status === "won"
+    ? buildHardshipPortal(lead.hardshipStepsCompleted)
+    : lead.status === "won"
       ? buildHardshipPortal(HARDSHIP_STEPS_TOTAL)
       : undefined;
 
   const canStartWorking =
-    row.status === "in_progress" &&
-    row.partnerId != null &&
-    row.partnerAcceptedAt == null;
+    lead.status === "in_progress" &&
+    lead.partnerId != null &&
+    lead.partnerAcceptedAt == null;
 
   const canCompleteStep =
-    row.status === "in_progress" &&
-    row.partnerAcceptedAt != null &&
-    row.hardshipStepsCompleted < HARDSHIP_STEPS_TOTAL;
+    lead.status === "in_progress" &&
+    lead.partnerAcceptedAt != null &&
+    lead.hardshipStepsCompleted < HARDSHIP_STEPS_TOTAL;
 
-  const canReject =
-    row.status === "in_progress" && row.partnerId != null;
+  const canReject = lead.status === "in_progress" && lead.partnerId != null;
 
   return {
-    id: row.id,
-    brand: row.brand,
-    balance: Number(row.balance),
-    currentApr: Number(row.currentApr),
-    targetApr: Number(row.targetApr),
-    estimatedAnnualSavings: Number(row.estimatedAnnualSavings),
-    status: row.status,
+    id: lead.id,
+    brand: agg.primaryBrand,
+    balance: agg.totalBalance,
+    currentApr: agg.weightedCurrentApr,
+    targetApr: agg.targetApr,
+    estimatedAnnualSavings: agg.totalEstimatedSavings,
+    cardCount: agg.cardCount,
+    status: lead.status,
     displayStatus,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-    displayStatusChangedAt: row.displayStatusChangedAt.toISOString(),
-    sentToPartnerAt: row.sentToPartnerAt?.toISOString() ?? null,
-    partnerAcceptedAt: row.partnerAcceptedAt?.toISOString() ?? null,
-    hardshipStepsCompleted: row.hardshipStepsCompleted,
+    createdAt: lead.createdAt.toISOString(),
+    updatedAt: lead.updatedAt.toISOString(),
+    displayStatusChangedAt: lead.displayStatusChangedAt.toISOString(),
+    sentToPartnerAt: lead.sentToPartnerAt?.toISOString() ?? null,
+    partnerAcceptedAt: lead.partnerAcceptedAt?.toISOString() ?? null,
+    hardshipStepsCompleted: lead.hardshipStepsCompleted,
     hardshipStepsTotal: HARDSHIP_STEPS_TOTAL,
     user: {
       id: user.id,
@@ -80,29 +83,33 @@ export function mapAdminPlanLeadDetail(
 }
 
 export function mapAdminPlanLeadListRow(
-  row: PlanLead & { partnerName?: string | null },
+  lead: DebtLead,
+  cards: LeadCard[],
+  partnerName?: string | null,
 ) {
+  const agg = aggregateLeadCards(cards);
   const displayStatus = resolveAdminUserPlanDisplayStatus({
-    status: row.status,
-    partnerId: row.partnerId,
-    partnerAcceptedAt: row.partnerAcceptedAt,
+    status: lead.status,
+    partnerId: lead.partnerId,
+    partnerAcceptedAt: lead.partnerAcceptedAt,
   });
 
   return {
-    id: row.id,
-    brand: row.brand,
-    balance: Number(row.balance),
-    currentApr: Number(row.currentApr),
-    targetApr: Number(row.targetApr),
-    estimatedAnnualSavings: Number(row.estimatedAnnualSavings),
-    status: row.status,
+    id: lead.id,
+    brand: agg.cardCount > 1 ? `${agg.primaryBrand} (+${agg.cardCount - 1})` : agg.primaryBrand,
+    balance: agg.totalBalance,
+    currentApr: agg.weightedCurrentApr,
+    targetApr: agg.targetApr,
+    estimatedAnnualSavings: agg.totalEstimatedSavings,
+    cardCount: agg.cardCount,
+    status: lead.status,
     displayStatus,
-    partnerName: row.partnerName ?? null,
+    partnerName: partnerName ?? null,
     hardshipPortal:
       displayStatus === "in_progress"
-        ? buildHardshipPortal(row.hardshipStepsCompleted)
+        ? buildHardshipPortal(lead.hardshipStepsCompleted)
         : undefined,
-    createdAt: row.createdAt.toISOString(),
+    createdAt: lead.createdAt.toISOString(),
   };
 }
 

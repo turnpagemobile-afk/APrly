@@ -157,6 +157,7 @@ After rollback, fix the bug on `petrychenko_dev` and merge a forward fix to
 | --- | --- |
 | Open psql | `$COMPOSE exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"` |
 | Re-run migrations only | `$COMPOSE --profile ops run --rm db-migrate` (applies SQL from `lib/db/migrations/` via `drizzle-kit migrate`) |
+| Local dev (repo root) | `pnpm run db:migrate` with `DATABASE_URL`, or `docker compose run --rm db-migrate` after new files in `lib/db/migrations/` |
 | Re-run seed only | `$COMPOSE --profile ops run --rm db-seed` (check logs for `[seed] admin user id=…`; `skip admin user` means `ADMIN_SEED_PASSWORD` was not passed into the container) |
 | Quick row count | `$COMPOSE exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c 'SELECT count(*) FROM leads;'` |
 | Backup (tar+psql dump) | `$COMPOSE exec db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > /var/www/aprly/backups/aprly-$(date -u +%Y%m%dT%H%M%SZ).sql` |

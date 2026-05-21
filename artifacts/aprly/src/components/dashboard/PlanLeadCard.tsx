@@ -53,9 +53,14 @@ export function PlanLeadCard({ plan, returnTo = DEFAULT_RETURN_TO }: PlanLeadCar
             <CreditCard className="h-5 w-5 text-primary" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="font-bold text-foreground">{plan.brand}</h3>
+            <h3 className="font-bold text-foreground">
+              {plan.cardCount > 1
+                ? `${plan.brand} · ${plan.cardCount} ${copy.cardsLabel}`
+                : plan.brand}
+            </h3>
             <p className="text-sm text-muted-foreground">
               {formatCurrency(plan.balance, 2)}
+              {plan.cardCount > 1 ? ` total` : ""}
             </p>
           </div>
         </div>

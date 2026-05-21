@@ -9,6 +9,7 @@ export const registrationIntentsTable = pgTable(
     passwordHash: text("password_hash").notNull(),
     termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }).notNull(),
     stripeCheckoutSessionId: text("stripe_checkout_session_id"),
+    guestSessionId: text("guest_session_id"),
     status: text("status").notNull().default("pending"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
