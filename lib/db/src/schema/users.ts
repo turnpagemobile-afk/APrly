@@ -11,6 +11,7 @@ export const usersTable = pgTable(
     lastName: text("last_name"),
     stripeCustomerId: text("stripe_customer_id"),
     stripeSubscriptionId: text("stripe_subscription_id"),
+    paidAuditAt: timestamp("paid_audit_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [uniqueIndex("users_email_idx").on(table.email)],

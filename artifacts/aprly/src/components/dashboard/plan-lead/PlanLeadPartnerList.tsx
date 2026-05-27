@@ -8,13 +8,17 @@ import { cn } from "@/lib/utils";
 type PlanLeadPartnerListProps = {
   partners: Partner[];
   isSending: boolean;
+  canSend: boolean;
   onSend: (partnerId: number) => void;
+  onRequirePayment: (partnerId: number) => void;
 };
 
 export function PlanLeadPartnerList({
   partners,
   isSending,
+  canSend,
   onSend,
+  onRequirePayment,
 }: PlanLeadPartnerListProps) {
   const [selectedId, setSelectedId] = useState<number | null>(
     partners[0]?.id ?? null,
@@ -26,11 +30,24 @@ export function PlanLeadPartnerList({
     );
   }
 
+  const handleSendClick = (partnerId: number) => {
+    if (!canSend) {
+      onRequirePayment(partnerId);
+      return;
+    }
+    onSend(partnerId);
+  };
+
   return (
     <div className="space-y-3">
       <h2 className="text-sm font-bold text-foreground">
         {planLeadDetailContent.selectPartner}
       </h2>
+      {!canSend ? (
+        <p className="text-sm text-muted-foreground">
+          {planLeadDetailContent.sendRequiresPayment}
+        </p>
+      ) : null}
       <ul className="space-y-3">
         {partners.map((partner) => {
           const selected = selectedId === partner.id;
@@ -58,7 +75,7 @@ export function PlanLeadPartnerList({
                     size="sm"
                     className="shrink-0 font-semibold"
                     disabled={!selected || isSending}
-                    onClick={() => onSend(partner.id)}
+                    onClick={() => handleSendClick(partner.id)}
                   >
                     {isSending && selected ? (
                       <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

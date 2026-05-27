@@ -1,9 +1,8 @@
-import { sql, eq, and, gte } from "drizzle-orm";
+import { sql, eq, and, gte, count, isNotNull } from "drizzle-orm";
 import { GetAdminDashboardSummaryResponse } from "@workspace/api-zod";
 
 type AdminDashboardSummary = ReturnType<typeof GetAdminDashboardSummaryResponse.parse>;
 import { db, usersTable } from "@workspace/db";
-import { resolveSubscriptionActive } from "./subscription-status";
 import { USER_ROLE } from "./user-roles";
 
 type Period = "7d" | "30d" | "12m";
@@ -44,19 +43,18 @@ function mockMrrSeries(): AdminDashboardSummary["mrrSeries"] {
 export async function buildAdminDashboardSummary(
   period: Period = "30d",
 ): Promise<AdminDashboardSummary> {
-  const userRows = await db
-    .select()
+  const roleFilter = eq(usersTable.role, USER_ROLE);
+
+  const [{ value: total }] = await db
+    .select({ value: count() })
     .from(usersTable)
-    .where(eq(usersTable.role, USER_ROLE));
+    .where(roleFilter);
 
-  let subscribed = 0;
-  for (const row of userRows) {
-    if (await resolveSubscriptionActive(row)) {
-      subscribed += 1;
-    }
-  }
+  const [{ value: subscribed }] = await db
+    .select({ value: count() })
+    .from(usersTable)
+    .where(and(roleFilter, isNotNull(usersTable.paidAuditAt)));
 
-  const total = userRows.length;
   const unsubscribed = Math.max(0, total - subscribed);
   const subscribedPercent = total > 0 ? Math.round((subscribed / total) * 1000) / 10 : 0;
   const unsubscribedPercent = total > 0 ? Math.round((unsubscribed / total) * 1000) / 10 : 0;

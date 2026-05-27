@@ -6,8 +6,8 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import { useLocation } from "wouter";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { goToLanding } from "@/lib/app-navigation";
 import {
   getGetMeQueryKey,
   getMe,
@@ -45,7 +45,6 @@ export async function syncAuthSession(queryClient: QueryClient): Promise<void> {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [, navigate] = useLocation();
   const queryClient = useQueryClient();
   const hadSessionRef = useRef(false);
   const meQuery = useGetMe({
@@ -69,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!hadSessionRef.current) return;
       hadSessionRef.current = false;
       queryClient.removeQueries({ queryKey: getGetMeQueryKey() });
-      navigate("/login");
+      goToLanding("/login");
       toast({
         title: "Session expired",
         description: "Please sign in again.",
@@ -77,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     });
     return () => setOnSessionExpired(null);
-  }, [navigate, queryClient]);
+  }, [queryClient]);
 
   const logout = useCallback(async () => {
     try {
@@ -85,9 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       hadSessionRef.current = false;
       queryClient.clear();
-      navigate("/");
+      goToLanding("/");
     }
-  }, [logoutMutation, queryClient, navigate]);
+  }, [logoutMutation, queryClient]);
 
   const user = meQuery.data
     ? {

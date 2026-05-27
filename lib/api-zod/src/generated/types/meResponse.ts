@@ -12,6 +12,6 @@ export interface MeResponse {
   firstName?: string | null;
   lastName?: string | null;
   role: string;
-  /** True when the user has an active Stripe subscription on file */
+  /** True when the user paid the one-time audit fee or has legacy active subscription */
   hasActiveSubscription: boolean;
 }

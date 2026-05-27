@@ -65,6 +65,7 @@ export function mapPlanLeadRow(lead: DebtLead, cards: LeadCard[]) {
     estimatedAnnualSavings: summary.totalEstimatedSavings,
     status: summary.status,
     cardCount: summary.cardCount,
+    cards: cards.map(mapLeadCardRow),
     createdAt: summary.createdAt,
   };
 }

@@ -1,6 +1,7 @@
 import { CreditCard } from "lucide-react";
 import { Link } from "wouter";
 import type { PlanLead, PlanLeadStatus } from "@workspace/api-client-react";
+import { PlanLeadCardPreviewRow } from "@/components/dashboard/plan-lead/PlanLeadCardPreviewRow";
 import { dashboardTabContent } from "@/content/dashboard-tab";
 import { formatCurrency } from "@/lib/format-currency";
 import { planLeadHref } from "@/lib/plan-lead-navigation";
@@ -40,33 +41,10 @@ function statusBadge(status: PlanLeadStatus) {
   }
 }
 
-export function PlanLeadCard({ plan, returnTo = DEFAULT_RETURN_TO }: PlanLeadCardProps) {
+function AprSummary({ plan }: { plan: PlanLead }) {
   const copy = dashboardTabContent.planCard;
-  const detailHref = planLeadHref(plan.id, returnTo);
-  const isNavigable = plan.status === "in_progress" || plan.status === "won";
-
-  const cardBody = (
+  return (
     <>
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15">
-            <CreditCard className="h-5 w-5 text-primary" aria-hidden="true" />
-          </div>
-          <div>
-            <h3 className="font-bold text-foreground">
-              {plan.cardCount > 1
-                ? `${plan.brand} · ${plan.cardCount} ${copy.cardsLabel}`
-                : plan.brand}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {formatCurrency(plan.balance, 2)}
-              {plan.cardCount > 1 ? ` total` : ""}
-            </p>
-          </div>
-        </div>
-        {statusBadge(plan.status)}
-      </div>
-
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <span className="rounded-md border border-destructive/40 bg-destructive/10 px-2 py-1 text-sm font-semibold text-destructive">
           {plan.currentApr.toFixed(2)}%
@@ -85,38 +63,103 @@ export function PlanLeadCard({ plan, returnTo = DEFAULT_RETURN_TO }: PlanLeadCar
           {plan.targetApr.toFixed(1)}%
         </span>
       </div>
-
-      <div className="mt-4 flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">
-          {copy.estimatedSavings}{" "}
-          <span className="font-semibold text-foreground">
-            {formatCurrency(plan.estimatedAnnualSavings)}
-            {copy.perYear}
-          </span>
-        </p>
-        {plan.status === "recommended" ? (
-          <Button type="button" size="sm" className="shrink-0 font-semibold" asChild>
-            <Link href={detailHref}>{copy.negotiate}</Link>
-          </Button>
-        ) : null}
-      </div>
+      <p className="mt-4 text-sm text-muted-foreground">
+        {copy.estimatedSavings}{" "}
+        <span className="font-semibold text-foreground">
+          {formatCurrency(plan.estimatedAnnualSavings)}
+          {copy.perYear}
+        </span>
+      </p>
     </>
   );
+}
+
+export function PlanLeadCard({ plan, returnTo = DEFAULT_RETURN_TO }: PlanLeadCardProps) {
+  const copy = dashboardTabContent.planCard;
+  const detailHref = planLeadHref(plan.id, returnTo);
+  const addCardHref = planLeadHref(plan.id, returnTo, { addCard: true });
+  const isEditable = plan.status === "recommended";
+  const isNavigable =
+    plan.status === "in_progress" || plan.status === "won";
+  const cards = plan.cards ?? [];
+
+  const shellClass =
+    "rounded-lg border border-border/60 bg-card p-5 shadow-sm transition-colors";
+
+  const header = (
+    <div className="flex items-start justify-between gap-3">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/15">
+          <CreditCard className="h-5 w-5 text-primary" aria-hidden="true" />
+        </div>
+        <div className="min-w-0">
+          <h3 className="font-bold text-foreground">
+            {plan.cardCount > 1
+              ? `${plan.brand} · ${plan.cardCount} ${copy.cardsLabel}`
+              : plan.brand}
+          </h3>
+          {plan.cardCount > 1 ? (
+            <p className="text-sm text-muted-foreground">
+              {formatCurrency(plan.balance, 2)} total
+            </p>
+          ) : cards.length === 1 ? (
+            <p className="text-sm text-muted-foreground">{formatCurrency(plan.balance, 2)}</p>
+          ) : null}
+        </div>
+      </div>
+      {statusBadge(plan.status)}
+    </div>
+  );
+
+  const cardsList =
+    cards.length > 0 ? (
+      <ul className="mt-4 space-y-2">
+        {cards.map((card) => (
+          <li key={card.id}>
+            <PlanLeadCardPreviewRow card={card} />
+          </li>
+        ))}
+      </ul>
+    ) : null;
+
+  if (isEditable) {
+    return (
+      <article className={shellClass}>
+        {header}
+        {cardsList}
+        {isEditable ? (
+          <Button type="button" variant="outline" size="sm" className="mt-3 w-full" asChild>
+            <Link href={addCardHref}>{copy.addCard}</Link>
+          </Button>
+        ) : null}
+        <AprSummary plan={plan} />
+        <div className="mt-2 flex justify-end">
+          <Button type="button" size="sm" className="font-semibold" asChild>
+            <Link href={detailHref}>{copy.negotiate}</Link>
+          </Button>
+        </div>
+      </article>
+    );
+  }
 
   if (isNavigable) {
     return (
       <Link
         href={detailHref}
-        className="block rounded-lg border border-border/60 bg-card p-5 shadow-sm transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className={cn(shellClass, "block hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring")}
       >
-        {cardBody}
+        {header}
+        {cardsList}
+        <AprSummary plan={plan} />
       </Link>
     );
   }
 
   return (
-    <article className="rounded-lg border border-border/60 bg-card p-5 shadow-sm">
-      {cardBody}
+    <article className={shellClass}>
+      {header}
+      {cardsList}
+      <AprSummary plan={plan} />
     </article>
   );
 }

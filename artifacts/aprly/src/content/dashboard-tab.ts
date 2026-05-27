@@ -7,9 +7,9 @@ export const dashboardTabContent = {
     disabled: "Disabled",
   },
   upsell: {
-    title: "Activate APRly for US $19.99/month",
+    title: "Unlock Verified Audit Packet — US $39 one-time",
     features: planContent.card.features,
-    cta: "Activate APRly",
+    cta: "Pay $39 — unlock partner sending",
   },
   empty: {
     body: "To create your first detailed plan, connect your accounts and run an audit.",
@@ -20,12 +20,14 @@ export const dashboardTabContent = {
     estimatedSavings: "Est. Annual Savings",
     meltCountdown: "Melt Countdown",
   },
-  linkedAccounts: {
-    title: "Linked Bank Accounts:",
-    addAriaLabel: "Add bank account",
+  planLeads: {
+    title: "Your plan leads",
+    addAriaLabel: "Add plan lead",
+    addLead: "Add lead",
   },
   planCard: {
     cardsLabel: "cards",
+    addCard: "+ Add card",
     estimatedSavings: "Est. Savings",
     perYear: "/yr",
     negotiate: "Negotiate",
@@ -37,8 +39,8 @@ export const dashboardTabContent = {
   },
   checkout: {
     activating: "Redirecting to checkout…",
-    successTitle: "Subscription active",
-    successDescription: "Your APRly subscription is active. You can create your first plan.",
+    successTitle: "Payment received",
+    successDescription: "You can send plan leads to partners without limits.",
     cancelTitle: "Checkout canceled",
     cancelDescription: "You can activate APRly anytime from the Dashboard tab.",
     errorTitle: "Checkout failed",

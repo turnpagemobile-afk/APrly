@@ -26,6 +26,8 @@ export async function finalizeCheckoutSessionIfNeeded(
   const intentId = session.metadata?.["registrationIntentId"];
   if (!intentId) return;
 
+  if (session.payment_status !== "paid") return;
+
   const [intent] = await db
     .select()
     .from(registrationIntentsTable)
@@ -35,21 +37,7 @@ export async function finalizeCheckoutSessionIfNeeded(
   if (!intent) return;
 
   const email = intent.email.trim().toLowerCase();
-
-  const [existingUser] = await db
-    .select({ id: usersTable.id })
-    .from(usersTable)
-    .where(eq(usersTable.email, email))
-    .limit(1);
-
-  if (existingUser) {
-    await db
-      .update(registrationIntentsTable)
-      .set({ status: "paid" })
-      .where(eq(registrationIntentsTable.id, intentId));
-    await attachGuestLeadsToUser(existingUser.id, intent.guestSessionId);
-    return;
-  }
+  const paidAt = new Date();
 
   const customerId =
     typeof session.customer === "string"
@@ -59,6 +47,31 @@ export async function finalizeCheckoutSessionIfNeeded(
     typeof session.subscription === "string"
       ? session.subscription
       : session.subscription?.id ?? null;
+
+  const [existingUser] = await db
+    .select({ id: usersTable.id, paidAuditAt: usersTable.paidAuditAt })
+    .from(usersTable)
+    .where(eq(usersTable.email, email))
+    .limit(1);
+
+  if (existingUser) {
+    if (!existingUser.paidAuditAt) {
+      await db
+        .update(usersTable)
+        .set({
+          paidAuditAt: paidAt,
+          ...(customerId ? { stripeCustomerId: customerId } : {}),
+          ...(subscriptionId ? { stripeSubscriptionId: subscriptionId } : {}),
+        })
+        .where(eq(usersTable.id, existingUser.id));
+    }
+    await db
+      .update(registrationIntentsTable)
+      .set({ status: "paid" })
+      .where(eq(registrationIntentsTable.id, intentId));
+    await attachGuestLeadsToUser(existingUser.id, intent.guestSessionId);
+    return;
+  }
 
   let newUserId: number | undefined;
 
@@ -72,6 +85,7 @@ export async function finalizeCheckoutSessionIfNeeded(
           role: "user",
           stripeCustomerId: customerId,
           stripeSubscriptionId: subscriptionId,
+          paidAuditAt: paidAt,
         })
         .returning({ id: usersTable.id });
       newUserId = inserted?.id;

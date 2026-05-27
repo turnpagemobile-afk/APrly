@@ -4,13 +4,14 @@ import {
   getGetDashboardTabQueryKey,
   getGetDashboardTabQueryOptions,
 } from "@workspace/api-client-react";
-import { useSubscriptionRenewalCheckout } from "@/lib/use-subscription-renewal-checkout";
+import { useAuditCheckout } from "@/lib/use-audit-checkout";
 
 /**
  * Fresh Stripe-backed subscription state for the whole dashboard shell.
  * Refetches on mount so cabinet entry always reflects current subscription.
  */
-export function useDashboardSubscription(stripeSessionId: string | null = null) {
+/** @param auditSessionId Stripe session id from `?audit_session=` return URL after $39 payment */
+export function useDashboardSubscription(auditSessionId: string | null = null) {
   const queryClient = useQueryClient();
   const invalidatedRef = useRef(false);
 
@@ -27,7 +28,13 @@ export function useDashboardSubscription(stripeSessionId: string | null = null) 
     retry: 1,
   });
 
-  const checkout = useSubscriptionRenewalCheckout(stripeSessionId);
+  const { startCheckout, isCheckoutLoading, resumeFromReturnUrl } = useAuditCheckout();
+
+  useEffect(() => {
+    if (auditSessionId) {
+      resumeFromReturnUrl(auditSessionId);
+    }
+  }, [auditSessionId, resumeFromReturnUrl]);
 
   const subscriptionActive = tabQuery.data?.subscriptionActive ?? false;
   const hasLeads = tabQuery.data?.hasLeads ?? false;
@@ -44,8 +51,8 @@ export function useDashboardSubscription(stripeSessionId: string | null = null) 
     isSubscriptionLoading,
     isSubscriptionError: tabQuery.isError,
     tabQuery,
-    startCheckout: checkout.startCheckout,
-    isCheckoutLoading: checkout.isCheckoutLoading,
-    isPollingReturn: checkout.isPollingReturn,
+    startCheckout,
+    isCheckoutLoading,
+    isPollingReturn: Boolean(auditSessionId),
   };
 }

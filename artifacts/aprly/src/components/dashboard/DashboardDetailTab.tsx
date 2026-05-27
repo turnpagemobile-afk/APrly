@@ -55,7 +55,16 @@ export function DashboardDetailTab({
     <div className="app-page-cabinet space-y-6 py-8">
       <h1 className="text-2xl font-black tracking-tight text-foreground">Dashboard</h1>
 
-      {!subscriptionActive ? (
+      {subscriptionActive ? <SubscriptionStatusCard active /> : null}
+
+      {!subscriptionActive && hasLeads ? (
+        <SubscriptionUpsellCard
+          onActivate={onActivateSubscription}
+          isLoading={isCheckoutLoading}
+        />
+      ) : null}
+
+      {!subscriptionActive && !hasLeads ? (
         <>
           <SubscriptionStatusCard active={false} />
           <SubscriptionUpsellCard
@@ -65,14 +74,9 @@ export function DashboardDetailTab({
         </>
       ) : null}
 
-      {subscriptionActive && !hasLeads ? (
-        <>
-          <SubscriptionStatusCard active />
-          <CreatePlanEmptyCard />
-        </>
-      ) : null}
+      {!hasLeads ? <CreatePlanEmptyCard /> : null}
 
-      {subscriptionActive && hasLeads && summary ? (
+      {hasLeads && summary ? (
         <>
           <DashboardPlansSummary
             subscriptionActive={subscriptionActive}
@@ -81,14 +85,14 @@ export function DashboardDetailTab({
 
           <div className="flex items-center justify-between gap-3 pt-2">
             <h2 className="text-lg font-bold text-foreground">
-              {dashboardTabContent.linkedAccounts.title}
+              {dashboardTabContent.planLeads.title}
             </h2>
             <Button
               type="button"
               variant="outline"
               size="icon"
               className="h-9 w-9 shrink-0"
-              aria-label={dashboardTabContent.linkedAccounts.addAriaLabel}
+              aria-label={dashboardTabContent.planLeads.addAriaLabel}
               asChild
             >
               <Link href={createPlanHref("/dashboard?tab=dashboard")}>
@@ -109,6 +113,12 @@ export function DashboardDetailTab({
                 </li>
               ))}
           </ul>
+
+          <Button type="button" className="w-full font-semibold" asChild>
+            <Link href={createPlanHref("/dashboard?tab=dashboard")}>
+              {dashboardTabContent.planLeads.addLead}
+            </Link>
+          </Button>
         </>
       ) : null}
     </div>

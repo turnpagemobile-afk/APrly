@@ -42,7 +42,7 @@ git log -1 --oneline
 
 ---
 
-## 2. `.env.prod` — FRONTEND_ORIGIN і Plaid
+## 2. `.env.prod` — FRONTEND_ORIGIN (і Plaid)
 
 ```bash
 nano /var/www/aprly/.env.prod
@@ -50,10 +50,15 @@ nano /var/www/aprly/.env.prod
 
 ```bash
 FRONTEND_ORIGIN=https://dev.aprly.ai
-PLAID_REDIRECT_URI=https://dev.aprly.ai/
 ```
 
-Зберегти. **api-server** перезапустити після зміни (крок 6).
+`PLAID_REDIRECT_URI` **не обов’язковий** для sandbox Link у браузері (як локально без цього рядка). Додавайте лише якщо потрібен OAuth redirect і URI зареєстрований у [Plaid Dashboard → API](https://dashboard.plaid.com/developers/api):
+
+```bash
+# PLAID_REDIRECT_URI=https://dev.aprly.ai/
+```
+
+Після **будь-якої** зміни `.env.prod` — не `build`, а recreate **api-server** (крок 6).
 
 ---
 

@@ -5,6 +5,7 @@
  * APRly API
  * OpenAPI spec version: 0.1.0
  */
+import type { LeadCardItem } from "./leadCardItem";
 import type { PlanLeadStatus } from "./planLeadStatus";
 
 /**
@@ -23,6 +24,7 @@ export interface PlanLead {
   estimatedAnnualSavings: number;
   /** @minimum 0 */
   cardCount: number;
+  cards: LeadCardItem[];
   status: PlanLeadStatus;
   createdAt: Date;
 }

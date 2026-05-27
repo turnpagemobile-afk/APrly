@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, Redirect } from "wouter";
+import { Link } from "wouter";
+import { goToCabinet } from "@/lib/app-navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@workspace/api-client-react/custom-fetch";
 import { useLogin } from "@workspace/api-client-react";
@@ -11,7 +12,6 @@ import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
-  const [, navigate] = useLocation();
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading } = useAuth();
   const login = useLogin();
@@ -20,12 +20,12 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      navigate("/dashboard?tab=home");
+      goToCabinet("/dashboard?tab=home");
     }
-  }, [isAuthenticated, isLoading, navigate]);
+  }, [isAuthenticated, isLoading]);
 
   if (!isLoading && isAuthenticated) {
-    return <Redirect to="/dashboard?tab=home" />;
+    return null;
   }
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -33,7 +33,7 @@ export default function LoginPage() {
     try {
       await login.mutateAsync({ data: { email, password } });
       await syncAuthSession(queryClient);
-      navigate("/dashboard?tab=home");
+      goToCabinet("/dashboard?tab=home");
     } catch (err: unknown) {
       const msg =
         err instanceof ApiError && typeof err.data === "object" && err.data && "error" in err.data

@@ -1,22 +1,33 @@
 import type { Partner, PlanLeadDetail } from "@workspace/api-client-react";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Loader2 } from "lucide-react";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
-import { LeadCardsList } from "@/components/dashboard/plan-lead/LeadCardsList";
+import { PlanLeadEditableCards } from "@/components/dashboard/plan-lead/PlanLeadEditableCards";
 import { PlanLeadMetricsGrid } from "@/components/dashboard/plan-lead/PlanLeadMetricsGrid";
 import { PlanLeadPartnerList } from "@/components/dashboard/plan-lead/PlanLeadPartnerList";
+import { Button } from "@/components/ui/button";
 
 type PlanLeadSendViewProps = {
   detail: PlanLeadDetail;
   partners: Partner[];
   isSending: boolean;
+  isSavingCards?: boolean;
+  canSend: boolean;
   onSend: (partnerId: number) => void;
+  onRequirePayment: (partnerId: number) => void;
+  onDeleteCard: (cardId: number) => void;
+  onAddCard: () => void;
 };
 
 export function PlanLeadSendView({
   detail,
   partners,
   isSending,
+  isSavingCards = false,
+  canSend,
   onSend,
+  onRequirePayment,
+  onDeleteCard,
+  onAddCard,
 }: PlanLeadSendViewProps) {
   const copy = planLeadDetailContent.status;
 
@@ -50,17 +61,31 @@ export function PlanLeadSendView({
 
       {detail.cards.length > 0 ? (
         <section className="space-y-3">
-          <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
-            {planLeadDetailContent.cardsSection}
-          </h2>
-          <LeadCardsList cards={detail.cards} />
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+              {planLeadDetailContent.cardsSection}
+            </h2>
+            {isSavingCards ? (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden="true" />
+            ) : null}
+          </div>
+          <PlanLeadEditableCards
+            cards={detail.cards}
+            onDeleteCard={onDeleteCard}
+            isDeleting={isSavingCards}
+          />
+          <Button type="button" variant="outline" className="w-full" onClick={onAddCard}>
+            + Add card
+          </Button>
         </section>
       ) : null}
 
       <PlanLeadPartnerList
         partners={partners}
         isSending={isSending}
+        canSend={canSend}
         onSend={onSend}
+        onRequirePayment={onRequirePayment}
       />
     </div>
   );

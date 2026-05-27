@@ -12,8 +12,6 @@ import {
   YAxis,
 } from "recharts";
 import { useGetAdminDashboardSummary } from "@workspace/api-client-react";
-import { AdminShell } from "@/components/admin/AdminShell";
-import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
 import { adminContent } from "@/content/admin";
 import { Button } from "@/components/ui/button";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
@@ -218,11 +216,5 @@ function AdminDashboardContent() {
 }
 
 export default function AdminDashboardPage() {
-  return (
-    <AdminProtectedRoute>
-      <AdminShell>
-        <AdminDashboardContent />
-      </AdminShell>
-    </AdminProtectedRoute>
-  );
+  return <AdminDashboardContent />;
 }

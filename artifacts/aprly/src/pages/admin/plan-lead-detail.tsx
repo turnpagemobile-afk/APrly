@@ -16,8 +16,6 @@ import { AdminBreadcrumbs } from "@/components/admin/AdminBreadcrumbs";
 import { AdminHardshipPortalStepper } from "@/components/admin/AdminHardshipPortalStepper";
 import { AdminPlanMetricsStrip } from "@/components/admin/AdminPlanMetricsStrip";
 import { AdminPlanPartnerBar } from "@/components/admin/AdminPlanPartnerBar";
-import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
-import { AdminShell } from "@/components/admin/AdminShell";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -343,11 +341,5 @@ function AdminPlanLeadDetailInner() {
 }
 
 export default function AdminPlanLeadDetailPage() {
-  return (
-    <AdminProtectedRoute>
-      <AdminShell>
-        <AdminPlanLeadDetailInner />
-      </AdminShell>
-    </AdminProtectedRoute>
-  );
+  return <AdminPlanLeadDetailInner />;
 }

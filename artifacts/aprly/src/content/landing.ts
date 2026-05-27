@@ -79,6 +79,12 @@ export const optimizerContent = {
     2: "Step 2 of 3 \u2014 The Cards",
     3: "Step 3 of 3 \u2014 The Plan",
   },
+  step3: {
+    chartTitle: "Debt Interest Analysis: Current vs. 8% Baseline",
+    chartSubtitle:
+      "Visualizing your monthly interest paid across the next 12 months.",
+    ctaLabel: "Start Saving",
+  },
 } as const;
 
 export const faqContent = {
@@ -122,7 +128,7 @@ export const planContent = {
   title: "Stop paying banks for your own money",
   subtitle: "One flat price. Every account watched. Every day.",
   card: {
-    heading: "Activate APRly for US $39.00/month",
+    heading: "Unlock APRly — US $39 one-time",
     features: [
       "24/7 automated rate negotiation",
       "Hardship portal management",
@@ -131,9 +137,9 @@ export const planContent = {
       "Cancel anytime",
     ],
     cta: {
-      label: "Activate APRly \u2014 $39/mo",
+      label: "Get started \u2014 $39 when you send to a partner",
       disabled: false,
-      note: "Stripe Checkout: $39 setup + $19.99/mo after 30-day trial.",
+      note: "Create your account free. One-time $39 unlocks unlimited partner submissions.",
     },
   },
 } as const;

@@ -100,7 +100,6 @@ services:
     environment:
       - VITE_API_PROXY_TARGET=http://api-server:5000
       - PORT=5173
-      - BASE_PATH=/
     ports:
       - "5173:5173"
     depends_on:
@@ -112,7 +111,7 @@ services:
       - .:/app
       - app-node-modules:/app/node_modules
     # Скрипт dev у aprly вже містить --host 0.0.0.0; зайвий --host ламав аргументи vite
-    command: pnpm --filter @workspace/aprly run dev
+    command: ["pnpm", "--filter", "@workspace/aprly", "run", "dev"]
 
 volumes:
   app-node-modules:

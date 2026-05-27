@@ -64,6 +64,13 @@
       "when": 1779600000000,
       "tag": "0008_debt_leads_lead_cards",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1779700000000,
+      "tag": "0009_users_paid_audit_at",
+      "breakpoints": true
     }
   ]
 }

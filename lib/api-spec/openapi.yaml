@@ -174,11 +174,43 @@ paths:
         "401":
           description: Unauthorized
 
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Create account without payment; sets session cookies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "200":
+          description: Registered and logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FieldErrorsResponse"
+        "409":
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FieldErrorsResponse"
+
   /auth/register-and-checkout:
     post:
       operationId: registerAndCheckout
+      deprecated: true
       tags: [auth]
-      summary: Validate signup, store pending registration, create Stripe Checkout (subscription + setup fee + trial)
+      summary: Deprecated — use POST /auth/register and POST /me/audit-checkout
       requestBody:
         required: true
         content:
@@ -509,6 +541,95 @@ paths:
           description: Unauthorized
         "404":
           description: Plan lead or partner not found
+        "402":
+          description: Audit packet payment required before sending to partner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentRequiredResponse"
+
+  /me/plan-leads/{id}/cards:
+    put:
+      operationId: updatePlanLeadCards
+      tags: [me]
+      summary: Replace cards on a draft plan lead (recommended, not yet sent)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportCardsInput"
+      responses:
+        "200":
+          description: Updated plan lead detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanLeadDetail"
+        "400":
+          description: Invalid request or lead not editable
+        "401":
+          description: Unauthorized
+        "404":
+          description: Plan lead not found
+
+  /me/audit-checkout:
+    post:
+      operationId: createAuditCheckout
+      tags: [me]
+      summary: Start Stripe Checkout for one-time $39 Verified Audit Packet
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Checkout session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditCheckoutPayload"
+        "400":
+          description: Already paid
+        "401":
+          description: Unauthorized
+        "503":
+          description: Stripe is not configured
+
+  /me/audit-checkout/session-status:
+    get:
+      operationId: getAuditCheckoutSessionStatus
+      tags: [me]
+      summary: Poll audit checkout; sets paid access when payment completes
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: stripeSessionId
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Checkout status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditCheckoutSessionStatusResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Session does not belong to this user
+        "404":
+          description: Unknown session
 
   /me/subscription/checkout:
     post:
@@ -754,7 +875,8 @@ paths:
     get:
       operationId: getAdminUserPlans
       tags: [admin]
-      summary: Plan leads for a user
+      summary: Plan leads sent to a partner for a user
+      description: Paginated list of plan leads with partner_id set (excludes not-sent drafts).
       security:
         - cookieAuth: []
       parameters:
@@ -1511,6 +1633,7 @@ components:
         - estimatedAnnualSavings
         - status
         - cardCount
+        - cards
         - createdAt
       properties:
         id:
@@ -1532,6 +1655,10 @@ components:
         cardCount:
           type: integer
           minimum: 0
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeadCardItem"
         status:
           $ref: "#/components/schemas/PlanLeadStatus"
         createdAt:
@@ -1715,10 +1842,11 @@ components:
         level:
           type: integer
           minimum: 0
-          description: Active plan leads (in_progress), v1
+          description: Active plans at partner — in_progress with partner_id (on_review + partner working)
         planCount:
           type: integer
           minimum: 0
+          description: Total plan leads for the user (all statuses)
         createdAt:
           type: string
           format: date-time
@@ -1866,6 +1994,29 @@ components:
         subscriptionActive:
           type: boolean
 
+    RegisterInput:
+      type: object
+      required: [email, password, confirmPassword, termsAccepted]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          minLength: 8
+          maxLength: 20
+        confirmPassword:
+          type: string
+          minLength: 8
+          maxLength: 20
+        termsAccepted:
+          type: boolean
+        guestSessionId:
+          type: string
+          maxLength: 64
+          description: Links pre-registration calculator debt lead to the new user
+
     RegisterAndCheckoutInput:
       type: object
       required: [email, password, confirmPassword, termsAccepted]
@@ -1955,7 +2106,37 @@ components:
           type: string
         hasActiveSubscription:
           type: boolean
-          description: True when the user has an active Stripe subscription on file
+          description: True when the user paid the one-time audit fee or has legacy active subscription
+
+    AuditCheckoutPayload:
+      type: object
+      required: [checkoutUrl, stripeSessionId]
+      properties:
+        checkoutUrl:
+          type: string
+          format: uri
+        stripeSessionId:
+          type: string
+
+    AuditCheckoutSessionStatusResponse:
+      type: object
+      required: [status, hasPaidAudit]
+      properties:
+        status:
+          type: string
+          enum: [pending, processing, paid, expired]
+        hasPaidAudit:
+          type: boolean
+
+    PaymentRequiredResponse:
+      type: object
+      required: [error, code]
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+          enum: [payment_required]
 
     PatchMeInput:
       type: object
@@ -2147,7 +2328,12 @@ components:
 
     AdminUserDetailSummary:
       type: object
-      required: [registeredMonthsAgo, currentPlansCount, createdPlansCount]
+      required:
+        - registeredMonthsAgo
+        - currentPlansCount
+        - createdPlansCount
+        - sentToPartnerPlansCount
+        - notSentPlansCount
       properties:
         registeredMonthsAgo:
           type: integer
@@ -2155,9 +2341,19 @@ components:
         currentPlansCount:
           type: integer
           minimum: 0
+          description: Active plans at partner, same as AdminUserRow.level
         createdPlansCount:
           type: integer
           minimum: 0
+          description: Total plan leads, same as AdminUserRow.planCount
+        sentToPartnerPlansCount:
+          type: integer
+          minimum: 0
+          description: Plans sent to a partner (partner_id set)
+        notSentPlansCount:
+          type: integer
+          minimum: 0
+          description: Plans not yet sent to a partner (partner_id null)
 
     AdminUserSubscriptionInfo:
       type: object

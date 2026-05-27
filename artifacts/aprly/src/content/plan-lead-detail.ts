@@ -31,4 +31,14 @@ export const planLeadDetailContent = {
   hardshipCtaSoonDescription: "This action will be available in a future release.",
   loadError: "Could not load this plan.",
   notFound: "Plan not found.",
+  addCardsTitle: "Add cards to this plan",
+  addCardsDescription: "New cards are added to your current plan lead — not a separate lead.",
+  addCardsSave: "Save cards",
+  addCardsCancel: "Cancel",
+  addCardsSuccessTitle: "Cards added",
+  addCardsSuccessDescription: "Your plan lead was updated.",
+  addCardsErrorTitle: "Could not add cards",
+  addCardsErrorDescription: "Please check your card details and try again.",
+  sendRequiresPayment:
+    "Pay US $39 once to unlock sending this plan to a partner. You can still edit cards before paying.",
 } as const;
