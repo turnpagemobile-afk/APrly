@@ -1,5 +1,11 @@
-const MANIFEST_HREF = "/manifest-cabinet.webmanifest";
-const APPLE_TOUCH_ICON = "/icons/apple-touch-icon-180.png";
+function cabinetPublicUrl(relativePath: string): string {
+  const base = import.meta.env.BASE_URL || "/dashboard/";
+  const normalized = relativePath.replace(/^\//, "");
+  return `${base}${normalized}`.replace(/([^:]\/)\/+/g, "$1");
+}
+
+const MANIFEST_HREF = cabinetPublicUrl("manifest-cabinet.webmanifest");
+const APPLE_TOUCH_ICON = cabinetPublicUrl("icons/apple-touch-icon-180.png");
 
 function upsertLink(rel: string, href: string, extra?: Record<string, string>) {
   const selector = `link[rel="${rel}"]`;

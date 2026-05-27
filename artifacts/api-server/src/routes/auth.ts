@@ -15,6 +15,7 @@ import {
   PatchMePasswordBody,
   RefreshSessionResponse,
 } from "@workspace/api-zod";
+import { attachGuestLeadsToUser } from "../lib/debt-lead-service";
 import {
   db,
   registrationIntentsTable,
@@ -68,51 +69,55 @@ function frontendOrigin(): string {
   return (process.env["FRONTEND_ORIGIN"] ?? "http://localhost:5173").replace(/\/+$/, "");
 }
 
-router.post("/auth/register-and-checkout", async (req, res, next) => {
+function parseRegisterFields(body: unknown) {
+  const parsed = RegisterAndCheckoutBody.safeParse(body);
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string[]> = {};
+    for (const issue of parsed.error.issues) {
+      const key = issue.path.length ? issue.path.join(".") : "_root";
+      fieldErrors[key] ??= [];
+      fieldErrors[key].push(issue.message);
+    }
+    return { ok: false as const, fieldErrors };
+  }
+  const { email, password, confirmPassword, termsAccepted } = parsed.data;
+  const guestSessionId = (
+    parsed.data as { guestSessionId?: string | undefined }
+  ).guestSessionId;
+  if (password !== confirmPassword) {
+    return {
+      ok: false as const,
+      fieldErrors: { confirmPassword: ["Passwords must match."] },
+    };
+  }
+  if (!termsAccepted) {
+    return {
+      ok: false as const,
+      fieldErrors: { termsAccepted: ["You must accept the terms of use."] },
+    };
+  }
+  return {
+    ok: true as const,
+    email: email.trim().toLowerCase(),
+    password,
+    guestSessionId: guestSessionId?.trim() || null,
+  };
+}
+
+router.post("/auth/register", async (req, res, next) => {
   try {
-    if (!stripeConfigured()) {
-      res.status(503).json({ error: "Stripe checkout is not configured on the server." });
+    const fields = parseRegisterFields(req.body);
+    if (!fields.ok) {
+      fieldErrorsResponse(fields.fieldErrors, 400, res);
       return;
     }
 
-    const parsed = RegisterAndCheckoutBody.safeParse(req.body);
-    if (!parsed.success) {
-      const fieldErrors: Record<string, string[]> = {};
-      for (const issue of parsed.error.issues) {
-        const key = issue.path.length ? issue.path.join(".") : "_root";
-        fieldErrors[key] ??= [];
-        fieldErrors[key].push(issue.message);
-      }
-      fieldErrorsResponse(fieldErrors, 400, res);
-      return;
-    }
-    const { email, password, confirmPassword, termsAccepted } = parsed.data;
-    const guestSessionId = (
-      parsed.data as { guestSessionId?: string | undefined }
-    ).guestSessionId;
-    if (password !== confirmPassword) {
-      fieldErrorsResponse(
-        { confirmPassword: ["Passwords must match."] },
-        400,
-        res,
-      );
-      return;
-    }
-    if (!termsAccepted) {
-      fieldErrorsResponse(
-        { termsAccepted: ["You must accept the terms of use."] },
-        400,
-        res,
-      );
-      return;
-    }
-
-    const normalizedEmail = email.trim().toLowerCase();
+    const { email, password, guestSessionId } = fields;
 
     const [existing] = await db
       .select({ id: usersTable.id })
       .from(usersTable)
-      .where(eq(usersTable.email, normalizedEmail))
+      .where(eq(usersTable.email, email))
       .limit(1);
 
     if (existing) {
@@ -128,72 +133,34 @@ router.post("/auth/register-and-checkout", async (req, res, next) => {
       return;
     }
 
-    const intentId = crypto.randomUUID();
     const passwordHash = await bcrypt.hash(password, 10);
-    const termsAcceptedAt = new Date();
 
-    await db.insert(registrationIntentsTable).values({
-      id: intentId,
-      email: normalizedEmail,
-      passwordHash,
-      termsAcceptedAt,
-      guestSessionId: guestSessionId?.trim() || null,
-      status: "pending",
-    });
+    const [inserted] = await db
+      .insert(usersTable)
+      .values({
+        email,
+        passwordHash,
+        role: "user",
+      })
+      .returning();
 
-    const stripe = getStripe();
-    const oneTime = stripeSetupFeePriceId()!;
-    const recurring = stripeSubscriptionPriceId()!;
-    const origin = frontendOrigin();
-
-    let session: Stripe.Checkout.Session;
-    try {
-      session = await stripe.checkout.sessions.create({
-        mode: "subscription",
-        customer_email: normalizedEmail,
-        line_items: [
-          { price: oneTime, quantity: 1 },
-          { price: recurring, quantity: 1 },
-        ],
-        subscription_data: {
-          trial_period_days: 30,
-        },
-        success_url: `${origin}/?stripe_session={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/?stripe_cancel=1`,
-        metadata: {
-          registrationIntentId: intentId,
-        },
-      });
-    } catch (stripeErr: unknown) {
-      await db.delete(registrationIntentsTable).where(eq(registrationIntentsTable.id, intentId));
-      const detail =
-        stripeErr instanceof Error ? stripeErr.message : typeof stripeErr === "string" ? stripeErr : "Unknown error";
-      logger.error({ err: stripeErr }, "Stripe checkout.sessions.create failed");
-      res.status(502).json({
-        error: "Stripe checkout failed",
-        detail,
-      });
+    if (!inserted) {
+      res.status(500).json({ error: "Failed to create account." });
       return;
     }
 
-    if (!session.url || !session.id) {
-      res.status(500).json({ error: "Stripe did not return a checkout URL." });
-      return;
-    }
-
-    await db
-      .update(registrationIntentsTable)
-      .set({ stripeCheckoutSessionId: session.id })
-      .where(eq(registrationIntentsTable.id, intentId));
-
-    const payload = RegisterAndCheckoutResponse.parse({
-      checkoutUrl: session.url,
-      stripeSessionId: session.id,
-    });
-    res.json(payload);
+    await attachGuestLeadsToUser(inserted.id, guestSessionId);
+    await issueAuthCookies(res, inserted.id, inserted.role);
+    res.json(LoginResponse.parse(await buildMeResponse(inserted)));
   } catch (err) {
     next(err);
   }
+});
+
+router.post("/auth/register-and-checkout", async (_req, res) => {
+  res.status(410).json({
+    error: "Deprecated. Use POST /auth/register and POST /me/audit-checkout when sending to a partner.",
+  });
 });
 
 router.get("/auth/checkout/session-status", async (req, res, next) => {

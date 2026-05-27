@@ -12,19 +12,10 @@ import { AdminBreadcrumbs } from "@/components/admin/AdminBreadcrumbs";
 import { AdminDetailTabs } from "@/components/admin/AdminDetailTabs";
 import { AdminInfoGrid } from "@/components/admin/AdminInfoGrid";
 import { AdminPartnerLeadCard } from "@/components/admin/AdminPartnerLeadCard";
-import { AdminShell } from "@/components/admin/AdminShell";
-import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
 import { adminContent } from "@/content/admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 
@@ -231,24 +222,21 @@ function AdminPartnerDetailContent({ partnerId }: { partnerId: number }) {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>{adminContent.partners.rowsPerPage}</span>
-              <Select
+              <select
+                aria-label={adminContent.partners.rowsPerPage}
                 value={String(leadsPageSize)}
-                onValueChange={(v) => {
-                  setLeadsPageSize(Number(v));
+                onChange={(e) => {
+                  setLeadsPageSize(Number(e.target.value));
                   setLeadsPage(1);
                 }}
+                className="h-9 w-[72px] rounded-md border border-input bg-transparent px-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
               >
-                <SelectTrigger className="h-9 w-[72px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {[10, 20, 50].map((n) => (
-                    <SelectItem key={n} value={String(n)}>
-                      {n}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {[10, 20, 50].map((n) => (
+                  <option key={n} value={String(n)}>
+                    {n}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Button
@@ -284,20 +272,8 @@ export default function AdminPartnerDetailPage() {
   const [, params] = useRoute("/admin/partners/:id");
   const id = Number(params?.id);
   if (!Number.isInteger(id) || id < 1) {
-    return (
-      <AdminProtectedRoute>
-        <AdminShell>
-          <p className="text-destructive">Invalid partner</p>
-        </AdminShell>
-      </AdminProtectedRoute>
-    );
+    return <p className="text-destructive">Invalid partner</p>;
   }
 
-  return (
-    <AdminProtectedRoute>
-      <AdminShell>
-        <AdminPartnerDetailContent partnerId={id} />
-      </AdminShell>
-    </AdminProtectedRoute>
-  );
+  return <AdminPartnerDetailContent partnerId={id} />;
 }

@@ -11,6 +11,8 @@ out-tsc
 # dependencies
 node_modules
 .pnpm-store/
+# APRly multi-app dev (one cacheDir per Vite instance)
+artifacts/aprly/.vite-*
 
 # IDEs and editors
 /.idea

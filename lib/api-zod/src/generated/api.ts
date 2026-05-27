@@ -283,6 +283,16 @@ export const GetDashboardTabResponse = zod.object({
         cardCount: zod
           .number()
           .min(getDashboardTabResponsePlansItemCardCountMin),
+        cards: zod.array(
+          zod.object({
+            id: zod.number(),
+            brand: zod.string(),
+            balance: zod.number(),
+            currentApr: zod.number(),
+            targetApr: zod.number(),
+            estimatedAnnualSavings: zod.number(),
+          }),
+        ),
         status: zod.enum(["recommended", "in_progress", "won", "denied"]),
         createdAt: zod.coerce.date(),
       })
@@ -295,7 +305,52 @@ export const GetDashboardTabResponse = zod.object({
 });
 
 /**
- * @summary Validate signup, store pending registration, create Stripe Checkout (subscription + setup fee + trial)
+ * @summary Create account without payment; sets session cookies
+ */
+export const registerBodyEmailMax = 254;
+
+export const registerBodyPasswordMin = 8;
+export const registerBodyPasswordMax = 20;
+
+export const registerBodyConfirmPasswordMin = 8;
+export const registerBodyConfirmPasswordMax = 20;
+
+export const registerBodyGuestSessionIdMax = 64;
+
+export const RegisterBody = zod.object({
+  email: zod.string().email().max(registerBodyEmailMax),
+  password: zod
+    .string()
+    .min(registerBodyPasswordMin)
+    .max(registerBodyPasswordMax),
+  confirmPassword: zod
+    .string()
+    .min(registerBodyConfirmPasswordMin)
+    .max(registerBodyConfirmPasswordMax),
+  termsAccepted: zod.boolean(),
+  guestSessionId: zod
+    .string()
+    .max(registerBodyGuestSessionIdMax)
+    .optional()
+    .describe("Links pre-registration calculator debt lead to the new user"),
+});
+
+export const RegisterResponse = zod.object({
+  id: zod.number(),
+  email: zod.string().email(),
+  firstName: zod.string().nullish(),
+  lastName: zod.string().nullish(),
+  role: zod.string(),
+  hasActiveSubscription: zod
+    .boolean()
+    .describe(
+      "True when the user paid the one-time audit fee or has legacy active subscription",
+    ),
+});
+
+/**
+ * @deprecated
+ * @summary Deprecated — use POST /auth/register and POST /me/audit-checkout
  */
 export const registerAndCheckoutBodyEmailMax = 254;
 
@@ -367,7 +422,9 @@ export const LoginResponse = zod.object({
   role: zod.string(),
   hasActiveSubscription: zod
     .boolean()
-    .describe("True when the user has an active Stripe subscription on file"),
+    .describe(
+      "True when the user paid the one-time audit fee or has legacy active subscription",
+    ),
 });
 
 /**
@@ -381,7 +438,9 @@ export const RefreshSessionResponse = zod.object({
   role: zod.string(),
   hasActiveSubscription: zod
     .boolean()
-    .describe("True when the user has an active Stripe subscription on file"),
+    .describe(
+      "True when the user paid the one-time audit fee or has legacy active subscription",
+    ),
 });
 
 /**
@@ -395,7 +454,9 @@ export const GetMeResponse = zod.object({
   role: zod.string(),
   hasActiveSubscription: zod
     .boolean()
-    .describe("True when the user has an active Stripe subscription on file"),
+    .describe(
+      "True when the user paid the one-time audit fee or has legacy active subscription",
+    ),
 });
 
 /**
@@ -418,7 +479,9 @@ export const PatchMeResponse = zod.object({
   role: zod.string(),
   hasActiveSubscription: zod
     .boolean()
-    .describe("True when the user has an active Stripe subscription on file"),
+    .describe(
+      "True when the user paid the one-time audit fee or has legacy active subscription",
+    ),
 });
 
 /**
@@ -523,6 +586,16 @@ export const CreateDetailedPlanResponse = zod.object({
         cardCount: zod
           .number()
           .min(createDetailedPlanResponsePlansItemCardCountMin),
+        cards: zod.array(
+          zod.object({
+            id: zod.number(),
+            brand: zod.string(),
+            balance: zod.number(),
+            currentApr: zod.number(),
+            targetApr: zod.number(),
+            estimatedAnnualSavings: zod.number(),
+          }),
+        ),
         status: zod.enum(["recommended", "in_progress", "won", "denied"]),
         createdAt: zod.coerce.date(),
       })
@@ -650,6 +723,16 @@ export const UpdatePlanLeadStatusResponse = zod
       .number()
       .describe("Sum of estimated savings across cards"),
     cardCount: zod.number().min(updatePlanLeadStatusResponseCardCountMin),
+    cards: zod.array(
+      zod.object({
+        id: zod.number(),
+        brand: zod.string(),
+        balance: zod.number(),
+        currentApr: zod.number(),
+        targetApr: zod.number(),
+        estimatedAnnualSavings: zod.number(),
+      }),
+    ),
     status: zod.enum(["recommended", "in_progress", "won", "denied"]),
     createdAt: zod.coerce.date(),
   })
@@ -731,6 +814,124 @@ export const SendPlanLeadResponse = zod
   .describe(
     "Debt lead package with card breakdown. For status `recommended`, partner fields are null.\nAfter POST ...\/send (`in_progress` or later `won`), partnerId, sentToPartnerAt,\nand partner are always set; hardshipPortal is included for in_progress and won.\n",
   );
+
+/**
+ * @summary Replace cards on a draft plan lead (recommended, not yet sent)
+ */
+
+export const UpdatePlanLeadCardsParams = zod.object({
+  id: zod.coerce.number().min(1),
+});
+
+export const updatePlanLeadCardsBodyCardsItemBalanceExclusiveMin = 0;
+
+export const updatePlanLeadCardsBodyCardsItemRateExclusiveMin = 0;
+export const updatePlanLeadCardsBodyCardsItemRateMax = 100;
+
+export const UpdatePlanLeadCardsBody = zod.object({
+  cards: zod
+    .array(
+      zod.object({
+        brand: zod.string().min(1),
+        balance: zod
+          .number()
+          .gt(updatePlanLeadCardsBodyCardsItemBalanceExclusiveMin),
+        rate: zod
+          .number()
+          .gt(updatePlanLeadCardsBodyCardsItemRateExclusiveMin)
+          .max(updatePlanLeadCardsBodyCardsItemRateMax),
+        accountId: zod.string().optional(),
+        source: zod.enum(["manual", "plaid"]).optional(),
+      }),
+    )
+    .min(1),
+});
+
+export const updatePlanLeadCardsResponseCardCountMin = 0;
+
+export const updatePlanLeadCardsResponseHardshipPortalOneProgressMin = 0;
+export const updatePlanLeadCardsResponseHardshipPortalOneProgressMax = 100;
+
+export const UpdatePlanLeadCardsResponse = zod
+  .object({
+    id: zod.number(),
+    brand: zod.string(),
+    balance: zod.number(),
+    currentApr: zod.number(),
+    targetApr: zod.number(),
+    estimatedAnnualSavings: zod.number(),
+    cardCount: zod.number().min(updatePlanLeadCardsResponseCardCountMin),
+    cards: zod.array(
+      zod.object({
+        id: zod.number(),
+        brand: zod.string(),
+        balance: zod.number(),
+        currentApr: zod.number(),
+        targetApr: zod.number(),
+        estimatedAnnualSavings: zod.number(),
+      }),
+    ),
+    status: zod.enum(["recommended", "in_progress", "won", "denied"]),
+    createdAt: zod.coerce.date(),
+    partnerId: zod.number().nullish(),
+    sentToPartnerAt: zod.coerce.date().nullish(),
+    partner: zod
+      .object({
+        id: zod.number(),
+        name: zod.string(),
+        createdAt: zod.coerce
+          .date()
+          .optional()
+          .describe("Included in admin partner payloads"),
+        isActive: zod
+          .boolean()
+          .optional()
+          .describe("Included in admin partner payloads"),
+      })
+      .nullish(),
+    hardshipPortal: zod
+      .object({
+        stage: zod.string(),
+        progress: zod
+          .number()
+          .min(updatePlanLeadCardsResponseHardshipPortalOneProgressMin)
+          .max(updatePlanLeadCardsResponseHardshipPortalOneProgressMax),
+        etaDays: zod.number(),
+        steps: zod.array(
+          zod.object({
+            name: zod.string(),
+            status: zod.enum(["done", "active", "pending"]),
+            description: zod.string().optional(),
+            cta: zod.string().optional(),
+          }),
+        ),
+      })
+      .nullish(),
+  })
+  .describe(
+    "Debt lead package with card breakdown. For status `recommended`, partner fields are null.\nAfter POST ...\/send (`in_progress` or later `won`), partnerId, sentToPartnerAt,\nand partner are always set; hardshipPortal is included for in_progress and won.\n",
+  );
+
+/**
+ * @summary Start Stripe Checkout for one-time $39 Verified Audit Packet
+ */
+export const CreateAuditCheckoutResponse = zod.object({
+  checkoutUrl: zod.string().url(),
+  stripeSessionId: zod.string(),
+});
+
+/**
+ * @summary Poll audit checkout; sets paid access when payment completes
+ */
+
+export const GetAuditCheckoutSessionStatusQueryParams = zod.object({
+  stripeSessionId: zod.coerce.string().min(1),
+});
+
+export const GetAuditCheckoutSessionStatusResponse = zod.object({
+  status: zod.enum(["pending", "processing", "paid", "expired"]),
+  hasPaidAudit: zod.boolean(),
+});
 
 /**
  * @summary Start Stripe Checkout for subscription renewal (subscription only, no setup fee)
@@ -909,7 +1110,7 @@ export const GetAdminUsersResponse = zod.object({
       level: zod
         .number()
         .min(getAdminUsersResponseUsersItemLevelMin)
-        .describe("Active plan leads (in_progress), v1"),
+        .describe("Active plans at partner — in_progress with partner_id (on_review + partner working)"),
       planCount: zod.number().min(getAdminUsersResponseUsersItemPlanCountMin),
       createdAt: zod.coerce.date(),
     }),
@@ -943,6 +1144,10 @@ export const getAdminUserResponseSummaryCurrentPlansCountMin = 0;
 
 export const getAdminUserResponseSummaryCreatedPlansCountMin = 0;
 
+export const getAdminUserResponseSummarySentToPartnerPlansCountMin = 0;
+
+export const getAdminUserResponseSummaryNotSentPlansCountMin = 0;
+
 export const GetAdminUserResponse = zod.object({
   user: zod.object({
     id: zod.number(),
@@ -952,7 +1157,7 @@ export const GetAdminUserResponse = zod.object({
     level: zod
       .number()
       .min(getAdminUserResponseUserLevelMin)
-      .describe("Active plan leads (in_progress), v1"),
+      .describe("Active plans at partner — in_progress with partner_id (on_review + partner working)"),
     planCount: zod.number().min(getAdminUserResponseUserPlanCountMin),
     createdAt: zod.coerce.date(),
   }),
@@ -966,6 +1171,12 @@ export const GetAdminUserResponse = zod.object({
     createdPlansCount: zod
       .number()
       .min(getAdminUserResponseSummaryCreatedPlansCountMin),
+    sentToPartnerPlansCount: zod
+      .number()
+      .min(getAdminUserResponseSummarySentToPartnerPlansCountMin),
+    notSentPlansCount: zod
+      .number()
+      .min(getAdminUserResponseSummaryNotSentPlansCountMin),
   }),
   subscription: zod.object({
     active: zod.boolean(),

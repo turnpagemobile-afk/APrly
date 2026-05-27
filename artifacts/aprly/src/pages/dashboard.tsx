@@ -19,19 +19,19 @@ function readTabFromUrl(): DashboardTab {
   return parseDashboardTab(window.location.search);
 }
 
-function readStripeSessionFromUrl(): string | null {
+function readAuditSessionFromUrl(): string | null {
   if (typeof window === "undefined") return null;
   const params = new URLSearchParams(window.location.search);
   if (params.get("tab") !== "dashboard") return null;
-  return params.get("stripe_session");
+  return params.get("audit_session");
 }
 
 export default function DashboardPage() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<DashboardTab>(readTabFromUrl);
-  const [stripeSessionId, setStripeSessionId] = useState<string | null>(readStripeSessionFromUrl);
+  const [auditSessionId, setAuditSessionId] = useState<string | null>(readAuditSessionFromUrl);
 
-  const subscription = useDashboardSubscription(stripeSessionId);
+  const subscription = useDashboardSubscription(auditSessionId);
 
   useEffect(() => {
     const onPopState = () => setActiveTab(readTabFromUrl());
@@ -53,12 +53,12 @@ export default function DashboardPage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
-    const sid = params.get("stripe_session");
-    const cancelled = params.get("stripe_cancel");
+    const auditSid = params.get("audit_session");
+    const cancelled = params.get("audit_cancel");
     const tab = params.get("tab");
 
-    if (sid && tab === "dashboard") {
-      setStripeSessionId(sid);
+    if (auditSid && tab === "dashboard") {
+      setAuditSessionId(auditSid);
       setActiveTab("dashboard");
       const clean = `${window.location.pathname}?tab=dashboard`;
       window.history.replaceState({}, "", clean);
@@ -75,18 +75,10 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (!subscription.isPollingReturn && stripeSessionId) {
-      const paid =
-        subscription.tabQuery.data?.subscriptionActive &&
-        !subscription.isSubscriptionLoading;
-      if (paid) setStripeSessionId(null);
+    if (auditSessionId && subscription.tabQuery.data?.subscriptionActive) {
+      setAuditSessionId(null);
     }
-  }, [
-    subscription.isPollingReturn,
-    subscription.isSubscriptionLoading,
-    subscription.tabQuery.data?.subscriptionActive,
-    stripeSessionId,
-  ]);
+  }, [auditSessionId, subscription.tabQuery.data?.subscriptionActive]);
 
   const setTab = useCallback(
     (tab: DashboardTab) => {

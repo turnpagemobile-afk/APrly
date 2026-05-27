@@ -1,5 +1,15 @@
-export function planLeadHref(id: number, returnTo: string): string {
-  return `/dashboard/plan-leads/${id}?returnTo=${encodeURIComponent(returnTo)}`;
+export function planLeadHref(
+  id: number,
+  returnTo: string,
+  options?: { addCard?: boolean },
+): string {
+  const params = new URLSearchParams({ returnTo });
+  if (options?.addCard) params.set("addCard", "1");
+  return `/dashboard/plan-leads/${id}?${params.toString()}`;
+}
+
+export function readPlanLeadAddCard(search: string): boolean {
+  return new URLSearchParams(search).get("addCard") === "1";
 }
 
 export function readPlanLeadReturnTo(search: string): string {

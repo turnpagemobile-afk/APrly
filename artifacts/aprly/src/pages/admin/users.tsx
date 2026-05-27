@@ -5,8 +5,6 @@ import {
   getGetAdminUsersQueryKey,
   useGetAdminUsers,
 } from "@workspace/api-client-react";
-import { AdminShell } from "@/components/admin/AdminShell";
-import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
 import { AdminListPageHeader } from "@/components/admin/AdminListPageHeader";
 import { adminContent } from "@/content/admin";
 import { Button } from "@/components/ui/button";
@@ -19,13 +17,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 type Tab = "subscribed" | "unsubscribed";
 
@@ -134,10 +125,10 @@ function AdminUsersContent() {
                     {adminContent.users.email}
                   </TableHead>
                   <TableHead className="w-16 text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.users.level}
+                    {adminContent.users.activePlans}
                   </TableHead>
                   <TableHead className="w-20 text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.users.plans}
+                    {adminContent.users.totalPlans}
                   </TableHead>
                   <TableHead className="text-xs font-medium uppercase text-muted-foreground">
                     {adminContent.users.registrationDate}
@@ -176,24 +167,21 @@ function AdminUsersContent() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>{adminContent.partners.rowsPerPage}</span>
-              <Select
+              <select
+                aria-label={adminContent.partners.rowsPerPage}
                 value={String(pageSize)}
-                onValueChange={(v) => {
-                  setPageSize(Number(v));
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
                   setPage(1);
                 }}
+                className="h-9 w-[72px] rounded-md border border-input bg-transparent px-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
               >
-                <SelectTrigger className="h-9 w-[72px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {[10, 20, 50].map((n) => (
-                    <SelectItem key={n} value={String(n)}>
-                      {n}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {[10, 20, 50].map((n) => (
+                  <option key={n} value={String(n)}>
+                    {n}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Button
@@ -224,11 +212,5 @@ function AdminUsersContent() {
 }
 
 export default function AdminUsersPage() {
-  return (
-    <AdminProtectedRoute>
-      <AdminShell>
-        <AdminUsersContent />
-      </AdminShell>
-    </AdminProtectedRoute>
-  );
+  return <AdminUsersContent />;
 }

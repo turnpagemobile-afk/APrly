@@ -238,6 +238,7 @@ export interface PlanLead {
   status: PlanLeadStatus;
   /** @minimum 0 */
   cardCount: number;
+  cards: LeadCardItem[];
   createdAt: string;
 }
 
@@ -309,7 +310,7 @@ export interface AdminUserRow {
   firstName?: string | null;
   lastName?: string | null;
   /**
-   * Active plan leads (in_progress), v1
+   * Active plans at partner — in_progress with partner_id (on_review + partner working)
    * @minimum 0
    */
   level: number;
@@ -614,6 +615,10 @@ export interface AdminUserDetailSummary {
   currentPlansCount: number;
   /** @minimum 0 */
   createdPlansCount: number;
+  /** @minimum 0 */
+  sentToPartnerPlansCount: number;
+  /** @minimum 0 */
+  notSentPlansCount: number;
 }
 
 export interface AdminUserSubscriptionInfo {

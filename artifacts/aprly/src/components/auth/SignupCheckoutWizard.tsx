@@ -1,21 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useLocation } from "wouter";
+import { goToCabinet } from "@/lib/app-navigation";
 import { cn } from "@/lib/utils";
-import {
-  releaseDialogScrollLock,
-  scheduleHardNavigation,
-} from "@/lib/release-dialog-scroll-lock";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { releaseDialogScrollLock } from "@/lib/release-dialog-scroll-lock";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { ApiError } from "@workspace/api-client-react/custom-fetch";
 import {
-  getCheckoutSessionStatus,
-  getGetCheckoutSessionStatusQueryKey,
   getGetDashboardTabQueryKey,
   useImportMyCards,
   usePatchMe,
-  useRegisterAndCheckout,
 } from "@workspace/api-client-react";
+import { registerAccount } from "@/lib/payment-api";
 import { readGuestSessionId } from "@/lib/guest-session";
 import { syncAuthSession } from "@/lib/auth-session";
 import {
@@ -48,7 +43,7 @@ const step1Schema = z
     }
   });
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 3;
 
 type FieldErrors = Record<string, string[]>;
 
@@ -86,7 +81,6 @@ export function SignupCheckoutWizard({
   initialEmail,
   initialName,
 }: SignupCheckoutWizardProps) {
-  const [, navigate] = useLocation();
   const queryClient = useQueryClient();
 
   const refreshAuthSession = useCallback(
@@ -99,22 +93,24 @@ export function SignupCheckoutWizard({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [stripeSessionId, setStripeSessionId] = useState<string | null>(null);
   const [checkoutUserEmail, setCheckoutUserEmail] = useState<string | null>(null);
 
-  const registerMutation = useRegisterAndCheckout();
+  const registerMutation = useMutation({
+    mutationFn: (data: {
+      email: string;
+      password: string;
+      confirmPassword: string;
+      termsAccepted: boolean;
+      guestSessionId?: string;
+    }) => registerAccount(data),
+  });
   const patchMutation = usePatchMe();
   const importCardsMutation = useImportMyCards();
   const cardsImportStartedRef = useRef(false);
   const sessionSyncedRef = useRef(false);
-  const step2AdvanceStartedRef = useRef(false);
-  const advanceGenerationRef = useRef(0);
   const checkoutPaidRef = useRef(false);
   const step3SideEffectsStartedRef = useRef(false);
-  const [isAdvancingToStep3, setIsAdvancingToStep3] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
-  const [pendingCheckoutUrl, setPendingCheckoutUrl] = useState<string | null>(null);
-  const isRedirectingToCheckout = pendingCheckoutUrl !== null;
 
   const step1Parsed = useMemo(
     () =>
@@ -128,26 +124,6 @@ export function SignupCheckoutWizard({
   );
   const step1FormValid = step1Parsed.success;
 
-  const sessionQueryKey = useMemo(
-    () =>
-      stripeSessionId
-        ? getGetCheckoutSessionStatusQueryKey({ stripeSessionId })
-        : ["checkout-session-status", "idle"],
-    [stripeSessionId],
-  );
-
-  const sessionQuery = useQuery({
-    queryKey: sessionQueryKey,
-    queryFn: ({ signal }) =>
-      getCheckoutSessionStatus({ stripeSessionId: stripeSessionId! }, { signal }),
-    enabled: open && step === 2 && Boolean(stripeSessionId),
-    refetchInterval: (q) => {
-      const s = q.state.data?.status;
-      if (s === "paid" || s === "failed" || s === "expired") return false;
-      return 2000;
-    },
-  });
-
   const resetForm = useCallback(() => {
     setStep(1);
     setEmail("");
@@ -155,62 +131,24 @@ export function SignupCheckoutWizard({
     setConfirmPassword("");
     setTermsAccepted(false);
     setFieldErrors({});
-    setStripeSessionId(null);
     setCheckoutUserEmail(null);
     cardsImportStartedRef.current = false;
     sessionSyncedRef.current = false;
-    step2AdvanceStartedRef.current = false;
-    advanceGenerationRef.current += 1;
     checkoutPaidRef.current = false;
     step3SideEffectsStartedRef.current = false;
-    setIsAdvancingToStep3(false);
     setIsFinishing(false);
-    setPendingCheckoutUrl(null);
   }, []);
-
-  const paidCheckoutEmail = sessionQuery.data?.status === "paid" ? sessionQuery.data.user?.email : undefined;
-
-  useEffect(() => {
-    if (!open && pendingCheckoutUrl) {
-      scheduleHardNavigation(pendingCheckoutUrl);
-    }
-  }, [open, pendingCheckoutUrl]);
 
   useEffect(() => {
     if (!open) {
-      if (pendingCheckoutUrl) return undefined;
       resetForm();
-      return undefined;
-    }
-    if (initialStripeSessionId) {
-      setStripeSessionId(initialStripeSessionId);
-      setStep(2);
       return undefined;
     }
     if (initialEmail?.trim()) {
       setEmail(initialEmail.trim());
     }
     return undefined;
-  }, [open, initialStripeSessionId, initialEmail, resetForm, navigate]);
-
-  useEffect(() => {
-    if (!open || step !== 2 || !paidCheckoutEmail) return;
-    if (step2AdvanceStartedRef.current) return;
-
-    step2AdvanceStartedRef.current = true;
-    const generation = ++advanceGenerationRef.current;
-    setCheckoutUserEmail(paidCheckoutEmail);
-    setIsAdvancingToStep3(true);
-    checkoutPaidRef.current = true;
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (generation !== advanceGenerationRef.current) return;
-        setIsAdvancingToStep3(false);
-        setStep(3);
-      });
-    });
-  }, [open, step, paidCheckoutEmail]);
+  }, [open, initialEmail, resetForm]);
 
   useEffect(() => {
     if (!open || step !== 3 || !checkoutPaidRef.current) return undefined;
@@ -267,18 +205,17 @@ export function SignupCheckoutWizard({
     if (!step1FormValid) return;
     setFieldErrors({});
     try {
-      const res = await registerMutation.mutateAsync({
-        data: {
-          email,
-          password,
-          confirmPassword,
-          termsAccepted,
-          guestSessionId: readGuestSessionId() ?? undefined,
-        },
+      await registerMutation.mutateAsync({
+        email,
+        password,
+        confirmPassword,
+        termsAccepted,
+        guestSessionId: readGuestSessionId() ?? undefined,
       });
-      releaseDialogScrollLock();
-      setPendingCheckoutUrl(res.checkoutUrl);
-      onBeginStripeRedirect?.();
+      await refreshAuthSession();
+      setCheckoutUserEmail(email.trim().toLowerCase());
+      checkoutPaidRef.current = true;
+      setStep(3);
     } catch (err: unknown) {
       const fe = readFieldErrors(err);
       if (fe) {
@@ -327,7 +264,7 @@ export function SignupCheckoutWizard({
       await refreshAuthSession();
       onOpenChange(false);
       releaseDialogScrollLock();
-      navigate("/dashboard?tab=home");
+      goToCabinet("/dashboard?tab=home");
     } catch (err: unknown) {
       setIsFinishing(false);
       toast({
@@ -338,37 +275,12 @@ export function SignupCheckoutWizard({
     }
   };
 
-  const allowDismiss =
-    !isRedirectingToCheckout &&
-    !registerMutation.isPending &&
-    !(step >= 2 && !isFinishing && !isAdvancingToStep3);
+  const allowDismiss = !registerMutation.isPending && !isFinishing;
 
   const handleRequestClose = () => {
     if (!allowDismiss) return;
     onOpenChange(false);
   };
-
-  const status = sessionQuery.data?.status;
-  const showStep2Error =
-    step === 2 &&
-    (status === "failed" ||
-      status === "expired" ||
-      (sessionQuery.isFetched && sessionQuery.isError));
-
-  if (isRedirectingToCheckout && !open) {
-    return (
-      <div
-        className="notranslate fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-background/95"
-        role="status"
-        aria-live="polite"
-        translate="no"
-        lang="en"
-      >
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">Redirecting to Stripe…</p>
-      </div>
-    );
-  }
 
   return (
     <SignupCheckoutModal
@@ -378,18 +290,12 @@ export function SignupCheckoutWizard({
     >
         <div className="flex flex-col space-y-1.5 text-center sm:text-left">
           <h2 className="text-lg font-semibold leading-none tracking-tight">
-            {step === 1
-              ? "Create account"
-              : step === 2 || isAdvancingToStep3
-                ? "Pay with Stripe"
-                : "Your profile"}
+            {step === 1 ? "Create account" : "Your profile"}
           </h2>
           <p className="text-sm text-muted-foreground">
             {step === 1
-              ? "All fields are required. You will continue to secure Stripe Checkout in this window."
-              : step === 2 || isAdvancingToStep3
-                ? "After you pay, you will return here automatically while we finish your account."
-                : "Add your first and last name — email cannot be changed here."}
+              ? "All fields are required. Payment is only needed when you send a plan to a partner."
+              : "Add your first and last name — email cannot be changed here."}
           </p>
         </div>
 
@@ -479,53 +385,10 @@ export function SignupCheckoutWizard({
                   Please wait…
                 </>
               ) : (
-                "Continue to Stripe checkout"
+                "Create account"
               )}
             </Button>
           </form>
-        </div>
-
-        <div
-          className={cn(
-            step !== 2 && !isAdvancingToStep3 && "hidden",
-            (step === 2 || isAdvancingToStep3) && "block",
-          )}
-          aria-hidden={step !== 2 && !isAdvancingToStep3}
-        >
-          <div className="grid gap-4 pt-2">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {(isAdvancingToStep3 ||
-                status === "pending" ||
-                status === "processing" ||
-                status === "paid" ||
-                sessionQuery.isLoading) && (
-                <Loader2 className="h-4 w-4 animate-spin shrink-0" />
-              )}
-              {isAdvancingToStep3 && "Finishing your account…"}
-              {!isAdvancingToStep3 && status === "pending" && "Waiting for payment to complete…"}
-              {!isAdvancingToStep3 && status === "processing" && "Payment received, finishing your account…"}
-              {!isAdvancingToStep3 && status === "paid" && "Payment received, finishing your account…"}
-              {!isAdvancingToStep3 && !status && sessionQuery.isLoading && "Checking status…"}
-            </div>
-            {showStep2Error ? (
-              <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
-                <p className="font-medium text-destructive">Payment not completed or session expired</p>
-                <p className="mt-1 text-muted-foreground">
-                  Check the Stripe tab or tap &quot;Check again&quot;.
-                </p>
-              </div>
-            ) : null}
-            {!isAdvancingToStep3 ? (
-              <div className="flex flex-wrap gap-2">
-                <Button type="button" variant="secondary" onClick={() => void sessionQuery.refetch()}>
-                  Check again
-                </Button>
-                <Button type="button" variant="outline" onClick={() => setStep(1)}>
-                  Back
-                </Button>
-              </div>
-            ) : null}
-          </div>
         </div>
 
         <div

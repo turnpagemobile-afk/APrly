@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, animate } from "framer-motion";
 import {
   Calendar,
@@ -7,9 +7,26 @@ import {
   Flame,
   TrendingDown,
 } from "lucide-react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { optimizerContent } from "@/content/landing";
+
+/** SVG text does not resolve `hsl(var(--token))` when tokens are hex; use explicit colors. */
+const CHART_AXIS_TICK_FILL = "#ffffff";
+const CHART_LEGEND_COLOR = "rgba(255, 255, 255, 0.85)";
+const CHART_BORDER_COLOR = "rgba(255, 255, 255, 0.2)";
+const CHART_TOOLTIP_TEXT = "#ffffff";
 
 function AnimatedNumber({
   value,
@@ -75,7 +92,41 @@ export function OptimizerStep3({
   onBack,
   onActivateClick,
 }: OptimizerStep3Props) {
+  const baselineApr = 8;
   const showSkeleton = isPending && !res;
+  const safeTotalDebt = Math.max(0, totalDebtAmount || 0);
+  const monthlySavings = Math.max(0, res?.monthlySavings || 0);
+  const baselineMonthlyInterest = safeTotalDebt * (baselineApr / 100) / 12;
+  const monthlyWaste = Math.max(0, (res?.dailyInterestWaste || 0) * 30.4375);
+  const estimatedCurrentMonthlyInterest = baselineMonthlyInterest + monthlyWaste;
+  const estimatedCurrentApr = safeTotalDebt > 0
+    ? (estimatedCurrentMonthlyInterest * 12 * 100) / safeTotalDebt
+    : baselineApr;
+  const safeCurrentApr = Math.max(baselineApr, estimatedCurrentApr);
+
+  const chartData = useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => {
+      const monthIndex = i + 1;
+      const remainingDebt = Math.max(0, safeTotalDebt - monthlySavings * i);
+      const baselineInterest = remainingDebt * (baselineApr / 100) / 12;
+      const currentInterest = remainingDebt * (safeCurrentApr / 100) / 12;
+      const wasteInterest = Math.max(0, currentInterest - baselineInterest);
+      return {
+        month: `M${monthIndex.toString().padStart(2, "0")}`,
+        baselineInterest,
+        wasteInterest,
+      };
+    });
+  }, [baselineApr, monthlySavings, safeCurrentApr, safeTotalDebt]);
+
+  const chartMax = useMemo(
+    () =>
+      chartData.reduce(
+        (max, row) => Math.max(max, row.baselineInterest + row.wasteInterest),
+        0,
+      ),
+    [chartData],
+  );
 
   return (
     <motion.div
@@ -85,6 +136,78 @@ export function OptimizerStep3({
       transition={{ duration: 0.35 }}
       className="space-y-8"
     >
+      <Card className="bg-card border-border/60 overflow-hidden">
+        <CardContent className="p-5 cabinet:p-6">
+          <h3 className="text-base cabinet:text-lg font-black uppercase tracking-wide text-foreground">
+            {optimizerContent.step3.chartTitle}
+          </h3>
+          <p className="mt-1 text-xs cabinet:text-sm text-muted-foreground">
+            {optimizerContent.step3.chartSubtitle}
+          </p>
+          <div className="mt-4 h-56 cabinet:h-64 [&_.recharts-cartesian-axis-tick_text]:fill-white [&_.recharts-cartesian-axis-tick_text]:text-[11px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={CHART_BORDER_COLOR}
+                  opacity={0.6}
+                />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fill: CHART_AXIS_TICK_FILL, fontSize: 11 }}
+                  axisLine={{ stroke: CHART_BORDER_COLOR }}
+                  tickLine={false}
+                />
+                <YAxis
+                  domain={[0, Math.max(200, Math.ceil(chartMax / 100) * 100)]}
+                  tick={{ fill: CHART_AXIS_TICK_FILL, fontSize: 11 }}
+                  axisLine={{ stroke: CHART_BORDER_COLOR }}
+                  tickLine={false}
+                  tickFormatter={(v) => `$${Math.round(v)}`}
+                />
+                <Tooltip
+                  cursor={{ fill: "rgba(59, 130, 246, 0.12)" }}
+                  contentStyle={{
+                    background: "var(--card)",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    borderRadius: "8px",
+                    color: CHART_TOOLTIP_TEXT,
+                  }}
+                  labelStyle={{ color: CHART_TOOLTIP_TEXT }}
+                  itemStyle={{ color: CHART_TOOLTIP_TEXT }}
+                  formatter={(value: number, name: string) => [
+                    `$${value.toFixed(2)}`,
+                    name === "baselineInterest" ? "Interest at 8% baseline" : "Interest waste (current APR)",
+                  ]}
+                />
+                <Legend
+                  wrapperStyle={{ color: CHART_LEGEND_COLOR }}
+                  formatter={(value) =>
+                    value === "baselineInterest" ? (
+                      <span style={{ color: CHART_LEGEND_COLOR }}>Interest at 8% baseline</span>
+                    ) : (
+                      <span style={{ color: CHART_LEGEND_COLOR }}>Interest waste (current APR)</span>
+                    )
+                  }
+                />
+                <Bar
+                  dataKey="baselineInterest"
+                  stackId="interest"
+                  fill="#2AA198"
+                  radius={[2, 2, 0, 0]}
+                />
+                <Bar
+                  dataKey="wasteInterest"
+                  stackId="interest"
+                  fill="#D9480F"
+                  radius={[2, 2, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 cabinet:grid-cols-3 gap-6">
         <Card className="bg-card border-border/50 @container min-w-0">
           <CardContent className="p-6 cabinet:p-8 flex items-center justify-between gap-3 min-w-0">
@@ -109,7 +232,10 @@ export function OptimizerStep3({
               <p className="text-xs font-bold text-destructive uppercase tracking-[0.2em] mb-2">
                 Daily Interest Waste
               </p>
-              <p className="text-[clamp(1.5rem,3.5cqi+1.1rem,3.75rem)] cabinet:text-[clamp(1.75rem,4cqi+1rem,3.85rem)] font-black leading-none">
+              <div
+                className="text-[clamp(1.5rem,3.5cqi+1.1rem,3.75rem)] cabinet:text-[clamp(1.75rem,4cqi+1rem,3.85rem)] font-black leading-none"
+                aria-live="polite"
+              >
                 {showSkeleton ? (
                   <Skeleton className="h-14 w-56 max-w-full bg-card/60" />
                 ) : (
@@ -118,7 +244,7 @@ export function OptimizerStep3({
                     isWaste
                   />
                 )}
-              </p>
+              </div>
               <p className="mt-2 text-sm font-medium text-muted-foreground">
                 Gone, every single day.
               </p>
@@ -138,13 +264,16 @@ export function OptimizerStep3({
               <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-2">
                 Monthly Savings
               </p>
-              <p className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] cabinet:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
+              <div
+                className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] cabinet:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]"
+                aria-live="polite"
+              >
                 {showSkeleton ? (
                   <Skeleton className="h-9 w-40 max-w-full bg-card/60" />
                 ) : (
                   <AnimatedNumber value={res?.monthlySavings || 0} />
                 )}
-              </p>
+              </div>
             </div>
             <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
               <Calendar className="h-6 w-6 text-primary" />
@@ -159,13 +288,16 @@ export function OptimizerStep3({
               <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-2">
                 Annual Savings
               </p>
-              <p className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] cabinet:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]">
+              <div
+                className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] cabinet:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]"
+                aria-live="polite"
+              >
                 {showSkeleton ? (
                   <Skeleton className="h-9 w-40 max-w-full bg-card/60" />
                 ) : (
                   <AnimatedNumber value={res?.annualSavings || 0} />
                 )}
-              </p>
+              </div>
             </div>
             <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
               <TrendingDown className="h-6 w-6 text-primary" />
@@ -178,15 +310,22 @@ export function OptimizerStep3({
         <Button variant="ghost" onClick={onBack} className="font-bold sm:w-auto">
           <ChevronLeft className="mr-1 h-5 w-5" /> Back
         </Button>
-        <div className="flex flex-col items-stretch sm:items-end">
-          <Button
-            type="button"
-            size="lg"
-            onClick={onActivateClick}
-            className="font-black uppercase tracking-wider text-base px-8 h-14 shadow-[0_0_18px_rgba(59,130,246,0.55)] hover:shadow-[0_0_24px_rgba(59,130,246,0.8)] transition-shadow"
-          >
-            Activate APRly — $39/mo
-          </Button>
+        <div className="flex flex-col items-stretch sm:items-end w-full sm:w-auto">
+          <Card className="bg-primary/10 border-primary/40 w-full sm:min-w-[370px]">
+            <CardContent className="p-4 cabinet:p-5">
+              <p className="text-center text-xl cabinet:text-2xl font-black uppercase tracking-wide text-foreground">
+                Create a free APRly account and start saving today
+              </p>
+              <Button
+                type="button"
+                size="lg"
+                onClick={onActivateClick}
+                className="mt-4 w-full font-black text-base cabinet:text-lg h-14 shadow-[0_0_14px_rgba(59,130,246,0.5)] hover:shadow-[0_0_20px_rgba(59,130,246,0.75)] transition-shadow"
+              >
+                {optimizerContent.step3.ctaLabel}
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </motion.div>

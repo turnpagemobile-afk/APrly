@@ -11,17 +11,8 @@ import { AdminDetailTabs } from "@/components/admin/AdminDetailTabs";
 import { AdminInfoGrid } from "@/components/admin/AdminInfoGrid";
 import { AdminSummaryCards } from "@/components/admin/AdminSummaryCards";
 import { AdminUserPlanCard } from "@/components/admin/AdminUserPlanCard";
-import { AdminShell } from "@/components/admin/AdminShell";
-import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
 import { adminContent } from "@/content/admin";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 type UserTabId = "details" | "plans";
 
@@ -70,10 +61,10 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
       { id: "details", label: adminContent.userDetail.tabDetails },
       {
         id: "plans",
-        label: adminContent.userDetail.tabPlans(data?.summary.createdPlansCount ?? 0),
+        label: adminContent.userDetail.tabPlans(data?.summary.sentToPartnerPlansCount ?? 0),
       },
     ],
-    [data?.summary.createdPlansCount],
+    [data?.summary.sentToPartnerPlansCount],
   );
 
   const summaryCards = data
@@ -84,11 +75,15 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
         },
         {
           value: data.summary.currentPlansCount,
-          label: adminContent.userDetail.currentPlans,
+          label: adminContent.userDetail.activePlans,
+        },
+        {
+          value: data.summary.notSentPlansCount,
+          label: adminContent.userDetail.notSentPlans,
         },
         {
           value: data.summary.createdPlansCount,
-          label: adminContent.userDetail.createdPlans,
+          label: adminContent.userDetail.totalPlans,
         },
       ]
     : [];
@@ -120,7 +115,10 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
 
       {activeTab === "details" ? (
         <div className="space-y-6">
-          <AdminSummaryCards cards={summaryCards} />
+          <AdminSummaryCards
+            cards={summaryCards}
+            className="sm:grid-cols-2 lg:grid-cols-4"
+          />
 
           <div className="grid gap-6 lg:grid-cols-2">
             <AdminInfoGrid
@@ -157,7 +155,10 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
         </div>
       ) : (
         <div className="space-y-6">
-          <AdminSummaryCards cards={summaryCards} />
+          <AdminSummaryCards
+            cards={summaryCards}
+            className="sm:grid-cols-2 lg:grid-cols-4"
+          />
 
           <h2 className="text-lg font-bold text-foreground">
             {adminContent.userDetail.linkedAccountsTitle}
@@ -182,24 +183,21 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <span>{adminContent.partners.rowsPerPage}</span>
-                  <Select
+                  <select
+                    aria-label={adminContent.partners.rowsPerPage}
                     value={String(plansPageSize)}
-                    onValueChange={(v) => {
-                      setPlansPageSize(Number(v));
+                    onChange={(e) => {
+                      setPlansPageSize(Number(e.target.value));
                       setPlansPage(1);
                     }}
+                    className="h-9 w-[72px] rounded-md border border-input bg-transparent px-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
                   >
-                    <SelectTrigger className="h-9 w-[72px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[10, 20, 50].map((n) => (
-                        <SelectItem key={n} value={String(n)}>
-                          {n}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    {[10, 20, 50].map((n) => (
+                      <option key={n} value={String(n)}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <Button
@@ -237,20 +235,8 @@ export default function AdminUserDetailPage() {
   const [, params] = useRoute("/admin/users/:id");
   const id = Number(params?.id);
   if (!Number.isInteger(id) || id < 1) {
-    return (
-      <AdminProtectedRoute>
-        <AdminShell>
-          <p className="text-destructive">Invalid user</p>
-        </AdminShell>
-      </AdminProtectedRoute>
-    );
+    return <p className="text-destructive">Invalid user</p>;
   }
 
-  return (
-    <AdminProtectedRoute>
-      <AdminShell>
-        <AdminUserDetailContent userId={id} />
-      </AdminShell>
-    </AdminProtectedRoute>
-  );
+  return <AdminUserDetailContent userId={id} />;
 }

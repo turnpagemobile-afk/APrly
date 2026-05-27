@@ -10,15 +10,17 @@ import {
   UpdatePlanLeadStatusBody,
   UpdatePlanLeadStatusResponse,
 } from "@workspace/api-zod";
-import { db, debtLeadsTable, partnersTable } from "@workspace/db";
+import { db, debtLeadsTable, partnersTable, usersTable } from "@workspace/db";
 import { requireAuth } from "../middleware/requireAuth";
 import {
   createDetailedDebtLead,
   loadDebtLeadDetailForUser,
   loadDebtLeadForUser,
   loadLeadCards,
+  replacePlanLeadCards,
 } from "../lib/debt-lead-service";
 import { mapPlanLeadDetail, mapPlanLeadRow } from "../lib/lead-mapper";
+import { resolveHasPaidAccess } from "../lib/subscription-status";
 
 const router: IRouter = Router();
 
@@ -98,6 +100,23 @@ async function sendLeadHandler(
       return;
     }
 
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, userId))
+      .limit(1);
+    if (!user) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+    if (!(await resolveHasPaidAccess(user))) {
+      res.status(402).json({
+        error: "Payment required to send plan lead to partner.",
+        code: "payment_required",
+      });
+      return;
+    }
+
     const [partner] = await db
       .select()
       .from(partnersTable)
@@ -171,6 +190,33 @@ const ALLOWED_TRANSITIONS: Record<string, Set<string>> = {
   won: new Set(),
   denied: new Set(),
 };
+
+router.put("/me/plan-leads/:id/cards", requireAuth, async (req, res, next) => {
+  try {
+    const userId = req.userId!;
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      res.status(400).json({ error: "Invalid plan lead id" });
+      return;
+    }
+
+    const parsed = CreateDetailedPlanBody.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid request body" });
+      return;
+    }
+
+    const detail = await replacePlanLeadCards(id, userId, parsed.data.cards);
+    if (!detail) {
+      res.status(400).json({ error: "Plan lead cannot be edited" });
+      return;
+    }
+
+    res.json(GetPlanLeadResponse.parse(detail));
+  } catch (err) {
+    next(err);
+  }
+});
 
 router.patch("/me/plan-leads/:id", requireAuth, async (req, res, next) => {
   try {

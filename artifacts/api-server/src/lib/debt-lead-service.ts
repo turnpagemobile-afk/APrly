@@ -456,6 +456,61 @@ export async function createDetailedDebtLead(
   return { createdCount, plans };
 }
 
+export async function replacePlanLeadCards(
+  leadId: number,
+  userId: number,
+  cards: ImportCardInput[],
+): Promise<Awaited<ReturnType<typeof loadDebtLeadDetailForUser>> | null> {
+  const loaded = await loadDebtLeadForUser(leadId, userId);
+  if (!loaded) return null;
+  if (loaded.lead.status !== "recommended" || loaded.lead.sentToPartnerAt) {
+    return null;
+  }
+
+  const validCards = cards.filter(isValidImportCardForPlanLead);
+  if (validCards.length === 0) return null;
+
+  const now = new Date();
+
+  await db.transaction(async (tx) => {
+    await tx.delete(leadCardsTable).where(eq(leadCardsTable.leadId, leadId));
+
+    for (const card of validCards) {
+      const brand = card.brand.trim();
+      const balanceStr = card.balance.toString();
+      const rateStr = card.rate.toString();
+      const plaidAccountId = card.accountId?.trim() || null;
+      const userCardId = await upsertUserCard(tx, userId, card, "cabinet");
+
+      const annualSavings = calculateAnnualSavings(
+        card.balance,
+        card.rate,
+        CABINET_TARGET_APR,
+      );
+
+      await tx.insert(leadCardsTable).values({
+        leadId,
+        userCardId,
+        plaidAccountId,
+        brand,
+        balance: balanceStr,
+        currentApr: rateStr,
+        targetApr: CABINET_TARGET_APR.toString(),
+        estimatedAnnualSavings: annualSavings.toString(),
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+
+    await tx
+      .update(debtLeadsTable)
+      .set({ updatedAt: now })
+      .where(eq(debtLeadsTable.id, leadId));
+  });
+
+  return loadDebtLeadDetailForUser(leadId, userId);
+}
+
 export async function loadDebtLeadById(leadId: number): Promise<DebtLead | null> {
   const [row] = await db
     .select()

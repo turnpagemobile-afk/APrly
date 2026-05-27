@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, ilike, isNotNull, or, sql } from "drizzle-orm";
 import {
   GetAdminUserParams,
   GetAdminUserPlansParams,
@@ -11,24 +11,14 @@ import {
 } from "@workspace/api-zod";
 import { db, debtLeadsTable, partnersTable, usersTable } from "@workspace/db";
 import { mapAdminPlanLeadListRow } from "../lib/admin-plan-lead-mapper";
+import { fetchUserPlanCounts, fetchUserPlanCountsMap } from "../lib/admin-user-plan-counts";
 import { loadLeadCards } from "../lib/debt-lead-service";
 import { USER_ROLE } from "../lib/user-roles";
 import { requireAdmin } from "../middleware/requireAdmin";
 
 const router: IRouter = Router();
 
-const subscribedCond = sql`coalesce(trim(${usersTable.stripeSubscriptionId}), '') <> ''`;
-
-const levelExpr = sql<number>`(
-  SELECT count(*)::int FROM ${debtLeadsTable}
-  WHERE ${debtLeadsTable.userId} = ${usersTable.id}
-    AND ${debtLeadsTable.status} = 'in_progress'
-)`.mapWith(Number);
-
-const planCountExpr = sql<number>`(
-  SELECT count(*)::int FROM ${debtLeadsTable}
-  WHERE ${debtLeadsTable.userId} = ${usersTable.id}
-)`.mapWith(Number);
+const subscribedCond = isNotNull(usersTable.paidAuditAt);
 
 function monthsSince(createdAt: Date): number {
   const now = new Date();
@@ -38,11 +28,7 @@ function monthsSince(createdAt: Date): number {
   return Math.max(0, months);
 }
 
-function hasSubscription(stripeSubscriptionId: string | null): boolean {
-  return (stripeSubscriptionId ?? "").trim() !== "";
-}
-
-async function fetchUserRow(userId: number) {
+async function fetchUserIdentity(userId: number) {
   const [row] = await db
     .select({
       id: usersTable.id,
@@ -50,9 +36,7 @@ async function fetchUserRow(userId: number) {
       firstName: usersTable.firstName,
       lastName: usersTable.lastName,
       createdAt: usersTable.createdAt,
-      stripeSubscriptionId: usersTable.stripeSubscriptionId,
-      level: levelExpr,
-      planCount: planCountExpr,
+      paidAuditAt: usersTable.paidAuditAt,
     })
     .from(usersTable)
     .where(and(eq(usersTable.id, userId), eq(usersTable.role, USER_ROLE)))
@@ -69,7 +53,7 @@ router.get("/admin/users/:id/plans", ...requireAdmin, async (req, res, next) => 
     }
     const userId = paramsParsed.data.id;
 
-    const user = await fetchUserRow(userId);
+    const user = await fetchUserIdentity(userId);
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;
@@ -82,7 +66,10 @@ router.get("/admin/users/:id/plans", ...requireAdmin, async (req, res, next) => 
     }
     const { page, pageSize } = queryParsed.data;
     const offset = (page - 1) * pageSize;
-    const listWhere = eq(debtLeadsTable.userId, userId);
+    const listWhere = and(
+      eq(debtLeadsTable.userId, userId),
+      isNotNull(debtLeadsTable.partnerId),
+    );
 
     const [{ value: total }] = await db
       .select({ value: count() })
@@ -130,23 +117,13 @@ router.get("/admin/users/:id", ...requireAdmin, async (req, res, next) => {
     }
     const userId = paramsParsed.data.id;
 
-    const row = await fetchUserRow(userId);
+    const row = await fetchUserIdentity(userId);
     if (!row) {
       res.status(404).json({ error: "User not found" });
       return;
     }
 
-    const [{ value: currentPlansCount }] = await db
-      .select({ value: count() })
-      .from(debtLeadsTable)
-      .where(
-        and(eq(debtLeadsTable.userId, userId), eq(debtLeadsTable.status, "in_progress")),
-      );
-
-    const [{ value: createdPlansCount }] = await db
-      .select({ value: count() })
-      .from(debtLeadsTable)
-      .where(eq(debtLeadsTable.userId, userId));
+    const planCounts = await fetchUserPlanCounts(userId);
 
     res.json(
       GetAdminUserResponse.parse({
@@ -155,18 +132,20 @@ router.get("/admin/users/:id", ...requireAdmin, async (req, res, next) => {
           email: row.email,
           firstName: row.firstName,
           lastName: row.lastName,
-          level: row.level,
-          planCount: row.planCount,
+          level: planCounts.activePlans,
+          planCount: planCounts.total,
           createdAt: row.createdAt.toISOString(),
         },
         summary: {
           registeredMonthsAgo: monthsSince(row.createdAt),
-          currentPlansCount,
-          createdPlansCount,
+          currentPlansCount: planCounts.activePlans,
+          createdPlansCount: planCounts.total,
+          sentToPartnerPlansCount: planCounts.sentToPartner,
+          notSentPlansCount: planCounts.notSentPlans,
         },
         subscription: {
-          active: hasSubscription(row.stripeSubscriptionId),
-          nextRenewalAt: null,
+          active: row.paidAuditAt != null,
+          nextRenewalAt: row.paidAuditAt?.toISOString() ?? null,
         },
       }),
     );
@@ -222,8 +201,6 @@ router.get("/admin/users", ...requireAdmin, async (req, res, next) => {
         firstName: usersTable.firstName,
         lastName: usersTable.lastName,
         createdAt: usersTable.createdAt,
-        level: levelExpr,
-        planCount: planCountExpr,
       })
       .from(usersTable)
       .where(listWhere)
@@ -231,17 +208,27 @@ router.get("/admin/users", ...requireAdmin, async (req, res, next) => {
       .limit(pageSize)
       .offset(offset);
 
+    const planCountsMap = await fetchUserPlanCountsMap(rows.map((r) => r.id));
+
     res.json(
       GetAdminUsersResponse.parse({
-        users: rows.map((r) => ({
-          id: r.id,
-          email: r.email,
-          firstName: r.firstName,
-          lastName: r.lastName,
-          level: r.level,
-          planCount: r.planCount,
-          createdAt: r.createdAt.toISOString(),
-        })),
+        users: rows.map((r) => {
+          const planCounts = planCountsMap.get(r.id) ?? {
+            total: 0,
+            activePlans: 0,
+            sentToPartner: 0,
+            notSentPlans: 0,
+          };
+          return {
+            id: r.id,
+            email: r.email,
+            firstName: r.firstName,
+            lastName: r.lastName,
+            level: planCounts.activePlans,
+            planCount: planCounts.total,
+            createdAt: r.createdAt.toISOString(),
+          };
+        }),
         tabCounts: { subscribed, unsubscribed },
         total,
         page,

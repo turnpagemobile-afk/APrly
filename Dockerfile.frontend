@@ -46,7 +46,7 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     pnpm install --frozen-lockfile
 
 # ─────────────────────────────────────────────────────────────────────
-# builder: produce static assets in artifacts/aprly/dist/public
+# builder: landing + cabinet + admin → artifacts/aprly/dist/public
 # ─────────────────────────────────────────────────────────────────────
 FROM deps AS builder
 
@@ -55,7 +55,6 @@ COPY . .
 
 # vite.config.ts validates these at module top-level even for `vite build`
 ENV PORT=5173
-ENV BASE_PATH=/
 ENV NODE_ENV=production
 
 RUN pnpm --filter @workspace/aprly run build
@@ -72,6 +71,7 @@ COPY docker/nginx/40-aprly-ssl-init.sh /docker-entrypoint.d/40-aprly-ssl-init.sh
 RUN chmod +x /docker-entrypoint.d/40-aprly-ssl-init.sh
 
 COPY nginx/aprly.conf /etc/nginx/conf.d/default.conf
+COPY nginx/aprly-spa-locations.inc /etc/nginx/conf.d/aprly-spa-locations.inc
 COPY --from=builder /app/artifacts/aprly/dist/public /usr/share/nginx/html
 
 EXPOSE 80

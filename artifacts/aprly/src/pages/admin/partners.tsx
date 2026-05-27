@@ -1,16 +1,13 @@
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
-import { Handshake, Loader2, MoreHorizontal, Plus } from "lucide-react";
+import { Handshake, Loader2, MoreHorizontal } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   getGetAdminPartnersQueryKey,
   useDeleteAdminPartner,
   useGetAdminPartners,
   usePatchAdminPartner,
-  usePostAdminPartner,
 } from "@workspace/api-client-react";
-import { AdminShell } from "@/components/admin/AdminShell";
-import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
 import { AdminListPageHeader } from "@/components/admin/AdminListPageHeader";
 import { adminContent } from "@/content/admin";
 import { Button } from "@/components/ui/button";
@@ -38,22 +35,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 
 function formatDate(iso: string) {
@@ -69,8 +50,6 @@ function AdminPartnersContent() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [newName, setNewName] = useState("");
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const params = useMemo(
@@ -82,7 +61,6 @@ function AdminPartnersContent() {
     query: { queryKey: getGetAdminPartnersQueryKey(params) },
   });
 
-  const postPartner = usePostAdminPartner();
   const patchPartner = usePatchAdminPartner();
   const deletePartner = useDeleteAdminPartner();
 
@@ -94,21 +72,6 @@ function AdminPartnersContent() {
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, total);
   const lastPage = Math.max(1, Math.ceil(total / pageSize));
-
-  const onCreate = async () => {
-    const name = newName.trim();
-    if (!name) return;
-    try {
-      await postPartner.mutateAsync({ data: { name } });
-      toast({ title: adminContent.partnerDetail.saved });
-      setCreateOpen(false);
-      setNewName("");
-      setPage(1);
-      invalidatePartners();
-    } catch {
-      toast({ title: "Could not create partner", variant: "destructive" });
-    }
-  };
 
   const setActive = async (id: number, isActive: boolean) => {
     try {
@@ -141,12 +104,6 @@ function AdminPartnersContent() {
           setSearch(v);
           setPage(1);
         }}
-        actions={
-          <Button type="button" onClick={() => setCreateOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
-            {adminContent.partners.createPartner}
-          </Button>
-        }
       />
 
       {isLoading || !data ? (
@@ -234,24 +191,21 @@ function AdminPartnersContent() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>{adminContent.partners.rowsPerPage}</span>
-              <Select
+              <select
+                aria-label={adminContent.partners.rowsPerPage}
                 value={String(pageSize)}
-                onValueChange={(v) => {
-                  setPageSize(Number(v));
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
                   setPage(1);
                 }}
+                className="h-9 w-[72px] rounded-md border border-input bg-transparent px-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
               >
-                <SelectTrigger className="h-9 w-[72px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {[10, 20, 50].map((n) => (
-                    <SelectItem key={n} value={String(n)}>
-                      {n}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {[10, 20, 50].map((n) => (
+                  <option key={n} value={String(n)}>
+                    {n}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Button
@@ -278,31 +232,6 @@ function AdminPartnersContent() {
         </>
       )}
 
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{adminContent.partners.newPartnerTitle}</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-2 py-2">
-            <Label htmlFor="new-partner-name">{adminContent.partners.newPartnerName}</Label>
-            <Input
-              id="new-partner-name"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              autoComplete="organization"
-            />
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
-              {adminContent.partners.cancel}
-            </Button>
-            <Button type="button" onClick={() => void onCreate()} disabled={postPartner.isPending}>
-              {adminContent.partners.create}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       <AlertDialog open={deleteId != null} onOpenChange={(o) => !o && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -320,11 +249,5 @@ function AdminPartnersContent() {
 }
 
 export default function AdminPartnersPage() {
-  return (
-    <AdminProtectedRoute>
-      <AdminShell>
-        <AdminPartnersContent />
-      </AdminShell>
-    </AdminProtectedRoute>
-  );
+  return <AdminPartnersContent />;
 }

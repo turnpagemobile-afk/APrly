@@ -1,31 +1,21 @@
 import { eq } from "drizzle-orm";
 import { GetMeResponse } from "@workspace/api-zod";
 import { db, usersTable } from "@workspace/db";
-import { getStripe } from "./stripe-client";
 
 const ACTIVE_SUBSCRIPTION_STATUSES = new Set(["active", "trialing"]);
 
 export type UserRow = typeof usersTable.$inferSelect;
 
-export async function resolveSubscriptionActive(user: UserRow): Promise<boolean> {
-  const subId = user.stripeSubscriptionId?.trim();
-  if (!subId) return false;
-
-  if (!process.env["STRIPE_SECRET_KEY"]?.trim()) {
-    return true;
-  }
-
-  try {
-    const stripe = getStripe();
-    const sub = await stripe.subscriptions.retrieve(subId);
-    return ACTIVE_SUBSCRIPTION_STATUSES.has(sub.status);
-  } catch {
-    return false;
-  }
+/** True after one-time $39 audit payment (required to send leads to a partner). */
+export async function resolveHasPaidAccess(user: UserRow): Promise<boolean> {
+  return user.paidAuditAt != null;
 }
 
+/** @deprecated Use resolveHasPaidAccess — name kept for call sites during transition. */
+export const resolveSubscriptionActive = resolveHasPaidAccess;
+
 export async function buildMeResponse(row: UserRow) {
-  const hasActiveSubscription = await resolveSubscriptionActive(row);
+  const hasActiveSubscription = await resolveHasPaidAccess(row);
   return GetMeResponse.parse({
     id: row.id,
     email: row.email,

@@ -13,4 +13,8 @@ export interface AdminUserDetailSummary {
   currentPlansCount: number;
   /** @minimum 0 */
   createdPlansCount: number;
+  /** @minimum 0 */
+  sentToPartnerPlansCount: number;
+  /** @minimum 0 */
+  notSentPlansCount: number;
 }

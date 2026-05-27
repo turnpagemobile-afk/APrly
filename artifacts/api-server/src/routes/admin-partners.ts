@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { and, asc, count, desc, eq, ilike, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, count, desc, eq, ilike, isNotNull, isNull } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import {
   GetAdminPartnerPlanLeadsParams,
@@ -13,6 +13,10 @@ import {
   PostAdminPartnerBody,
 } from "@workspace/api-zod";
 import { db, debtLeadsTable, partnersTable, usersTable } from "@workspace/db";
+import {
+  fetchPartnerLeadCounts,
+  fetchPartnerLeadCountsMap,
+} from "../lib/admin-partner-lead-counts";
 import { loadLeadCards } from "../lib/debt-lead-service";
 import { aggregateLeadCards } from "../lib/lead-mapper";
 import { resolveAdminUserPlanDisplayStatus } from "../lib/plan-lead-display-status";
@@ -21,24 +25,6 @@ import { requireAdmin } from "../middleware/requireAdmin";
 const router: IRouter = Router();
 
 type LeadTab = "all" | "on_review" | "in_progress" | "won" | "rejected";
-
-function onReviewCountExpr() {
-  return sql<number>`(
-    SELECT count(*)::int FROM ${debtLeadsTable}
-    WHERE ${debtLeadsTable.partnerId} = ${partnersTable.id}
-      AND ${debtLeadsTable.status} = 'in_progress'
-      AND ${debtLeadsTable.partnerAcceptedAt} IS NULL
-  )`.mapWith(Number);
-}
-
-function inProgressCountExpr() {
-  return sql<number>`(
-    SELECT count(*)::int FROM ${debtLeadsTable}
-    WHERE ${debtLeadsTable.partnerId} = ${partnersTable.id}
-      AND ${debtLeadsTable.status} = 'in_progress'
-      AND ${debtLeadsTable.partnerAcceptedAt} IS NOT NULL
-  )`.mapWith(Number);
-}
 
 function leadTabFilter(partnerId: number, leadTab: LeadTab): SQL | undefined {
   const base = eq(debtLeadsTable.partnerId, partnerId);
@@ -64,44 +50,6 @@ function leadTabFilter(partnerId: number, leadTab: LeadTab): SQL | undefined {
     default:
       return base;
   }
-}
-
-async function fetchLeadCounts(partnerId: number) {
-  const partnerCond = eq(debtLeadsTable.partnerId, partnerId);
-
-  const [{ value: onReview }] = await db
-    .select({ value: count() })
-    .from(debtLeadsTable)
-    .where(
-      and(
-        partnerCond,
-        eq(debtLeadsTable.status, "in_progress"),
-        isNull(debtLeadsTable.partnerAcceptedAt),
-      ),
-    );
-
-  const [{ value: inProgress }] = await db
-    .select({ value: count() })
-    .from(debtLeadsTable)
-    .where(
-      and(
-        partnerCond,
-        eq(debtLeadsTable.status, "in_progress"),
-        isNotNull(debtLeadsTable.partnerAcceptedAt),
-      ),
-    );
-
-  const [{ value: won }] = await db
-    .select({ value: count() })
-    .from(debtLeadsTable)
-    .where(and(partnerCond, eq(debtLeadsTable.status, "won")));
-
-  const [{ value: rejected }] = await db
-    .select({ value: count() })
-    .from(debtLeadsTable)
-    .where(and(partnerCond, eq(debtLeadsTable.status, "denied")));
-
-  return { onReview, inProgress, won, rejected };
 }
 
 router.get("/admin/partners/:id/plan-leads", ...requireAdmin, async (req, res, next) => {
@@ -137,7 +85,7 @@ router.get("/admin/partners/:id/plan-leads", ...requireAdmin, async (req, res, n
       return;
     }
 
-    const leadCounts = await fetchLeadCounts(partnerId);
+    const leadCounts = await fetchPartnerLeadCounts(partnerId);
     const where = leadTabFilter(partnerId, leadTab);
 
     const [{ value: total }] = await db
@@ -246,13 +194,7 @@ router.patch("/admin/partners/:id", ...requireAdmin, async (req, res, next) => {
       return;
     }
 
-    const [{ onReviewCount, inProgressCount }] = await db
-      .select({
-        onReviewCount: onReviewCountExpr(),
-        inProgressCount: inProgressCountExpr(),
-      })
-      .from(partnersTable)
-      .where(eq(partnersTable.id, id));
+    const counts = await fetchPartnerLeadCounts(id);
 
     res.json(
       PatchAdminPartnerResponse.parse({
@@ -260,8 +202,8 @@ router.patch("/admin/partners/:id", ...requireAdmin, async (req, res, next) => {
         name: updated.name,
         createdAt: updated.createdAt.toISOString(),
         isActive: updated.isActive,
-        onReviewCount,
-        inProgressCount,
+        onReviewCount: counts.onReview,
+        inProgressCount: counts.inProgress,
       }),
     );
   } catch (err) {
@@ -313,8 +255,6 @@ router.get("/admin/partners", ...requireAdmin, async (req, res, next) => {
         name: partnersTable.name,
         createdAt: partnersTable.createdAt,
         isActive: partnersTable.isActive,
-        onReviewCount: onReviewCountExpr(),
-        inProgressCount: inProgressCountExpr(),
       })
       .from(partnersTable)
       .where(listWhere)
@@ -322,16 +262,26 @@ router.get("/admin/partners", ...requireAdmin, async (req, res, next) => {
       .limit(pageSize)
       .offset(offset);
 
+    const countsMap = await fetchPartnerLeadCountsMap(rows.map((r) => r.id));
+
     res.json(
       GetAdminPartnersResponse.parse({
-        partners: rows.map((r) => ({
-          id: r.id,
-          name: r.name,
-          createdAt: r.createdAt.toISOString(),
-          isActive: r.isActive,
-          onReviewCount: r.onReviewCount,
-          inProgressCount: r.inProgressCount,
-        })),
+        partners: rows.map((r) => {
+          const counts = countsMap.get(r.id) ?? {
+            onReview: 0,
+            inProgress: 0,
+            won: 0,
+            rejected: 0,
+          };
+          return {
+            id: r.id,
+            name: r.name,
+            createdAt: r.createdAt.toISOString(),
+            isActive: r.isActive,
+            onReviewCount: counts.onReview,
+            inProgressCount: counts.inProgress,
+          };
+        }),
         total,
         page,
         pageSize,

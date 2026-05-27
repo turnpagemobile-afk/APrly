@@ -40,22 +40,6 @@ export default function CreateDetailedPlanPage() {
     [],
   );
 
-  useEffect(() => {
-    if (subscription.isSubscriptionLoading) return;
-    if (!subscription.subscriptionActive) {
-      toast({
-        title: dashboardSummaryContent.subscriptionRequiredTitle,
-        description: dashboardSummaryContent.subscriptionRequiredBody,
-        variant: "destructive",
-      });
-      navigate("/dashboard?tab=home");
-    }
-  }, [
-    subscription.isSubscriptionLoading,
-    subscription.subscriptionActive,
-    navigate,
-  ]);
-
   const addManualCard = () => {
     setAccounts((prev) => [...prev, { brand: "", balance: "", rate: "" }]);
   };
@@ -95,10 +79,6 @@ export default function CreateDetailedPlanPage() {
         Loading…
       </div>
     );
-  }
-
-  if (!subscription.subscriptionActive) {
-    return null;
   }
 
   return (
