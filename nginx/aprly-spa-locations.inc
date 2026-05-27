@@ -1,3 +1,25 @@
+# SPA shells must not be cached long-term (separate hashed assets under /assets/).
+location = /index.html {
+    add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+    try_files $uri =404;
+}
+
+location = /dashboard/index.html {
+    add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+    try_files $uri =404;
+}
+
+location = /admin/index.html {
+    add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+    try_files $uri =404;
+}
+
+# Mono-era PWA at site root — no-cache so update checks pick up the cleanup worker.
+location = /sw.js {
+    add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+    try_files $uri =404;
+}
+
 # Landing static assets (root build).
 location /assets/ {
     try_files $uri =404;

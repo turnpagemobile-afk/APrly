@@ -1,5 +1,10 @@
 import { registerSW } from "virtual:pwa-register";
-import { notifyCabinetSwNeedRefresh } from "@/lib/pwa/cabinet-sw-refresh";
+import {
+  handleCabinetSwUpdateReady,
+  listenForCabinetControllerChange,
+  scheduleCabinetSwUpdateChecks,
+  setCabinetSwReloader,
+} from "@/lib/pwa/cabinet-sw-update";
 
 let registered = false;
 
@@ -9,10 +14,17 @@ export function registerCabinetSw(): void {
   if (!("serviceWorker" in navigator)) return;
 
   registered = true;
-  registerSW({
+  listenForCabinetControllerChange();
+
+  const reload = registerSW({
     immediate: true,
     onNeedRefresh() {
-      notifyCabinetSwNeedRefresh();
+      handleCabinetSwUpdateReady();
+    },
+    onRegisteredSW(_swScriptUrl, registration) {
+      if (registration) scheduleCabinetSwUpdateChecks(registration);
     },
   });
+
+  setCabinetSwReloader(reload);
 }

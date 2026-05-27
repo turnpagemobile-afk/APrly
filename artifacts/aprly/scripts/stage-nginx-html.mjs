@@ -54,8 +54,12 @@ function ensureIndexHtml(dir, entryHtmlName) {
   }
 }
 
+/** Mono PWA used `/sw.js` at site root; browsers still poll it for updates. */
+const LEGACY_ROOT_SW = `self.addEventListener("install",()=>{self.skipWaiting()});self.addEventListener("activate",e=>{e.waitUntil((async()=>{await self.registration.unregister();const c=await self.clients.matchAll({type:"window"});for(const x of c)await x.navigate(x.url)})())});`;
+
 copyDirContents(landing, out);
 ensureIndexHtml(out, "index.landing.html");
+fs.writeFileSync(path.join(out, "sw.js"), LEGACY_ROOT_SW, "utf8");
 
 const dashboardDir = path.join(out, "dashboard");
 copyDirContents(cabinet, dashboardDir);

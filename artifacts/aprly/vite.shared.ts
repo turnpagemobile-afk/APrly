@@ -87,6 +87,10 @@ export async function createAprlyViteConfig(
           navigateFallback: "index.html",
           navigateFallbackAllowlist: [/^\/dashboard/],
           navigateFallbackDenylist: [/^\/api/],
+          // registerType: autoUpdate also sets these; keep explicit for cabinet deploys.
+          skipWaiting: true,
+          clientsClaim: true,
+          cleanupOutdatedCaches: true,
           runtimeCaching: [
             {
               urlPattern: ({ request, url }) =>
