@@ -1,5 +1,6 @@
 import { RefreshCw } from "lucide-react";
 import { dashboardPromoContent } from "@/content/dashboard-home";
+import { applyCabinetSwUpdate } from "@/lib/pwa/cabinet-sw-update";
 import { Button } from "@/components/ui/button";
 
 type CabinetUpdateBannerProps = {
@@ -21,7 +22,7 @@ export function CabinetUpdateBanner({ visible }: CabinetUpdateBannerProps) {
           size="sm"
           variant="secondary"
           className="h-8 shrink-0 font-semibold"
-          onClick={() => window.location.reload()}
+          onClick={() => void applyCabinetSwUpdate()}
         >
           <RefreshCw className="mr-2 h-3.5 w-3.5" aria-hidden="true" />
           {dashboardPromoContent.updateRefresh}

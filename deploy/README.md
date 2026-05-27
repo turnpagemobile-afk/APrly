@@ -98,10 +98,13 @@ Install is intended **only from the logged-in user cabinet**, not the marketing 
 
 ### Updates after deploy
 
-1. Deploy on `main` rebuilds the frontend and publishes a new `sw.js` + precached assets (nginx serves `sw.js` with `no-cache`).
-2. Installed PWA: Workbox downloads the new service worker in the background (`autoUpdate`).
-3. When a new version is waiting, the cabinet shows **“A new version of APRly is ready”** with **Refresh app** (reload activates the new SW).
-4. If the banner does not appear: fully close the PWA from Android recents and reopen, or reinstall from the browser once.
+1. Deploy on `main` rebuilds the frontend and publishes a new `/dashboard/sw.js` + precached assets (nginx serves cabinet `sw.js` with `no-cache`). Root `/sw.js` is a one-shot cleanup worker for the old mono PWA only.
+2. Cabinet uses Workbox `autoUpdate` (`skipWaiting` + `clientsClaim`). On **online**, **focus**, **tab visible**, and **PWA resume** the app calls `registration.update()` to fetch a new `sw.js`.
+3. **Installed PWA (standalone):** when an update is found, the app reloads automatically (or on `controllerchange` after `skipWaiting`).
+4. **Browser tab:** banner **“A new version of APRly is ready”** + **Refresh app** (activates the waiting worker and reloads).
+5. If UI is still stale: DevTools → Application → Unregister service workers → Clear site data, then reopen `/dashboard/`.
+
+**Stale UI after multi-SPA deploy (new landing, old cabinet):** an older site-wide service worker (mono build, scope `/`) can keep serving cached `/dashboard/*` assets. After deploy, open `/` once (hard refresh), complete registration again, or DevTools → Application → Service Workers → Unregister all → Clear site data. New builds unregister non-cabinet workers on landing and cabinet boot.
 
 **Manifest scope changes** (e.g. `/dashboard/` → `/dashboard`): existing installs may keep the old scope until the user **removes and re-adds** the home-screen app.
 
