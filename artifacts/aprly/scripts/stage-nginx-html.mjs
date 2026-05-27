@@ -41,8 +41,28 @@ for (const [name, dir] of [
   }
 }
 
+/** Vite keeps the HTML entry filename; nginx expects index.html per SPA root. */
+function ensureIndexHtml(dir, entryHtmlName) {
+  const entryPath = path.join(dir, entryHtmlName);
+  const indexPath = path.join(dir, "index.html");
+  if (!fs.existsSync(entryPath)) {
+    throw new Error(`Missing ${entryHtmlName} in ${dir}`);
+  }
+  fs.copyFileSync(entryPath, indexPath);
+  if (entryHtmlName !== "index.html") {
+    fs.unlinkSync(entryPath);
+  }
+}
+
 copyDirContents(landing, out);
-copyDirContents(cabinet, path.join(out, "dashboard"));
-copyDirContents(admin, path.join(out, "admin"));
+ensureIndexHtml(out, "index.landing.html");
+
+const dashboardDir = path.join(out, "dashboard");
+copyDirContents(cabinet, dashboardDir);
+ensureIndexHtml(dashboardDir, "cabinet.html");
+
+const adminDir = path.join(out, "admin");
+copyDirContents(admin, adminDir);
+ensureIndexHtml(adminDir, "admin.html");
 
 console.log(`Staged static apps → ${out}`);
