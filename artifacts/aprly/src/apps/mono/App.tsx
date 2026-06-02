@@ -4,6 +4,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SignupCheckoutProvider } from "@/lib/signup-checkout-context";
 import { SignupCheckoutHost } from "@/components/auth/signup-checkout-host";
 import { AppProviders } from "@/apps/shared/AppProviders";
+import { LandingThemeEffect } from "@/components/landing/LandingThemeEffect";
 import { ScrollLockRouteGuard } from "@/apps/shared/ScrollLockRouteGuard";
 import AdminAppLayout from "@/components/admin/AdminAppLayout";
 import Home from "@/pages/home";
@@ -23,6 +24,7 @@ export default function MonoApp() {
   return (
     <AppProviders withUserAuth>
       <SignupCheckoutProvider>
+        <LandingThemeEffect />
         <ScrollLockRouteGuard />
         <Switch>
           <Route path="/admin/login" component={AdminLoginPage} />

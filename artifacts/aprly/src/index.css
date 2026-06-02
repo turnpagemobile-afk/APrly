@@ -67,6 +67,12 @@
 
   /* 460px = mobile (<460) vs desktop-like (>=460). Not a content max-width. */
   --breakpoint-cabinet: 28.75rem;
+
+  /* Landing design breakpoints (Figma ranges: 375-599 / 600-839 / 840-1199 / 1200-1599 / >=1600) */
+  --breakpoint-bp600: 37.5rem; /* 600px */
+  --breakpoint-bp840: 52.5rem; /* 840px */
+  --breakpoint-bp1200: 75rem; /* 1200px */
+  --breakpoint-bp1600: 100rem; /* 1600px */
 }
 
 /**
@@ -92,7 +98,7 @@
   --background: var(--page-bg);
   --foreground: var(--neutral-theme-900);
 
-  --card: var(--card-bg-color);
+  --card: var(--card-1lvl-bg-color);
   --card-foreground: var(--neutral-theme-900);
 
   --popover: var(--popup-header-bg-color);
@@ -123,7 +129,7 @@
   --chart-4: var(--warning-theme-500);
   --chart-5: var(--danger-theme-500);
 
-  --sidebar: var(--card-bg-color);
+  --sidebar: var(--card-1lvl-bg-color);
   --sidebar-foreground: var(--neutral-theme-900);
   --sidebar-border: var(--neutral-theme-200);
   --sidebar-primary: var(--info-theme-500);
@@ -135,7 +141,7 @@
   --app-font-sans: "Inter", sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: Menlo, monospace;
-  --radius: 0.5rem;
+  --radius: var(--design-button-corner-radius, 12px);
 
   --button-outline: rgba(0, 0, 0, 0.1);
   --badge-outline: rgba(0, 0, 0, 0.05);

@@ -1,22 +1,8 @@
+import type { RefObject } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-
-function BigArrow() {
-  return (
-    <motion.div
-      animate={{ x: [0, 12, 0] }}
-      transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
-      className="hidden cabinet:flex items-center text-primary drop-shadow-[0_0_18px_rgba(56,189,248,0.7)] shrink-0"
-      aria-hidden
-    >
-      <ArrowRight className="h-16 w-16 cabinet:h-20 cabinet:w-20" strokeWidth={3} />
-    </motion.div>
-  );
-}
+import { optimizerContent } from "@/content/landing";
+import { cn } from "@/lib/utils";
 
 export interface OptimizerStep1Props {
   totalDebt: string;
@@ -24,7 +10,16 @@ export interface OptimizerStep1Props {
   interestRate: string;
   setInterestRate: (v: string) => void;
   onNext: () => void;
+  debtInputRef?: RefObject<HTMLInputElement | null>;
 }
+
+const auditInputClass = cn(
+  "h-14 w-full rounded-[var(--design-button-corner-radius,12px)] border bg-white px-4",
+  "text-lg font-semibold text-[var(--neutral-theme-900)] shadow-sm",
+  "border-[var(--primary-theme-200)] placeholder:text-[var(--neutral-theme-400)]",
+  "focus-visible:border-[var(--primary-theme-500)] focus-visible:ring-2 focus-visible:ring-[var(--primary-theme-300)]",
+  "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+);
 
 export function OptimizerStep1({
   totalDebt,
@@ -32,6 +27,7 @@ export function OptimizerStep1({
   interestRate,
   setInterestRate,
   onNext,
+  debtInputRef,
 }: OptimizerStep1Props) {
   const ready =
     !!totalDebt &&
@@ -41,78 +37,68 @@ export function OptimizerStep1({
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 24 }}
+      initial={{ opacity: 0, x: 16 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -24 }}
-      transition={{ duration: 0.35 }}
-      className="space-y-10"
+      exit={{ opacity: 0, x: -16 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-5 bp600:space-y-6"
     >
-      <div className="flex items-center gap-6 cabinet:gap-10">
-        <BigArrow />
-        <Card className="bg-card border-border/50 flex-1">
-          <CardContent className="p-6 cabinet:p-8 space-y-3">
-            <Label
-              htmlFor="debt"
-              className="text-base cabinet:text-lg font-black uppercase tracking-[0.18em] text-primary"
-            >
-              Enter your debt in dollars
-            </Label>
-            <div className="relative">
-              <span className="absolute left-5 top-1/2 -translate-y-1/2 text-3xl cabinet:text-4xl font-black text-muted-foreground">
-                $
-              </span>
-              <Input
-                id="debt"
-                type="number"
-                inputMode="decimal"
-                placeholder="15000"
-                value={totalDebt}
-                onChange={(e) => setTotalDebt(e.target.value)}
-                autoFocus
-                className="text-3xl cabinet:text-4xl h-20 cabinet:h-24 pl-12 cabinet:pl-14 font-black bg-background border-border/60 focus-visible:ring-primary"
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="flex items-center gap-6 cabinet:gap-10">
-        <BigArrow />
-        <Card className="bg-card border-border/50 flex-1">
-          <CardContent className="p-6 cabinet:p-8 space-y-3">
-            <Label
-              htmlFor="rate"
-              className="text-base cabinet:text-lg font-black uppercase tracking-[0.18em] text-primary"
-            >
-              Enter the interest rate you're paying
-            </Label>
-            <div className="relative">
-              <Input
-                id="rate"
-                type="number"
-                step="0.01"
-                inputMode="decimal"
-                placeholder="24.99"
-                value={interestRate}
-                onChange={(e) => setInterestRate(e.target.value)}
-                className="text-3xl cabinet:text-4xl h-20 cabinet:h-24 pr-14 font-black bg-background border-border/60 focus-visible:ring-primary"
-              />
-              <span className="absolute right-5 top-1/2 -translate-y-1/2 text-3xl cabinet:text-4xl font-black text-muted-foreground">
-                %
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="flex justify-end pt-2">
-        <Button
-          size="lg"
-          onClick={onNext}
-          disabled={!ready}
-          className="font-black uppercase tracking-wider text-base px-8 h-14 shadow-[0_0_18px_rgba(59,130,246,0.55)] hover:shadow-[0_0_24px_rgba(59,130,246,0.8)] transition-shadow disabled:opacity-40 disabled:shadow-none"
+      <div className="space-y-2">
+        <label
+          htmlFor="debt"
+          className="block text-left text-sm font-semibold text-[var(--neutral-theme-800)]"
         >
-          Continue <ArrowRight className="ml-2 h-5 w-5" />
+          {optimizerContent.step1.debtLabel}
+        </label>
+        <div className="relative">
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-[var(--neutral-theme-500)]">
+            $
+          </span>
+          <input
+            ref={debtInputRef}
+            id="debt"
+            type="number"
+            inputMode="decimal"
+            placeholder="15 000"
+            value={totalDebt}
+            onChange={(e) => setTotalDebt(e.target.value)}
+            className={cn(auditInputClass, "pl-10")}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label
+          htmlFor="rate"
+          className="block text-left text-sm font-semibold text-[var(--neutral-theme-800)]"
+        >
+          {optimizerContent.step1.rateLabel}
+        </label>
+        <div className="relative">
+          <input
+            id="rate"
+            type="number"
+            inputMode="decimal"
+            placeholder="24.99"
+            value={interestRate}
+            onChange={(e) => setInterestRate(e.target.value)}
+            className={cn(auditInputClass, "pr-10")}
+          />
+          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-lg font-bold text-[var(--neutral-theme-500)]">
+            %
+          </span>
+        </div>
+      </div>
+
+      <div className="flex justify-center pt-2 bp600:pt-4">
+        <Button
+          type="button"
+          size="lg"
+          disabled={!ready}
+          onClick={onNext}
+          className="h-12 w-full min-w-0 rounded-[var(--design-button-corner-radius,12px)] bg-[var(--primary-theme-500)] px-10 text-sm font-bold uppercase tracking-wide text-white hover:bg-[var(--primary-theme-600)] bp600:w-auto bp600:min-w-[200px]"
+        >
+          {optimizerContent.step1.continue}
         </Button>
       </div>
     </motion.div>

@@ -127,6 +127,17 @@ curl -fsS https://dev.aprly.ai/api/healthz
 
 Regenerate icons: `pnpm --filter @workspace/aprly run pwa:icons` (requires `pnpm approve-builds sharp` or macOS `sips`).
 
+### Design tokens and landing assets
+
+Figma exports live in `local_docs/APRLY DESIGN/` (gitignored). Sync into the repo before commit:
+
+```bash
+pnpm --filter @workspace/aprly run sync-design   # → design-tokens/ + public/landing/
+pnpm --filter @workspace/aprly run tokens        # → src/styles/theme-tokens.css (commit output)
+```
+
+CI/droplet only see committed `artifacts/aprly/design-tokens/`, `public/landing/`, and `theme-tokens.css`.
+
 ## Rolling back
 
 Two equivalent paths.

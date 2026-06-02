@@ -1,6 +1,6 @@
-import { Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { heroContent } from "@/content/landing";
+import { landingAsset } from "@/lib/landing-assets";
 
 export interface HeroSectionProps {
   onSeeOptimizer: () => void;
@@ -8,52 +8,60 @@ export interface HeroSectionProps {
 
 export function HeroSection({ onSeeOptimizer }: HeroSectionProps) {
   return (
-    <section className="relative px-4 py-16 cabinet:py-24">
-      <div className="app-page-marketing">
-        <div className="grid items-center gap-10 cabinet:grid-cols-[1.2fr_1fr] cabinet:gap-14">
-          <div className="flex min-w-0 flex-col items-center text-center cabinet:items-start cabinet:text-left">
-            <h1 className="font-black leading-[1.05] tracking-tight text-4xl cabinet:text-5xl cabinet:text-6xl">
-              {heroContent.taglineLines.map((line, i) => (
-                <span key={i} className="block">
-                  <span
-                    className={`text-primary${
-                      line.underlineLead
-                        ? " underline underline-offset-4 decoration-[0.08em]"
-                        : ""
-                    }`}
-                  >
-                    {line.lead}
-                  </span>
-                  <span className="text-foreground">{line.rest}</span>
-                </span>
-              ))}
-            </h1>
+    <section className="relative bg-[#F8FCFE]">
+      {/* Full-width mountain background with headline + sync banner */}
+      <div className="relative w-full">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${landingAsset("landing/hero/full.png")})` }}
+          aria-hidden
+        />
+        <div
+          className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-[#F8FCFE]"
+          aria-hidden
+        />
 
-            <p className="mt-8 max-w-xl text-base font-semibold text-foreground/90 cabinet:mt-10 cabinet:text-lg">
-              {heroContent.subtitle}
-            </p>
+        <div className="relative mx-auto w-full max-w-[1400px] px-4 pt-10 pb-28 bp600:px-6 bp840:pt-16 bp840:pb-36 bp1200:px-10 bp1200:pt-20 bp1200:pb-44">
+          <h1 className="max-w-2xl font-black uppercase leading-[1.05] tracking-tight text-[#0B2C47] text-3xl bp600:text-4xl bp840:max-w-3xl bp840:text-5xl bp1200:text-6xl">
+            <span className="block">{heroContent.headline}</span>
+            <span className="mt-1 block">
+              {heroContent.headlineLead}{" "}
+              <span className="text-primary">{heroContent.headlineHighlight}</span>
+              <span aria-hidden>.</span>
+            </span>
+          </h1>
+        </div>
+      </div>
 
-            <div className="mt-8">
-              <Button
-                size="lg"
-                onClick={onSeeOptimizer}
-                className="w-full font-semibold cabinet:w-auto"
-              >
-                {heroContent.cta.label}
-              </Button>
-            </div>
-          </div>
-
-          <div
-            role="img"
-            aria-label={heroContent.imageAlt}
-            className="relative flex aspect-[4/3] w-full min-w-0 items-center justify-center rounded-2xl border border-border/40 bg-[var(--info-theme-200)]/40"
+      {/* Video card + CTA on solid light background */}
+      <div className="relative mx-auto -mt-16 max-w-3xl px-4 pb-12 bp840:-mt-24 bp840:pb-16 bp1200:-mt-28">
+        <div className="relative overflow-hidden rounded-[var(--design-screen-corner-radius,30px)] border border-[var(--neutral-theme-200)] bg-card shadow-xl">
+          <video
+            className="aspect-video w-full bg-[var(--neutral-theme-100)] object-cover"
+            controls
+            playsInline
+            preload="metadata"
+            poster={landingAsset("landing/hero/little.png")}
+            aria-label={heroContent.videoAlt}
           >
-            <ImageIcon
-              className="h-12 w-12 text-muted-foreground/40"
-              aria-hidden="true"
+            <source
+              src={landingAsset("landing/hero/landing-video-section.mp4")}
+              type="video/mp4"
             />
-          </div>
+          </video>
+          <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-4 pb-4 pt-12 text-center text-sm font-semibold text-white bp840:text-base">
+            {heroContent.videoCaption}
+          </p>
+        </div>
+
+        <div className="mt-8 flex justify-center bp840:mt-10">
+          <Button
+            size="lg"
+            onClick={onSeeOptimizer}
+            className="h-12 min-w-[220px] rounded-[var(--design-button-corner-radius,12px)] px-10 text-sm font-bold uppercase tracking-wide"
+          >
+            {heroContent.cta.label}
+          </Button>
         </div>
       </div>
     </section>
