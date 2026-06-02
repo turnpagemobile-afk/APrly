@@ -84,6 +84,9 @@ export async function createAprlyViteConfig(
         ],
         workbox: {
           globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,webmanifest}"],
+          /** Marketing assets under public/landing/ are multi-MB; cabinet PWA must not precache them. */
+          globIgnores: ["**/landing/**", "**/node_modules/**"],
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
           navigateFallback: "index.html",
           navigateFallbackAllowlist: [/^\/dashboard/],
           navigateFallbackDenylist: [/^\/api/],

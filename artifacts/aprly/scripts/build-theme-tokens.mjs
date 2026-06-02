@@ -149,10 +149,16 @@ function buildThemedBlock(selector, tokenMap) {
   return lines.join("\n");
 }
 
+/** Figma names may include commas (e.g. x1,5); commas are invalid unescaped in CSS custom property names. */
+function sanitizeCssVarName(name) {
+  return name.replace(/,/g, "-");
+}
+
 function buildStaticBlock(selector, tokenMap, cssPrefix) {
   const lines = [`${selector} {`];
   for (const [name, token] of tokenMap) {
-    lines.push(`  --${cssPrefix}${name}: ${tokenToCssValue(name, token)};`);
+    const cssName = sanitizeCssVarName(name);
+    lines.push(`  --${cssPrefix}${cssName}: ${tokenToCssValue(name, token)};`);
   }
   lines.push("}");
   return lines.join("\n");
