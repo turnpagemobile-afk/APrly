@@ -1,20 +1,45 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { HeroSection } from "../components/landing/HeroSection";
-import { StatsSection } from "../components/landing/StatsSection";
-import { HowItWorksSection } from "../components/landing/HowItWorksSection";
-import { OptimizerSection } from "../components/landing/OptimizerSection";
+import { FunctionsSection } from "../components/landing/FunctionsSection";
+import { ProgressStatsSection } from "../components/landing/ProgressStatsSection";
+import { LandingThemeEffect } from "../components/landing/LandingThemeEffect";
+import { EasyStepsSection } from "../components/landing/EasyStepsSection";
+import {
+  OptimizerSection,
+  type OptimizerSectionHandle,
+} from "../components/landing/OptimizerSection";
+import { WhySection } from "../components/landing/WhySection";
+import { DashboardPreviewSection } from "../components/landing/DashboardPreviewSection";
+import { FirstStepsSection } from "../components/landing/FirstStepsSection";
 import { FaqSection } from "../components/landing/FaqSection";
-import { PlanSection } from "../components/landing/PlanSection";
+import { FooterCtaSection } from "../components/landing/FooterCtaSection";
 import { loadOptimizerSnapshot } from "@/lib/optimizerSnapshot";
 import { useSignupCheckout } from "@/lib/signup-checkout-context";
 import { toast } from "@/hooks/use-toast";
 
+const OPTIMIZER_FOCUS_DELAY_MS = 450;
+
 export default function Home() {
-  const optimizerRef = useRef<HTMLElement>(null);
+  const optimizerRef = useRef<OptimizerSectionHandle>(null);
   const { openSignup } = useSignupCheckout();
 
-  const scrollToPlan = () => {
-    document.getElementById("plan")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const openSignupFromSnapshot = useCallback(() => {
+    const snap = loadOptimizerSnapshot();
+    openSignup({
+      email: snap?.email?.trim() || null,
+      name: snap?.name?.trim() || null,
+    });
+  }, [openSignup]);
+
+  const focusOptimizerDebt = useCallback(() => {
+    window.setTimeout(() => {
+      optimizerRef.current?.focusDebtInput();
+    }, OPTIMIZER_FOCUS_DELAY_MS);
+  }, []);
+
+  const scrollToOptimizer = () => {
+    optimizerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    focusOptimizerDebt();
   };
 
   useEffect(() => {
@@ -44,34 +69,25 @@ export default function Home() {
     const tryScroll = () => {
       const el = document.getElementById(hash);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (hash === "optimizer") focusOptimizerDebt();
     };
     const t = setTimeout(tryScroll, 60);
     return () => clearTimeout(t);
-  }, []);
-
-  const handleSeeOptimizer = () => {
-    optimizerRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
+  }, [focusOptimizerDebt]);
 
   return (
-    <div className="flex flex-col">
-      <HeroSection onSeeOptimizer={handleSeeOptimizer} />
-      <StatsSection />
-      <HowItWorksSection />
-      <OptimizerSection ref={optimizerRef} onActivateClick={scrollToPlan} />
+    <div className="flex flex-col bg-[#F8FCFE] text-[#202226]">
+      <LandingThemeEffect />
+      <HeroSection onSeeOptimizer={scrollToOptimizer} />
+      <FunctionsSection />
+      <ProgressStatsSection />
+      <EasyStepsSection />
+      <OptimizerSection ref={optimizerRef} onActivateClick={openSignupFromSnapshot} />
+      <WhySection />
+      <DashboardPreviewSection />
+      <FirstStepsSection />
       <FaqSection />
-      <PlanSection
-        onActivateClick={() => {
-          const snap = loadOptimizerSnapshot();
-          openSignup({
-            email: snap?.email?.trim() || null,
-            name: snap?.name?.trim() || null,
-          });
-        }}
-      />
+      <FooterCtaSection onAuditClick={scrollToOptimizer} />
     </div>
   );
 }

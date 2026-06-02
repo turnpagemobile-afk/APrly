@@ -8,6 +8,7 @@ import { CardEntryList } from "@/components/cards/CardEntryList";
 import { usePlaidCardImport } from "@/components/cards/usePlaidCardImport";
 import type { CardEntry } from "./types";
 import { accountsAreComplete } from "./optimizerAccounts";
+import { optimizerContent } from "@/content/landing";
 
 export interface OptimizerStep2Props {
   accounts: CardEntry[];
@@ -98,16 +99,17 @@ export function OptimizerStep2({
       </Card>
 
       <div className="flex items-center justify-between gap-3 pt-2">
-        <Button variant="ghost" onClick={onBack} className="font-bold">
-          <ChevronLeft className="mr-1 h-5 w-5" /> Back
+        <Button variant="ghost" onClick={onBack} className="font-bold uppercase">
+          <ChevronLeft className="mr-1 h-5 w-5" /> {optimizerContent.step2.back}
         </Button>
         <Button
           size="lg"
           onClick={onNext}
           disabled={!cardsReady}
-          className="font-black uppercase tracking-wider text-base px-8 h-14 shadow-[0_0_18px_rgba(59,130,246,0.55)] hover:shadow-[0_0_24px_rgba(59,130,246,0.8)] transition-shadow disabled:opacity-40 disabled:shadow-none"
+          className="min-w-[160px] font-bold uppercase tracking-wide"
         >
-          See My Plan <ArrowRight className="ml-2 h-5 w-5" />
+          {optimizerContent.step2.continue}
+          <ArrowRight className="ml-2 h-5 w-5" />
         </Button>
       </div>
     </motion.div>

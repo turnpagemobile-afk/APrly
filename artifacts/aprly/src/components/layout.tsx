@@ -7,7 +7,11 @@ import {
   useVoiceRecorder,
 } from "@workspace/integrations-openai-ai-react/audio";
 import { Button } from "@/components/ui/button";
-import { brandContent, footerContent, navContent } from "@/content/landing";
+import { AuthBrandLogo } from "@/components/auth/AuthBrandLogo";
+import { LandingFooter } from "@/components/landing/LandingFooter";
+import { footerContent, navContent } from "@/content/landing";
+import { isLandingMarketingPath } from "@/lib/landing-document-theme";
+import { cn } from "@/lib/utils";
 
 export const VoiceStore = {
   listeners: new Set<(data: { totalDebt?: number; interestRate?: number }) => void>(),
@@ -263,12 +267,12 @@ function HeaderActions({
   }
 
   return (
-    <div className="flex shrink-0 items-center gap-2">
+    <div className="flex shrink-0 items-center gap-2 cabinet:gap-3">
       <Button
         type="button"
         size="sm"
-        variant="secondary"
-        className="font-semibold shrink-0"
+        variant="outline"
+        className="shrink-0 border-primary font-bold uppercase tracking-wide text-primary"
         asChild
       >
         <Link href={navContent.logIn.href}>{navContent.logIn.label}</Link>
@@ -277,7 +281,7 @@ function HeaderActions({
         type="button"
         size="sm"
         onClick={onGetStarted}
-        className="font-semibold shrink-0"
+        className="shrink-0 font-bold uppercase tracking-wide"
       >
         {navContent.getStarted.label}
       </Button>
@@ -289,6 +293,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const { logout } = useAuth();
   const isDashboard = location === "/dashboard" || location.startsWith("/dashboard/");
+  const isLandingApp =
+    __APRLY_APP__ === "landing" ||
+    (__APRLY_APP__ === "mono" && isLandingMarketingPath(location));
 
   const goToAnchor = (href: string) => {
     if (!href.startsWith("#")) {
@@ -310,21 +317,48 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-background text-foreground">
+    <div
+      className={cn(
+        "min-h-[100dvh] flex flex-col",
+        isLandingApp
+          ? "bg-[#F8FCFE] text-[#202226]"
+          : "bg-background text-foreground",
+      )}
+    >
       {!isDashboard ? (
-      <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
+      <header
+        className={cn(
+          "sticky top-0 z-50 w-full border-b backdrop-blur",
+          isLandingApp
+            ? "border-[#D8DEE4] bg-[#F8FCFE]/95 supports-[backdrop-filter]:bg-[#F8FCFE]/90"
+            : "border-[var(--neutral-theme-200)] bg-[var(--page-bg)]/95 supports-[backdrop-filter]:bg-[var(--page-bg)]/90",
+        )}
+      >
+        <div
+          className={cn(
+            "container mx-auto gap-3 px-4 py-3",
+            isLandingApp
+              ? "flex flex-col items-center cabinet:h-16 cabinet:flex-row cabinet:justify-between cabinet:py-0"
+              : "flex h-16 items-center justify-between",
+          )}
+        >
           <Link
             href="/"
-            className="flex items-center gap-2"
-            aria-label={brandContent.name}
+            className={cn(
+              "flex shrink-0 items-center",
+              isLandingApp && "cabinet:mr-0",
+            )}
+            aria-label="APRly home"
           >
-            <span className="text-2xl font-black tracking-tight text-foreground">
-              {brandContent.name}
-            </span>
+            {isLandingApp ? (
+              <AuthBrandLogo size="header" className="!text-left" />
+            ) : (
+              <span className="text-2xl font-black tracking-tight text-foreground">APRly</span>
+            )}
           </Link>
 
-          <nav
+          {!isLandingApp && navContent.links.length > 0 ? (
+            <nav
               className="hidden cabinet:flex items-center gap-7 text-sm font-semibold text-primary"
               aria-label="Primary"
             >
@@ -339,8 +373,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </button>
               ))}
             </nav>
+          ) : !isLandingApp ? (
+            <div className="flex-1" aria-hidden />
+          ) : null}
 
-          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <div
+            className={cn(
+              "flex shrink-0 items-center gap-2 sm:gap-3",
+              isLandingApp && "justify-center",
+            )}
+          >
             <div className="hidden" aria-hidden="true">
               <VoiceAssistant />
             </div>
@@ -356,29 +398,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       <main className="flex-1">{children}</main>
 
-      <footer
-        className={`border-t border-border/60 bg-card text-card-foreground py-8 ${isDashboard ? "mt-0" : "mt-16"}`}
-      >
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col cabinet:flex-row justify-between items-center gap-4 text-muted-foreground text-sm">
-            <nav
-              className="flex items-center gap-6 text-primary font-semibold"
-              aria-label="Footer"
-            >
-              {footerContent.links.map((link) => (
-                <Link
-                  key={link.id}
-                  href={link.href}
-                  className="hover:opacity-80 transition-opacity"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-            <div className="text-center cabinet:text-right">{copyright}</div>
+      {isLandingApp ? (
+        <LandingFooter copyright={copyright} />
+      ) : (
+        <footer
+          className={`border-t border-border/60 bg-card text-card-foreground py-8 ${isDashboard ? "mt-0" : "mt-16"}`}
+        >
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col cabinet:flex-row justify-between items-center gap-4 text-muted-foreground text-sm">
+              <nav
+                className="flex items-center gap-6 text-primary font-semibold"
+                aria-label="Footer"
+              >
+                {footerContent.links.map((link) => (
+                  <Link
+                    key={link.id}
+                    href={link.href}
+                    className="hover:opacity-80 transition-opacity"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+              <div className="text-center cabinet:text-right">{copyright}</div>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </div>
   );
 }

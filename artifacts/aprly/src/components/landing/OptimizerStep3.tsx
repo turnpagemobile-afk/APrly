@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, animate } from "framer-motion";
-import {
-  Calendar,
-  ChevronLeft,
-  CreditCard,
-  Flame,
-  TrendingDown,
-} from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -18,22 +12,21 @@ import {
   YAxis,
 } from "recharts";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { optimizerContent } from "@/content/landing";
+import { cn } from "@/lib/utils";
 
-/** SVG text does not resolve `hsl(var(--token))` when tokens are hex; use explicit colors. */
-const CHART_AXIS_TICK_FILL = "#ffffff";
-const CHART_LEGEND_COLOR = "rgba(255, 255, 255, 0.85)";
-const CHART_BORDER_COLOR = "rgba(255, 255, 255, 0.2)";
-const CHART_TOOLTIP_TEXT = "#ffffff";
+const CHART_AXIS = "#0B2C47";
+const CHART_GRID = "#D4E9FB";
+const CHART_BASELINE = "#10B981";
+const CHART_WASTE = "#FF9E7F";
 
 function AnimatedNumber({
   value,
-  isWaste,
+  className,
 }: {
   value: number;
-  isWaste?: boolean;
+  className?: string;
 }) {
   const [displayValue, setDisplayValue] = useState(value);
 
@@ -49,23 +42,80 @@ function AnimatedNumber({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  const isRed = isWaste && value > 10;
-
   return (
-    <motion.span
-      className={`inline-block max-w-full font-mono tabular-nums tracking-tight ${
-        isRed
-          ? "text-destructive drop-shadow-[0_0_18px_rgba(248,113,113,0.7)]"
-          : "text-primary drop-shadow-[0_0_18px_rgba(56,189,248,0.7)]"
-      }`}
-      animate={isRed ? { scale: [1, 1.04, 1] } : {}}
-      transition={isRed ? { repeat: Infinity, duration: 2 } : {}}
-    >
-      ${displayValue.toLocaleString("en-US", {
+    <span className={cn("font-mono tabular-nums tracking-tight", className)}>
+      $
+      {displayValue.toLocaleString("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })}
-    </motion.span>
+    </span>
+  );
+}
+
+function ResultStatCard({
+  value,
+  label,
+  variant,
+  isPending,
+}: {
+  value: number;
+  label: string;
+  variant: "debt" | "waste" | "monthly" | "annual";
+  isPending?: boolean;
+}) {
+  const styles = {
+    debt: {
+      wrap: "border-[var(--primary-theme-200)] bg-white",
+      value: "text-[var(--primary-theme-900)]",
+      label: "text-[var(--primary-theme-900)]",
+    },
+    waste: {
+      wrap: "border-[var(--accent-theme-200)] bg-[var(--accent-theme-100)]",
+      value: "text-[var(--accent-theme-500)]",
+      label: "text-[var(--primary-theme-900)]",
+    },
+    monthly: {
+      wrap: "border-[var(--secondary-theme-200)] bg-[var(--secondary-theme-100)]",
+      value: "text-[var(--secondary-theme-600)]",
+      label: "text-[var(--primary-theme-900)]",
+    },
+    annual: {
+      wrap: "border-[var(--secondary-theme-600)] bg-[var(--secondary-theme-500)]",
+      value: "text-white",
+      label: "text-white",
+    },
+  }[variant];
+
+  return (
+    <article
+      className={cn(
+        "flex min-w-0 flex-col items-center justify-center rounded-[var(--design-button-corner-radius,12px)] border px-4 py-5 text-center",
+        styles.wrap,
+      )}
+    >
+      <div
+        className={cn(
+          "text-2xl font-extrabold leading-none bp600:text-3xl",
+          styles.value,
+        )}
+        aria-live="polite"
+      >
+        {isPending ? (
+          <Skeleton className="mx-auto h-9 w-32 bg-black/10" />
+        ) : (
+          <AnimatedNumber value={value} />
+        )}
+      </div>
+      <p
+        className={cn(
+          "mt-2 text-xs font-extrabold uppercase tracking-wide",
+          styles.label,
+        )}
+      >
+        {label}
+      </p>
+    </article>
   );
 }
 
@@ -77,11 +127,9 @@ export interface OptimizerStep3Props {
         annualSavings?: number;
       }
     | undefined;
-  /** Sum of all card balances used for the optimizer call */
   totalDebtAmount: number;
   isPending: boolean;
   onBack: () => void;
-  /** Scroll to #plan (same as Get Started in nav) */
   onActivateClick: () => void;
 }
 
@@ -96,23 +144,24 @@ export function OptimizerStep3({
   const showSkeleton = isPending && !res;
   const safeTotalDebt = Math.max(0, totalDebtAmount || 0);
   const monthlySavings = Math.max(0, res?.monthlySavings || 0);
-  const baselineMonthlyInterest = safeTotalDebt * (baselineApr / 100) / 12;
+  const baselineMonthlyInterest = (safeTotalDebt * (baselineApr / 100)) / 12;
   const monthlyWaste = Math.max(0, (res?.dailyInterestWaste || 0) * 30.4375);
   const estimatedCurrentMonthlyInterest = baselineMonthlyInterest + monthlyWaste;
-  const estimatedCurrentApr = safeTotalDebt > 0
-    ? (estimatedCurrentMonthlyInterest * 12 * 100) / safeTotalDebt
-    : baselineApr;
+  const estimatedCurrentApr =
+    safeTotalDebt > 0
+      ? (estimatedCurrentMonthlyInterest * 12 * 100) / safeTotalDebt
+      : baselineApr;
   const safeCurrentApr = Math.max(baselineApr, estimatedCurrentApr);
 
   const chartData = useMemo(() => {
     return Array.from({ length: 12 }, (_, i) => {
       const monthIndex = i + 1;
       const remainingDebt = Math.max(0, safeTotalDebt - monthlySavings * i);
-      const baselineInterest = remainingDebt * (baselineApr / 100) / 12;
-      const currentInterest = remainingDebt * (safeCurrentApr / 100) / 12;
+      const baselineInterest = (remainingDebt * (baselineApr / 100)) / 12;
+      const currentInterest = (remainingDebt * (safeCurrentApr / 100)) / 12;
       const wasteInterest = Math.max(0, currentInterest - baselineInterest);
       return {
-        month: `M${monthIndex.toString().padStart(2, "0")}`,
+        month: `MON ${monthIndex}`,
         baselineInterest,
         wasteInterest,
       };
@@ -128,204 +177,154 @@ export function OptimizerStep3({
     [chartData],
   );
 
+  const yMax = Math.max(200, Math.ceil(chartMax / 100) * 100);
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -24 }}
       transition={{ duration: 0.35 }}
-      className="space-y-8"
+      className="space-y-8 bp840:space-y-10"
     >
-      <Card className="bg-card border-border/60 overflow-hidden">
-        <CardContent className="p-5 cabinet:p-6">
-          <h3 className="text-base cabinet:text-lg font-black uppercase tracking-wide text-foreground">
-            {optimizerContent.step3.chartTitle}
-          </h3>
-          <p className="mt-1 text-xs cabinet:text-sm text-muted-foreground">
-            {optimizerContent.step3.chartSubtitle}
-          </p>
-          <div className="mt-4 h-56 cabinet:h-64 [&_.recharts-cartesian-axis-tick_text]:fill-white [&_.recharts-cartesian-axis-tick_text]:text-[11px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={CHART_BORDER_COLOR}
-                  opacity={0.6}
-                />
-                <XAxis
-                  dataKey="month"
-                  tick={{ fill: CHART_AXIS_TICK_FILL, fontSize: 11 }}
-                  axisLine={{ stroke: CHART_BORDER_COLOR }}
-                  tickLine={false}
-                />
-                <YAxis
-                  domain={[0, Math.max(200, Math.ceil(chartMax / 100) * 100)]}
-                  tick={{ fill: CHART_AXIS_TICK_FILL, fontSize: 11 }}
-                  axisLine={{ stroke: CHART_BORDER_COLOR }}
-                  tickLine={false}
-                  tickFormatter={(v) => `$${Math.round(v)}`}
-                />
-                <Tooltip
-                  cursor={{ fill: "rgba(59, 130, 246, 0.12)" }}
-                  contentStyle={{
-                    background: "var(--card)",
-                    border: "1px solid rgba(255, 255, 255, 0.15)",
-                    borderRadius: "8px",
-                    color: CHART_TOOLTIP_TEXT,
-                  }}
-                  labelStyle={{ color: CHART_TOOLTIP_TEXT }}
-                  itemStyle={{ color: CHART_TOOLTIP_TEXT }}
-                  formatter={(value: number, name: string) => [
-                    `$${value.toFixed(2)}`,
-                    name === "baselineInterest" ? "Interest at 8% baseline" : "Interest waste (current APR)",
-                  ]}
-                />
-                <Legend
-                  wrapperStyle={{ color: CHART_LEGEND_COLOR }}
-                  formatter={(value) =>
-                    value === "baselineInterest" ? (
-                      <span style={{ color: CHART_LEGEND_COLOR }}>Interest at 8% baseline</span>
-                    ) : (
-                      <span style={{ color: CHART_LEGEND_COLOR }}>Interest waste (current APR)</span>
-                    )
-                  }
-                />
-                <Bar
-                  dataKey="baselineInterest"
-                  stackId="interest"
-                  fill="#2AA198"
-                  radius={[2, 2, 0, 0]}
-                />
-                <Bar
-                  dataKey="wasteInterest"
-                  stackId="interest"
-                  fill="#D9480F"
-                  radius={[2, 2, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      <h3 className="text-center text-lg font-extrabold uppercase tracking-tight text-[var(--primary-theme-900)] bp600:text-xl">
+        {optimizerContent.step3.readyTitle}{" "}
+        <span className="text-[var(--secondary-theme-500)]">
+          {optimizerContent.step3.readyHighlight}
+        </span>{" "}
+        {optimizerContent.step3.readySuffix}
+      </h3>
 
-      <div className="grid grid-cols-1 cabinet:grid-cols-3 gap-6">
-        <Card className="bg-card border-border/50 @container min-w-0">
-          <CardContent className="p-6 cabinet:p-8 flex items-center justify-between gap-3 min-w-0">
-            <div className="min-w-0 flex-1 pr-1">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-2">
-                Total Debt
-              </p>
-              <p className="text-[clamp(1.35rem,4cqi+0.85rem,3.1rem)] cabinet:text-[clamp(1.5rem,5cqi+0.75rem,3.25rem)] font-black leading-[1.05]">
-                <AnimatedNumber value={totalDebtAmount} />
-              </p>
-            </div>
-            <div className="h-12 w-12 cabinet:h-14 cabinet:w-14 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-              <CreditCard className="h-6 w-6 cabinet:h-7 cabinet:w-7 text-destructive" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-destructive/30 cabinet:col-span-2 relative overflow-hidden min-w-0 @container">
-          <div className="absolute inset-0 bg-destructive/5" />
-          <CardContent className="p-6 cabinet:p-8 flex items-center justify-between relative z-10 gap-4 min-w-0">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-destructive uppercase tracking-[0.2em] mb-2">
-                Daily Interest Waste
-              </p>
-              <div
-                className="text-[clamp(1.5rem,3.5cqi+1.1rem,3.75rem)] cabinet:text-[clamp(1.75rem,4cqi+1rem,3.85rem)] font-black leading-none"
-                aria-live="polite"
-              >
-                {showSkeleton ? (
-                  <Skeleton className="h-14 w-56 max-w-full bg-card/60" />
-                ) : (
-                  <AnimatedNumber
-                    value={res?.dailyInterestWaste || 0}
-                    isWaste
-                  />
-                )}
-              </div>
-              <p className="mt-2 text-sm font-medium text-muted-foreground">
-                Gone, every single day.
-              </p>
-            </div>
-            <div className="h-14 w-14 rounded-full bg-destructive/15 flex items-center justify-center shrink-0">
-              <Flame className="h-7 w-7 text-destructive" />
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 gap-3 bp840:grid-cols-4 bp840:gap-4">
+        <ResultStatCard
+          value={totalDebtAmount}
+          label="Total Debt"
+          variant="debt"
+        />
+        <ResultStatCard
+          value={res?.dailyInterestWaste || 0}
+          label="Daily Interest Waste"
+          variant="waste"
+          isPending={showSkeleton}
+        />
+        <ResultStatCard
+          value={res?.monthlySavings || 0}
+          label="Monthly Saving"
+          variant="monthly"
+          isPending={showSkeleton}
+        />
+        <ResultStatCard
+          value={res?.annualSavings || 0}
+          label="Annual Saving"
+          variant="annual"
+          isPending={showSkeleton}
+        />
       </div>
 
-      <div className="grid grid-cols-1 cabinet:grid-cols-2 gap-6">
-        <Card className="bg-card border-primary/30 relative overflow-hidden min-w-0 @container">
-          <div className="absolute inset-0 bg-primary/5" />
-          <CardContent className="p-6 relative z-10 flex items-center justify-between gap-4 min-w-0">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-2">
-                Monthly Savings
-              </p>
-              <div
-                className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] cabinet:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]"
-                aria-live="polite"
-              >
-                {showSkeleton ? (
-                  <Skeleton className="h-9 w-40 max-w-full bg-card/60" />
-                ) : (
-                  <AnimatedNumber value={res?.monthlySavings || 0} />
-                )}
-              </div>
-            </div>
-            <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-              <Calendar className="h-6 w-6 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-primary/30 relative overflow-hidden min-w-0 @container">
-          <div className="absolute inset-0 bg-primary/5" />
-          <CardContent className="p-6 relative z-10 flex items-center justify-between gap-4 min-w-0">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-2">
-                Annual Savings
-              </p>
-              <div
-                className="text-[clamp(1.25rem,3cqi+0.9rem,2.25rem)] cabinet:text-[clamp(1.35rem,3.5cqi+0.85rem,2.5rem)] font-black leading-tight text-primary drop-shadow-[0_0_14px_rgba(59,130,246,0.55)]"
-                aria-live="polite"
-              >
-                {showSkeleton ? (
-                  <Skeleton className="h-9 w-40 max-w-full bg-card/60" />
-                ) : (
-                  <AnimatedNumber value={res?.annualSavings || 0} />
-                )}
-              </div>
-            </div>
-            <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-              <TrendingDown className="h-6 w-6 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
+      <div className="rounded-[var(--design-button-corner-radius,12px)] border border-[var(--primary-theme-200)] bg-white p-5 bp600:p-6">
+        <h4 className="text-sm font-extrabold uppercase tracking-tight text-[var(--primary-theme-900)] bp600:text-base">
+          {optimizerContent.step3.chartTitle}
+        </h4>
+        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-[var(--neutral-theme-800)] bp600:text-sm">
+          <span className="inline-flex items-center gap-2">
+            <span
+              className="h-2.5 w-2.5 shrink-0 rounded-full"
+              style={{ background: CHART_WASTE }}
+              aria-hidden
+            />
+            {optimizerContent.step3.chartLegendWaste}
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span
+              className="h-2.5 w-2.5 shrink-0 rounded-full"
+              style={{ background: CHART_BASELINE }}
+              aria-hidden
+            />
+            {optimizerContent.step3.chartLegendBaseline}
+          </span>
+        </div>
+        <div className="mt-4 h-56 bp600:h-72 [&_.recharts-cartesian-axis-tick_text]:fill-[#0B2C47] [&_.recharts-cartesian-axis-tick_text]:text-[10px] bp600:[&_.recharts-cartesian-axis-tick_text]:text-[11px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{ top: 8, right: 8, left: 4, bottom: 48 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={CHART_GRID}
+                vertical={false}
+              />
+              <XAxis
+                dataKey="month"
+                tick={{ fill: CHART_AXIS, fontSize: 10 }}
+                axisLine={{ stroke: CHART_GRID }}
+                tickLine={false}
+                interval={0}
+                angle={-90}
+                textAnchor="end"
+                height={56}
+              />
+              <YAxis
+                domain={[0, yMax]}
+                tick={{ fill: CHART_AXIS, fontSize: 11 }}
+                axisLine={{ stroke: CHART_GRID }}
+                tickLine={false}
+                tickFormatter={(v) => `$${Math.round(v)}`}
+                width={48}
+              />
+              <Tooltip
+                cursor={{ fill: "rgba(38, 147, 237, 0.08)" }}
+                contentStyle={{
+                  background: "#fff",
+                  border: `1px solid ${CHART_GRID}`,
+                  borderRadius: "8px",
+                  color: CHART_AXIS,
+                }}
+                formatter={(value: number, name: string) => [
+                  `$${value.toFixed(2)}`,
+                  name === "baselineInterest"
+                    ? optimizerContent.step3.chartLegendBaseline
+                    : optimizerContent.step3.chartLegendWaste,
+                ]}
+              />
+              <Legend content={() => null} />
+              <Bar
+                dataKey="baselineInterest"
+                stackId="interest"
+                fill={CHART_BASELINE}
+                radius={[0, 0, 0, 0]}
+              />
+              <Bar
+                dataKey="wasteInterest"
+                stackId="interest"
+                fill={CHART_WASTE}
+                radius={[2, 2, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
-        <Button variant="ghost" onClick={onBack} className="font-bold sm:w-auto">
-          <ChevronLeft className="mr-1 h-5 w-5" /> Back
-        </Button>
-        <div className="flex flex-col items-stretch sm:items-end w-full sm:w-auto">
-          <Card className="bg-primary/10 border-primary/40 w-full sm:min-w-[370px]">
-            <CardContent className="p-4 cabinet:p-5">
-              <p className="text-center text-xl cabinet:text-2xl font-black uppercase tracking-wide text-foreground">
-                Create a free APRly account and start saving today
-              </p>
-              <Button
-                type="button"
-                size="lg"
-                onClick={onActivateClick}
-                className="mt-4 w-full font-black text-base cabinet:text-lg h-14 shadow-[0_0_14px_rgba(59,130,246,0.5)] hover:shadow-[0_0_20px_rgba(59,130,246,0.75)] transition-shadow"
-              >
-                {optimizerContent.step3.ctaLabel}
-              </Button>
-            </CardContent>
-          </Card>
+      <div className="flex flex-col items-center gap-4">
+        <p className="max-w-xl text-center text-sm font-extrabold uppercase tracking-wide text-[var(--primary-theme-900)] bp600:text-base">
+          {optimizerContent.step3.ctaLead}
+        </p>
+        <div className="flex w-full flex-col items-stretch gap-3 bp600:flex-row bp600:items-center bp600:justify-between">
+          <Button
+            variant="ghost"
+            onClick={onBack}
+            className="order-2 font-bold uppercase text-[var(--primary-theme-700)] bp600:order-1"
+          >
+            <ChevronLeft className="mr-1 h-5 w-5" /> {optimizerContent.step3.back}
+          </Button>
+          <Button
+            type="button"
+            size="lg"
+            onClick={onActivateClick}
+            className="order-1 h-12 w-full rounded-[var(--design-button-corner-radius,12px)] bg-[var(--primary-theme-500)] px-8 text-sm font-bold uppercase tracking-wide text-white hover:bg-[var(--primary-theme-600)] bp600:order-2 bp600:w-auto bp600:min-w-[220px]"
+          >
+            {optimizerContent.step3.ctaLabel}
+          </Button>
         </div>
       </div>
     </motion.div>

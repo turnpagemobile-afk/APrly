@@ -3,6 +3,7 @@ import { Layout } from "@/components/layout";
 import { SignupCheckoutProvider } from "@/lib/signup-checkout-context";
 import { SignupCheckoutHost } from "@/components/auth/signup-checkout-host";
 import { AppProviders } from "@/apps/shared/AppProviders";
+import { LandingThemeEffect } from "@/components/landing/LandingThemeEffect";
 import { ScrollLockRouteGuard } from "@/apps/shared/ScrollLockRouteGuard";
 import Home from "@/pages/home";
 import Privacy from "@/pages/privacy";
@@ -14,6 +15,7 @@ export default function LandingApp() {
   return (
     <AppProviders withUserAuth>
       <SignupCheckoutProvider>
+        <LandingThemeEffect />
         <ScrollLockRouteGuard />
         <Layout>
           <Switch>

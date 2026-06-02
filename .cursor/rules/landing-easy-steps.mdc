@@ -1,0 +1,46 @@
+---
+description: Frozen spec for Easy Steps landing section — do not change without explicit user request
+globs: artifacts/aprly/src/components/landing/EasyStepsSection.tsx
+---
+
+# Easy Steps (`#how`) — frozen implementation
+
+Do **not** modify this file unless the user explicitly asks for Easy Steps / `#how` changes.
+
+## Architecture
+
+- **Two independent DOM trees** — never merge into one responsive block:
+  - `EasyStepsDesktopRow`: `hidden` + `bp840:flex`
+  - `EasyStepsMobileStack`: `flex flex-col` + `bp840:hidden`
+
+## Desktop (viewport ≥ 840px)
+
+- Row height: `h-[240px]`, `bp1200:h-[272px]`
+- Layout: 1 expanded (`flex-[4]`) + 2 collapsed (`w-max shrink-0`)
+- **Collapsed**: digit **in document flow** (`StepDigit`, not `absolute`) so `w-max` width = digit + padding
+- **Expanded**: `StepDigitWatermark` with `absolute inset-[20px_30px]` + `flex items-end justify-end`
+- Digit size: CSS var `--easy-step-digit-desktop` on `<section>` (not Tailwind `text-[calc(...)]`)
+- Auto-rotate in viewport (~500ms delay, 2s interval); click sets `autoPlay = false` and stops interval
+- `prefers-reduced-motion`: no interval
+
+## Mobile (viewport ≤ 839px)
+
+- Three cards, always expanded, full width, `gap-10`
+- Card: text in flow first; digit overlay `absolute inset-0` + `items-end justify-end` + padding 30×20
+- Digit size: `--easy-step-digit-mobile` + `min(..., calc((100cqw - 60px) / 0.85))` in `style` only
+- **Do not** use unreliable `100cqh` with `@container` (inline-size)
+- **Do not** apply `--easy-step-digit-desktop` on mobile cards
+
+## Shared
+
+- Padding: `px-[30px] py-[20px]`; gap between cards: `gap-10` (40px)
+- Text: `text-left`
+- Expanded watermark digit: `text-white/20`, bottom-right inside padding inset
+
+## Anti-patterns (known regressions)
+
+- `text-[calc(...)]` in Tailwind className
+- `w-fit` + absolute-only digit on collapsed desktop (width → 0)
+- Fixed `240×240` squares for collapsed cards
+- Shared digit layer without `desktop` | `mobile` variant
+- Fixing mobile by breaking desktop (or vice versa) in one shared code path

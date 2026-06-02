@@ -3,6 +3,8 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 export interface ThemeProviderProps {
   children: ReactNode;
+  /** When set (e.g. landing SPA), overrides stored theme preference. */
+  forcedTheme?: "light" | "dark";
 }
 
 /**
@@ -16,11 +18,12 @@ export interface ThemeProviderProps {
  * - We deliberately do NOT render a toggle yet; switching is possible
  *   programmatically (e.g. for testing) via the `useTheme()` hook.
  */
-export function ThemeProvider({ children }: ThemeProviderProps) {
+export function ThemeProvider({ children, forcedTheme }: ThemeProviderProps) {
   return (
     <NextThemesProvider
       attribute="class"
       defaultTheme="dark"
+      forcedTheme={forcedTheme}
       enableSystem={false}
       storageKey="aprly-theme"
       disableTransitionOnChange

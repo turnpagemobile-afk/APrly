@@ -62,6 +62,18 @@
         }
       }
     </script>
+    <script>
+      (function () {
+        var p = location.pathname;
+        var landing =
+          p === "/" || p === "/login" || p === "/privacy" || p === "/terms";
+        if (landing) {
+          document.documentElement.classList.remove("dark");
+          document.documentElement.classList.add("light");
+          document.documentElement.style.colorScheme = "light";
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
