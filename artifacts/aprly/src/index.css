@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./styles/theme-tokens.css";
+@import "./styles/dashboard-plans.css";
+@import "./styles/dashboard-account.css";
+@import "./styles/dashboard-create-plan.css";
+@import "./styles/dashboard-plan-detail.css";
+@import "./styles/dashboard-modals.css";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
@@ -69,6 +74,7 @@
   --breakpoint-cabinet: 28.75rem;
 
   /* Landing design breakpoints (Figma ranges: 375-599 / 600-839 / 840-1199 / 1200-1599 / >=1600) */
+  --breakpoint-bp375: 23.4375rem; /* 375px */
   --breakpoint-bp600: 37.5rem; /* 600px */
   --breakpoint-bp840: 52.5rem; /* 840px */
   --breakpoint-bp1200: 75rem; /* 1200px */
@@ -139,6 +145,7 @@
   --sidebar-ring: var(--info-theme-500);
 
   --app-font-sans: "Inter", sans-serif;
+  --app-font-display: "Inter Display", "Inter", sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: Menlo, monospace;
   --radius: var(--design-button-corner-radius, 12px);

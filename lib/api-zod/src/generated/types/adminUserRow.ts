@@ -12,11 +12,14 @@ export interface AdminUserRow {
   firstName?: string | null;
   lastName?: string | null;
   /**
-   * Active plan leads (in_progress), v1
+   * Active plans at partner — in_progress with partner_id (on_review + partner working)
    * @minimum 0
    */
   level: number;
-  /** @minimum 0 */
+  /**
+   * Total plan leads for the user (all statuses)
+   * @minimum 0
+   */
   planCount: number;
   createdAt: Date;
 }

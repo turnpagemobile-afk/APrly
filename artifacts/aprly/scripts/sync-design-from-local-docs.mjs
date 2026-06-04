@@ -105,6 +105,38 @@ const MEDIA = [
     ),
     dest: join(APRLY_ROOT, "public", "landing", "functions", "landing-functions-photo.png"),
   },
+  {
+    src: join(DESIGN_ROOT, "404", "image", "search.png"),
+    dest: join(APRLY_ROOT, "public", "landing", "404", "search.png"),
+  },
+  {
+    src: join(DESIGN_ROOT, "USER CABINET", "DASHBOARD", "PLANS", "image", "fire.svg"),
+    dest: join(APRLY_ROOT, "public", "cabinet", "dashboard", "fire.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "USER CABINET", "DASHBOARD", "PLANS", "image", "pig.svg"),
+    dest: join(APRLY_ROOT, "public", "cabinet", "dashboard", "pig.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "images", "arrow.svg"),
+    dest: join(APRLY_ROOT, "public", "cabinet", "dashboard", "arrow.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "images", "litl-arrow.svg"),
+    dest: join(APRLY_ROOT, "public", "cabinet", "dashboard", "litl-arrow.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "images", "plus.svg"),
+    dest: join(APRLY_ROOT, "public", "cabinet", "dashboard", "plus.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "images", "card-label-icon.svg"),
+    dest: join(APRLY_ROOT, "public", "cabinet", "dashboard", "card-label-icon.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "images", "active-label-icon.svg"),
+    dest: join(APRLY_ROOT, "public", "cabinet", "dashboard", "active-label-icon.svg"),
+  },
 ];
 
 function copyDir(src, dest) {

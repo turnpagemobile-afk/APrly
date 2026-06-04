@@ -7,6 +7,11 @@ import {
 import { syncAuthSession } from "@/lib/auth-session";
 import { getGetDashboardTabQueryKey } from "@workspace/api-client-react";
 import { releaseDialogScrollLock } from "@/lib/release-dialog-scroll-lock";
+import { DEFAULT_AUDIT_CHECKOUT_RETURN } from "@/lib/audit-checkout-return";
+
+export type StartCheckoutOptions = {
+  returnPath?: string;
+};
 
 export function useAuditCheckout() {
   const queryClient = useQueryClient();
@@ -35,10 +40,12 @@ export function useAuditCheckout() {
     [queryClient],
   );
 
-  const startCheckout = useCallback(async () => {
+  const startCheckout = useCallback(async (options: StartCheckoutOptions = {}) => {
     setIsCheckoutLoading(true);
     try {
-      const { checkoutUrl } = await createAuditCheckout();
+      const { checkoutUrl } = await createAuditCheckout({
+        returnPath: options.returnPath ?? DEFAULT_AUDIT_CHECKOUT_RETURN,
+      });
       releaseDialogScrollLock();
       window.location.assign(checkoutUrl);
     } finally {

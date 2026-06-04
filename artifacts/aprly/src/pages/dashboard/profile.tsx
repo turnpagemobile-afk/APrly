@@ -3,45 +3,59 @@ import { Loader2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import type { DashboardTab } from "@/components/dashboard/DashboardTabBar";
-import {
-  ProfileTabSwitcher,
-  type ProfileSection,
-} from "@/components/dashboard/profile/ProfileTabSwitcher";
-import { ProfileYourProfileForm } from "@/components/dashboard/profile/ProfileYourProfileForm";
-import { ProfilePasswordForm } from "@/components/dashboard/profile/ProfilePasswordForm";
+import { AccountAccessCard } from "@/components/dashboard/account/AccountAccessCard";
+import { AccountActionsRow } from "@/components/dashboard/account/AccountActionsRow";
+import { AccountLoginEmailCard } from "@/components/dashboard/account/AccountLoginEmailCard";
+import { AccountPasswordCard } from "@/components/dashboard/account/AccountPasswordCard";
+import { AccountPersonalInfoCard } from "@/components/dashboard/account/AccountPersonalInfoCard";
 import { dashboardProfileContent } from "@/content/dashboard-profile";
-import { useDashboardSubscription } from "@/lib/use-dashboard-subscription";
+import { dashboardTabContent } from "@/content/dashboard-tab";
+import { profileAuditCheckoutReturnPath } from "@/lib/audit-checkout-return";
+import { useCabinetActivate } from "@/lib/cabinet-activate-context";
+import { useAuth } from "@/lib/auth-session";
 import { dashboardTabPath } from "@/lib/dashboard-tab-url";
+import { toast } from "@/hooks/use-toast";
+import { useAuditReturnUrl } from "@/lib/use-audit-return-url";
+import { useDashboardSubscription } from "@/lib/use-dashboard-subscription";
 
-function readSectionFromUrl(): ProfileSection {
-  if (typeof window === "undefined") return "profile";
-  const params = new URLSearchParams(window.location.search);
-  return params.get("section") === "password" ? "password" : "profile";
-}
+function ProfileAccountAccessCard({
+  subscriptionActive,
+  accessActivatedAt,
+}: {
+  subscriptionActive: boolean;
+  accessActivatedAt?: string | null;
+}) {
+  const { openActivateModal, isCheckoutLoading } = useCabinetActivate();
 
-function readDashboardTabFromPath(): DashboardTab {
-  return "home";
+  return (
+    <AccountAccessCard
+      subscriptionActive={subscriptionActive}
+      accessActivatedAt={accessActivatedAt}
+      onActivate={() => openActivateModal(profileAuditCheckoutReturnPath())}
+      isCheckoutLoading={isCheckoutLoading}
+    />
+  );
 }
 
 export default function DashboardProfilePage() {
   const [, setLocation] = useLocation();
-  const [section, setSection] = useState<ProfileSection>(readSectionFromUrl);
-  const subscription = useDashboardSubscription();
+  const { user } = useAuth();
+
+  const onCheckoutCancel = useCallback(() => {
+    toast({
+      title: dashboardTabContent.checkout.cancelTitle,
+      description: dashboardTabContent.checkout.cancelDescription,
+    });
+  }, []);
+
+  const { auditSessionId, clearAuditSession } = useAuditReturnUrl(onCheckoutCancel);
+  const subscription = useDashboardSubscription(auditSessionId);
 
   useEffect(() => {
-    const onPopState = () => setSection(readSectionFromUrl());
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, []);
-
-  const setProfileSection = useCallback((next: ProfileSection) => {
-    setSection(next);
-    const path =
-      next === "password"
-        ? "/dashboard/profile?section=password"
-        : "/dashboard/profile";
-    window.history.pushState({}, "", path);
-  }, []);
+    if (auditSessionId && subscription.subscriptionActive) {
+      clearAuditSession();
+    }
+  }, [auditSessionId, subscription.subscriptionActive, clearAuditSession]);
 
   const onDashboardTabChange = useCallback(
     (tab: DashboardTab) => {
@@ -61,26 +75,29 @@ export default function DashboardProfilePage() {
 
   return (
     <DashboardShell
-      activeTab={readDashboardTabFromPath()}
+      activeTab="dashboard"
       onTabChange={onDashboardTabChange}
       subscriptionActive={subscription.subscriptionActive}
-      onActivateSubscription={() => void subscription.startCheckout()}
+      startCheckout={subscription.startCheckout}
       isCheckoutLoading={subscription.isCheckoutLoading}
+      activateReturnPath={profileAuditCheckoutReturnPath()}
     >
-      <div className="app-page-cabinet py-8">
-        <h1 className="mb-6 text-2xl font-black text-foreground">
-          {dashboardProfileContent.pageTitle}
-        </h1>
+      <div className="app-page-cabinet max-w-none py-6 cabinet:max-w-none bp600:py-8">
+        <div className="dash-account-layout space-y-4 bp600:space-y-5">
+          <h1 className="dash-account-page-title">{dashboardProfileContent.pageTitle}</h1>
 
-        <div className="mb-8 flex justify-center cabinet:justify-start">
-          <ProfileTabSwitcher active={section} onChange={setProfileSection} />
-        </div>
+          <ProfileAccountAccessCard
+            subscriptionActive={subscription.subscriptionActive}
+            accessActivatedAt={subscription.accessActivatedAt}
+          />
 
-        <div
-          className="rounded-lg border border-border bg-card p-6 shadow-sm"
-          role="tabpanel"
-        >
-          {section === "profile" ? <ProfileYourProfileForm /> : <ProfilePasswordForm />}
+          <AccountLoginEmailCard email={user?.email ?? ""} />
+
+          <AccountPersonalInfoCard />
+
+          <AccountPasswordCard />
+
+          <AccountActionsRow />
         </div>
       </div>
     </DashboardShell>

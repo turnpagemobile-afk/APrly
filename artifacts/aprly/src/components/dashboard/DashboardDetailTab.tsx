@@ -1,16 +1,14 @@
 import { Link } from "wouter";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import type {
   DashboardPlansSummary as DashboardPlansSummaryData,
   PlanLead,
 } from "@workspace/api-client-react";
 import { dashboardTabContent } from "@/content/dashboard-tab";
 import { SubscriptionStatusCard } from "@/components/dashboard/SubscriptionStatusCard";
-import { SubscriptionUpsellCard } from "@/components/dashboard/SubscriptionUpsellCard";
 import { CreatePlanEmptyCard } from "@/components/dashboard/CreatePlanEmptyCard";
 import { DashboardPlansSummary } from "@/components/dashboard/DashboardPlansSummary";
 import { PlanLeadCard } from "@/components/dashboard/PlanLeadCard";
-import { Button } from "@/components/ui/button";
 import { createPlanHref } from "@/lib/create-plan-navigation";
 
 type DashboardDetailTabProps = {
@@ -19,8 +17,6 @@ type DashboardDetailTabProps = {
   plans: PlanLead[];
   summary: DashboardPlansSummaryData | undefined;
   isSubscriptionError?: boolean;
-  onActivateSubscription: () => void;
-  isCheckoutLoading?: boolean;
   isPollingReturn?: boolean;
 };
 
@@ -30,8 +26,6 @@ export function DashboardDetailTab({
   plans,
   summary,
   isSubscriptionError = false,
-  onActivateSubscription,
-  isCheckoutLoading = false,
   isPollingReturn = false,
 }: DashboardDetailTabProps) {
   if (isPollingReturn) {
@@ -51,76 +45,52 @@ export function DashboardDetailTab({
     );
   }
 
+  const visiblePlans = plans.filter((p) => p.status !== "denied");
+
   return (
-    <div className="app-page-cabinet space-y-6 py-8">
-      <h1 className="text-2xl font-black tracking-tight text-foreground">Dashboard</h1>
+    <div className="app-page-cabinet max-w-none py-6 cabinet:max-w-none bp600:py-8">
+      <div className="dash-plans-layout space-y-8">
+        <h1 className="text-2xl font-extrabold uppercase tracking-wide text-[var(--title-color)]">
+          {dashboardTabContent.pageTitle}
+        </h1>
 
-      {subscriptionActive ? <SubscriptionStatusCard active /> : null}
+        {!hasLeads ? (
+          <>
+            <SubscriptionStatusCard active={subscriptionActive} />
+            <CreatePlanEmptyCard />
+          </>
+        ) : (
+          <>
+            {summary ? (
+              <DashboardPlansSummary
+                subscriptionActive={subscriptionActive}
+                summary={summary}
+              />
+            ) : null}
 
-      {!subscriptionActive && hasLeads ? (
-        <SubscriptionUpsellCard
-          onActivate={onActivateSubscription}
-          isLoading={isCheckoutLoading}
-        />
-      ) : null}
-
-      {!subscriptionActive && !hasLeads ? (
-        <>
-          <SubscriptionStatusCard active={false} />
-          <SubscriptionUpsellCard
-            onActivate={onActivateSubscription}
-            isLoading={isCheckoutLoading}
-          />
-        </>
-      ) : null}
-
-      {!hasLeads ? <CreatePlanEmptyCard /> : null}
-
-      {hasLeads && summary ? (
-        <>
-          <DashboardPlansSummary
-            subscriptionActive={subscriptionActive}
-            summary={summary}
-          />
-
-          <div className="flex items-center justify-between gap-3 pt-2">
-            <h2 className="text-lg font-bold text-foreground">
-              {dashboardTabContent.planLeads.title}
-            </h2>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 shrink-0"
-              aria-label={dashboardTabContent.planLeads.addAriaLabel}
-              asChild
-            >
-              <Link href={createPlanHref("/dashboard?tab=dashboard")}>
-                <Plus className="h-5 w-5" aria-hidden="true" />
-              </Link>
-            </Button>
-          </div>
-
-          <ul className="space-y-4">
-            {plans
-              .filter((p) => p.status !== "denied")
-              .map((plan) => (
-                <li key={plan.id}>
+            <ul className="w-full space-y-4">
+              {visiblePlans.map((plan, index) => (
+                <li key={plan.id} className="w-full">
                   <PlanLeadCard
                     plan={plan}
+                    planIndex={index + 1}
                     returnTo="/dashboard?tab=dashboard"
                   />
                 </li>
               ))}
-          </ul>
+            </ul>
 
-          <Button type="button" className="w-full font-semibold" asChild>
-            <Link href={createPlanHref("/dashboard?tab=dashboard")}>
-              {dashboardTabContent.planLeads.addLead}
-            </Link>
-          </Button>
-        </>
-      ) : null}
+            <div className="flex justify-center">
+              <Link
+                href={createPlanHref("/dashboard?tab=dashboard")}
+                className="dash-plan-create-cta"
+              >
+                {dashboardTabContent.planLeads.addLead}
+              </Link>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

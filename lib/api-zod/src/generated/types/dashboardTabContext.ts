@@ -11,6 +11,8 @@ import type { PlanLead } from "./planLead";
 export interface DashboardTabContext {
   /** True when Stripe subscription is active or trialing */
   subscriptionActive: boolean;
+  /** When the one-time audit fee was paid (paidAuditAt) */
+  accessActivatedAt?: Date | null;
   /** True when the user has at least one plan lead */
   hasLeads: boolean;
   plans: PlanLead[];

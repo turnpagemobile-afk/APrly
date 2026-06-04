@@ -1,0 +1,254 @@
+/**
+ * Dashboard PLAN DETAIL — Figma USER CABINET / PLAN DETAIL.
+ */
+
+@layer components {
+  .dash-plan-detail-layout {
+    @apply mx-auto w-full min-w-0 max-w-[calc(100%-40px)] min-[375px]:max-w-[463px] bp600:max-w-[657px] bp840:max-w-[948px] bp1200:max-w-[988px] bp1600:max-w-[1128px];
+  }
+
+  .dash-plan-detail-stack {
+    @apply flex flex-col gap-6 bp600:gap-8;
+  }
+
+  .dash-plan-detail-header {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .dash-plan-detail-back {
+    @apply inline-flex min-w-0 flex-1 items-center gap-2 text-[var(--neutral-theme-900)] transition-opacity hover:opacity-80;
+  }
+
+  .dash-plan-detail-back-icon {
+    @apply h-6 w-6 shrink-0 text-[var(--action-default-color)];
+  }
+
+  .dash-plan-detail-title {
+    font-family: var(--app-font-display);
+    @apply truncate text-xl font-extrabold uppercase tracking-wide text-[var(--title-color)] bp600:text-2xl;
+  }
+
+  .dash-plan-detail-metrics {
+    @apply grid grid-cols-1 gap-4 min-[375px]:grid-cols-2 bp840:grid-cols-3 bp1200:grid-cols-5;
+  }
+
+  .dash-plan-detail-status-tile {
+    @apply relative box-border flex h-[104px] min-h-[104px] max-h-[104px] flex-col overflow-hidden rounded-2xl p-4 shadow-sm;
+    border: 1px solid var(--card-border-color);
+    background: var(--card-1lvl-bg-color);
+  }
+
+  .dash-plan-detail-status-tile--won {
+    @apply border-0 bg-[var(--secondary-theme-500)] text-white;
+  }
+
+  .dash-plan-detail-status-tile--denied {
+    @apply border-0 bg-[var(--danger-theme-500)] text-white;
+  }
+
+  .dash-plan-detail-status-won-icon {
+    @apply mb-1 h-6 w-6 text-white;
+  }
+
+  .dash-plan-detail-metric-outline--rate-high {
+    @apply relative box-border flex h-[104px] min-h-[104px] max-h-[104px] flex-col overflow-hidden rounded-2xl p-4 shadow-sm;
+    border: 2px solid var(--danger-theme-200);
+    background: var(--card-1lvl-bg-color);
+  }
+
+  .dash-plan-detail-metric-outline--rate-low {
+    @apply relative box-border flex h-[104px] min-h-[104px] max-h-[104px] flex-col overflow-hidden rounded-2xl p-4 shadow-sm;
+    border: 2px solid var(--secondary-theme-200);
+    background: var(--card-1lvl-bg-color);
+  }
+
+  .dash-plan-detail-metric-value--danger {
+    @apply text-[var(--danger-theme-500)];
+  }
+
+  .dash-plan-detail-metric-value--success {
+    @apply text-[var(--secondary-theme-600)];
+  }
+
+  .dash-plan-detail-negotiate-row {
+    @apply flex w-full justify-center py-2;
+  }
+
+  .dash-plan-detail-negotiate-btn {
+    font-family: var(--app-font-display);
+    @apply inline-flex min-h-[52px] min-w-[200px] items-center justify-center px-10 py-3 text-center text-base font-extrabold uppercase tracking-wide text-white transition-opacity hover:opacity-95;
+    border-radius: var(--design-button-corner-radius, 12px);
+    background: var(--action-default-color);
+  }
+
+  .dash-plan-detail-cards-head {
+    @apply flex flex-wrap items-center justify-between gap-3;
+  }
+
+  .dash-plan-detail-cards-title {
+    font-family: var(--app-font-display);
+    @apply text-sm font-extrabold uppercase tracking-wide text-[var(--neutral-theme-900)] bp600:text-base;
+  }
+
+  .dash-plan-detail-cards-list {
+    @apply flex flex-col gap-4;
+  }
+
+  .dash-plan-detail-card {
+    @apply overflow-hidden rounded-2xl border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] shadow-sm;
+  }
+
+  .dash-plan-detail-card-body {
+    @apply space-y-3 p-4 bp600:p-5;
+  }
+
+  .dash-plan-detail-card-top {
+    @apply flex items-start justify-between gap-3;
+  }
+
+  .dash-plan-detail-card-brand-row {
+    @apply flex min-w-0 flex-1 items-start gap-2;
+  }
+
+  .dash-plan-detail-card-icon-wrap {
+    @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--action-default-color)]/10;
+  }
+
+  .dash-plan-detail-card-brand {
+    @apply min-w-0 pt-0.5 text-lg font-extrabold leading-tight text-[var(--neutral-theme-900)] bp600:text-xl;
+  }
+
+  .dash-plan-detail-card-balance-col {
+    @apply shrink-0 text-right;
+  }
+
+  .dash-plan-detail-card-balance {
+    @apply text-lg font-extrabold leading-tight text-[var(--neutral-theme-900)] bp600:text-xl;
+  }
+
+  .dash-plan-detail-card-delete {
+    @apply mt-0.5 inline-flex rounded-md p-1 text-[var(--danger-theme-500)] transition-colors hover:bg-[var(--danger-theme-100)] disabled:opacity-50;
+  }
+
+  .dash-plan-detail-card-savings {
+    @apply flex items-center justify-center bg-[var(--secondary-theme-100)] px-4 py-3 text-center;
+  }
+
+  .dash-plan-detail-card-savings-text {
+    @apply text-sm text-[var(--neutral-theme-900)] bp600:text-base;
+  }
+
+  .dash-plan-detail-card-savings-amount {
+    @apply font-extrabold text-[var(--secondary-theme-700)];
+  }
+
+  .dash-plan-detail-partner {
+    @apply flex items-start gap-3 rounded-2xl border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] p-5 shadow-sm;
+  }
+
+  .dash-plan-detail-partner-icon {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--action-default-color)]/10 text-[var(--action-default-color)];
+  }
+
+  .dash-plan-detail-partner-name {
+    @apply text-lg font-extrabold text-[var(--neutral-theme-900)];
+  }
+
+  .dash-plan-detail-partner-meta {
+    @apply mt-1 text-sm text-[var(--hint-text-color)];
+  }
+
+  .dash-plan-detail-portal {
+    @apply space-y-4;
+  }
+
+  .dash-plan-detail-portal-title {
+    font-family: var(--app-font-display);
+    @apply text-sm font-extrabold uppercase tracking-wide text-[var(--neutral-theme-900)] bp600:text-base;
+  }
+
+  .dash-plan-detail-portal-subtitle {
+    @apply text-sm text-[var(--hint-text-color)];
+  }
+
+  .dash-plan-detail-portal-progress-track {
+    @apply h-2 w-full overflow-hidden rounded-full bg-[var(--neutral-theme-200)];
+  }
+
+  .dash-plan-detail-portal-progress-fill {
+    @apply h-full rounded-full bg-[var(--secondary-theme-500)] transition-[width];
+  }
+
+  .dash-plan-detail-portal-steps {
+    @apply rounded-2xl border-2 border-[var(--secondary-theme-200)] bg-[var(--secondary-theme-050)] p-4 bp600:p-6;
+  }
+
+  .dash-plan-detail-step {
+    @apply relative flex gap-4 pb-6 last:pb-0;
+  }
+
+  .dash-plan-detail-step--active {
+    @apply -mx-2 rounded-xl bg-[var(--info-theme-100)] px-2 py-3 bp600:-mx-3 bp600:px-3;
+  }
+
+  .dash-plan-detail-step-line {
+    @apply absolute left-[15px] top-9 h-[calc(100%-1.25rem)] w-0.5 border-l-2 border-dashed border-[var(--neutral-theme-300)];
+  }
+
+  .dash-plan-detail-step-badge {
+    @apply relative z-10 flex shrink-0 flex-col items-center;
+  }
+
+  .dash-plan-detail-step-check {
+    @apply flex h-8 w-8 items-center justify-center rounded-full bg-[var(--secondary-theme-500)] text-white;
+  }
+
+  .dash-plan-detail-step-number {
+    @apply flex h-8 w-8 items-center justify-center rounded-full border-2 border-[var(--neutral-theme-300)] bg-white text-sm font-bold text-[var(--hint-text-color)];
+  }
+
+  .dash-plan-detail-step-pill {
+    @apply mt-2 shrink-0 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide;
+  }
+
+  .dash-plan-detail-step-pill--done {
+    @apply bg-[var(--secondary-theme-100)] text-[var(--secondary-theme-700)];
+  }
+
+  .dash-plan-detail-step-pill--active {
+    @apply bg-[var(--action-default-color)] text-white;
+  }
+
+  .dash-plan-detail-step-content {
+    @apply min-w-0 flex-1 pt-0.5;
+  }
+
+  .dash-plan-detail-step-row {
+    @apply flex flex-wrap items-start justify-between gap-2;
+  }
+
+  .dash-plan-detail-step-name {
+    @apply font-bold text-[var(--neutral-theme-900)];
+  }
+
+  .dash-plan-detail-step-desc {
+    @apply mt-1 text-sm text-[var(--hint-text-color)];
+  }
+
+  .dash-plan-detail-step-cta {
+    font-family: var(--app-font-display);
+    @apply mt-3 inline-flex min-h-[40px] items-center justify-center rounded-[var(--design-button-corner-radius,12px)] border-2 border-[var(--action-default-color)] bg-white px-4 text-xs font-extrabold uppercase tracking-wide text-[var(--action-default-color)] transition-colors hover:bg-[var(--button-secondary-hover-bg-color)];
+  }
+
+  .dash-plan-detail-review-banner {
+    @apply rounded-2xl border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] px-5 py-4 text-center text-sm text-[var(--neutral-theme-900)] shadow-sm bp600:text-base;
+  }
+
+  .dash-plan-detail-denied-message {
+    @apply text-center text-sm text-[var(--hint-text-color)] bp600:text-base;
+  }
+
+  .dash-plan-detail-back-btn-row {
+    @apply flex justify-center pt-2;
+  }
+}

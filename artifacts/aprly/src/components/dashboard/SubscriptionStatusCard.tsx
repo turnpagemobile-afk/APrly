@@ -7,22 +7,29 @@ type SubscriptionStatusCardProps = {
 
 export function SubscriptionStatusCard({ active }: SubscriptionStatusCardProps) {
   return (
-    <div className={cn("rounded-2xl border border-border/60 bg-card p-5")}>
-      <p className="text-sm font-medium text-muted-foreground">
-        {dashboardTabContent.subscriptionCard.title}
-      </p>
-      <p className="mt-2 flex items-center gap-2 text-base font-bold text-foreground">
+    <div className="dash-summary-tile border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)]">
+      <div className="dash-metric-card-stack">
         <span
           className={cn(
-            "inline-block h-2.5 w-2.5 rounded-full",
-            active ? "bg-emerald-500" : "bg-red-500",
+            "inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 uppercase tracking-wide text-white dash-text-sm-sb",
+            active ? "bg-[var(--secondary-theme-500)]" : "bg-[var(--danger-theme-500)]",
           )}
-          aria-hidden="true"
-        />
-        {active
-          ? dashboardTabContent.subscriptionCard.active
-          : dashboardTabContent.subscriptionCard.disabled}
-      </p>
+        >
+          <span
+            className={cn(
+              "h-2 w-2 rounded-full bg-white/90",
+              !active && "opacity-80",
+            )}
+            aria-hidden
+          />
+          {active
+            ? dashboardTabContent.subscriptionCard.active
+            : dashboardTabContent.subscriptionCard.disabled}
+        </span>
+        <p className="dash-display-label text-[var(--neutral-theme-900)]">
+          {dashboardTabContent.subscriptionCard.title}
+        </p>
+      </div>
     </div>
   );
 }

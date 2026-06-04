@@ -589,6 +589,12 @@ paths:
       summary: Start Stripe Checkout for one-time $39 Verified Audit Packet
       security:
         - cookieAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAuditCheckoutInput"
       responses:
         "200":
           description: Checkout session created
@@ -1964,6 +1970,11 @@ components:
         subscriptionActive:
           type: boolean
           description: True when Stripe subscription is active or trialing
+        accessActivatedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the one-time audit fee was paid (paidAuditAt)
         hasLeads:
           type: boolean
           description: True when the user has at least one plan lead
@@ -2118,6 +2129,14 @@ components:
         stripeSessionId:
           type: string
 
+    CreateAuditCheckoutInput:
+      type: object
+      properties:
+        returnPath:
+          type: string
+          maxLength: 512
+          description: Relative path for success/cancel redirect (must start with /dashboard)
+
     AuditCheckoutSessionStatusResponse:
       type: object
       required: [status, hasPaidAudit]
@@ -2153,8 +2172,12 @@ components:
 
     PatchMePasswordInput:
       type: object
-      required: [password, confirmPassword]
+      required: [currentPassword, password, confirmPassword]
       properties:
+        currentPassword:
+          type: string
+          minLength: 1
+          maxLength: 128
         password:
           type: string
           minLength: 8

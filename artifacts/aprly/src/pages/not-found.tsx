@@ -1,27 +1,52 @@
-import { Link } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import type { ReactNode } from "react";
+import { Link, useLocation } from "wouter";
+import { NotFoundSection } from "@/components/landing/NotFoundSection";
+import { brandContent } from "@/content/landing";
+import { cn } from "@/lib/utils";
 
-export default function NotFound() {
+function isCabinetNotFoundContext(location: string): boolean {
+  if (__APRLY_APP__ === "cabinet") return true;
+  if (
+    __APRLY_APP__ === "mono" &&
+    (location === "/dashboard" || location.startsWith("/dashboard/"))
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function CabinetNotFoundChrome({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-[50dvh] w-full items-center justify-center px-4 py-16">
-      <Card className="w-full max-w-full cabinet:max-w-md">
-        <CardContent className="pt-6">
-          <div className="mb-4 flex gap-2">
-            <AlertCircle className="h-8 w-8 text-destructive" aria-hidden="true" />
-            <h1 className="text-2xl font-bold tracking-tight">404 Page Not Found</h1>
-          </div>
-
-          <p className="mt-4 text-sm text-muted-foreground">
-            The page you are looking for does not exist or has been moved.
-          </p>
-
-          <Button type="button" className="mt-6 w-full cabinet:w-auto" asChild>
-            <Link href="/">Back to home</Link>
-          </Button>
-        </CardContent>
-      </Card>
+    <div className="flex min-h-[100dvh] w-full flex-col bg-background text-foreground">
+      <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="app-page-cabinet flex h-14 items-center justify-between gap-3">
+          <Link
+            href="/dashboard"
+            className="text-2xl font-black tracking-tight text-foreground"
+            aria-label={brandContent.name}
+          >
+            {brandContent.name}
+          </Link>
+        </div>
+      </header>
+      <main className="flex min-h-0 flex-1 flex-col">{children}</main>
     </div>
   );
+}
+
+export default function NotFound() {
+  const [location] = useLocation();
+  const cabinetContext = isCabinetNotFoundContext(location);
+
+  const section = (
+    <NotFoundSection
+      className={cn(!cabinetContext && "min-h-[50dvh] bg-[#F8FCFE]")}
+    />
+  );
+
+  if (cabinetContext) {
+    return <CabinetNotFoundChrome>{section}</CabinetNotFoundChrome>;
+  }
+
+  return section;
 }

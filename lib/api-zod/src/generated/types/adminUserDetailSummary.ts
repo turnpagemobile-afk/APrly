@@ -9,12 +9,24 @@
 export interface AdminUserDetailSummary {
   /** @minimum 0 */
   registeredMonthsAgo: number;
-  /** @minimum 0 */
+  /**
+   * Active plans at partner, same as AdminUserRow.level
+   * @minimum 0
+   */
   currentPlansCount: number;
-  /** @minimum 0 */
+  /**
+   * Total plan leads, same as AdminUserRow.planCount
+   * @minimum 0
+   */
   createdPlansCount: number;
-  /** @minimum 0 */
+  /**
+   * Plans sent to a partner (partner_id set)
+   * @minimum 0
+   */
   sentToPartnerPlansCount: number;
-  /** @minimum 0 */
+  /**
+   * Plans not yet sent to a partner (partner_id null)
+   * @minimum 0
+   */
   notSentPlansCount: number;
 }

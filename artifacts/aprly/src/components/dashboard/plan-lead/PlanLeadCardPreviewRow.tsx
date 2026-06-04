@@ -1,5 +1,8 @@
 import type { LeadCardItem } from "@workspace/api-client-react";
-import { formatCurrency } from "@/lib/format-currency";
+import { PlanLeadAprPills } from "@/components/dashboard/plan-lead/PlanLeadAprPills";
+import { formatDashboardCurrency } from "@/lib/format-currency";
+import { dashboardTabContent } from "@/content/dashboard-tab";
+import { cabinetAsset } from "@/lib/cabinet-assets";
 import { cn } from "@/lib/utils";
 
 type PlanLeadCardPreviewRowProps = {
@@ -7,34 +10,45 @@ type PlanLeadCardPreviewRowProps = {
   className?: string;
 };
 
-/** Compact card row for plan lead list (read-only). */
 export function PlanLeadCardPreviewRow({ card, className }: PlanLeadCardPreviewRowProps) {
+  const copy = dashboardTabContent.planCard;
   return (
-    <div
-      className={cn(
-        "rounded-md border border-border/50 bg-background/40 px-3 py-2.5",
-        className,
-      )}
-    >
-      <p className="truncate text-sm font-bold text-foreground">{card.brand}</p>
-      <p className="text-xs text-muted-foreground">{formatCurrency(card.balance, 2)}</p>
-      <div className="mt-2 flex flex-wrap items-center gap-1.5">
-        <span className="rounded-md border border-destructive/40 bg-destructive/10 px-1.5 py-0.5 text-xs font-semibold text-destructive">
-          {card.currentApr.toFixed(2)}%
-        </span>
-        <span className="text-xs text-muted-foreground" aria-hidden="true">
-          →
-        </span>
-        <span className="rounded-md border border-emerald-500/40 bg-emerald-500/10 px-1.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-          {card.targetApr.toFixed(1)}%
-        </span>
+    <div className={cn("dash-plan-card-widget", className)}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex min-w-0 flex-1 items-start gap-2">
+          <span className="dash-plan-card-icon-wrap" aria-hidden>
+            <img
+              src={cabinetAsset("cabinet/dashboard/card-label-icon.svg")}
+              alt=""
+              aria-hidden
+              className="h-5 w-5"
+            />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="dash-text-lg-b truncate">{card.brand}</p>
+            <div className="mt-2">
+              <PlanLeadAprPills
+                currentApr={card.currentApr}
+                targetApr={card.targetApr}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="shrink-0 text-right">
+          <p className="dash-text-lg-xb">
+            {formatDashboardCurrency(card.balance, 2, { spaceAfterDollar: false })}
+          </p>
+          <p className="mt-2 dash-text-md-sb">
+            {copy.estimatedSavings}{" "}
+            <span className="dash-text-md-xb text-[var(--secondary-theme-500)]">
+              {formatDashboardCurrency(card.estimatedAnnualSavings, 0, {
+                spaceAfterDollar: false,
+              })}
+              {copy.perYearShort}
+            </span>
+          </p>
+        </div>
       </div>
-      <p className="mt-1.5 text-xs text-muted-foreground">
-        Est. savings{" "}
-        <span className="font-semibold text-foreground">
-          {formatCurrency(card.estimatedAnnualSavings, 0)}/yr
-        </span>
-      </p>
     </div>
   );
 }
