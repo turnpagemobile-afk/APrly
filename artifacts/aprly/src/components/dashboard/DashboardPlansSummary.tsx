@@ -1,7 +1,9 @@
 import type { DashboardPlansSummary as DashboardPlansSummaryData } from "@workspace/api-client-react";
 import { dashboardTabContent } from "@/content/dashboard-tab";
+import { cabinetAsset } from "@/lib/cabinet-assets";
 import { formatMeltCountdown } from "@/lib/melt-countdown";
-import { formatCurrency } from "@/lib/format-currency";
+import { formatDashboardCurrency } from "@/lib/format-currency";
+import { MeltCountdownSummaryCard } from "@/components/dashboard/MeltCountdownSummaryCard";
 import { SubscriptionStatusCard } from "@/components/dashboard/SubscriptionStatusCard";
 import { cn } from "@/lib/utils";
 
@@ -10,24 +12,55 @@ type DashboardPlansSummaryProps = {
   summary: DashboardPlansSummaryData;
 };
 
-function StatTile({
+function SummaryMetricCard({
   label,
   value,
-  className,
+  variant,
+  valueClassName,
+  iconSrc,
 }: {
   label: string;
   value: string;
-  className?: string;
+  variant: "default" | "debt" | "savings";
+  valueClassName?: string;
+  iconSrc?: string;
 }) {
   return (
     <div
       className={cn(
-        "rounded-lg border border-border/60 bg-card p-4 shadow-sm",
-        className,
+        "dash-summary-tile",
+        variant === "debt" && "bg-[var(--danger-theme-500)] text-white",
+        variant === "savings" && "bg-[var(--secondary-theme-500)] text-white",
+        variant === "default" &&
+          "border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)]",
       )}
     >
-      <p className="text-sm font-medium text-muted-foreground">{label}</p>
-      <p className="mt-2 text-xl font-extrabold tracking-tight text-foreground">{value}</p>
+      {iconSrc ? (
+        <img src={iconSrc} alt="" aria-hidden className="dash-metric-card-bg-icon" />
+      ) : null}
+      <div className="dash-metric-card-stack">
+        <p
+          className={cn(
+            "dash-display-value",
+            variant === "debt" && "text-white",
+            variant === "savings" && "text-white",
+            variant === "default" && "text-[var(--neutral-theme-900)]",
+            valueClassName,
+          )}
+        >
+          {value}
+        </p>
+        <p
+          className={cn(
+            "dash-display-label",
+            variant === "default"
+              ? "text-[var(--hint-text-color)]"
+              : "text-white/90",
+          )}
+        >
+          {label}
+        </p>
+      </div>
     </div>
   );
 }
@@ -40,19 +73,24 @@ export function DashboardPlansSummary({
   const copy = dashboardTabContent.summary;
 
   return (
-    <div className="grid grid-cols-1 gap-4 cabinet:grid-cols-2 lg:grid-cols-4">
+    <div className="dash-plans-summary-grid">
       <SubscriptionStatusCard active={subscriptionActive} />
-      <StatTile
+      <SummaryMetricCard
         label={copy.totalDebt}
-        value={formatCurrency(summary.totalDebt)}
-        className="bg-rose-500/10"
+        value={formatDashboardCurrency(summary.totalDebt)}
+        variant="debt"
+        iconSrc={cabinetAsset("cabinet/dashboard/fire.svg")}
       />
-      <StatTile
+      <SummaryMetricCard
         label={copy.estimatedSavings}
-        value={formatCurrency(summary.estimatedAnnualSavings)}
-        className="bg-emerald-500/10"
+        value={formatDashboardCurrency(summary.estimatedAnnualSavings)}
+        variant="savings"
+        iconSrc={cabinetAsset("cabinet/dashboard/pig.svg")}
       />
-      <StatTile label={copy.meltCountdown} value={melt.label} />
+      <MeltCountdownSummaryCard
+        display={melt.display}
+        label={copy.meltCountdown}
+      />
     </div>
   );
 }

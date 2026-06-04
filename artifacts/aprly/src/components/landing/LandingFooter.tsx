@@ -11,9 +11,11 @@ const SOCIAL_ICONS = {
 
 type LandingFooterProps = {
   copyright: string;
+  /** Logo link target (cabinet uses dashboard home). */
+  homeHref?: string;
 };
 
-export function LandingFooter({ copyright }: LandingFooterProps) {
+export function LandingFooter({ copyright, homeHref = "/" }: LandingFooterProps) {
   const [termsLink, privacyLink] = footerContent.links;
 
   return (
@@ -26,7 +28,7 @@ export function LandingFooter({ copyright }: LandingFooterProps) {
           )}
         >
           <Link
-            href="/"
+            href={homeHref}
             className="text-2xl font-black tracking-tight text-white/95 transition-opacity hover:opacity-90 bp600:text-3xl"
             aria-label="APRly home"
           >

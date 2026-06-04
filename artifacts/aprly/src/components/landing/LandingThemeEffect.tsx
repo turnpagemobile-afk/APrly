@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import {
   applyDarkDocumentTheme,
   applyLandingLightDocumentTheme,
+  isCabinetHomeTabPath,
   isLandingMarketingPath,
 } from "@/lib/landing-document-theme";
 
@@ -22,7 +23,25 @@ export function LandingThemeEffect() {
     }
 
     if (__APRLY_APP__ === "mono") {
-      if (isLandingMarketingPath(location)) {
+      const [monoPath, monoSearch = ""] = location.split("?");
+      const monoSearchPart = monoSearch ? `?${monoSearch}` : "";
+      if (
+        isLandingMarketingPath(monoPath) ||
+        isCabinetHomeTabPath(monoPath, monoSearchPart)
+      ) {
+        setTheme("light");
+        applyLandingLightDocumentTheme();
+      } else {
+        setTheme("dark");
+        applyDarkDocumentTheme();
+      }
+      return;
+    }
+
+    if (__APRLY_APP__ === "cabinet") {
+      const [pathname, search = ""] = location.split("?");
+      const searchPart = search ? `?${search}` : "";
+      if (isCabinetHomeTabPath(pathname, searchPart)) {
         setTheme("light");
         applyLandingLightDocumentTheme();
       } else {

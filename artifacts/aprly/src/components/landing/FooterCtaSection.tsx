@@ -6,9 +6,15 @@ import { cn } from "@/lib/utils";
 
 type FooterCtaSectionProps = {
   onAuditClick?: () => void;
+  ctaLabel?: string;
+  title?: string;
 };
 
-export function FooterCtaSection({ onAuditClick }: FooterCtaSectionProps) {
+export function FooterCtaSection({
+  onAuditClick,
+  ctaLabel,
+  title,
+}: FooterCtaSectionProps) {
   return (
     <section
       id="plan"
@@ -51,7 +57,7 @@ export function FooterCtaSection({ onAuditClick }: FooterCtaSectionProps) {
             "bp1600:max-w-4xl",
           )}
         >
-          {planContent.title}
+          {title ?? planContent.title}
         </p>
         <Button
           type="button"
@@ -63,7 +69,7 @@ export function FooterCtaSection({ onAuditClick }: FooterCtaSectionProps) {
           )}
           onClick={() => onAuditClick?.()}
         >
-          {planContent.cta.label}
+          {ctaLabel ?? planContent.cta.label}
         </Button>
       </div>
     </section>

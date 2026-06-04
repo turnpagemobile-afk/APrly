@@ -115,7 +115,7 @@ export default function DashboardPage() {
       activeTab={activeTab}
       onTabChange={setTab}
       subscriptionActive={subscription.subscriptionActive}
-      onActivateSubscription={() => void subscription.startCheckout()}
+      startCheckout={subscription.startCheckout}
       isCheckoutLoading={subscription.isCheckoutLoading}
     >
       <DashboardTabErrorBoundary>
@@ -126,15 +126,10 @@ export default function DashboardPage() {
             plans={subscription.plans}
             summary={subscription.summary}
             isSubscriptionError={subscription.isSubscriptionError}
-            onActivateSubscription={() => void subscription.startCheckout()}
-            isCheckoutLoading={subscription.isCheckoutLoading}
             isPollingReturn={subscription.isPollingReturn}
           />
         ) : (
-          <DashboardHomeTab
-            subscriptionActive={subscription.subscriptionActive}
-            onGoToDashboard={() => setTab("dashboard")}
-          />
+          <DashboardHomeTab onGoToDashboard={() => setTab("dashboard")} />
         )}
       </DashboardTabErrorBoundary>
     </DashboardShell>

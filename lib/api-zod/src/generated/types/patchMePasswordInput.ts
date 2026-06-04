@@ -8,6 +8,11 @@
 
 export interface PatchMePasswordInput {
   /**
+   * @minLength 1
+   * @maxLength 128
+   */
+  currentPassword: string;
+  /**
    * @minLength 8
    * @maxLength 20
    */

@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
 import type Stripe from "stripe";
 import {
+  CreateAuditCheckoutBody,
   CreateAuditCheckoutResponse,
   GetAuditCheckoutSessionStatusQueryParams,
   GetAuditCheckoutSessionStatusResponse,
@@ -9,6 +10,10 @@ import {
 import { db, usersTable } from "@workspace/db";
 import { getStripe } from "../lib/stripe-client";
 import { finalizeAuditCheckoutIfNeeded } from "../lib/stripe-audit-finalize";
+import {
+  appendCheckoutQueryParam,
+  normalizeAuditCheckoutReturnPath,
+} from "../lib/audit-checkout-return-path";
 import {
   frontendOrigin,
   stripeAuditPriceId,
@@ -38,9 +43,17 @@ router.post("/me/audit-checkout", requireAuth, async (req, res, next) => {
       return;
     }
 
+    const bodyParsed = CreateAuditCheckoutBody.safeParse(req.body ?? {});
+    const returnPath = normalizeAuditCheckoutReturnPath(
+      bodyParsed.success ? bodyParsed.data.returnPath : undefined,
+    );
+
     const priceId = stripeAuditPriceId()!;
     const stripe = getStripe();
     const origin = frontendOrigin();
+
+    const successPath = appendCheckoutQueryParam(returnPath, "audit_session", "{CHECKOUT_SESSION_ID}");
+    const cancelPath = appendCheckoutQueryParam(returnPath, "audit_cancel", "1");
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -48,11 +61,12 @@ router.post("/me/audit-checkout", requireAuth, async (req, res, next) => {
       ...(user.stripeCustomerId
         ? { customer: user.stripeCustomerId }
         : { customer_email: user.email }),
-      success_url: `${origin}/dashboard?tab=dashboard&audit_session={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/dashboard?tab=dashboard&audit_cancel=1`,
+      success_url: `${origin}${successPath}`,
+      cancel_url: `${origin}${cancelPath}`,
       metadata: {
         userId: String(user.id),
         purpose: "audit_packet",
+        returnPath,
       },
     });
 

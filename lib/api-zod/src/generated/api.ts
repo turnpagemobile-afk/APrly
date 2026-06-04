@@ -264,6 +264,10 @@ export const GetDashboardTabResponse = zod.object({
   subscriptionActive: zod
     .boolean()
     .describe("True when Stripe subscription is active or trialing"),
+  accessActivatedAt: zod.coerce
+    .date()
+    .nullish()
+    .describe("When the one-time audit fee was paid (paidAuditAt)"),
   hasLeads: zod
     .boolean()
     .describe("True when the user has at least one plan lead"),
@@ -487,6 +491,8 @@ export const PatchMeResponse = zod.object({
 /**
  * @summary Change password for the authenticated user
  */
+export const patchMePasswordBodyCurrentPasswordMax = 128;
+
 export const patchMePasswordBodyPasswordMin = 8;
 export const patchMePasswordBodyPasswordMax = 20;
 
@@ -494,6 +500,10 @@ export const patchMePasswordBodyConfirmPasswordMin = 8;
 export const patchMePasswordBodyConfirmPasswordMax = 20;
 
 export const PatchMePasswordBody = zod.object({
+  currentPassword: zod
+    .string()
+    .min(1)
+    .max(patchMePasswordBodyCurrentPasswordMax),
   password: zod
     .string()
     .min(patchMePasswordBodyPasswordMin)
@@ -915,6 +925,18 @@ export const UpdatePlanLeadCardsResponse = zod
 /**
  * @summary Start Stripe Checkout for one-time $39 Verified Audit Packet
  */
+export const createAuditCheckoutBodyReturnPathMax = 512;
+
+export const CreateAuditCheckoutBody = zod.object({
+  returnPath: zod
+    .string()
+    .max(createAuditCheckoutBodyReturnPathMax)
+    .optional()
+    .describe(
+      "Relative path for success\/cancel redirect (must start with \/dashboard)",
+    ),
+});
+
 export const CreateAuditCheckoutResponse = zod.object({
   checkoutUrl: zod.string().url(),
   stripeSessionId: zod.string(),
@@ -1110,8 +1132,13 @@ export const GetAdminUsersResponse = zod.object({
       level: zod
         .number()
         .min(getAdminUsersResponseUsersItemLevelMin)
-        .describe("Active plans at partner — in_progress with partner_id (on_review + partner working)"),
-      planCount: zod.number().min(getAdminUsersResponseUsersItemPlanCountMin),
+        .describe(
+          "Active plans at partner — in_progress with partner_id (on_review + partner working)",
+        ),
+      planCount: zod
+        .number()
+        .min(getAdminUsersResponseUsersItemPlanCountMin)
+        .describe("Total plan leads for the user (all statuses)"),
       createdAt: zod.coerce.date(),
     }),
   ),
@@ -1157,8 +1184,13 @@ export const GetAdminUserResponse = zod.object({
     level: zod
       .number()
       .min(getAdminUserResponseUserLevelMin)
-      .describe("Active plans at partner — in_progress with partner_id (on_review + partner working)"),
-    planCount: zod.number().min(getAdminUserResponseUserPlanCountMin),
+      .describe(
+        "Active plans at partner — in_progress with partner_id (on_review + partner working)",
+      ),
+    planCount: zod
+      .number()
+      .min(getAdminUserResponseUserPlanCountMin)
+      .describe("Total plan leads for the user (all statuses)"),
     createdAt: zod.coerce.date(),
   }),
   summary: zod.object({
@@ -1167,16 +1199,20 @@ export const GetAdminUserResponse = zod.object({
       .min(getAdminUserResponseSummaryRegisteredMonthsAgoMin),
     currentPlansCount: zod
       .number()
-      .min(getAdminUserResponseSummaryCurrentPlansCountMin),
+      .min(getAdminUserResponseSummaryCurrentPlansCountMin)
+      .describe("Active plans at partner, same as AdminUserRow.level"),
     createdPlansCount: zod
       .number()
-      .min(getAdminUserResponseSummaryCreatedPlansCountMin),
+      .min(getAdminUserResponseSummaryCreatedPlansCountMin)
+      .describe("Total plan leads, same as AdminUserRow.planCount"),
     sentToPartnerPlansCount: zod
       .number()
-      .min(getAdminUserResponseSummarySentToPartnerPlansCountMin),
+      .min(getAdminUserResponseSummarySentToPartnerPlansCountMin)
+      .describe("Plans sent to a partner (partner_id set)"),
     notSentPlansCount: zod
       .number()
-      .min(getAdminUserResponseSummaryNotSentPlansCountMin),
+      .min(getAdminUserResponseSummaryNotSentPlansCountMin)
+      .describe("Plans not yet sent to a partner (partner_id null)"),
   }),
   subscription: zod.object({
     active: zod.boolean(),
@@ -1185,7 +1221,8 @@ export const GetAdminUserResponse = zod.object({
 });
 
 /**
- * @summary Plan leads for a user
+ * Paginated list of plan leads with partner_id set (excludes not-sent drafts).
+ * @summary Plan leads sent to a partner for a user
  */
 
 export const GetAdminUserPlansParams = zod.object({

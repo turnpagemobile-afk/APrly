@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { readCreatePlanReturnTo } from "@/lib/create-plan-navigation";
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,18 +8,27 @@ import {
   useCreateDetailedPlan,
 } from "@workspace/api-client-react";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
-import { CardEntryList } from "@/components/cards/CardEntryList";
+import type { DashboardTab } from "@/components/dashboard/DashboardTabBar";
+import { CreateSavingPlanCardList } from "@/components/dashboard/create-plan/CreateSavingPlanCardList";
 import { mapCardEntriesToImportItems } from "@/components/cards/mapCardEntries";
 import { usePlaidCardImport } from "@/components/cards/usePlaidCardImport";
 import type { CardEntry } from "@/components/landing/types";
-import { accountsAreComplete } from "@/components/landing/optimizerAccounts";
 import { createPlanContent } from "@/content/create-plan";
-import { dashboardSummaryContent } from "@/content/dashboard-home";
+import { dashboardPromoContent } from "@/content/dashboard-home";
 import { useDashboardSubscription } from "@/lib/use-dashboard-subscription";
 import { requireOnlineForCabinetAction } from "@/lib/pwa/use-cabinet-pwa";
-import { dashboardPromoContent } from "@/content/dashboard-home";
+import { createPlanCardsAreComplete } from "@/lib/create-plan-cards";
+import { dashboardTabPath, parseDashboardTab } from "@/lib/dashboard-tab-url";
 import { toast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
+
+function activeTabFromReturnTo(returnTo: string): DashboardTab {
+  try {
+    const query = returnTo.includes("?") ? returnTo.slice(returnTo.indexOf("?")) : "";
+    return parseDashboardTab(query || "?tab=dashboard");
+  } catch {
+    return "dashboard";
+  }
+}
 
 export default function CreateDetailedPlanPage() {
   const [, navigate] = useLocation();
@@ -30,7 +39,7 @@ export default function CreateDetailedPlanPage() {
   const [accounts, setAccounts] = useState<CardEntry[]>([]);
   const { startPlaid, plaidBusy } = usePlaidCardImport(setAccounts);
 
-  const cardsReady = useMemo(() => accountsAreComplete(accounts), [accounts]);
+  const cardsReady = useMemo(() => createPlanCardsAreComplete(accounts), [accounts]);
 
   const returnTo = useMemo(
     () =>
@@ -40,11 +49,32 @@ export default function CreateDetailedPlanPage() {
     [],
   );
 
+  const activeTab = useMemo(() => activeTabFromReturnTo(returnTo), [returnTo]);
+
+  const onTabChange = useCallback(
+    (tab: DashboardTab) => {
+      navigate(dashboardTabPath(tab));
+    },
+    [navigate],
+  );
+
   const addManualCard = () => {
     setAccounts((prev) => [...prev, { brand: "", balance: "", rate: "" }]);
   };
 
-  const onContinue = async () => {
+  const onPlaid = () => {
+    if (!requireOnlineForCabinetAction()) {
+      toast({
+        title: dashboardPromoContent.offlineBanner,
+        variant: "destructive",
+      });
+      return;
+    }
+    void startPlaid();
+  };
+
+  const onSavePlan = async () => {
+    if (!cardsReady) return;
     if (!requireOnlineForCabinetAction()) {
       toast({
         title: dashboardPromoContent.offlineBanner,
@@ -83,77 +113,56 @@ export default function CreateDetailedPlanPage() {
 
   return (
     <DashboardShell
-      activeTab="home"
-      onTabChange={() => {}}
-      showTabs={false}
+      activeTab={activeTab}
+      onTabChange={onTabChange}
       subscriptionActive={subscription.subscriptionActive}
-      onActivateSubscription={() => void subscription.startCheckout()}
+      startCheckout={subscription.startCheckout}
       isCheckoutLoading={subscription.isCheckoutLoading}
     >
-      <div className="app-page-cabinet py-8">
-        <h1 className="mb-8 text-2xl font-black tracking-tight text-foreground">
-          {createPlanContent.title}
-        </h1>
+      <div className="app-page-cabinet max-w-none py-6 cabinet:max-w-none bp600:py-8">
+        <div className="dash-create-plan-layout dash-create-plan-stack">
+          <h1 className="dash-create-plan-page-title">{createPlanContent.title}</h1>
 
-        <div className="mx-auto flex max-w-lg flex-col items-center gap-6">
-          {accounts.length > 0 ? (
-            <div className="w-full">
-              <CardEntryList accounts={accounts} setAccounts={setAccounts} />
-            </div>
-          ) : null}
+          <CreateSavingPlanCardList accounts={accounts} setAccounts={setAccounts} />
 
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full max-w-md font-semibold"
-            disabled={plaidBusy}
-            onClick={() => {
-              if (!requireOnlineForCabinetAction()) {
-                toast({
-                  title: dashboardPromoContent.offlineBanner,
-                  variant: "destructive",
-                });
-                return;
-              }
-              void startPlaid();
-            }}
-          >
-            {plaidBusy ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-            ) : null}
-            {createPlanContent.plaidCta}
-          </Button>
+          <div className="dash-create-plan-add-section">
+            <button
+              type="button"
+              className="dash-create-plan-plaid-btn"
+              disabled={plaidBusy}
+              onClick={onPlaid}
+            >
+              {plaidBusy ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : null}
+              {createPlanContent.plaidCta}
+            </button>
 
-          <p className="text-sm text-muted-foreground">{createPlanContent.manualHint}</p>
+            <p className="dash-create-plan-manual-row">
+              <span>{createPlanContent.manualHint}</span>
+              <button
+                type="button"
+                className="dash-create-plan-manual-link"
+                onClick={addManualCard}
+              >
+                {createPlanContent.manualAdd}
+              </button>
+            </p>
+          </div>
 
-          <button
-            type="button"
-            className="text-sm font-bold text-primary hover:underline"
-            onClick={addManualCard}
-          >
-            {createPlanContent.manualAdd}
-          </button>
-
-          <Button
-            type="button"
-            className="mt-4 w-full max-w-md font-semibold"
-            disabled={!cardsReady || createPlan.isPending}
-            onClick={() => void onContinue()}
-          >
-            {createPlan.isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-            ) : null}
-            {createPlanContent.continue}
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full max-w-md font-semibold"
-            onClick={() => navigate(returnTo)}
-          >
-            {createPlanContent.skip}
-          </Button>
+          <div className="dash-create-plan-save-row">
+            <button
+              type="button"
+              className="dash-create-plan-save-btn"
+              disabled={!cardsReady || createPlan.isPending}
+              onClick={() => void onSavePlan()}
+            >
+              {createPlan.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : null}
+              {createPlanContent.savePlan}
+            </button>
+          </div>
         </div>
       </div>
     </DashboardShell>

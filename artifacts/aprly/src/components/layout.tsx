@@ -10,7 +10,10 @@ import { Button } from "@/components/ui/button";
 import { AuthBrandLogo } from "@/components/auth/AuthBrandLogo";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { footerContent, navContent } from "@/content/landing";
-import { isLandingMarketingPath } from "@/lib/landing-document-theme";
+import {
+  isCabinetShellPath,
+  isLandingMarketingPath,
+} from "@/lib/landing-document-theme";
 import { cn } from "@/lib/utils";
 
 export const VoiceStore = {
@@ -292,7 +295,7 @@ function HeaderActions({
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const { logout } = useAuth();
-  const isDashboard = location === "/dashboard" || location.startsWith("/dashboard/");
+  const isDashboard = isCabinetShellPath(location);
   const isLandingApp =
     __APRLY_APP__ === "landing" ||
     (__APRLY_APP__ === "mono" && isLandingMarketingPath(location));
@@ -400,21 +403,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {isLandingApp ? (
         <LandingFooter copyright={copyright} />
-      ) : (
-        <footer
-          className={`border-t border-border/60 bg-card text-card-foreground py-8 ${isDashboard ? "mt-0" : "mt-16"}`}
-        >
+      ) : isDashboard ? null : (
+        <footer className="mt-16 border-t border-border/60 bg-card py-8 text-card-foreground">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col cabinet:flex-row justify-between items-center gap-4 text-muted-foreground text-sm">
+            <div className="flex flex-col items-center justify-between gap-4 text-sm text-muted-foreground cabinet:flex-row">
               <nav
-                className="flex items-center gap-6 text-primary font-semibold"
+                className="flex items-center gap-6 font-semibold text-primary"
                 aria-label="Footer"
               >
                 {footerContent.links.map((link) => (
                   <Link
                     key={link.id}
                     href={link.href}
-                    className="hover:opacity-80 transition-opacity"
+                    className="transition-opacity hover:opacity-80"
                   >
                     {link.label}
                   </Link>

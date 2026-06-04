@@ -125,6 +125,7 @@ router.get("/dashboard/tab", requireAuth, async (req, res, next) => {
     res.json(
       GetDashboardTabResponse.parse({
         subscriptionActive,
+        accessActivatedAt: user.paidAuditAt?.toISOString() ?? null,
         hasLeads: mappedPlans.length > 0,
         plans: mappedPlans,
         summary: {

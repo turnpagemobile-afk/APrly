@@ -1,0 +1,37 @@
+---
+description: Tailwind v4 — never @apply custom dash-* component classes in CSS
+globs: artifacts/aprly/**/*.css
+alwaysApply: true
+---
+
+# Tailwind v4 `@apply` — custom component classes
+
+Tailwind v4 (`@tailwindcss/vite`) **rejects `@apply` of project component classes** (e.g. `.dash-text-sm-sb`, `.dash-text-md-xb`), even when defined in the same `@layer components` file. Dev/build fails with:
+
+`Cannot apply unknown utility class 'dash-…'`
+
+## Rules
+
+1. **Never** put custom project classes inside `@apply`:
+   - Bad: `@apply flex dash-text-sm-sb;`
+   - Good: `@apply flex text-sm font-semibold;`
+
+2. **`@apply` may only use built-in Tailwind utilities** (`flex`, `text-sm`, `font-semibold`, `rounded-md`, …).
+
+3. **To compose custom styles:**
+   - Expand utilities inline in `@apply`, or
+   - Apply the component class in TSX/HTML (`className="dash-text-sm-sb"`), or
+   - Use plain CSS properties instead of `@apply` for that part.
+
+4. **After editing any `*.css` with `@apply`**, run:
+   ```bash
+   pnpm --filter @workspace/aprly run check:tailwind-apply
+   ```
+
+## Examples from this repo
+
+| Custom class | Expand to in `@apply` |
+|---|---|
+| `dash-text-sm-sb` | `text-sm font-semibold` |
+| `dash-text-md-xb` | `text-lg font-extrabold leading-snug` |
+| `dash-text-lg-xb` | `text-xl font-extrabold leading-tight` |

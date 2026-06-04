@@ -21,12 +21,20 @@ export const planLeadDetailContent = {
     deniedDescription: "This plan lead was closed. Return to your dashboard to review other accounts.",
   },
   metrics: {
-    debt: "Debt",
-    currentRate: "Current rate",
-    estimatedSavings: "Est. Savings",
-    targetRate: "Rate",
+    planStatus: "PLAN STATUS",
+    totalPlanDebt: "TOTAL PLAN DEBT",
+    initialAverageRate: "INITIAL AVERAGE RATE",
+    estimatedSavings: "EST. SAVING",
+    estAverageRate: "EST. AVERAGE RATE",
   },
-  partnerSent: (date: string) => `The proposal was sent on ${date}.`,
+  yourCards: "YOUR CARDS:",
+  addCard: "ADD CARD",
+  hardshipPortalTitle: "HARDSHIP PORTAL:",
+  stepComplete: "Complete",
+  stepInProgress: "In Progress",
+  reviewBanner: (date: string) =>
+    `This plan will be automatically reviewed on ${date}.`,
+  partnerSent: (date: string) => `The proposal was sent on the evening of ${date}.`,
   hardshipCtaSoon: "Coming soon",
   hardshipCtaSoonDescription: "This action will be available in a future release.",
   loadError: "Could not load this plan.",
@@ -41,4 +49,11 @@ export const planLeadDetailContent = {
   addCardsErrorDescription: "Please check your card details and try again.",
   sendRequiresPayment:
     "Pay US $39 once to unlock sending this plan to a partner. You can still edit cards before paying.",
+  partnerModal: {
+    title: "SEND YOUR PLAN INFO TO THE PARTNER",
+    subtitle: "Select a partner you like:",
+    sendInfo: "SEND INFO",
+    empty: "No partners are available yet.",
+  },
+  sendToPartnerCta: "SEND TO PARTNER",
 } as const;

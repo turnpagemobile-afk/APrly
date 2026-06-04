@@ -1,35 +1,51 @@
 export const dashboardProfileContent = {
-  pageTitle: "Profile",
-  tabs: {
-    profile: "Your Profile",
-    password: "Password",
+  pageTitle: "ACCOUNT",
+  accessCard: {
+    getFullAccess: "GET FULL ACCESS",
+    activate: "ACTIVATE APRLY",
+    activeTitle: "YOUR ACCOUNT IS ACTIVE",
+    activeDescriptionFrom: "Your full access is activated from {date}.",
+    activeDescriptionFallback: "Your full access is active.",
   },
-  profileCard: {
-    title: "Your Profile",
+  loginEmail: {
+    title: "LOGIN EMAIL",
+    emailLabel: "Email",
+  },
+  personalInfo: {
+    title: "PERSONAL INFO",
     firstName: "First name",
     lastName: "Last name",
-    email: "Email",
-    save: "Save changes",
-    delete: "Delete account",
+    save: "SAVE CHANGES",
+    successMessage: "Your personal info has been successfully changed.",
   },
-  passwordCard: {
-    title: "Password",
+  password: {
+    title: "ACCOUNT PASSWORD",
+    oldPassword: "Old password",
     newPassword: "New password",
-    verifyPassword: "Verify password",
-    apply: "Apply a new password",
-    hint: "Password must be 8–20 characters.",
+    confirmPassword: "Confirm a new password",
+    apply: "CHANGE PASSWORD",
+    errorBanner: "Please check the passwords you entered.",
+    successMessage: "Your account password has been successfully changed.",
+    passwordLength: "Password must be 8–20 characters.",
+    passwordsMustMatch: "Passwords must match.",
+    currentPasswordIncorrect: "Current password is incorrect.",
   },
+  actions: {
+    logOut: "LOG OUT",
+  },
+  fieldRequired: "This field is required",
+  ok: "OK",
   logout: {
-    title: "Log out",
+    title: "LOG OUT",
     message: "Are you sure you want to log out?",
-    confirm: "Log Out",
+    confirm: "CONFIRM & LOG OUT",
   },
   deleteAccount: {
-    title: "Delete account",
+    title: "DELETE ACCOUNT",
     message:
       "Are you sure you want to delete your account? This action cannot be undone.",
-    confirm: "Delete account",
-    cancel: "Cancel",
+    button: "DELETE ACCOUNT",
+    confirm: "CONFIRM & DELETE ACCOUNT",
   },
   toast: {
     profileSaved: {

@@ -1,10 +1,11 @@
 import { planContent } from "@/content/landing";
 
 export const dashboardTabContent = {
+  pageTitle: "DASHBOARD",
   subscriptionCard: {
-    title: "Subscription Features",
-    active: "Active",
-    disabled: "Disabled",
+    title: "SUBSCRIPTION FEATURES",
+    active: "ACTIVE",
+    disabled: "DISABLED",
   },
   upsell: {
     title: "Unlock Verified Audit Packet — US $39 one-time",
@@ -12,30 +13,36 @@ export const dashboardTabContent = {
     cta: "Pay $39 — unlock partner sending",
   },
   empty: {
-    body: "To create your first detailed plan, connect your accounts and run an audit.",
-    cta: "Create detailed plan",
+    line1: "TO CREATE YOUR FIRST",
+    line2: "SAVING PLAN",
+    line3: "AND START SAVING MONEY TODAY",
+    cta: "CREATE SAVING PLAN",
   },
   summary: {
-    totalDebt: "Total debt",
-    estimatedSavings: "Est. Annual Savings",
-    meltCountdown: "Melt Countdown",
+    totalDebt: "TOTAL DEBT",
+    estimatedSavings: "EST. ANNUAL SAVINGS",
+    meltCountdown: "MELT COUNTDOWN",
   },
   planLeads: {
-    title: "Your plan leads",
-    addAriaLabel: "Add plan lead",
-    addLead: "Add lead",
+    title: "YOUR SAVING PLANS",
+    addAriaLabel: "Create saving plan",
+    addLead: "CREATE SAVING PLAN",
   },
   planCard: {
+    planLabel: "SAVING PLAN",
     cardsLabel: "cards",
-    addCard: "+ Add card",
-    estimatedSavings: "Est. Savings",
-    perYear: "/yr",
+    addCard: "ADD CARD",
+    totalEstSaving: "TOTAL EST. SAVING",
+    perYear: "/YR",
+    estimatedSavings: "Est. Saving",
+    perYearShort: "/yr",
     negotiate: "Negotiate",
   },
   planStatus: {
-    inProgress: "In Progress",
-    won: "Won",
-    denied: "Denied",
+    waiting: "WAITING",
+    inProgress: "IN PROGRESS",
+    won: "WON",
+    denied: "DENIED",
   },
   checkout: {
     activating: "Redirecting to checkout…",

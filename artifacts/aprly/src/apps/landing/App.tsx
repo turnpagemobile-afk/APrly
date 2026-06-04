@@ -23,6 +23,7 @@ export default function LandingApp() {
             <Route path="/login" component={Login} />
             <Route path="/privacy" component={Privacy} />
             <Route path="/terms" component={Terms} />
+            <Route path="/404" component={NotFound} />
             <Route component={NotFound} />
           </Switch>
         </Layout>

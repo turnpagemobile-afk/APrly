@@ -1,0 +1,134 @@
+/**
+ * Dashboard CREATE SAVING PLAN — Figma cabinet breakpoints.
+ */
+
+@layer components {
+  .dash-create-plan-layout {
+    @apply mx-auto w-full min-w-0 max-w-[calc(100%-40px)] min-[375px]:max-w-[463px] bp600:max-w-[657px] bp840:max-w-[948px] bp1200:max-w-[988px] bp1600:max-w-[1128px];
+  }
+
+  .dash-create-plan-page-title {
+    font-family: var(--app-font-display);
+    @apply mb-6 text-2xl font-extrabold uppercase tracking-wide text-[var(--title-color)] bp600:mb-8;
+  }
+
+  .dash-create-plan-stack {
+    @apply flex flex-col gap-5 bp600:gap-6;
+  }
+
+  .dash-create-plan-card {
+    @apply rounded-[var(--design-card-corner-radius-small,24px)] border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] p-5 shadow-sm bp600:p-6;
+  }
+
+  .dash-create-plan-card-header {
+    @apply mb-5 flex items-center justify-between gap-3;
+  }
+
+  .dash-create-plan-card-heading {
+    @apply flex min-w-0 items-center gap-3;
+  }
+
+  .dash-create-plan-card-icon {
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--action-default-color)]/10;
+  }
+
+  .dash-create-plan-card-title {
+    font-family: var(--app-font-display);
+    @apply text-lg font-extrabold uppercase tracking-wide text-[var(--neutral-theme-900)];
+  }
+
+  .dash-create-plan-remove-btn {
+    @apply inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-[var(--danger-theme-500)] transition-colors hover:bg-[var(--danger-theme-100)];
+  }
+
+  .dash-create-plan-field-label {
+    @apply mb-2 block text-xs text-[var(--input-label-text-color)];
+  }
+
+  .dash-create-plan-input {
+    @apply h-[var(--design-input-min-height-x1,52px)] w-full rounded-lg border px-3 text-sm text-[var(--input-text-color)] shadow-none transition-colors focus-visible:outline-none focus-visible:ring-0;
+    border-color: var(--input-default-border-color);
+    background: var(--input-default-bg-color);
+  }
+
+  .dash-create-plan-input:focus {
+    border-color: var(--input-focus-border-color);
+    background: var(--input-focus-bg-color);
+  }
+
+  .dash-create-plan-input-adorned {
+    @apply relative flex w-full items-center;
+  }
+
+  .dash-create-plan-input-adorned--prefix .dash-create-plan-input {
+    @apply pl-8;
+  }
+
+  .dash-create-plan-input-adorned--suffix .dash-create-plan-input {
+    @apply pr-10;
+  }
+
+  .dash-create-plan-input-affix {
+    @apply pointer-events-none absolute text-sm font-semibold text-[var(--hint-text-color)];
+  }
+
+  .dash-create-plan-input-affix--prefix {
+    @apply left-3;
+  }
+
+  .dash-create-plan-input-affix--suffix {
+    @apply right-3;
+  }
+
+  .dash-create-plan-fields-row {
+    @apply grid grid-cols-2 gap-4;
+  }
+
+  .dash-create-plan-add-section {
+    @apply flex flex-col items-stretch gap-3 bp840:flex-row bp840:items-center bp840:justify-between bp840:gap-6;
+  }
+
+  .dash-create-plan-plaid-btn {
+    font-family: var(--app-font-display);
+    border: calc(var(--design-button-line-width, 3) * 1px) solid var(--action-default-color);
+    @apply inline-flex min-h-[52px] w-full items-center justify-center px-5 py-3 text-center text-sm font-extrabold uppercase tracking-wide text-[var(--action-default-color)] transition-colors disabled:opacity-60 bp840:flex-1;
+    border-radius: var(--design-button-corner-radius, 12px);
+    background: var(--button-secondary-normal-bg-color);
+  }
+
+  .dash-create-plan-plaid-btn:not(:disabled):hover {
+    background: var(--button-secondary-hover-bg-color);
+  }
+
+  .dash-create-plan-manual-row {
+    @apply flex flex-wrap items-center justify-center gap-1 text-center text-sm text-[var(--hint-text-color)] bp840:shrink-0 bp840:justify-end;
+  }
+
+  .dash-create-plan-manual-link {
+    font-family: var(--app-font-display);
+    @apply text-sm font-extrabold uppercase tracking-wide text-[var(--action-default-color)] underline-offset-2 hover:underline;
+  }
+
+  .dash-create-plan-save-row {
+    @apply mt-2 flex w-full justify-center;
+  }
+
+  .dash-create-plan-save-btn {
+    font-family: var(--app-font-display);
+    @apply inline-flex min-h-[52px] w-auto items-center justify-center gap-3 p-[14px] text-center text-base font-extrabold uppercase tracking-wide text-white transition-opacity disabled:cursor-not-allowed;
+    border-radius: var(--button-corner-radius, var(--design-button-corner-radius, 12px));
+    background: var(--neutral-theme-300);
+  }
+
+  .dash-create-plan-save-btn:not(:disabled) {
+    background: var(--action-default-color);
+  }
+
+  .dash-create-plan-save-btn:not(:disabled):hover {
+    @apply opacity-95;
+  }
+
+  .dash-create-plan-save-btn:disabled {
+    @apply opacity-100;
+  }
+}

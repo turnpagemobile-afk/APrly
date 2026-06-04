@@ -3,10 +3,18 @@ import { heroContent } from "@/content/landing";
 import { landingAsset } from "@/lib/landing-assets";
 
 export interface HeroSectionProps {
-  onSeeOptimizer: () => void;
+  onSeeOptimizer?: () => void;
+  onCabinetCta?: () => void;
+  ctaLabel?: string;
 }
 
-export function HeroSection({ onSeeOptimizer }: HeroSectionProps) {
+export function HeroSection({
+  onSeeOptimizer,
+  onCabinetCta,
+  ctaLabel,
+}: HeroSectionProps) {
+  const onCta = onCabinetCta ?? onSeeOptimizer;
+  const label = ctaLabel ?? heroContent.cta.label;
   return (
     <section className="relative bg-[#F8FCFE]">
       {/* Full-width mountain background with headline + sync banner */}
@@ -57,10 +65,10 @@ export function HeroSection({ onSeeOptimizer }: HeroSectionProps) {
         <div className="mt-8 flex justify-center bp840:mt-10">
           <Button
             size="lg"
-            onClick={onSeeOptimizer}
+            onClick={() => onCta?.()}
             className="h-12 min-w-[220px] rounded-[var(--design-button-corner-radius,12px)] px-10 text-sm font-bold uppercase tracking-wide"
           >
-            {heroContent.cta.label}
+            {label}
           </Button>
         </div>
       </div>

@@ -37,6 +37,7 @@ export function useDashboardSubscription(auditSessionId: string | null = null) {
   }, [auditSessionId, resumeFromReturnUrl]);
 
   const subscriptionActive = tabQuery.data?.subscriptionActive ?? false;
+  const accessActivatedAt = tabQuery.data?.accessActivatedAt ?? null;
   const hasLeads = tabQuery.data?.hasLeads ?? false;
   const plans = tabQuery.data?.plans ?? [];
   const summary = tabQuery.data?.summary;
@@ -45,6 +46,7 @@ export function useDashboardSubscription(auditSessionId: string | null = null) {
 
   return {
     subscriptionActive,
+    accessActivatedAt,
     hasLeads,
     plans,
     summary,

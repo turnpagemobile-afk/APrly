@@ -434,7 +434,7 @@ router.patch("/auth/me/password", requireAuth, async (req, res, next) => {
       res.status(400).json({ error: "Invalid request" });
       return;
     }
-    const { password, confirmPassword } = parsed.data;
+    const { currentPassword, password, confirmPassword } = parsed.data;
     if (password !== confirmPassword) {
       fieldErrorsResponse(
         { confirmPassword: ["Passwords must match."] },
@@ -444,6 +444,20 @@ router.patch("/auth/me/password", requireAuth, async (req, res, next) => {
       return;
     }
     const id = req.userId!;
+    const [row] = await db.select().from(usersTable).where(eq(usersTable.id, id)).limit(1);
+    if (!row) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+    const currentOk = await bcrypt.compare(currentPassword, row.passwordHash);
+    if (!currentOk) {
+      fieldErrorsResponse(
+        { currentPassword: ["Current password is incorrect."] },
+        400,
+        res,
+      );
+      return;
+    }
     const passwordHash = await bcrypt.hash(password, 10);
     const [updated] = await db
       .update(usersTable)

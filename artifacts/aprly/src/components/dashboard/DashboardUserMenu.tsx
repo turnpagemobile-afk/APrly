@@ -20,12 +20,12 @@ function AccountMenuTrigger({
       type="button"
       variant="outline"
       size="icon"
-      className="h-9 w-9 shrink-0 rounded-full border-border bg-muted/50"
+      className="h-9 w-9 shrink-0 rounded-full border-primary bg-white text-primary hover:bg-white/90"
       aria-label="Account menu"
       onClick={onClick}
       {...props}
     >
-      <User className="h-5 w-5 text-foreground" aria-hidden="true" />
+      <User className="h-5 w-5" aria-hidden="true" />
     </Button>
   );
 }

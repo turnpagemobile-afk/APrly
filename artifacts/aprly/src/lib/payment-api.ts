@@ -32,12 +32,19 @@ export async function registerAccount(
   });
 }
 
+export type CreateAuditCheckoutInput = {
+  returnPath?: string;
+};
+
 export async function createAuditCheckout(
+  data?: CreateAuditCheckoutInput,
   options?: RequestInit,
 ): Promise<AuditCheckoutPayload> {
   return customFetch<AuditCheckoutPayload>("/api/me/audit-checkout", {
     ...options,
     method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(data ?? {}),
   });
 }
 

@@ -1,92 +1,76 @@
-import type { Partner, PlanLeadDetail } from "@workspace/api-client-react";
-import { CreditCard, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import type { PlanLeadDetail } from "@workspace/api-client-react";
+import { dashboardTabContent } from "@/content/dashboard-tab";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
+import { PlanLeadDetailHeader } from "@/components/dashboard/plan-lead/PlanLeadDetailHeader";
+import { PlanLeadDetailMetricsStrip } from "@/components/dashboard/plan-lead/PlanLeadDetailMetricsStrip";
 import { PlanLeadEditableCards } from "@/components/dashboard/plan-lead/PlanLeadEditableCards";
-import { PlanLeadMetricsGrid } from "@/components/dashboard/plan-lead/PlanLeadMetricsGrid";
-import { PlanLeadPartnerList } from "@/components/dashboard/plan-lead/PlanLeadPartnerList";
-import { Button } from "@/components/ui/button";
+import { cabinetAsset } from "@/lib/cabinet-assets";
 
 type PlanLeadSendViewProps = {
   detail: PlanLeadDetail;
-  partners: Partner[];
-  isSending: boolean;
+  planIndex: number;
+  returnTo: string;
   isSavingCards?: boolean;
-  canSend: boolean;
-  onSend: (partnerId: number) => void;
-  onRequirePayment: (partnerId: number) => void;
   onDeleteCard: (cardId: number) => void;
   onAddCard: () => void;
+  onOpenPartnerModal: () => void;
 };
 
 export function PlanLeadSendView({
   detail,
-  partners,
-  isSending,
+  planIndex,
+  returnTo,
   isSavingCards = false,
-  canSend,
-  onSend,
-  onRequirePayment,
   onDeleteCard,
   onAddCard,
+  onOpenPartnerModal,
 }: PlanLeadSendViewProps) {
-  const copy = planLeadDetailContent.status;
+  const copy = dashboardTabContent.planCard;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/15">
-          <CreditCard className="h-6 w-6 text-primary" aria-hidden="true" />
-        </div>
-        <div>
-          <h1 className="text-xl font-black text-foreground">
-            {detail.cardCount > 1
-              ? `${planLeadDetailContent.packageTitle} · ${detail.cardCount} cards`
-              : detail.brand}
-          </h1>
-          {detail.cardCount > 1 ? (
-            <p className="text-sm text-muted-foreground">{detail.brand}</p>
-          ) : null}
-        </div>
+    <div className="dash-plan-detail-stack">
+      <PlanLeadDetailHeader planIndex={planIndex} returnTo={returnTo} />
+      <PlanLeadDetailMetricsStrip detail={detail} />
+
+      <div className="dash-plan-detail-negotiate-row">
+        <button
+          type="button"
+          className="dash-plan-detail-negotiate-btn"
+          onClick={onOpenPartnerModal}
+        >
+          {copy.negotiate}
+        </button>
       </div>
 
-      <section className="rounded-lg border border-border/60 bg-card p-5 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Status
-        </p>
-        <p className="mt-1 text-lg font-bold text-foreground">{copy.waiting}</p>
-        <p className="mt-2 text-sm text-muted-foreground">{copy.waitingDescription}</p>
-      </section>
-
-      <PlanLeadMetricsGrid detail={detail} />
-
       {detail.cards.length > 0 ? (
-        <section className="space-y-3">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
-              {planLeadDetailContent.cardsSection}
+        <section className="space-y-4">
+          <div className="dash-plan-detail-cards-head">
+            <h2 className="dash-plan-detail-cards-title">
+              {planLeadDetailContent.yourCards}
             </h2>
-            {isSavingCards ? (
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden="true" />
-            ) : null}
+            <button type="button" className="dash-plan-add-card-btn" onClick={onAddCard}>
+              <img
+                src={cabinetAsset("cabinet/dashboard/plus.svg")}
+                alt=""
+                aria-hidden
+                className="h-7 w-7 shrink-0"
+              />
+              {planLeadDetailContent.addCard}
+            </button>
           </div>
+          {isSavingCards ? (
+            <div className="flex justify-center py-2">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-hidden="true" />
+            </div>
+          ) : null}
           <PlanLeadEditableCards
             cards={detail.cards}
             onDeleteCard={onDeleteCard}
             isDeleting={isSavingCards}
           />
-          <Button type="button" variant="outline" className="w-full" onClick={onAddCard}>
-            + Add card
-          </Button>
         </section>
       ) : null}
-
-      <PlanLeadPartnerList
-        partners={partners}
-        isSending={isSending}
-        canSend={canSend}
-        onSend={onSend}
-        onRequirePayment={onRequirePayment}
-      />
     </div>
   );
 }

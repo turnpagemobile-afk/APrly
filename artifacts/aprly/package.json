@@ -15,6 +15,7 @@
     "build:admin": "PORT=5173 vite build --config vite.admin.config.ts",
     "serve": "vite preview --config vite.landing.config.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check:tailwind-apply": "node ./scripts/check-tailwind-apply.mjs",
     "tokens": "node ./scripts/build-theme-tokens.mjs",
     "sync-design": "node ./scripts/sync-design-from-local-docs.mjs",
     "pwa:icons": "node ./scripts/generate-pwa-icons.mjs"

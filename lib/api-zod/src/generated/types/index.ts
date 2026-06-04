@@ -41,6 +41,7 @@ export * from "./auditCheckoutSessionStatusResponseStatus";
 export * from "./authUserSummary";
 export * from "./checkoutSessionStatusResponse";
 export * from "./checkoutSessionStatusResponseStatus";
+export * from "./createAuditCheckoutInput";
 export * from "./createDetailedPlanResponse";
 export * from "./createLeadInput";
 export * from "./dashboardPlansSummary";

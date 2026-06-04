@@ -1,0 +1,161 @@
+/**
+ * Dashboard PLANS tab — Figma typography & APR pills (PLANS/ACTIVE FIGMA.png).
+ */
+
+@layer components {
+  .dash-head-xl {
+    @apply text-[3rem] font-extrabold leading-none tracking-tight;
+  }
+
+  .dash-display-label {
+    font-family: var(--app-font-display);
+    @apply text-[14px] font-extrabold uppercase leading-5 tracking-normal;
+  }
+
+  .dash-display-value {
+    font-family: var(--app-font-display);
+    @apply text-[26px] font-black uppercase leading-[1.3] tracking-normal;
+  }
+
+  .dash-melt-value-row {
+    @apply relative flex flex-wrap items-baseline gap-x-1 gap-y-0.5;
+  }
+
+  .dash-melt-number {
+    font-family: var(--app-font-display);
+    font-feature-settings: "case" on;
+    @apply text-[26px] font-black uppercase leading-[1.3] tracking-normal text-[var(--secondary-theme-500)];
+  }
+
+  .dash-melt-unit {
+    font-family: var(--app-font-display);
+    font-feature-settings: "case" on;
+    @apply text-[18px] font-extrabold normal-case leading-6 tracking-normal text-[var(--neutral-theme-900)];
+  }
+
+  .dash-text-lg-xb {
+    @apply text-xl font-extrabold leading-tight text-[var(--neutral-theme-900)];
+  }
+
+  .dash-text-lg-b {
+    @apply text-xl font-bold leading-tight text-[var(--neutral-theme-900)];
+  }
+
+  .dash-text-md-sb {
+    @apply text-lg font-semibold leading-snug text-[var(--hint-text-color)];
+  }
+
+  .dash-text-md-xb {
+    @apply text-lg font-extrabold leading-snug;
+  }
+
+  .dash-text-sm-sb {
+    @apply text-sm font-semibold;
+  }
+
+  .dash-apr-current {
+    font-family: var(--app-font-display);
+    @apply rounded-md bg-[var(--danger-theme-500)] px-2 py-0.5 text-[18px] font-extrabold leading-6 tracking-normal text-white;
+  }
+
+  .dash-apr-target {
+    font-family: var(--app-font-display);
+    @apply rounded-md bg-[var(--secondary-theme-200)] px-2 py-0.5 text-[18px] font-extrabold leading-6 tracking-normal text-[var(--secondary-theme-700)];
+  }
+
+  .dash-plan-card-widget {
+    @apply rounded-xl border border-[var(--card-border-color)] bg-[var(--neutral-theme-050)] p-4 bp600:p-5;
+  }
+
+  /** PLANS tab content width: 1128 / 988 / 948 / 657 / 463 / calc(100% - 40px) */
+  .dash-plans-layout {
+    @apply mx-auto w-full min-w-0 max-w-[calc(100%-40px)] min-[375px]:max-w-[463px] bp600:max-w-[657px] bp840:max-w-[948px] bp1200:max-w-[988px] bp1600:max-w-[1128px];
+  }
+
+  /** Summary metrics: 1 col (<375), 2x2 (375-839), 4 cols (>=840) */
+  .dash-plans-summary-grid {
+    @apply grid grid-cols-1 gap-4 min-[375px]:grid-cols-2 bp840:grid-cols-4;
+  }
+
+  .dash-metric-card-stack {
+    @apply relative z-[1] flex flex-col justify-start gap-2.5;
+  }
+
+  .dash-summary-tile {
+    @apply relative box-border flex h-[104px] min-h-[104px] max-h-[104px] flex-col overflow-hidden rounded-2xl p-4 shadow-sm;
+  }
+
+  .dash-metric-card-bg-icon {
+    @apply pointer-events-none absolute bottom-0 right-0 h-[80px] w-[59px] object-contain object-right-bottom;
+  }
+
+  .dash-plan-lead-card {
+    @apply box-border flex w-full min-w-[min(100%,343px)] max-w-[var(--design-grid-extralarge-max-content,1128px)] flex-col items-start self-stretch overflow-hidden p-0.5 transition-[box-shadow];
+    border-radius: var(--design-card-corner-radius, 32px);
+    background: var(--card-1lvl-bg-color);
+    box-shadow: 0 10px 20px 0 rgba(29, 62, 11, 0.1);
+  }
+
+  .dash-plan-lead-card--interactive:hover {
+    box-shadow: 0 12px 24px 0 rgba(29, 62, 11, 0.14);
+  }
+
+  .dash-plan-lead-card-inner {
+    @apply flex w-full min-w-0 flex-col items-stretch overflow-hidden bg-[var(--card-1lvl-bg-color)];
+    border-radius: calc(var(--design-card-corner-radius, 32px) - 2px);
+  }
+
+  .dash-plan-lead-header {
+    @apply flex items-center justify-between gap-3 px-6 py-4;
+  }
+
+  .dash-plan-lead-chevron {
+    @apply flex shrink-0 items-center justify-center rounded-md p-1 transition-colors hover:bg-[var(--primary-theme-100)]/50;
+  }
+
+  .dash-plan-lead-body {
+    @apply space-y-3 bg-[var(--card-1lvl-bg-color)] px-6 py-4;
+  }
+
+  .dash-plan-lead-total-btn {
+    font-family: var(--app-font-display);
+    @apply box-border flex h-[105px] w-full flex-wrap content-center items-center justify-center gap-2 self-stretch px-5 py-[15px] text-center text-[26px] font-black uppercase leading-[1.3] tracking-normal text-white transition-opacity hover:opacity-95;
+    border-radius: var(--design-card-corner-radius-small, 24px);
+    background: var(--secondary-theme-500);
+  }
+
+  .dash-plan-card-icon-wrap {
+    @apply flex shrink-0 items-center justify-center;
+  }
+
+  .dash-plan-add-card-btn {
+    font-family: var(--app-font-display);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 36px;
+    border: calc(var(--design-button-line-width, 3) * 1px) solid var(--action-default-color);
+    @apply flex min-h-[52px] w-full items-center justify-center gap-3 self-stretch px-5 py-5 text-center uppercase tracking-normal text-[var(--action-default-color)] rounded-[var(--design-button-corner-radius,12px)] bg-[var(--button-secondary-normal-bg-color)] transition-colors hover:bg-[var(--button-secondary-hover-bg-color)];
+  }
+
+  .dash-plan-status-badge {
+    gap: 7px;
+    @apply inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold uppercase tracking-wide text-white;
+  }
+
+  .dash-plan-status-badge--waiting {
+    background: var(--neutral-theme-500);
+  }
+
+  .dash-plan-status-badge--in-progress {
+    background: var(--palette-cornflower-cornflower-500, #567af9);
+  }
+
+  .dash-plan-status-badge--won {
+    background: var(--success-theme-500);
+  }
+
+  .dash-plan-create-cta {
+    font-family: var(--app-font-display);
+    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-3 self-center px-5 py-5 rounded-[var(--design-button-corner-radius,12px)] bg-[var(--action-default-color)] text-center text-xl font-extrabold uppercase tracking-wide text-white transition-opacity hover:opacity-95 bp600:w-auto;
+  }
+}

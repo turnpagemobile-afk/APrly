@@ -21,3 +21,17 @@ export function isLandingMarketingPath(pathname: string): boolean {
   if (pathname === "/privacy" || pathname === "/terms") return true;
   return false;
 }
+
+/** Routes rendered inside DashboardShell (footer comes from the shell, not Layout). */
+export function isCabinetShellPath(pathname: string): boolean {
+  return pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+}
+
+/** Cabinet HOME tab uses landing-light visuals. */
+export function isCabinetHomeTabPath(pathname: string, search: string): boolean {
+  if (!pathname.startsWith("/dashboard")) return false;
+  const tab = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search).get(
+    "tab",
+  );
+  return tab === "home" || tab === null;
+}

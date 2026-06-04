@@ -2,10 +2,26 @@
  * Logged-in dashboard Home tab copy.
  */
 
+export const cabinetShellContent = {
+  createSavingPlan: "CREATE SAVING PLAN",
+  createSavingPlanShort: "CREATE PLAN",
+  tabs: {
+    home: "HOME",
+    dashboard: "DASHBOARD",
+  },
+} as const;
+
+export const cabinetHomeContent = {
+  goToDashboardCta: "GO TO DASHBOARD",
+} as const;
+
 export const dashboardPromoContent = {
+  bannerTitle: "APRly. SYNC EVERYWHERE.",
+  bannerBody:
+    "Full APRly experience on both iOS and Android. Get easy access to APRly in a way that works best for you.",
   title: "APRly. Sync Everywhere.",
   body: "Install APRly on your home screen for quick access to your wealth cockpit — no app store required.",
-  cta: { label: "Install APRly App" },
+  cta: { label: "DOWNLOAD APRly APP" },
   ctaInstalled: "Installed on this device",
   ctaIos: "Add to Home Screen",
   disabledNoSubscription: "Activate your APRly subscription to install the app.",

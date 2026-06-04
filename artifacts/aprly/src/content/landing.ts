@@ -224,6 +224,14 @@ export const planContent = {
   },
 } as const;
 
+export const notFoundContent = {
+  title: "I CAN'T FIND THAT PAGE",
+  subtitle: "Check the address or learn more about APRly",
+  cta: "LEARN MORE",
+  ctaHref: "/",
+  imageAlt: "Magnifying glass illustration for page not found",
+} as const;
+
 export const footerContent = {
   links: [
     { id: "terms", label: "TERMS & CONDITIONS", href: "/terms" },
