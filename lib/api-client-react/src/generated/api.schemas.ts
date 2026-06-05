@@ -228,17 +228,51 @@ export interface LeadCardItem {
   estimatedAnnualSavings: number;
 }
 
+/**
+ * Debt lead summary (aggregated across cards in the package)
+ */
 export interface PlanLead {
   id: number;
+  /** Primary card brand or label for the lead package */
   brand: string;
+  /** Total balance across cards */
   balance: number;
+  /** Balance-weighted average APR */
   currentApr: number;
   targetApr: number;
+  /** Sum of estimated savings across cards */
   estimatedAnnualSavings: number;
-  status: PlanLeadStatus;
   /** @minimum 0 */
   cardCount: number;
   cards: LeadCardItem[];
+  status: PlanLeadStatus;
+  createdAt: string;
+}
+
+export interface UpsertGuestLeadInput {
+  /**
+   * @minLength 8
+   * @maxLength 64
+   */
+  guestSessionId: string;
+  /** @maxLength 200 */
+  name?: string;
+  /** @maxLength 254 */
+  email?: string;
+  /** @minItems 1 */
+  cards: ImportCardItem[];
+}
+
+export interface UpsertGuestLeadResponse {
+  leadId: number;
+  id: number;
+  status: PlanLeadStatus;
+  cardCount: number;
+  totalBalance: number;
+  totalEstimatedSavings: number;
+  primaryBrand: string;
+  currentApr: number;
+  targetApr: number;
   createdAt: string;
 }
 
@@ -314,7 +348,10 @@ export interface AdminUserRow {
    * @minimum 0
    */
   level: number;
-  /** @minimum 0 */
+  /**
+   * Total plan leads for the user (all statuses)
+   * @minimum 0
+   */
   planCount: number;
   createdAt: string;
 }
@@ -347,7 +384,7 @@ export interface SendPlanLeadInput {
 }
 
 /**
- * Plan lead snapshot. For status `recommended`, partner fields are null.
+ * Debt lead package with card breakdown. For status `recommended`, partner fields are null.
 After POST .../send (`in_progress` or later `won`), partnerId, sentToPartnerAt,
 and partner are always set; hardshipPortal is included for in_progress and won.
 
@@ -359,10 +396,10 @@ export interface PlanLeadDetail {
   currentApr: number;
   targetApr: number;
   estimatedAnnualSavings: number;
-  status: PlanLeadStatus;
   /** @minimum 0 */
   cardCount: number;
   cards: LeadCardItem[];
+  status: PlanLeadStatus;
   createdAt: string;
   partnerId?: number | null;
   sentToPartnerAt?: string | null;
@@ -402,6 +439,27 @@ export interface SubscriptionCheckoutStatusResponse {
   subscriptionActive: boolean;
 }
 
+export interface RegisterInput {
+  /** @maxLength 254 */
+  email: string;
+  /**
+   * @minLength 8
+   * @maxLength 20
+   */
+  password: string;
+  /**
+   * @minLength 8
+   * @maxLength 20
+   */
+  confirmPassword: string;
+  termsAccepted: boolean;
+  /**
+   * Links pre-registration calculator debt lead to the new user
+   * @maxLength 64
+   */
+  guestSessionId?: string;
+}
+
 export interface RegisterAndCheckoutInput {
   /** @maxLength 254 */
   email: string;
@@ -416,31 +474,11 @@ export interface RegisterAndCheckoutInput {
    */
   confirmPassword: string;
   termsAccepted: boolean;
-  /** @maxLength 64 */
+  /**
+   * Links pre-registration calculator debt lead to the new user
+   * @maxLength 64
+   */
   guestSessionId?: string;
-}
-
-export interface UpsertGuestLeadInput {
-  /** @minLength 8 @maxLength 64 */
-  guestSessionId: string;
-  /** @maxLength 200 */
-  name?: string;
-  /** @maxLength 254 */
-  email?: string;
-  cards: ImportCardItem[];
-}
-
-export interface UpsertGuestLeadResponse {
-  leadId: number;
-  id: number;
-  status: PlanLeadStatus;
-  cardCount: number;
-  totalBalance: number;
-  totalEstimatedSavings: number;
-  primaryBrand: string;
-  currentApr: number;
-  targetApr: number;
-  createdAt: string;
 }
 
 export interface RegisterAndCheckoutPayload {
@@ -479,14 +517,76 @@ export interface LoginInput {
   password: string;
 }
 
+export interface ForgotPasswordInput {
+  email: string;
+}
+
+export interface ResetPasswordInput {
+  /**
+   * @minLength 1
+   * @maxLength 256
+   */
+  token: string;
+  /**
+   * @minLength 8
+   * @maxLength 20
+   */
+  password: string;
+  /**
+   * @minLength 8
+   * @maxLength 20
+   */
+  confirmPassword: string;
+}
+
 export interface MeResponse {
   id: number;
   email: string;
   firstName?: string | null;
   lastName?: string | null;
   role: string;
-  /** True when the user has an active Stripe subscription on file */
+  /** True when the user paid the one-time audit fee or has legacy active subscription */
   hasActiveSubscription: boolean;
+}
+
+export interface AuditCheckoutPayload {
+  checkoutUrl: string;
+  stripeSessionId: string;
+}
+
+export interface CreateAuditCheckoutInput {
+  /**
+   * Relative path for success/cancel redirect (must start with /dashboard)
+   * @maxLength 512
+   */
+  returnPath?: string;
+}
+
+export type AuditCheckoutSessionStatusResponseStatus =
+  (typeof AuditCheckoutSessionStatusResponseStatus)[keyof typeof AuditCheckoutSessionStatusResponseStatus];
+
+export const AuditCheckoutSessionStatusResponseStatus = {
+  pending: "pending",
+  processing: "processing",
+  paid: "paid",
+  expired: "expired",
+} as const;
+
+export interface AuditCheckoutSessionStatusResponse {
+  status: AuditCheckoutSessionStatusResponseStatus;
+  hasPaidAudit: boolean;
+}
+
+export type PaymentRequiredResponseCode =
+  (typeof PaymentRequiredResponseCode)[keyof typeof PaymentRequiredResponseCode];
+
+export const PaymentRequiredResponseCode = {
+  payment_required: "payment_required",
+} as const;
+
+export interface PaymentRequiredResponse {
+  error: string;
+  code: PaymentRequiredResponseCode;
 }
 
 export interface PatchMeInput {
@@ -618,13 +718,25 @@ export interface AdminPartnerLeadCounts {
 export interface AdminUserDetailSummary {
   /** @minimum 0 */
   registeredMonthsAgo: number;
-  /** @minimum 0 */
+  /**
+   * Active plans at partner, same as AdminUserRow.level
+   * @minimum 0
+   */
   currentPlansCount: number;
-  /** @minimum 0 */
+  /**
+   * Total plan leads, same as AdminUserRow.planCount
+   * @minimum 0
+   */
   createdPlansCount: number;
-  /** @minimum 0 */
+  /**
+   * Plans sent to a partner (partner_id set)
+   * @minimum 0
+   */
   sentToPartnerPlansCount: number;
-  /** @minimum 0 */
+  /**
+   * Plans not yet sent to a partner (partner_id null)
+   * @minimum 0
+   */
   notSentPlansCount: number;
 }
 
@@ -740,6 +852,13 @@ export interface AdminPartnerPlanLeadsResponse {
 }
 
 export type GetCheckoutSessionStatusParams = {
+  /**
+   * @minLength 1
+   */
+  stripeSessionId: string;
+};
+
+export type GetAuditCheckoutSessionStatusParams = {
   /**
    * @minLength 1
    */

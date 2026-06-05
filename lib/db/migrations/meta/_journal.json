@@ -71,6 +71,13 @@
       "when": 1779700000000,
       "tag": "0009_users_paid_audit_at",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1779800000000,
+      "tag": "0010_password_reset_tokens",
+      "breakpoints": true
     }
   ]
 }

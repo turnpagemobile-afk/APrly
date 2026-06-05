@@ -17,7 +17,7 @@ export function applyDarkDocumentTheme(): void {
 }
 
 export function isLandingMarketingPath(pathname: string): boolean {
-  if (pathname === "/" || pathname === "/login") return true;
+  if (pathname === "/" || pathname === "/login" || pathname === "/reset-password") return true;
   if (pathname === "/privacy" || pathname === "/terms") return true;
   return false;
 }
