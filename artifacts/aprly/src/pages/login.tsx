@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import { useForgotPasswordFlow } from "@/lib/forgot-password-context";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { goToCabinet } from "@/lib/app-navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -45,6 +46,7 @@ export default function LoginPage() {
   const login = useLogin();
   const { openSignup } = useSignupCheckout();
   const navigateBack = useNavigateBack("/");
+  const { openForgotPassword } = useForgotPasswordFlow();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -173,12 +175,13 @@ export default function LoginPage() {
         ) : null}
 
         <div className="flex items-center justify-between gap-4 pt-2">
-          <Link
-            href="/"
+          <button
+            type="button"
             className="text-xs font-semibold uppercase text-primary hover:underline"
+            onClick={openForgotPassword}
           >
             {authContent.login.forgot}
-          </Link>
+          </button>
           <Button
             type="submit"
             disabled={login.isPending}

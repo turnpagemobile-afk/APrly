@@ -2,6 +2,14 @@ import crypto from "node:crypto";
 import { Router, type IRouter } from "express";
 import bcrypt from "bcryptjs";
 import { and, eq, gt, isNull } from "drizzle-orm";
+import {
+  buildResetPasswordUrl,
+  generatePasswordResetToken,
+  hashPasswordResetToken,
+  logPasswordResetLinkForDev,
+  passwordResetTtlSec,
+} from "../lib/password-reset";
+import { USER_ROLE } from "../lib/user-roles";
 import type Stripe from "stripe";
 import {
   RegisterAndCheckoutBody,
@@ -10,6 +18,8 @@ import {
   GetCheckoutSessionStatusResponse,
   LoginBody,
   LoginResponse,
+  ForgotPasswordBody,
+  ResetPasswordBody,
   PatchMeBody,
   PatchMeResponse,
   PatchMePasswordBody,
@@ -21,6 +31,7 @@ import {
   registrationIntentsTable,
   usersTable,
   refreshTokensTable,
+  passwordResetTokensTable,
 } from "@workspace/db";
 import { getStripe } from "../lib/stripe-client";
 import { finalizeCheckoutSessionIfNeeded } from "../lib/stripe-checkout-finalize";
@@ -319,6 +330,124 @@ router.post("/auth/login", async (req, res, next) => {
 
     await issueAuthCookies(res, row.id, row.role);
     res.json(LoginResponse.parse(await buildMeResponse(row)));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/auth/forgot-password", async (req, res, next) => {
+  try {
+    const parsed = ForgotPasswordBody.safeParse(req.body);
+    if (!parsed.success) {
+      const fieldErrors: Record<string, string[]> = {};
+      for (const issue of parsed.error.issues) {
+        const key = issue.path.length ? String(issue.path[0]) : "email";
+        fieldErrors[key] ??= [];
+        fieldErrors[key].push(issue.message);
+      }
+      fieldErrorsResponse(fieldErrors, 400, res);
+      return;
+    }
+
+    const email = parsed.data.email.trim().toLowerCase();
+    const [row] = await db
+      .select({ id: usersTable.id, email: usersTable.email, role: usersTable.role })
+      .from(usersTable)
+      .where(eq(usersTable.email, email))
+      .limit(1);
+
+    if (row && row.role === USER_ROLE) {
+      const now = new Date();
+      await db
+        .update(passwordResetTokensTable)
+        .set({ usedAt: now })
+        .where(
+          and(
+            eq(passwordResetTokensTable.userId, row.id),
+            isNull(passwordResetTokensTable.usedAt),
+            gt(passwordResetTokensTable.expiresAt, now),
+          ),
+        );
+
+      const { raw, hash } = generatePasswordResetToken();
+      const expiresAt = new Date(Date.now() + passwordResetTtlSec() * 1000);
+      await db.insert(passwordResetTokensTable).values({
+        userId: row.id,
+        tokenHash: hash,
+        expiresAt,
+      });
+
+      const url = buildResetPasswordUrl(frontendOrigin(), raw);
+      logPasswordResetLinkForDev(row.email, url);
+    }
+
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/auth/reset-password", async (req, res, next) => {
+  try {
+    const parsed = ResetPasswordBody.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid request" });
+      return;
+    }
+
+    const { token, password, confirmPassword } = parsed.data;
+    if (password !== confirmPassword) {
+      fieldErrorsResponse(
+        { confirmPassword: ["Passwords must match."] },
+        400,
+        res,
+      );
+      return;
+    }
+
+    const tokenHash = hashPasswordResetToken(token);
+    const now = new Date();
+    const [tokenRow] = await db
+      .select()
+      .from(passwordResetTokensTable)
+      .where(
+        and(
+          eq(passwordResetTokensTable.tokenHash, tokenHash),
+          isNull(passwordResetTokensTable.usedAt),
+          gt(passwordResetTokensTable.expiresAt, now),
+        ),
+      )
+      .limit(1);
+
+    if (!tokenRow) {
+      res.status(401).json({ error: "Invalid or expired reset token." });
+      return;
+    }
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(and(eq(usersTable.id, tokenRow.userId), eq(usersTable.role, USER_ROLE)))
+      .limit(1);
+
+    if (!user) {
+      res.status(401).json({ error: "Invalid or expired reset token." });
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    await db
+      .update(usersTable)
+      .set({ passwordHash })
+      .where(eq(usersTable.id, user.id));
+
+    await db
+      .update(passwordResetTokensTable)
+      .set({ usedAt: now })
+      .where(eq(passwordResetTokensTable.id, tokenRow.id));
+
+    await issueAuthCookies(res, user.id, user.role);
+    res.json(LoginResponse.parse(await buildMeResponse(user)));
   } catch (err) {
     next(err);
   }

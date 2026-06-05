@@ -278,4 +278,36 @@ export const authContent = {
       passwordsMismatch: "The passwords you enter must match",
     },
   },
+  forgotPassword: {
+    title: "FORGOT PASSWORD",
+    prompt: "To proceed please enter your account email",
+    emailLabel: "Email",
+    submit: "CONTINUE",
+    successTitle: "EMAIL HAS BEEN SENT",
+    successSubtitle:
+      "We've sent you an email with a link to reset your APRly account password.",
+    successOk: "OK",
+    errors: {
+      emailRequired: "You need to enter your account email to proceed",
+      emailInvalid: "Please check the email address you entered",
+      serverError: "Something went wrong. Please try again later.",
+    },
+  },
+  resetPassword: {
+    pageTitle: "ACCOUNT PASSWORD",
+    cardTitle: "SET A NEW PASSWORD",
+    newPassword: "New password",
+    confirmPassword: "Confirm a new password",
+    submit: "SAVE PASSWORD",
+    successMessage: "Your account password has been successfully changed.",
+    goToDashboard: "GO TO DASHBOARD",
+    missingToken: "This reset link is invalid or has expired.",
+    backToLogin: "Back to login",
+    errors: {
+      fieldRequired: "This field is required",
+      passwordsMismatch: "The passwords you enter must match.",
+      passwordLength: "Password must be 8–20 characters.",
+      invalidToken: "This reset link is invalid or has expired. Please request a new one.",
+    },
+  },
 } as const;

@@ -6,6 +6,7 @@
 @import "./styles/dashboard-create-plan.css";
 @import "./styles/dashboard-plan-detail.css";
 @import "./styles/dashboard-modals.css";
+@import "./styles/reset-password.css";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));

@@ -32,17 +32,22 @@ import type {
   AdminUserPlansResponse,
   AdminUsersListResponse,
   AdminVerifyOtpInput,
+  AuditCheckoutPayload,
+  AuditCheckoutSessionStatusResponse,
   CheckoutSessionStatusResponse,
+  CreateAuditCheckoutInput,
   CreateDetailedPlanResponse,
   CreateLeadInput,
   DashboardSummary,
   DashboardTabContext,
   FieldErrorsResponse,
+  ForgotPasswordInput,
   GetAdminDashboardSummaryParams,
   GetAdminPartnerPlanLeadsParams,
   GetAdminPartnersParams,
   GetAdminUserPlansParams,
   GetAdminUsersParams,
+  GetAuditCheckoutSessionStatusParams,
   GetCheckoutSessionStatusParams,
   GetSubscriptionCheckoutSessionStatusParams,
   HealthStatus,
@@ -56,6 +61,7 @@ import type {
   PartnerListResponse,
   PatchMeInput,
   PatchMePasswordInput,
+  PaymentRequiredResponse,
   PlaidExchangeInput,
   PlaidLinkToken,
   PlaidLinkedAccount,
@@ -63,6 +69,8 @@ import type {
   PlanLeadDetail,
   RegisterAndCheckoutInput,
   RegisterAndCheckoutPayload,
+  RegisterInput,
+  ResetPasswordInput,
   SendPlanLeadInput,
   SubscribeInput,
   Subscription,
@@ -329,7 +337,12 @@ export const useCalculateOptimization = <
   return useMutation(getCalculateOptimizationMutationOptions(options));
 };
 
-export const getUpsertGuestLeadUrl = () => `/api/optimizer/guest-lead`;
+/**
+ * @summary Persist pre-registration calculator cards as one guest debt lead
+ */
+export const getUpsertGuestLeadUrl = () => {
+  return `/api/optimizer/guest-lead`;
+};
 
 export const upsertGuestLead = async (
   upsertGuestLeadInput: UpsertGuestLeadInput,
@@ -344,7 +357,7 @@ export const upsertGuestLead = async (
 };
 
 export const getUpsertGuestLeadMutationOptions = <
-  TError = ErrorType<unknown>,
+  TError = ErrorType<void>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -374,14 +387,24 @@ export const getUpsertGuestLeadMutationOptions = <
     { data: BodyType<UpsertGuestLeadInput> }
   > = (props) => {
     const { data } = props ?? {};
+
     return upsertGuestLead(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
+export type UpsertGuestLeadMutationResult = NonNullable<
+  Awaited<ReturnType<typeof upsertGuestLead>>
+>;
+export type UpsertGuestLeadMutationBody = BodyType<UpsertGuestLeadInput>;
+export type UpsertGuestLeadMutationError = ErrorType<void>;
+
+/**
+ * @summary Persist pre-registration calculator cards as one guest debt lead
+ */
 export const useUpsertGuestLead = <
-  TError = ErrorType<unknown>,
+  TError = ErrorType<void>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -804,7 +827,94 @@ export function useGetDashboardTab<
 }
 
 /**
- * @summary Validate signup, store pending registration, create Stripe Checkout (subscription + setup fee + trial)
+ * @summary Create account without payment; sets session cookies
+ */
+export const getRegisterUrl = () => {
+  return `/api/auth/register`;
+};
+
+export const register = async (
+  registerInput: RegisterInput,
+  options?: RequestInit,
+): Promise<MeResponse> => {
+  return customFetch<MeResponse>(getRegisterUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(registerInput),
+  });
+};
+
+export const getRegisterMutationOptions = <
+  TError = ErrorType<FieldErrorsResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof register>>,
+    TError,
+    { data: BodyType<RegisterInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof register>>,
+  TError,
+  { data: BodyType<RegisterInput> },
+  TContext
+> => {
+  const mutationKey = ["register"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof register>>,
+    { data: BodyType<RegisterInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return register(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RegisterMutationResult = NonNullable<
+  Awaited<ReturnType<typeof register>>
+>;
+export type RegisterMutationBody = BodyType<RegisterInput>;
+export type RegisterMutationError = ErrorType<FieldErrorsResponse>;
+
+/**
+ * @summary Create account without payment; sets session cookies
+ */
+export const useRegister = <
+  TError = ErrorType<FieldErrorsResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof register>>,
+    TError,
+    { data: BodyType<RegisterInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof register>>,
+  TError,
+  { data: BodyType<RegisterInput> },
+  TContext
+> => {
+  return useMutation(getRegisterMutationOptions(options));
+};
+
+/**
+ * @deprecated
+ * @summary Deprecated — use POST /auth/register and POST /me/audit-checkout
  */
 export const getRegisterAndCheckoutUrl = () => {
   return `/api/auth/register-and-checkout`;
@@ -869,7 +979,8 @@ export type RegisterAndCheckoutMutationError =
   ErrorType<FieldErrorsResponse | void>;
 
 /**
- * @summary Validate signup, store pending registration, create Stripe Checkout (subscription + setup fee + trial)
+ * @deprecated
+ * @summary Deprecated — use POST /auth/register and POST /me/audit-checkout
  */
 export const useRegisterAndCheckout = <
   TError = ErrorType<FieldErrorsResponse | void>,
@@ -1081,6 +1192,178 @@ export const useLogin = <
   TContext
 > => {
   return useMutation(getLoginMutationOptions(options));
+};
+
+/**
+ * @summary Request a password reset link (email delivery deferred in v1)
+ */
+export const getForgotPasswordUrl = () => {
+  return `/api/auth/forgot-password`;
+};
+
+export const forgotPassword = async (
+  forgotPasswordInput: ForgotPasswordInput,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getForgotPasswordUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(forgotPasswordInput),
+  });
+};
+
+export const getForgotPasswordMutationOptions = <
+  TError = ErrorType<FieldErrorsResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof forgotPassword>>,
+    TError,
+    { data: BodyType<ForgotPasswordInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof forgotPassword>>,
+  TError,
+  { data: BodyType<ForgotPasswordInput> },
+  TContext
+> => {
+  const mutationKey = ["forgotPassword"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof forgotPassword>>,
+    { data: BodyType<ForgotPasswordInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return forgotPassword(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ForgotPasswordMutationResult = NonNullable<
+  Awaited<ReturnType<typeof forgotPassword>>
+>;
+export type ForgotPasswordMutationBody = BodyType<ForgotPasswordInput>;
+export type ForgotPasswordMutationError = ErrorType<FieldErrorsResponse>;
+
+/**
+ * @summary Request a password reset link (email delivery deferred in v1)
+ */
+export const useForgotPassword = <
+  TError = ErrorType<FieldErrorsResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof forgotPassword>>,
+    TError,
+    { data: BodyType<ForgotPasswordInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof forgotPassword>>,
+  TError,
+  { data: BodyType<ForgotPasswordInput> },
+  TContext
+> => {
+  return useMutation(getForgotPasswordMutationOptions(options));
+};
+
+/**
+ * @summary Set a new password using a reset token; issues auth cookies
+ */
+export const getResetPasswordUrl = () => {
+  return `/api/auth/reset-password`;
+};
+
+export const resetPassword = async (
+  resetPasswordInput: ResetPasswordInput,
+  options?: RequestInit,
+): Promise<MeResponse> => {
+  return customFetch<MeResponse>(getResetPasswordUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(resetPasswordInput),
+  });
+};
+
+export const getResetPasswordMutationOptions = <
+  TError = ErrorType<FieldErrorsResponse | void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof resetPassword>>,
+    TError,
+    { data: BodyType<ResetPasswordInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof resetPassword>>,
+  TError,
+  { data: BodyType<ResetPasswordInput> },
+  TContext
+> => {
+  const mutationKey = ["resetPassword"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof resetPassword>>,
+    { data: BodyType<ResetPasswordInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return resetPassword(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ResetPasswordMutationResult = NonNullable<
+  Awaited<ReturnType<typeof resetPassword>>
+>;
+export type ResetPasswordMutationBody = BodyType<ResetPasswordInput>;
+export type ResetPasswordMutationError = ErrorType<FieldErrorsResponse | void>;
+
+/**
+ * @summary Set a new password using a reset token; issues auth cookies
+ */
+export const useResetPassword = <
+  TError = ErrorType<FieldErrorsResponse | void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof resetPassword>>,
+    TError,
+    { data: BodyType<ResetPasswordInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof resetPassword>>,
+  TError,
+  { data: BodyType<ResetPasswordInput> },
+  TContext
+> => {
+  return useMutation(getResetPasswordMutationOptions(options));
 };
 
 /**
@@ -2001,7 +2284,7 @@ export const sendPlanLead = async (
 };
 
 export const getSendPlanLeadMutationOptions = <
-  TError = ErrorType<void>,
+  TError = ErrorType<void | PaymentRequiredResponse>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -2042,13 +2325,14 @@ export type SendPlanLeadMutationResult = NonNullable<
   Awaited<ReturnType<typeof sendPlanLead>>
 >;
 export type SendPlanLeadMutationBody = BodyType<SendPlanLeadInput>;
-export type SendPlanLeadMutationError = ErrorType<void>;
+export type SendPlanLeadMutationError =
+  ErrorType<void | PaymentRequiredResponse>;
 
 /**
  * @summary Send plan lead to partner (simulated v1)
  */
 export const useSendPlanLead = <
-  TError = ErrorType<void>,
+  TError = ErrorType<void | PaymentRequiredResponse>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -2066,6 +2350,289 @@ export const useSendPlanLead = <
 > => {
   return useMutation(getSendPlanLeadMutationOptions(options));
 };
+
+/**
+ * @summary Replace cards on a draft plan lead (recommended, not yet sent)
+ */
+export const getUpdatePlanLeadCardsUrl = (id: number) => {
+  return `/api/me/plan-leads/${id}/cards`;
+};
+
+export const updatePlanLeadCards = async (
+  id: number,
+  importCardsInput: ImportCardsInput,
+  options?: RequestInit,
+): Promise<PlanLeadDetail> => {
+  return customFetch<PlanLeadDetail>(getUpdatePlanLeadCardsUrl(id), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(importCardsInput),
+  });
+};
+
+export const getUpdatePlanLeadCardsMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updatePlanLeadCards>>,
+    TError,
+    { id: number; data: BodyType<ImportCardsInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updatePlanLeadCards>>,
+  TError,
+  { id: number; data: BodyType<ImportCardsInput> },
+  TContext
+> => {
+  const mutationKey = ["updatePlanLeadCards"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updatePlanLeadCards>>,
+    { id: number; data: BodyType<ImportCardsInput> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updatePlanLeadCards(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdatePlanLeadCardsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updatePlanLeadCards>>
+>;
+export type UpdatePlanLeadCardsMutationBody = BodyType<ImportCardsInput>;
+export type UpdatePlanLeadCardsMutationError = ErrorType<void>;
+
+/**
+ * @summary Replace cards on a draft plan lead (recommended, not yet sent)
+ */
+export const useUpdatePlanLeadCards = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updatePlanLeadCards>>,
+    TError,
+    { id: number; data: BodyType<ImportCardsInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updatePlanLeadCards>>,
+  TError,
+  { id: number; data: BodyType<ImportCardsInput> },
+  TContext
+> => {
+  return useMutation(getUpdatePlanLeadCardsMutationOptions(options));
+};
+
+/**
+ * @summary Start Stripe Checkout for one-time $39 Verified Audit Packet
+ */
+export const getCreateAuditCheckoutUrl = () => {
+  return `/api/me/audit-checkout`;
+};
+
+export const createAuditCheckout = async (
+  createAuditCheckoutInput?: CreateAuditCheckoutInput,
+  options?: RequestInit,
+): Promise<AuditCheckoutPayload> => {
+  return customFetch<AuditCheckoutPayload>(getCreateAuditCheckoutUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(createAuditCheckoutInput),
+  });
+};
+
+export const getCreateAuditCheckoutMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createAuditCheckout>>,
+    TError,
+    { data: BodyType<CreateAuditCheckoutInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createAuditCheckout>>,
+  TError,
+  { data: BodyType<CreateAuditCheckoutInput> },
+  TContext
+> => {
+  const mutationKey = ["createAuditCheckout"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createAuditCheckout>>,
+    { data: BodyType<CreateAuditCheckoutInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createAuditCheckout(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateAuditCheckoutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createAuditCheckout>>
+>;
+export type CreateAuditCheckoutMutationBody =
+  BodyType<CreateAuditCheckoutInput>;
+export type CreateAuditCheckoutMutationError = ErrorType<void>;
+
+/**
+ * @summary Start Stripe Checkout for one-time $39 Verified Audit Packet
+ */
+export const useCreateAuditCheckout = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createAuditCheckout>>,
+    TError,
+    { data: BodyType<CreateAuditCheckoutInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createAuditCheckout>>,
+  TError,
+  { data: BodyType<CreateAuditCheckoutInput> },
+  TContext
+> => {
+  return useMutation(getCreateAuditCheckoutMutationOptions(options));
+};
+
+/**
+ * @summary Poll audit checkout; sets paid access when payment completes
+ */
+export const getGetAuditCheckoutSessionStatusUrl = (
+  params: GetAuditCheckoutSessionStatusParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/me/audit-checkout/session-status?${stringifiedParams}`
+    : `/api/me/audit-checkout/session-status`;
+};
+
+export const getAuditCheckoutSessionStatus = async (
+  params: GetAuditCheckoutSessionStatusParams,
+  options?: RequestInit,
+): Promise<AuditCheckoutSessionStatusResponse> => {
+  return customFetch<AuditCheckoutSessionStatusResponse>(
+    getGetAuditCheckoutSessionStatusUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getGetAuditCheckoutSessionStatusQueryKey = (
+  params?: GetAuditCheckoutSessionStatusParams,
+) => {
+  return [
+    `/api/me/audit-checkout/session-status`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getGetAuditCheckoutSessionStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAuditCheckoutSessionStatus>>,
+  TError = ErrorType<void>,
+>(
+  params: GetAuditCheckoutSessionStatusParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAuditCheckoutSessionStatus>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetAuditCheckoutSessionStatusQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAuditCheckoutSessionStatus>>
+  > = ({ signal }) =>
+    getAuditCheckoutSessionStatus(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAuditCheckoutSessionStatus>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAuditCheckoutSessionStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAuditCheckoutSessionStatus>>
+>;
+export type GetAuditCheckoutSessionStatusQueryError = ErrorType<void>;
+
+/**
+ * @summary Poll audit checkout; sets paid access when payment completes
+ */
+
+export function useGetAuditCheckoutSessionStatus<
+  TData = Awaited<ReturnType<typeof getAuditCheckoutSessionStatus>>,
+  TError = ErrorType<void>,
+>(
+  params: GetAuditCheckoutSessionStatusParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAuditCheckoutSessionStatus>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAuditCheckoutSessionStatusQueryOptions(
+    params,
+    options,
+  );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
 
 /**
  * @summary Start Stripe Checkout for subscription renewal (subscription only, no setup fee)
@@ -2958,7 +3525,8 @@ export function useGetAdminUser<
 }
 
 /**
- * @summary Plan leads for a user
+ * Paginated list of plan leads with partner_id set (excludes not-sent drafts).
+ * @summary Plan leads sent to a partner for a user
  */
 export const getGetAdminUserPlansUrl = (
   id: number,
@@ -3043,7 +3611,7 @@ export type GetAdminUserPlansQueryResult = NonNullable<
 export type GetAdminUserPlansQueryError = ErrorType<void>;
 
 /**
- * @summary Plan leads for a user
+ * @summary Plan leads sent to a partner for a user
  */
 
 export function useGetAdminUserPlans<

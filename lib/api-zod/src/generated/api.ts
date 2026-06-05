@@ -432,6 +432,49 @@ export const LoginResponse = zod.object({
 });
 
 /**
+ * @summary Request a password reset link (email delivery deferred in v1)
+ */
+export const ForgotPasswordBody = zod.object({
+  email: zod.string().email(),
+});
+
+/**
+ * @summary Set a new password using a reset token; issues auth cookies
+ */
+export const resetPasswordBodyTokenMax = 256;
+
+export const resetPasswordBodyPasswordMin = 8;
+export const resetPasswordBodyPasswordMax = 20;
+
+export const resetPasswordBodyConfirmPasswordMin = 8;
+export const resetPasswordBodyConfirmPasswordMax = 20;
+
+export const ResetPasswordBody = zod.object({
+  token: zod.string().min(1).max(resetPasswordBodyTokenMax),
+  password: zod
+    .string()
+    .min(resetPasswordBodyPasswordMin)
+    .max(resetPasswordBodyPasswordMax),
+  confirmPassword: zod
+    .string()
+    .min(resetPasswordBodyConfirmPasswordMin)
+    .max(resetPasswordBodyConfirmPasswordMax),
+});
+
+export const ResetPasswordResponse = zod.object({
+  id: zod.number(),
+  email: zod.string().email(),
+  firstName: zod.string().nullish(),
+  lastName: zod.string().nullish(),
+  role: zod.string(),
+  hasActiveSubscription: zod
+    .boolean()
+    .describe(
+      "True when the user paid the one-time audit fee or has legacy active subscription",
+    ),
+});
+
+/**
  * @summary Rotate refresh token and re-issue access cookie
  */
 export const RefreshSessionResponse = zod.object({
