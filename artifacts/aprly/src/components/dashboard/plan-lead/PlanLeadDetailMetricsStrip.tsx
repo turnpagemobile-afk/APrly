@@ -11,6 +11,8 @@ type PlanLeadDetailMetricsStripProps = {
     PlanLeadDetail,
     "status" | "balance" | "currentApr" | "estimatedAnnualSavings" | "targetApr"
   >;
+  statusLabel?: string;
+  visualStatus?: PlanLeadStatus;
 };
 
 function statusBadgeLabel(status: PlanLeadStatus): string {
@@ -44,34 +46,39 @@ function statusBadgeClass(status: PlanLeadStatus): string {
   }
 }
 
-export function PlanLeadDetailMetricsStrip({ detail }: PlanLeadDetailMetricsStripProps) {
+export function PlanLeadDetailMetricsStrip({
+  detail,
+  statusLabel: statusLabelOverride,
+  visualStatus,
+}: PlanLeadDetailMetricsStripProps) {
   const metrics = planLeadDetailContent.metrics;
-  const statusLabel = statusBadgeLabel(detail.status);
+  const tileStatus = visualStatus ?? detail.status;
+  const statusLabel = statusLabelOverride ?? statusBadgeLabel(detail.status);
 
   return (
     <div className="dash-plan-detail-metrics">
       <div
         className={cn(
           "dash-plan-detail-status-tile",
-          detail.status === "won" && "dash-plan-detail-status-tile--won",
-          detail.status === "denied" && "dash-plan-detail-status-tile--denied",
+          tileStatus === "won" && "dash-plan-detail-status-tile--won",
+          tileStatus === "denied" && "dash-plan-detail-status-tile--denied",
         )}
       >
         <div className="dash-metric-card-stack">
-          {detail.status === "won" ? (
+          {tileStatus === "won" ? (
             <Check className="dash-plan-detail-status-won-icon" aria-hidden="true" />
           ) : null}
           <p
             className={cn(
               "dash-display-label",
-              detail.status === "won" || detail.status === "denied"
+              tileStatus === "won" || tileStatus === "denied"
                 ? "text-white/90"
                 : "text-[var(--hint-text-color)]",
             )}
           >
             {metrics.planStatus}
           </p>
-          <span className={statusBadgeClass(detail.status)}>{statusLabel}</span>
+          <span className={statusBadgeClass(tileStatus)}>{statusLabel}</span>
         </div>
       </div>
 

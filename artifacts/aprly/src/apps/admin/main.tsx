@@ -7,7 +7,7 @@ import "@/index.css";
 setBaseUrl(import.meta.env.VITE_API_URL || null);
 
 createRoot(document.getElementById("root")!).render(
-  <ThemeProvider>
+  <ThemeProvider forcedTheme="light">
     <AdminApp />
   </ThemeProvider>,
 );

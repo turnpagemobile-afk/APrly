@@ -1286,6 +1286,8 @@ export const GetAdminUserPlansQueryParams = zod.object({
     .default(getAdminUserPlansQueryPageSizeDefault),
 });
 
+export const getAdminUserPlansResponsePlansItemCardCountMin = 0;
+
 export const getAdminUserPlansResponsePlansItemHardshipPortalProgressMin = 0;
 export const getAdminUserPlansResponsePlansItemHardshipPortalProgressMax = 100;
 
@@ -1300,6 +1302,19 @@ export const GetAdminUserPlansResponse = zod.object({
       currentApr: zod.number(),
       targetApr: zod.number(),
       estimatedAnnualSavings: zod.number(),
+      cardCount: zod
+        .number()
+        .min(getAdminUserPlansResponsePlansItemCardCountMin),
+      cards: zod.array(
+        zod.object({
+          id: zod.number(),
+          brand: zod.string(),
+          balance: zod.number(),
+          currentApr: zod.number(),
+          targetApr: zod.number(),
+          estimatedAnnualSavings: zod.number(),
+        }),
+      ),
       status: zod.enum(["recommended", "in_progress", "won", "denied"]),
       displayStatus: zod
         .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
@@ -1342,6 +1357,8 @@ export const GetAdminUserPlanParams = zod.object({
   planId: zod.coerce.number().min(1),
 });
 
+export const getAdminUserPlanResponseCardCountMin = 0;
+
 export const getAdminUserPlanResponseHardshipStepsCompletedMin = 0;
 
 export const getAdminUserPlanResponseHardshipPortalProgressMin = 0;
@@ -1354,6 +1371,17 @@ export const GetAdminUserPlanResponse = zod.object({
   currentApr: zod.number(),
   targetApr: zod.number(),
   estimatedAnnualSavings: zod.number(),
+  cardCount: zod.number().min(getAdminUserPlanResponseCardCountMin),
+  cards: zod.array(
+    zod.object({
+      id: zod.number(),
+      brand: zod.string(),
+      balance: zod.number(),
+      currentApr: zod.number(),
+      targetApr: zod.number(),
+      estimatedAnnualSavings: zod.number(),
+    }),
+  ),
   status: zod.enum(["recommended", "in_progress", "won", "denied"]),
   displayStatus: zod
     .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
@@ -1421,6 +1449,8 @@ export const GetAdminPartnerPlanLeadParams = zod.object({
   planId: zod.coerce.number().min(1),
 });
 
+export const getAdminPartnerPlanLeadResponseCardCountMin = 0;
+
 export const getAdminPartnerPlanLeadResponseHardshipStepsCompletedMin = 0;
 
 export const getAdminPartnerPlanLeadResponseHardshipPortalProgressMin = 0;
@@ -1433,6 +1463,17 @@ export const GetAdminPartnerPlanLeadResponse = zod.object({
   currentApr: zod.number(),
   targetApr: zod.number(),
   estimatedAnnualSavings: zod.number(),
+  cardCount: zod.number().min(getAdminPartnerPlanLeadResponseCardCountMin),
+  cards: zod.array(
+    zod.object({
+      id: zod.number(),
+      brand: zod.string(),
+      balance: zod.number(),
+      currentApr: zod.number(),
+      targetApr: zod.number(),
+      estimatedAnnualSavings: zod.number(),
+    }),
+  ),
   status: zod.enum(["recommended", "in_progress", "won", "denied"]),
   displayStatus: zod
     .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
@@ -1507,6 +1548,8 @@ export const PostAdminPlanLeadStartWorkingParams = zod.object({
   planId: zod.coerce.number().min(1),
 });
 
+export const postAdminPlanLeadStartWorkingResponseCardCountMin = 0;
+
 export const postAdminPlanLeadStartWorkingResponseHardshipStepsCompletedMin = 0;
 
 export const postAdminPlanLeadStartWorkingResponseHardshipPortalProgressMin = 0;
@@ -1519,6 +1562,19 @@ export const PostAdminPlanLeadStartWorkingResponse = zod.object({
   currentApr: zod.number(),
   targetApr: zod.number(),
   estimatedAnnualSavings: zod.number(),
+  cardCount: zod
+    .number()
+    .min(postAdminPlanLeadStartWorkingResponseCardCountMin),
+  cards: zod.array(
+    zod.object({
+      id: zod.number(),
+      brand: zod.string(),
+      balance: zod.number(),
+      currentApr: zod.number(),
+      targetApr: zod.number(),
+      estimatedAnnualSavings: zod.number(),
+    }),
+  ),
   status: zod.enum(["recommended", "in_progress", "won", "denied"]),
   displayStatus: zod
     .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
@@ -1585,6 +1641,8 @@ export const PostAdminPlanLeadCompleteStepParams = zod.object({
   planId: zod.coerce.number().min(1),
 });
 
+export const postAdminPlanLeadCompleteStepResponseCardCountMin = 0;
+
 export const postAdminPlanLeadCompleteStepResponseHardshipStepsCompletedMin = 0;
 
 export const postAdminPlanLeadCompleteStepResponseHardshipPortalProgressMin = 0;
@@ -1597,6 +1655,19 @@ export const PostAdminPlanLeadCompleteStepResponse = zod.object({
   currentApr: zod.number(),
   targetApr: zod.number(),
   estimatedAnnualSavings: zod.number(),
+  cardCount: zod
+    .number()
+    .min(postAdminPlanLeadCompleteStepResponseCardCountMin),
+  cards: zod.array(
+    zod.object({
+      id: zod.number(),
+      brand: zod.string(),
+      balance: zod.number(),
+      currentApr: zod.number(),
+      targetApr: zod.number(),
+      estimatedAnnualSavings: zod.number(),
+    }),
+  ),
   status: zod.enum(["recommended", "in_progress", "won", "denied"]),
   displayStatus: zod
     .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
@@ -1663,6 +1734,8 @@ export const PostAdminPlanLeadRejectParams = zod.object({
   planId: zod.coerce.number().min(1),
 });
 
+export const postAdminPlanLeadRejectResponseCardCountMin = 0;
+
 export const postAdminPlanLeadRejectResponseHardshipStepsCompletedMin = 0;
 
 export const postAdminPlanLeadRejectResponseHardshipPortalProgressMin = 0;
@@ -1675,6 +1748,17 @@ export const PostAdminPlanLeadRejectResponse = zod.object({
   currentApr: zod.number(),
   targetApr: zod.number(),
   estimatedAnnualSavings: zod.number(),
+  cardCount: zod.number().min(postAdminPlanLeadRejectResponseCardCountMin),
+  cards: zod.array(
+    zod.object({
+      id: zod.number(),
+      brand: zod.string(),
+      balance: zod.number(),
+      currentApr: zod.number(),
+      targetApr: zod.number(),
+      estimatedAnnualSavings: zod.number(),
+    }),
+  ),
   status: zod.enum(["recommended", "in_progress", "won", "denied"]),
   displayStatus: zod
     .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])
@@ -1862,6 +1946,8 @@ export const getAdminPartnerPlanLeadsResponseLeadCountsWonMin = 0;
 
 export const getAdminPartnerPlanLeadsResponseLeadCountsRejectedMin = 0;
 
+export const getAdminPartnerPlanLeadsResponsePlanLeadsItemCardCountMin = 0;
+
 export const getAdminPartnerPlanLeadsResponseTotalMin = 0;
 
 export const GetAdminPartnerPlanLeadsResponse = zod.object({
@@ -1898,6 +1984,19 @@ export const GetAdminPartnerPlanLeadsResponse = zod.object({
       currentApr: zod.number(),
       targetApr: zod.number(),
       estimatedAnnualSavings: zod.number(),
+      cardCount: zod
+        .number()
+        .min(getAdminPartnerPlanLeadsResponsePlanLeadsItemCardCountMin),
+      cards: zod.array(
+        zod.object({
+          id: zod.number(),
+          brand: zod.string(),
+          balance: zod.number(),
+          currentApr: zod.number(),
+          targetApr: zod.number(),
+          estimatedAnnualSavings: zod.number(),
+        }),
+      ),
       status: zod.enum(["recommended", "in_progress", "won", "denied"]),
       displayStatus: zod
         .enum(["not_sent", "on_review", "in_progress", "won", "rejected"])

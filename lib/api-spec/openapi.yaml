@@ -2487,6 +2487,8 @@ components:
         - currentApr
         - targetApr
         - estimatedAnnualSavings
+        - cardCount
+        - cards
         - status
         - displayStatus
         - createdAt
@@ -2503,6 +2505,13 @@ components:
           type: number
         estimatedAnnualSavings:
           type: number
+        cardCount:
+          type: integer
+          minimum: 0
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeadCardItem"
         status:
           $ref: "#/components/schemas/PlanLeadStatus"
         displayStatus:
@@ -2559,6 +2568,8 @@ components:
         - currentApr
         - targetApr
         - estimatedAnnualSavings
+        - cardCount
+        - cards
         - status
         - displayStatus
         - createdAt
@@ -2583,6 +2594,13 @@ components:
           type: number
         estimatedAnnualSavings:
           type: number
+        cardCount:
+          type: integer
+          minimum: 0
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeadCardItem"
         status:
           $ref: "#/components/schemas/PlanLeadStatus"
         displayStatus:
@@ -2633,6 +2651,8 @@ components:
         - currentApr
         - targetApr
         - estimatedAnnualSavings
+        - cardCount
+        - cards
         - status
         - displayStatus
         - userEmail
@@ -2652,6 +2672,13 @@ components:
           type: number
         estimatedAnnualSavings:
           type: number
+        cardCount:
+          type: integer
+          minimum: 0
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeadCardItem"
         status:
           $ref: "#/components/schemas/PlanLeadStatus"
         displayStatus:

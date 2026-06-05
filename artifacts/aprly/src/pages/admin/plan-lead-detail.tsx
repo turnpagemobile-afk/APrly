@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { Link, useRoute } from "wouter";
+import { useRoute } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, CreditCard, Loader2, Printer } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   getGetAdminPartnerPlanLeadQueryKey,
   getGetAdminPartnerPlanLeadsQueryKey,
@@ -13,9 +13,7 @@ import {
   usePostAdminPlanLeadStartWorking,
 } from "@workspace/api-client-react";
 import { AdminBreadcrumbs } from "@/components/admin/AdminBreadcrumbs";
-import { AdminHardshipPortalStepper } from "@/components/admin/AdminHardshipPortalStepper";
-import { AdminPlanMetricsStrip } from "@/components/admin/AdminPlanMetricsStrip";
-import { AdminPlanPartnerBar } from "@/components/admin/AdminPlanPartnerBar";
+import { AdminPlanLeadDetailView } from "@/components/admin/AdminPlanLeadDetailView";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,7 +25,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { adminContent } from "@/content/admin";
-import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { openAdminPlanLeadPdf } from "@/lib/admin-plan-lead-pdf";
 
@@ -69,11 +66,20 @@ function formatUserName(first?: string | null, last?: string | null) {
   return `${a} ${b}`.trim() || "—";
 }
 
+function readPlanIndexFromSearch(): number | null {
+  if (typeof window === "undefined") return null;
+  const raw = new URLSearchParams(window.location.search).get("planIndex");
+  if (!raw) return null;
+  const n = Number(raw);
+  return Number.isInteger(n) && n > 0 ? n : null;
+}
+
 function AdminPlanLeadDetailContent({ ctx }: { ctx: PlanDetailContext }) {
   const queryClient = useQueryClient();
   const copy = adminContent.adminPlanDetail;
   const [rejectOpen, setRejectOpen] = useState(false);
   const [printPending, setPrintPending] = useState(false);
+  const planIndex = useMemo(() => readPlanIndexFromSearch(), []);
 
   const userQuery = useGetAdminUserPlan(ctx.kind === "user" ? ctx.userId : 0, ctx.planId, {
     query: {
@@ -218,94 +224,27 @@ function AdminPlanLeadDetailContent({ ctx }: { ctx: PlanDetailContext }) {
     }
   };
 
-  const showPartnerBar =
-    detail.partner != null &&
-    (detail.displayStatus === "on_review" ||
-      detail.displayStatus === "in_progress" ||
-      detail.canStartWorking);
-
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-3">
-        <Button type="button" variant="ghost" size="icon" className="h-9 w-9" asChild>
-          <Link href={backHref} aria-label={copy.backAria}>
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
-        <AdminBreadcrumbs segments={breadcrumbs} />
-      </div>
+    <div className="space-y-6 py-2">
+      <AdminBreadcrumbs segments={breadcrumbs} />
 
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/15">
-            <CreditCard className="h-6 w-6 text-primary" aria-hidden="true" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-primary">{detail.brand}</h1>
-            {ctx.kind === "partner" ? (
-              <p className="text-sm text-muted-foreground">
-                {detail.user.email}
-                {detail.user.firstName || detail.user.lastName
-                  ? ` · ${formatUserName(detail.user.firstName, detail.user.lastName)}`
-                  : null}
-              </p>
-            ) : null}
-          </div>
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 text-primary"
-          aria-label={copy.printAria}
-          disabled={printPending || isMutating}
-          onClick={() => void onPrint()}
-        >
-          {printPending ? (
-            <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
-          ) : (
-            <Printer className="h-5 w-5" />
-          )}
-        </Button>
-      </div>
-
-      <AdminPlanMetricsStrip detail={detail} />
-
-      {showPartnerBar ? (
-        <AdminPlanPartnerBar
+      <div className="dash-plan-detail-layout">
+        <AdminPlanLeadDetailView
           detail={detail}
+          ctx={ctx}
+          backHref={backHref}
+          planIndex={planIndex}
+          printPending={printPending}
+          isMutating={isMutating}
+          onPrint={() => void onPrint()}
           onStartWorking={() => void onStartWorking()}
+          onCompleteStep={() => void onCompleteStep()}
           onReject={() => setRejectOpen(true)}
           isStarting={startWorking.isPending}
-          isRejecting={rejectLead.isPending}
-        />
-      ) : null}
-
-      {detail.displayStatus === "not_sent" ? (
-        <p className="text-sm text-muted-foreground">{copy.notSentMessage}</p>
-      ) : null}
-
-      {detail.displayStatus === "won" ? (
-        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-          {copy.terminalWon}
-        </p>
-      ) : null}
-
-      {detail.displayStatus === "rejected" ? (
-        <p className="text-sm font-medium text-destructive">{copy.terminalRejected}</p>
-      ) : null}
-
-      {detail.hardshipPortal ? (
-        <AdminHardshipPortalStepper
-          portal={detail.hardshipPortal}
-          canCompleteStep={detail.canCompleteStep}
-          canReject={detail.canReject}
-          onComplete={() => void onCompleteStep()}
-          onReject={() => setRejectOpen(true)}
           isCompleting={completeStep.isPending}
           isRejecting={rejectLead.isPending}
         />
-      ) : null}
+      </div>
 
       <AlertDialog open={rejectOpen} onOpenChange={setRejectOpen}>
         <AlertDialogContent>

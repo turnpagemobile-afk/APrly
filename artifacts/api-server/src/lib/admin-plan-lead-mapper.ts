@@ -1,7 +1,7 @@
 import type { DebtLead, LeadCard } from "@workspace/db";
 import { buildHardshipPortal } from "./build-hardship-portal";
 import { HARDSHIP_STEPS_TOTAL } from "./hardship-steps";
-import { aggregateLeadCards } from "./lead-mapper";
+import { aggregateLeadCards, mapLeadCardRow } from "./lead-mapper";
 import {
   resolveAdminUserPlanDisplayStatus,
   type AdminUserPlanDisplayStatus,
@@ -59,6 +59,7 @@ export function mapAdminPlanLeadDetail(
     targetApr: agg.targetApr,
     estimatedAnnualSavings: agg.totalEstimatedSavings,
     cardCount: agg.cardCount,
+    cards: cards.map(mapLeadCardRow),
     status: lead.status,
     displayStatus,
     createdAt: lead.createdAt.toISOString(),
@@ -102,6 +103,7 @@ export function mapAdminPlanLeadListRow(
     targetApr: agg.targetApr,
     estimatedAnnualSavings: agg.totalEstimatedSavings,
     cardCount: agg.cardCount,
+    cards: cards.map(mapLeadCardRow),
     status: lead.status,
     displayStatus,
     partnerName: partnerName ?? null,
@@ -110,6 +112,29 @@ export function mapAdminPlanLeadListRow(
         ? buildHardshipPortal(lead.hardshipStepsCompleted)
         : undefined,
     createdAt: lead.createdAt.toISOString(),
+  };
+}
+
+type PartnerPlanLeadUser = {
+  userId: number;
+  userEmail: string;
+  firstName: string | null;
+  lastName: string | null;
+};
+
+export function mapAdminPartnerPlanLeadRow(
+  lead: DebtLead,
+  cards: LeadCard[],
+  user: PartnerPlanLeadUser,
+) {
+  const base = mapAdminPlanLeadListRow(lead, cards);
+  return {
+    ...base,
+    userId: user.userId,
+    userEmail: user.userEmail,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    sentToPartnerAt: lead.sentToPartnerAt?.toISOString() ?? null,
   };
 }
 

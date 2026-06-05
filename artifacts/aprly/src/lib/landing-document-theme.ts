@@ -35,3 +35,7 @@ export function isCabinetHomeTabPath(pathname: string, search: string): boolean 
   );
   return tab === "home" || tab === null;
 }
+
+export function isAdminPath(pathname: string): boolean {
+  return pathname === "/admin" || pathname.startsWith("/admin/");
+}

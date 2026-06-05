@@ -772,6 +772,9 @@ export interface AdminUserPlanLeadRow {
   currentApr: number;
   targetApr: number;
   estimatedAnnualSavings: number;
+  /** @minimum 0 */
+  cardCount: number;
+  cards: LeadCardItem[];
   status: PlanLeadStatus;
   displayStatus: AdminUserPlanDisplayStatus;
   partnerName?: string | null;
@@ -803,6 +806,9 @@ export interface AdminPlanLeadDetailResponse {
   currentApr: number;
   targetApr: number;
   estimatedAnnualSavings: number;
+  /** @minimum 0 */
+  cardCount: number;
+  cards: LeadCardItem[];
   status: PlanLeadStatus;
   displayStatus: AdminUserPlanDisplayStatus;
   createdAt: string;
@@ -830,6 +836,9 @@ export interface AdminPartnerPlanLead {
   currentApr: number;
   targetApr: number;
   estimatedAnnualSavings: number;
+  /** @minimum 0 */
+  cardCount: number;
+  cards: LeadCardItem[];
   status: PlanLeadStatus;
   displayStatus: AdminUserPlanDisplayStatus;
   userEmail: string;

@@ -1,14 +1,19 @@
 import { Check } from "lucide-react";
-import type { HardshipPortal } from "@workspace/api-client-react";
+import type { HardshipPortal, HardshipStep } from "@workspace/api-client-react";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 type HardshipPortalStepperProps = {
   portal: HardshipPortal;
+  renderActiveStepActions?: (step: HardshipStep) => ReactNode;
 };
 
-export function HardshipPortalStepper({ portal }: HardshipPortalStepperProps) {
+export function HardshipPortalStepper({
+  portal,
+  renderActiveStepActions,
+}: HardshipPortalStepperProps) {
   const copy = planLeadDetailContent;
 
   const onCta = () => {
@@ -71,15 +76,18 @@ export function HardshipPortalStepper({ portal }: HardshipPortalStepperProps) {
                     </span>
                   ) : null}
                   {isActive ? (
-                    <span className="dash-plan-detail-step-pill dash-plan-detail-step-pill--active">
-                      {copy.stepInProgress}
-                    </span>
+                    <>
+                      <span className="dash-plan-detail-step-pill dash-plan-detail-step-pill--active">
+                        {copy.stepInProgress}
+                      </span>
+                      {renderActiveStepActions ? renderActiveStepActions(step) : null}
+                    </>
                   ) : null}
                 </div>
                 {step.description ? (
                   <p className="dash-plan-detail-step-desc">{step.description}</p>
                 ) : null}
-                {step.cta && step.status === "pending" ? (
+                {!renderActiveStepActions && step.cta && step.status === "pending" ? (
                   <button type="button" className="dash-plan-detail-step-cta" onClick={onCta}>
                     {step.cta}
                   </button>
