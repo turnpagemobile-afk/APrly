@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import {
   applyDarkDocumentTheme,
   applyLandingLightDocumentTheme,
+  isAdminPath,
   isCabinetHomeTabPath,
   isLandingMarketingPath,
 } from "@/lib/landing-document-theme";
@@ -27,7 +28,8 @@ export function LandingThemeEffect() {
       const monoSearchPart = monoSearch ? `?${monoSearch}` : "";
       if (
         isLandingMarketingPath(monoPath) ||
-        isCabinetHomeTabPath(monoPath, monoSearchPart)
+        isCabinetHomeTabPath(monoPath, monoSearchPart) ||
+        isAdminPath(monoPath)
       ) {
         setTheme("light");
         applyLandingLightDocumentTheme();
@@ -35,6 +37,12 @@ export function LandingThemeEffect() {
         setTheme("dark");
         applyDarkDocumentTheme();
       }
+      return;
+    }
+
+    if (__APRLY_APP__ === "admin") {
+      setTheme("light");
+      applyLandingLightDocumentTheme();
       return;
     }
 

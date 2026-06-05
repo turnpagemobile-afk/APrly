@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AdminUserPlanDisplayStatus } from "./adminUserPlanDisplayStatus";
+import type { LeadCardItem } from "./leadCardItem";
 import type { PlanLeadStatus } from "./planLeadStatus";
 
 export interface AdminPartnerPlanLead {
@@ -16,6 +17,9 @@ export interface AdminPartnerPlanLead {
   currentApr: number;
   targetApr: number;
   estimatedAnnualSavings: number;
+  /** @minimum 0 */
+  cardCount: number;
+  cards: LeadCardItem[];
   status: PlanLeadStatus;
   displayStatus: AdminUserPlanDisplayStatus;
   userEmail: string;

@@ -7,6 +7,7 @@
  */
 import type { AdminUserPlanDisplayStatus } from "./adminUserPlanDisplayStatus";
 import type { HardshipPortal } from "./hardshipPortal";
+import type { LeadCardItem } from "./leadCardItem";
 import type { PlanLeadStatus } from "./planLeadStatus";
 
 export interface AdminUserPlanLeadRow {
@@ -16,6 +17,9 @@ export interface AdminUserPlanLeadRow {
   currentApr: number;
   targetApr: number;
   estimatedAnnualSavings: number;
+  /** @minimum 0 */
+  cardCount: number;
+  cards: LeadCardItem[];
   status: PlanLeadStatus;
   displayStatus: AdminUserPlanDisplayStatus;
   partnerName?: string | null;

@@ -18,8 +18,7 @@ import {
   fetchPartnerLeadCountsMap,
 } from "../lib/admin-partner-lead-counts";
 import { loadLeadCards } from "../lib/debt-lead-service";
-import { aggregateLeadCards } from "../lib/lead-mapper";
-import { resolveAdminUserPlanDisplayStatus } from "../lib/plan-lead-display-status";
+import { mapAdminPartnerPlanLeadRow } from "../lib/admin-plan-lead-mapper";
 import { requireAdmin } from "../middleware/requireAdmin";
 
 const router: IRouter = Router();
@@ -110,27 +109,12 @@ router.get("/admin/partners/:id/plan-leads", ...requireAdmin, async (req, res, n
     const planLeads = await Promise.all(
       rows.map(async ({ lead, userEmail, firstName, lastName }) => {
         const cards = await loadLeadCards(lead.id);
-        const agg = aggregateLeadCards(cards);
-        return {
-          id: lead.id,
+        return mapAdminPartnerPlanLeadRow(lead, cards, {
           userId: lead.userId!,
-          brand: agg.cardCount > 1 ? `${agg.primaryBrand} (+${agg.cardCount - 1})` : agg.primaryBrand,
-          balance: agg.totalBalance,
-          currentApr: agg.weightedCurrentApr,
-          targetApr: agg.targetApr,
-          estimatedAnnualSavings: agg.totalEstimatedSavings,
-          status: lead.status,
-          displayStatus: resolveAdminUserPlanDisplayStatus({
-            status: lead.status,
-            partnerId: lead.partnerId,
-            partnerAcceptedAt: lead.partnerAcceptedAt,
-          }),
           userEmail,
           firstName,
           lastName,
-          sentToPartnerAt: lead.sentToPartnerAt?.toISOString() ?? null,
-          createdAt: lead.createdAt.toISOString(),
-        };
+        });
       }),
     );
 

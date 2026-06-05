@@ -173,9 +173,13 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
           ) : (
             <>
               <ul className="space-y-4">
-                {plansData.plans.map((plan) => (
+                {plansData.plans.map((plan, index) => (
                   <li key={plan.id}>
-                    <AdminUserPlanCard plan={plan} userId={userId} />
+                    <AdminUserPlanCard
+                      plan={plan}
+                      userId={userId}
+                      planIndex={(plansPage - 1) * plansPageSize + index + 1}
+                    />
                   </li>
                 ))}
               </ul>
