@@ -41,6 +41,6 @@ export function setupCabinetPwaHead(): void {
   upsertLink("manifest", MANIFEST_HREF);
   upsertLink("apple-touch-icon", APPLE_TOUCH_ICON);
   upsertMeta("apple-mobile-web-app-capable", "yes");
-  upsertMeta("apple-mobile-web-app-title", "APRly");
+  upsertMeta("apple-mobile-web-app-title", "APrly");
   upsertMeta("apple-mobile-web-app-status-bar-style", "black-translucent");
 }

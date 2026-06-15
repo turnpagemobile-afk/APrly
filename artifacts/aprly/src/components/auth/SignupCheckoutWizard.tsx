@@ -301,7 +301,7 @@ export function SignupCheckoutWizard({
   const handleSuccessOk = () => {
     onOpenChange(false);
     releaseDialogScrollLock();
-    goToCabinet("/dashboard?tab=home");
+    goToCabinet();
   };
 
   const allowDismiss =

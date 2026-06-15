@@ -6,7 +6,7 @@ import { CabinetAppBanner } from "@/components/dashboard/CabinetAppBanner";
 import { CabinetHeaderActions } from "@/components/dashboard/CabinetHeaderActions";
 import { DashboardTabBar, type DashboardTab } from "@/components/dashboard/DashboardTabBar";
 import { DashboardUserMenu } from "@/components/dashboard/DashboardUserMenu";
-import { footerContent } from "@/content/landing";
+import { footerContent, brandContent } from "@/content/landing";
 import { createPlanHref } from "@/lib/create-plan-navigation";
 import { DEFAULT_AUDIT_CHECKOUT_RETURN } from "@/lib/audit-checkout-return";
 import { CabinetActivateProvider } from "@/lib/cabinet-activate-context";
@@ -81,7 +81,7 @@ function DashboardShellInner({
                 showTabs ? "grid-cols-[1fr_auto_1fr]" : "grid-cols-[1fr_auto]",
               )}
             >
-              <Link href="/dashboard?tab=home" className="justify-self-start" aria-label="APRly home">
+              <Link href="/dashboard?tab=home" className="justify-self-start" aria-label={`${brandContent.name} home`}>
                 <AuthBrandLogo size="header" className="!text-left" />
               </Link>
 
@@ -104,7 +104,7 @@ function DashboardShellInner({
 
             <div className="bp1200:hidden">
               <div className="flex items-center justify-between gap-3">
-                <Link href="/dashboard?tab=home" aria-label="APRly home">
+                <Link href="/dashboard?tab=home" aria-label={`${brandContent.name} home`}>
                   <AuthBrandLogo size="header" className="!text-left" />
                 </Link>
 

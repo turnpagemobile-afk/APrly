@@ -56,7 +56,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      goToCabinet("/dashboard?tab=home");
+      goToCabinet();
     }
   }, [isAuthenticated, isLoading]);
 
@@ -79,7 +79,7 @@ export default function LoginPage() {
     try {
       await login.mutateAsync({ data: { email, password } });
       await syncAuthSession(queryClient);
-      goToCabinet("/dashboard?tab=home");
+      goToCabinet();
     } catch {
       setAuthError(true);
     }

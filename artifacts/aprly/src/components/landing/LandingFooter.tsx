@@ -30,7 +30,7 @@ export function LandingFooter({ copyright, homeHref = "/" }: LandingFooterProps)
           <Link
             href={homeHref}
             className="text-2xl font-black tracking-tight text-white/95 transition-opacity hover:opacity-90 bp600:text-3xl"
-            aria-label="APRly home"
+            aria-label={`${brandContent.name} home`}
           >
             {brandContent.name}
           </Link>

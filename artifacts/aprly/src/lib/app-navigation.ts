@@ -4,6 +4,8 @@
  * helpers when leaving one app for another.
  */
 
+import { DEFAULT_CABINET_PATH } from "./dashboard-tab-url";
+
 /** Cabinet Vite build uses `base: /dashboard/` — require trailing slash before `?`. */
 export function normalizeCabinetUrl(path: string): string {
   const q = path.indexOf("?");
@@ -15,7 +17,7 @@ export function normalizeCabinetUrl(path: string): string {
   return path;
 }
 
-export function goToCabinet(path = "/dashboard?tab=home"): void {
+export function goToCabinet(path = DEFAULT_CABINET_PATH): void {
   window.location.assign(normalizeCabinetUrl(path));
 }
 

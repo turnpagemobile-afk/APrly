@@ -99,7 +99,7 @@ function drawPdfHeader(doc: PdfDoc, lead: DebtLead, titleBrand: string) {
     });
     contentTop = MARGIN + LOGO_FIT_HEIGHT + 12;
   } else {
-    doc.fillColor(BRAND_ORANGE).fontSize(22).font("Helvetica-Bold").text("APRly", MARGIN, MARGIN, {
+    doc.fillColor(BRAND_ORANGE).fontSize(22).font("Helvetica-Bold").text("APrly", MARGIN, MARGIN, {
       lineBreak: false,
     });
     contentTop = MARGIN + 28;

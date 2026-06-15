@@ -1,9 +1,9 @@
 export const adminContent = {
-  brand: "APRly",
+  brand: "APrly",
   panelTitle: "Admin panel",
   login: {
     title: "Log In",
-    subtitle: "to APRly Admin Panel",
+    subtitle: "to APrly Admin Panel",
     email: "Email",
     password: "Password",
     submit: "Log In",

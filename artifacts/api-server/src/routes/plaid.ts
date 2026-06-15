@@ -70,7 +70,8 @@ router.post("/plaid/link-token", async (_req, res, next) => {
 
     const tokenRes = await client.linkTokenCreate({
       user: { client_user_id: randomUUID() },
-      client_name: "APRly",
+      client_name: "APrly",
+      link_customization_name: "default",
       // Transactions + Liabilities: broader institution support in Link; Liabilities alone can fail Link init for some flows.
       products: [Products.Transactions, Products.Liabilities],
       country_codes: [CountryCode.Us],

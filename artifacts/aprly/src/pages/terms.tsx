@@ -4,7 +4,7 @@ const LAST_UPDATED = "May 7, 2026";
 
 export default function Terms() {
   useEffect(() => {
-    document.title = "Terms of Service — APRly.ai";
+    document.title = "Terms of Service — APrly.ai";
   }, []);
 
   return (
@@ -28,7 +28,7 @@ export default function Terms() {
           access, billing, and dispute-resolution terms.
         </p>
         <p>
-          Directional notes: APRly is currently offered with a one-time Audit
+          Directional notes: APrly is currently offered with a one-time Audit
           Access Fee of $39. The product is delivered through a paid web
           application and does not constitute legal, financial, or tax advice.
         </p>
