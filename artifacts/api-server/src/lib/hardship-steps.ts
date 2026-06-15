@@ -27,7 +27,7 @@ export const HARDSHIP_STEP_DEFINITIONS: HardshipStepDefinition[] = [
   },
   {
     name: "Sign the hardship agreement",
-    description: "E-sign in APRly to lock in the lower rate immediately.",
+    description: "E-sign in APrly to lock in the lower rate immediately.",
     cta: "E-sign",
   },
   {
@@ -42,7 +42,7 @@ export const HARDSHIP_STEP_DEFINITIONS: HardshipStepDefinition[] = [
   },
   {
     name: "Schedule next re-negotiation",
-    description: "APRly queues your next rate review (typically 90 days out).",
+    description: "APrly queues your next rate review (typically 90 days out).",
     cta: "Set reminder",
   },
 ];

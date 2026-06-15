@@ -49,7 +49,7 @@ export const dashboardTabContent = {
     successTitle: "Payment received",
     successDescription: "You can send plan leads to partners without limits.",
     cancelTitle: "Checkout canceled",
-    cancelDescription: "You can activate APRly anytime from the Dashboard tab.",
+    cancelDescription: "You can activate APrly anytime from the Dashboard tab.",
     errorTitle: "Checkout failed",
     errorDescription: "Could not start checkout. Please try again.",
   },

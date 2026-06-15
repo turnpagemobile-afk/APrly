@@ -192,7 +192,7 @@ export default function ResetPasswordPage() {
             <button
               type="button"
               className="reset-password-primary-btn mt-6"
-              onClick={() => goToCabinet("/dashboard?tab=home")}
+              onClick={() => goToCabinet()}
             >
               {copy.goToDashboard}
             </button>

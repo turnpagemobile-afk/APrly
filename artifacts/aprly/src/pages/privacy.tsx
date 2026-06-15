@@ -4,7 +4,7 @@ const LAST_UPDATED = "May 7, 2026";
 
 export default function Privacy() {
   useEffect(() => {
-    document.title = "Privacy Policy — APRly.ai";
+    document.title = "Privacy Policy — APrly.ai";
   }, []);
 
   return (
@@ -24,11 +24,11 @@ export default function Privacy() {
       <section className="space-y-5 text-base leading-relaxed text-foreground/85">
         <p>
           This page is a placeholder. The final Privacy Policy is being prepared
-          alongside our launch and will describe in detail how APRly collects,
+          alongside our launch and will describe in detail how APrly collects,
           stores, and processes user data.
         </p>
         <p>
-          As a directional summary: APRly does not store bank credentials.
+          As a directional summary: APrly does not store bank credentials.
           Account access is mediated by short-lived Plaid tokens. Sensitive data
           is encrypted at rest using AES-256, and all traffic is protected with
           TLS 1.2 or higher. We retain account data for 30 days after an account

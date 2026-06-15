@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AuthBrandLogo } from "@/components/auth/AuthBrandLogo";
 import { LandingFooter } from "@/components/landing/LandingFooter";
-import { footerContent, navContent } from "@/content/landing";
+import { footerContent, navContent, brandContent } from "@/content/landing";
 import {
   isCabinetShellPath,
   isLandingMarketingPath,
@@ -219,7 +219,7 @@ export function VoiceAssistant() {
               : "text-muted-foreground hover:text-primary"
         }`}
         aria-pressed={isRecording}
-        aria-label={isRecording ? "Stop recording" : "Talk to APRly"}
+        aria-label={isRecording ? "Stop recording" : `Talk to ${brandContent.name}`}
       >
         {isRecording ? (
           <Square className="h-4 w-4 mr-2 fill-current" />
@@ -228,7 +228,7 @@ export function VoiceAssistant() {
         ) : (
           <Mic className="h-4 w-4 mr-2" />
         )}
-        {isRecording ? "Stop" : pending ? "Thinking" : "Talk to APRly"}
+        {isRecording ? "Stop" : pending ? "Thinking" : `Talk to ${brandContent.name}`}
         {isRecording && (
           <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-rose-400 animate-ping" />
         )}
@@ -351,13 +351,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
               "flex shrink-0 items-center",
               isLandingApp && "cabinet:mr-0",
             )}
-            aria-label="APRly home"
+            aria-label={`${brandContent.name} home`}
           >
-            {isLandingApp ? (
-              <AuthBrandLogo size="header" className="!text-left" />
-            ) : (
-              <span className="text-2xl font-black tracking-tight text-foreground">APRly</span>
-            )}
+            <AuthBrandLogo size="header" className="!text-left" />
           </Link>
 
           {!isLandingApp && navContent.links.length > 0 ? (

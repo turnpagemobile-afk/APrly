@@ -1,9 +1,9 @@
 {
   "id": "/dashboard",
-  "name": "APRly",
-  "short_name": "APRly",
-  "description": "Your APRly wealth cockpit",
-  "start_url": "/dashboard/?tab=home",
+  "name": "APrly",
+  "short_name": "APrly",
+  "description": "Your APrly wealth cockpit",
+  "start_url": "/dashboard/?tab=dashboard",
   "scope": "/dashboard",
   "display": "standalone",
   "background_color": "#0c0c0e",

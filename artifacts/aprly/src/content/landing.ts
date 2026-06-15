@@ -3,10 +3,10 @@
  */
 
 export const brandContent = {
-  name: "APRly",
-  logoApr: "APR",
-  logoLy: "ly",
-  signature: "by APRly",
+  name: "APrly",
+  logoApr: "AP",
+  logoLy: "rly",
+  signature: "by APrly",
 } as const;
 
 type NavLink = { id: string; label: string; href: string };
@@ -22,8 +22,8 @@ export const heroContent = {
   headlineLead: "WE HAVE",
   headlineHighlight: "THE SOLUTION",
   cta: { label: "START AUDIT", target: "#optimizer" },
-  videoAlt: "APRly overview video",
-  posterAlt: "APRly hero video poster",
+  videoAlt: "APrly overview video",
+  posterAlt: "APrly hero video poster",
   videoCaption: "Staring at credit card balances with rates",
 } as const;
 
@@ -79,7 +79,7 @@ export const easyStepsContent = {
       number: "2",
       title: "GET A PLAN",
       tone: "teal" as const,
-      body: "Let APRly AI help you find effective ways to lower your interest rates and save money. Get a detailed action plan, the progress of which will be automatically tracked.",
+      body: "Let APrly AI help you find effective ways to lower your interest rates and save money. Get a detailed action plan, the progress of which will be automatically tracked.",
     },
     {
       number: "3",
@@ -128,7 +128,7 @@ export const dashboardPreviewContent = {
   subtitleLead: "USE THE WEBSITE OR THE",
   subtitleHighlight: "APRLY APP",
   subtitleRest: "AFTER ACTIVATION.",
-  imageAlt: "APRly dashboard on laptop",
+  imageAlt: "APrly dashboard on laptop",
 } as const;
 
 export const optimizerContent = {
@@ -174,7 +174,7 @@ export const faqContent = {
     {
       id: "what",
       q: "WHAT IS APRLY AND HOW DOES IT WORK?",
-      a: "APRly analyzes your debt and interest rates, then helps you find legitimate ways to lower what you pay banks — with a clear plan and partner support when you're ready.",
+      a: "APrly analyzes your debt and interest rates, then helps you find legitimate ways to lower what you pay banks — with a clear plan and partner support when you're ready.",
     },
     {
       id: "secure",
@@ -209,7 +209,7 @@ export const planContent = {
   subtitle: "",
   cta: { label: "START AUDIT", target: "#optimizer" },
   card: {
-    heading: "Unlock APRly — US $39 one-time",
+    heading: "Unlock APrly — US $39 one-time",
     features: [
       "24/7 automated rate negotiation",
       "Hardship portal management",
@@ -226,7 +226,7 @@ export const planContent = {
 
 export const notFoundContent = {
   title: "I CAN'T FIND THAT PAGE",
-  subtitle: "Check the address or learn more about APRly",
+  subtitle: "Check the address or learn more about APrly",
   cta: "LEARN MORE",
   ctaHref: "/",
   imageAlt: "Magnifying glass illustration for page not found",
@@ -242,7 +242,7 @@ export const footerContent = {
     { id: "facebook", label: "Facebook", href: "#" },
     { id: "linkedin", label: "LinkedIn", href: "#" },
   ],
-  copyrightTemplate: "Copyright \u00a9APRly, All rights reserved, {year}",
+  copyrightTemplate: "Copyright \u00a9APrly, All rights reserved, {year}",
 } as const;
 
 export const authContent = {
@@ -285,7 +285,7 @@ export const authContent = {
     submit: "CONTINUE",
     successTitle: "EMAIL HAS BEEN SENT",
     successSubtitle:
-      "We've sent you an email with a link to reset your APRly account password.",
+      "We've sent you an email with a link to reset your APrly account password.",
     successOk: "OK",
     errors: {
       emailRequired: "You need to enter your account email to proceed",

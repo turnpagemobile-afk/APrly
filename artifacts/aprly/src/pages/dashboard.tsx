@@ -15,7 +15,7 @@ import {
 } from "@/lib/dashboard-tab-url";
 
 function readTabFromUrl(): DashboardTab {
-  if (typeof window === "undefined") return "home";
+  if (typeof window === "undefined") return "dashboard";
   return parseDashboardTab(window.location.search);
 }
 
