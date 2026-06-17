@@ -21,6 +21,8 @@ import {
 } from "../lib/debt-lead-service";
 import { mapPlanLeadDetail, mapPlanLeadRow } from "../lib/lead-mapper";
 import { resolveHasPaidAccess } from "../lib/subscription-status";
+import { ghlSyncPlanCreated, ghlSyncPlanSent } from "../lib/ghl/ghl-sync";
+import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
@@ -147,6 +149,9 @@ async function sendLeadHandler(
     }
 
     const cards = await loadLeadCards(id);
+    void ghlSyncPlanSent(userId, id, partner.name).catch((err) =>
+      logger.warn({ err, userId, leadId: id, event: "E4" }, "ghl plan sent sync failed"),
+    );
     res.json(
       SendPlanLeadResponse.parse(
         mapPlanLeadDetail(updated, cards, {
@@ -172,6 +177,13 @@ router.post("/me/detailed-plan", requireAuth, async (req, res, next) => {
     }
 
     const { createdCount, plans } = await createDetailedDebtLead(userId, parsed.data.cards);
+
+    const newestPlan = plans[plans.length - 1];
+    if (newestPlan) {
+      void ghlSyncPlanCreated(userId, newestPlan.id).catch((err) =>
+        logger.warn({ err, userId, leadId: newestPlan.id, event: "E2" }, "ghl plan created sync failed"),
+      );
+    }
 
     res.json(
       CreateDetailedPlanResponse.parse({

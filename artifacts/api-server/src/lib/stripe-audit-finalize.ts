@@ -1,6 +1,8 @@
 import Stripe from "stripe";
 import { eq } from "drizzle-orm";
 import { db, usersTable } from "@workspace/db";
+import { ghlSyncPaidAudit } from "./ghl/ghl-sync";
+import { logger } from "./logger";
 
 /**
  * Idempotent: mark user as paid after one-time audit Checkout (mode=payment).
@@ -38,4 +40,8 @@ export async function finalizeAuditCheckoutIfNeeded(
   }
 
   await db.update(usersTable).set(patch).where(eq(usersTable.id, userId));
+
+  void ghlSyncPaidAudit(userId).catch((err) =>
+    logger.warn({ err, userId, event: "E3" }, "ghl paid audit sync failed"),
+  );
 }

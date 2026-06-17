@@ -8,3 +8,4 @@ export * from "./debt_leads";
 export * from "./lead_cards";
 export * from "./plan_leads";
 export * from "./partners";
+export * from "./ghl_sync_queue";
