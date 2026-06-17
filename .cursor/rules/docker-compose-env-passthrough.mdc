@@ -1,0 +1,43 @@
+---
+description: When adding api-server env vars, wire them through docker-compose.prod.yml immediately
+globs: docker-compose*.yml,.env.example,artifacts/api-server/**/*
+alwaysApply: false
+---
+
+# Docker Compose env passthrough (api-server)
+
+## Rule
+
+When introducing or documenting new **runtime** environment variables read by
+`artifacts/api-server` (e.g. via `process.env` / `getGhlConfig()`), **in the
+same change** wire them into [`docker-compose.prod.yml`](docker-compose.prod.yml)
+under `services.api-server.environment`.
+
+Do **not** wait for a droplet smoke test to discover missing vars.
+
+## Why
+
+Production `api-server` does **not** mount `.env.prod` into the container.
+Only variables listed in `environment:` are passed from `--env-file .env.prod`
+at compose substitution time.
+
+Local dev `docker-compose.yml` may use `env_file: .env` — prod still needs
+explicit entries.
+
+## Pattern
+
+Match existing keys (Stripe, Plaid, GHL):
+
+```yaml
+GHL_ENABLED: ${GHL_ENABLED:-false}
+GHL_API_KEY: ${GHL_API_KEY:-}
+```
+
+Also update [`.env.example`](.env.example) with placeholders when adding new vars.
+
+## Checklist (same PR / commit)
+
+1. Code reads `process.env.NEW_VAR`
+2. `.env.example` documents `NEW_VAR`
+3. `docker-compose.prod.yml` → `api-server.environment` includes `NEW_VAR`
+4. If dev compose uses explicit `environment:` overrides (not `env_file`), wire there too
