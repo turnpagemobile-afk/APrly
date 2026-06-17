@@ -26,6 +26,7 @@ import {
   RefreshSessionResponse,
 } from "@workspace/api-zod";
 import { attachGuestLeadsToUser } from "../lib/debt-lead-service";
+import { ghlCountUserLeads, ghlSyncRegistration } from "../lib/ghl/ghl-sync";
 import {
   db,
   registrationIntentsTable,
@@ -161,6 +162,9 @@ router.post("/auth/register", async (req, res, next) => {
     }
 
     await attachGuestLeadsToUser(inserted.id, guestSessionId);
+    void ghlCountUserLeads(inserted.id)
+      .then((leadCount) => ghlSyncRegistration(inserted.id, leadCount))
+      .catch((err) => logger.warn({ err, userId: inserted.id }, "ghl E1 sync failed"));
     await issueAuthCookies(res, inserted.id, inserted.role);
     res.json(LoginResponse.parse(await buildMeResponse(inserted)));
   } catch (err) {
