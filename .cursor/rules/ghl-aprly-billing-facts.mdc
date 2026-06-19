@@ -1,0 +1,28 @@
+---
+description: APRly billing model for GHL integration — one-time $39 only, no subscription
+globs: local_docs/**,artifacts/api-server/src/lib/ghl/**,**/*GHL*,**/*ghl*
+alwaysApply: false
+---
+
+# APRly billing vs GHL (locked facts)
+
+Do **not** mention monthly subscription ($19.99/mo) when discussing GHL integration,
+E1–E8, Cliff letters, or integration summaries. It is **not relevant**.
+
+## Product billing (actual code)
+
+- **Only payment that matters for GHL and partner send:** one-time **$39 audit** (`users.paidAuditAt`).
+- **E3** fires on first successful $39 audit payment (`finalizeAuditCheckoutIfNeeded` → `ghlSyncPaidAudit`).
+- **Gate for send to partner:** `resolveHasPaidAccess` = `paidAuditAt != null` ([`subscription-status.ts`](artifacts/api-server/src/lib/subscription-status.ts)).
+- Checkout path: `POST /me/audit-checkout` (not a recurring subscription product for this flow).
+
+## Naming legacy
+
+- UI/API may still say `subscriptionActive` / `hasActiveSubscription` — that maps to **paid audit ($39)**, not a monthly plan.
+- `resolveSubscriptionActive` is a **deprecated alias** of `resolveHasPaidAccess`.
+
+## GHL implications
+
+- `has_paid_audit` custom field = user paid the **$39 audit**.
+- E2 nurture «pay $39» refers to this one-time audit only.
+- **No GHL event** exists or is planned for monthly billing — do not document otherwise.

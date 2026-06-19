@@ -8,7 +8,7 @@ import {
   type GhlCustomFieldInput,
   type GhlWebhookPayload,
 } from "./ghl-client";
-import { GHL_TAGS } from "./ghl-tags";
+import { GHL_TAGS, type GhlWebhookEventType } from "./ghl-tags";
 
 const RETRY_DELAYS_MS = [1000, 3000, 9000] as const;
 
@@ -150,10 +150,11 @@ async function ensureContact(
 
 function webhookPayload(
   user: UserRow,
-  eventType: GhlWebhookPayload["event_type"],
+  eventType: GhlWebhookEventType,
   leadId: number,
   planIndex: number,
   partnerName?: string,
+  hardshipStepIndex?: number,
 ): GhlWebhookPayload {
   const payload: GhlWebhookPayload = {
     event_type: eventType,
@@ -164,6 +165,7 @@ function webhookPayload(
     timestamp: isoNow(),
   };
   if (partnerName) payload.partner_name = partnerName;
+  if (hardshipStepIndex !== undefined) payload.hardship_step_index = hardshipStepIndex;
   return payload;
 }
 
@@ -258,4 +260,112 @@ export async function ghlSyncPlanSent(
 /** Helper for E1 — total leads after guest attach */
 export async function ghlCountUserLeads(userId: number): Promise<number> {
   return countUserLeads(userId);
+}
+
+type GhlAdminLeadEventOpts = {
+  eventType: GhlWebhookEventType;
+  tags?: string[];
+  webhookOnly?: boolean;
+  hardshipStepIndex?: number;
+};
+
+async function ghlSyncAdminLeadEvent(
+  userId: number,
+  leadId: number,
+  partnerName: string | undefined,
+  opts: GhlAdminLeadEventOpts,
+  eventLabel: "E5" | "E6" | "E7" | "E8",
+): Promise<void> {
+  const config = getGhlConfig();
+  if (!config) return;
+
+  const user = await loadUser(userId);
+  if (!user) return;
+
+  const planIndex = await planIndexForLead(userId, leadId);
+  const customFields = buildCustomFields(config, {
+    hasPaidAudit: Boolean(user.paidAuditAt),
+    leadId: String(leadId),
+    planIndex,
+    partnerName,
+  });
+
+  const payload = webhookPayload(
+    user,
+    opts.eventType,
+    leadId,
+    planIndex,
+    partnerName,
+    opts.hardshipStepIndex,
+  );
+  const queuePayload = { ...payload };
+
+  await withRetry(eventLabel, userId, queuePayload, async () => {
+    if (!opts.webhookOnly && opts.tags?.length) {
+      await ensureContact(user, opts.tags, customFields);
+    }
+    await postGhlWebhook(config, payload);
+  });
+}
+
+/** E5 — partner review started */
+export async function ghlSyncPartnerReviewStarted(
+  userId: number,
+  leadId: number,
+  partnerName: string | undefined,
+): Promise<void> {
+  await ghlSyncAdminLeadEvent(
+    userId,
+    leadId,
+    partnerName,
+    { eventType: "partner_review_started", tags: [GHL_TAGS.partnerReviewStarted] },
+    "E5",
+  );
+}
+
+/** E6 — plan denied */
+export async function ghlSyncPlanDenied(
+  userId: number,
+  leadId: number,
+  partnerName: string | undefined,
+): Promise<void> {
+  await ghlSyncAdminLeadEvent(
+    userId,
+    leadId,
+    partnerName,
+    { eventType: "plan_denied", tags: [GHL_TAGS.planDenied] },
+    "E6",
+  );
+}
+
+/** E7 — hardship step completed (webhook only, repeatable) */
+export async function ghlSyncHardshipStep(
+  userId: number,
+  leadId: number,
+  partnerName: string | undefined,
+  hardshipStepIndex: number,
+): Promise<void> {
+  await ghlSyncAdminLeadEvent(
+    userId,
+    leadId,
+    partnerName,
+    { eventType: "hardship_step", webhookOnly: true, hardshipStepIndex },
+    "E7",
+  );
+}
+
+/** E8 — plan won */
+export async function ghlSyncPlanWon(
+  userId: number,
+  leadId: number,
+  partnerName: string | undefined,
+  hardshipStepIndex: number,
+): Promise<void> {
+  await ghlSyncAdminLeadEvent(
+    userId,
+    leadId,
+    partnerName,
+    { eventType: "plan_won", tags: [GHL_TAGS.planWon], hardshipStepIndex },
+    "E8",
+  );
 }

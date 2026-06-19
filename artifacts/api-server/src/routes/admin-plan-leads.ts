@@ -11,8 +11,15 @@ import {
 import { db, debtLeadsTable, partnersTable, usersTable } from "@workspace/db";
 import { mapAdminPlanLeadDetail } from "../lib/admin-plan-lead-mapper";
 import { loadDebtLeadById, loadLeadCards } from "../lib/debt-lead-service";
+import {
+  ghlSyncHardshipStep,
+  ghlSyncPartnerReviewStarted,
+  ghlSyncPlanDenied,
+  ghlSyncPlanWon,
+} from "../lib/ghl/ghl-sync";
 import { buildPlanLeadPdfBuffer } from "../lib/plan-lead-pdf";
 import { HARDSHIP_STEPS_TOTAL } from "../lib/hardship-steps";
+import { logger } from "../lib/logger";
 import { USER_ROLE } from "../lib/user-roles";
 import { requireAdmin } from "../middleware/requireAdmin";
 
@@ -180,6 +187,13 @@ router.post("/admin/plan-leads/:planId/start-working", ...requireAdmin, async (r
       })
       .where(eq(debtLeadsTable.id, planId));
 
+    if (row.userId) {
+      const partner = await loadPartner(row.partnerId);
+      void ghlSyncPartnerReviewStarted(row.userId, planId, partner?.name).catch((err) =>
+        logger.warn({ err, userId: row.userId, leadId: planId, event: "E5" }, "ghl partner review started sync failed"),
+      );
+    }
+
     const detail = await buildDetailResponse(planId);
     if (!detail) {
       res.status(404).json({ error: "Plan lead not found" });
@@ -227,6 +241,19 @@ router.post("/admin/plan-leads/:planId/complete-step", ...requireAdmin, async (r
 
     await db.update(debtLeadsTable).set(updates).where(eq(debtLeadsTable.id, planId));
 
+    if (row.userId) {
+      const partner = await loadPartner(row.partnerId);
+      if (nextSteps >= HARDSHIP_STEPS_TOTAL) {
+        void ghlSyncPlanWon(row.userId, planId, partner?.name, nextSteps).catch((err) =>
+          logger.warn({ err, userId: row.userId, leadId: planId, event: "E8" }, "ghl plan won sync failed"),
+        );
+      } else {
+        void ghlSyncHardshipStep(row.userId, planId, partner?.name, nextSteps).catch((err) =>
+          logger.warn({ err, userId: row.userId, leadId: planId, event: "E7" }, "ghl hardship step sync failed"),
+        );
+      }
+    }
+
     const detail = await buildDetailResponse(planId);
     if (!detail) {
       res.status(404).json({ error: "Plan lead not found" });
@@ -261,6 +288,13 @@ router.post("/admin/plan-leads/:planId/reject", ...requireAdmin, async (req, res
       .update(debtLeadsTable)
       .set({ status: "denied", displayStatusChangedAt: now, updatedAt: now })
       .where(eq(debtLeadsTable.id, planId));
+
+    if (row.userId) {
+      const partner = await loadPartner(row.partnerId);
+      void ghlSyncPlanDenied(row.userId, planId, partner?.name).catch((err) =>
+        logger.warn({ err, userId: row.userId, leadId: planId, event: "E6" }, "ghl plan denied sync failed"),
+      );
+    }
 
     const detail = await buildDetailResponse(planId);
     if (!detail) {
