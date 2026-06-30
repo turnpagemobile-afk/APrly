@@ -6,22 +6,22 @@
 
 :root {
   /* === page === */
-  --page-bg: #F8FCFE;
+  --page-bg: #FBFBFB;
 
   /* === error === */
   --error-box-bg-color: #FDD9DF;
 
   /* === progressbar === */
-  --progressbar-default-color: #D4E9FB;
-  --progressbar-selected-color: #2693ED;
+  --progressbar-default-color: #DDE4FE;
+  --progressbar-selected-color: #567AF9;
 
   /* === action === */
-  --action-default-color: #2693ED;
-  --action-hover-color: #207DC9;
+  --action-default-color: #48BE38;
+  --action-hover-color: #3AA52C;
 
   /* === card === */
   --card-1lvl-bg-color: #FFFFFF;
-  --card-2lvl-bg-color: #E9F6FF;
+  --card-2lvl-bg-color: #FFF9F1;
   --card-border-color: #E1E3E6;
 
   /* === bottom === */
@@ -31,10 +31,10 @@
   --stepper-bg: rgba(150, 208, 238, 0.15);
 
   /* === tabbar === */
-  --tabbar-bg: #061C30;
+  --tabbar-bg: #072A03;
 
   /* === tabs === */
-  --tabs-title-selected: #1B67A6;
+  --tabs-title-selected: #3C55AE;
 
   /* === tabbar === */
   --tabbar-selected-bg: #FFFFFF;
@@ -43,19 +43,19 @@
   --login-bg: rgba(255, 255, 255, 0.85);
 
   /* === footer === */
-  --footer-bg-color: rgba(14, 28, 74, 0.85);
+  --footer-bg-color: #937654;
 
   /* === exp === */
-  --exp-chip-bg-color: #F0F7FE;
-  --exp-chip-border-color: #D4E9FB;
+  --exp-chip-bg-color: #EDFCEA;
+  --exp-chip-border-color: #CCF7C7;
 
   /* === message === */
   --message-own-bg-color: #FFFFFF;
   --message-own-border-color: #F5F5F6;
-  --message-other-bg-color: #F0F7FE;
+  --message-other-bg-color: #EDFCEA;
 
   /* === header === */
-  --header-bg-color: rgba(255, 255, 255, 0.75);
+  --header-bg-color: rgba(255, 255, 255, 0.94);
 
   /* === landing === */
   --landing-icon-color: #FFFFFF;
@@ -64,33 +64,36 @@
   --message-other-border-color: #E1E3E6;
 
   /* === title === */
-  --title-color: #061C30;
+  --title-color: #17690E;
+  --title-beige-color: #715432;
 
   /* === average === */
   --average-text-color: #202226;
 
   /* === hint === */
-  --hint-text-color: #5B616D;
+  --hint-text-color: #6B7280;
 
   /* === disable === */
-  --disable-text-color: #C4C7CC;
+  --disable-text-color: #6B7280;
 
   /* === button === */
   --button-special-bg-color: #FFFFFF;
   --button-disable-color: #9FA3AC;
   --button-primary-disable-text-color: #F5F5F6;
-  --button-secondary-normal-bg-color: #F0F7FE;
-  --button-secondary-hover-bg-color: #D4E9FB;
+  --button-secondary-normal-bg-color: #EDFCEA;
+  --button-secondary-destructive-normal-bg-color: #FEF2F4;
+  --button-secondary-hover-bg-color: #CCF7C7;
+  --button-secondary-destructive-hover-bg-color: #FDD9DF;
 
   /* === illustration === */
-  --illustration-0-color: #FBFBFB;
+  --illustration-0-color: #ECF1F8;
   --illustration-1-color: #FFFFFF;
-  --illustration-2-color: #F5F5F6;
-  --illustration-border-color: #C4C7CC;
+  --illustration-2-color: #DAE3F2;
+  --illustration-border-color: #B5C7E6;
 
   /* === illustratot === */
-  --illustratot-grad-1: #E1E3E6;
-  --illustratot-grad-2: rgba(225, 227, 230, 0);
+  --illustratot-grad-1: #C7D5EC;
+  --illustratot-grad-2: rgba(199, 213, 236, 0);
 
   /* === popup === */
   --popup-header-bg-color: #FFFFFF;
@@ -101,42 +104,42 @@
 
   /* === input === */
   --input-default-bg-color: #FFFFFF;
-  --input-default-border-color: #E1E3E6;
-  --input-focus-bg-color: #F0F7FE;
-  --input-focus-border-color: #72B9F3;
+  --input-default-border-color: #C4C7CC;
+  --input-focus-bg-color: #EDFCEA;
+  --input-focus-border-color: #78DA6B;
   --input-error-bg-color: #FEF2F4;
   --input-disable-bg-color: #E1E3E6;
   --input-disable-border-color: #C4C7CC;
-  --input-disable-text-color: #9FA3AC;
-  --input-placeholder-text-color: #C4C7CC;
+  --input-disable-text-color: #6B7280;
+  --input-placeholder-text-color: #9FA3AC;
   --input-label-text-color: #5B616D;
   --input-text-color: #202226;
 
   /* === primary === */
-  --primary-theme-050: #F8FCFE;
-  --primary-theme-100: #F0F7FE;
-  --primary-theme-200: #D4E9FB;
-  --primary-theme-300: #A8D4F8;
-  --primary-theme-400: #72B9F3;
-  --primary-theme-500: #2693ED;
-  --primary-theme-600: #207DC9;
-  --primary-theme-700: #1B67A6;
-  --primary-theme-800: #134A77;
-  --primary-theme-900: #0B2C47;
-  --primary-theme-950: #061C30;
+  --primary-theme-050: #F8FEF7;
+  --primary-theme-100: #EDFCEA;
+  --primary-theme-200: #CCF7C7;
+  --primary-theme-300: #9EF093;
+  --primary-theme-400: #78DA6B;
+  --primary-theme-500: #48BE38;
+  --primary-theme-600: #3AA52C;
+  --primary-theme-700: #2A8C20;
+  --primary-theme-800: #17690E;
+  --primary-theme-900: #0C4106;
+  --primary-theme-950: #072A03;
 
   /* === secondary === */
-  --secondary-theme-050: #F8FDFB;
-  --secondary-theme-100: #EEFAF6;
-  --secondary-theme-200: #CFF1E6;
-  --secondary-theme-300: #9FE3CD;
-  --secondary-theme-400: #64D2AD;
-  --secondary-theme-500: #10B981;
-  --secondary-theme-600: #0E9D6E;
-  --secondary-theme-700: #0B825A;
-  --secondary-theme-800: #085D41;
-  --secondary-theme-900: #053827;
-  --secondary-theme-950: #032418;
+  --secondary-theme-050: #FFFCF8;
+  --secondary-theme-100: #FFF9F1;
+  --secondary-theme-200: #FFECD6;
+  --secondary-theme-300: #F8DBB9;
+  --secondary-theme-400: #E4C7A5;
+  --secondary-theme-500: #C9AC8A;
+  --secondary-theme-600: #AE916F;
+  --secondary-theme-700: #937654;
+  --secondary-theme-800: #715432;
+  --secondary-theme-900: #4D300E;
+  --secondary-theme-950: #3B2000;
 
   /* === neutral === */
   --neutral-theme-000: #FFFFFF;
@@ -193,17 +196,17 @@
   --danger-theme-950: #320A14;
 
   /* === info === */
-  --info-theme-050: #F8FCFE;
-  --info-theme-100: #F0F7FE;
-  --info-theme-200: #D4E9FB;
-  --info-theme-300: #A8D4F8;
-  --info-theme-400: #72B9F3;
-  --info-theme-500: #2693ED;
-  --info-theme-600: #207DC9;
-  --info-theme-700: #1B67A6;
-  --info-theme-800: #134A77;
-  --info-theme-900: #0B2C47;
-  --info-scheme-950: #061C30;
+  --info-theme-050: #FAFBFF;
+  --info-theme-100: #F3F6FF;
+  --info-theme-200: #DDE4FE;
+  --info-theme-300: #BBCAFD;
+  --info-theme-400: #91A9FB;
+  --info-theme-500: #567AF9;
+  --info-theme-600: #4968D4;
+  --info-theme-700: #3C55AE;
+  --info-theme-800: #2B3D7D;
+  --info-theme-900: #1A254B;
+  --info-scheme-950: #0F1733;
 
   /* === warning === */
   --warning-theme-050: #FEFDF8;
@@ -227,17 +230,17 @@
   --error-box-bg-color: #320A14;
 
   /* === progressbar === */
-  --progressbar-default-color: #0B2C47;
-  --progressbar-selected-color: #2693ED;
+  --progressbar-default-color: #1A254B;
+  --progressbar-selected-color: #567AF9;
 
   /* === action === */
-  --action-default-color: #2693ED;
-  --action-hover-color: #207DC9;
+  --action-default-color: #48BE38;
+  --action-hover-color: #3AA52C;
 
   /* === card === */
   --card-1lvl-bg-color: #090822;
   --card-2lvl-bg-color: #090822;
-  --card-border-color: #0B2C47;
+  --card-border-color: #0C4106;
 
   /* === bottom === */
   --bottom-buttons-bg-color: #030E45;
@@ -246,13 +249,13 @@
   --stepper-bg: rgba(150, 208, 238, 0.1);
 
   /* === tabbar === */
-  --tabbar-bg: #061C30;
+  --tabbar-bg: #072A03;
 
   /* === tabs === */
-  --tabs-title-selected: #2693ED;
+  --tabs-title-selected: #567AF9;
 
   /* === tabbar === */
-  --tabbar-selected-bg: #134A77;
+  --tabbar-selected-bg: #17690E;
 
   /* === login === */
   --login-bg: rgba(0, 7, 41, 0.85);
@@ -261,31 +264,32 @@
   --footer-bg-color: rgba(14, 28, 74, 0.85);
 
   /* === exp === */
-  --exp-chip-bg-color: #061C30;
-  --exp-chip-border-color: #0B2C47;
+  --exp-chip-bg-color: #072A03;
+  --exp-chip-border-color: #0C4106;
 
   /* === message === */
   --message-own-bg-color: #030F48;
-  --message-own-border-color: #061C30;
-  --message-other-bg-color: #053827;
+  --message-own-border-color: #072A03;
+  --message-other-bg-color: #0F2515;
 
   /* === header === */
   --header-bg-color: rgba(22, 18, 48, 0.75);
 
   /* === landing === */
-  --landing-icon-color: #F8FDFB;
+  --landing-icon-color: #FFFCF8;
 
   /* === message === */
-  --message-other-border-color: #085D41;
+  --message-other-border-color: #173720;
 
   /* === title === */
-  --title-color: #F8FCFE;
+  --title-color: #F8FEF7;
+  --title-beige-color: #F8FEF7;
 
   /* === average === */
   --average-text-color: #F5F5F6;
 
   /* === hint === */
-  --hint-text-color: #9FA3AC;
+  --hint-text-color: #6B7280;
 
   /* === disable === */
   --disable-text-color: #4B505A;
@@ -295,13 +299,15 @@
   --button-disable-color: #363940;
   --button-primary-disable-text-color: #5B616D;
   --button-secondary-normal-bg-color: #5B616D;
+  --button-secondary-destructive-normal-bg-color: #5B616D;
   --button-secondary-hover-bg-color: #5B616D;
+  --button-secondary-destructive-hover-bg-color: #5B616D;
 
   /* === illustration === */
   --illustration-0-color: #020C3D;
   --illustration-1-color: #030F48;
   --illustration-2-color: #1C2963;
-  --illustration-border-color: #1B67A6;
+  --illustration-border-color: #2A8C20;
 
   /* === illustratot === */
   --illustratot-grad-1: #273143;
@@ -309,7 +315,7 @@
 
   /* === popup === */
   --popup-header-bg-color: #020C3D;
-  --popup-header-border-color: #061C30;
+  --popup-header-border-color: #072A03;
 
   /* === pop === */
   --pop-up-shade: rgba(0, 0, 0, 0.75);
@@ -317,8 +323,8 @@
   /* === input === */
   --input-default-bg-color: #202226;
   --input-default-border-color: #4B505A;
-  --input-focus-bg-color: #0B2C47;
-  --input-focus-border-color: #207DC9;
+  --input-focus-bg-color: #0C4106;
+  --input-focus-border-color: #3AA52C;
   --input-error-bg-color: #49131C;
   --input-disable-bg-color: #363940;
   --input-disable-border-color: #4B505A;
@@ -328,30 +334,30 @@
   --input-text-color: #C4C7CC;
 
   /* === primary === */
-  --primary-theme-050: #061C30;
-  --primary-theme-100: #0B2C47;
-  --primary-theme-200: #134A77;
-  --primary-theme-300: #1B67A6;
-  --primary-theme-400: #207DC9;
-  --primary-theme-500: #2693ED;
-  --primary-theme-600: #72B9F3;
-  --primary-theme-700: #A8D4F8;
-  --primary-theme-800: #D4E9FB;
-  --primary-theme-900: #F0F7FE;
-  --primary-theme-950: #F8FCFE;
+  --primary-theme-050: #072A03;
+  --primary-theme-100: #0C4106;
+  --primary-theme-200: #17690E;
+  --primary-theme-300: #2A8C20;
+  --primary-theme-400: #3AA52C;
+  --primary-theme-500: #48BE38;
+  --primary-theme-600: #78DA6B;
+  --primary-theme-700: #9EF093;
+  --primary-theme-800: #CCF7C7;
+  --primary-theme-900: #EDFCEA;
+  --primary-theme-950: #F8FEF7;
 
   /* === secondary === */
-  --secondary-theme-050: #032418;
-  --secondary-theme-100: #053827;
-  --secondary-theme-200: #085D41;
-  --secondary-theme-300: #0B825A;
-  --secondary-theme-400: #0E9D6E;
-  --secondary-theme-500: #10B981;
-  --secondary-theme-600: #64D2AD;
-  --secondary-theme-700: #9FE3CD;
-  --secondary-theme-800: #CFF1E6;
-  --secondary-theme-900: #EEFAF6;
-  --secondary-theme-950: #F8FDFB;
+  --secondary-theme-050: #3B2000;
+  --secondary-theme-100: #4D300E;
+  --secondary-theme-200: #715432;
+  --secondary-theme-300: #937654;
+  --secondary-theme-400: #AE916F;
+  --secondary-theme-500: #C9AC8A;
+  --secondary-theme-600: #E4C7A5;
+  --secondary-theme-700: #F8DBB9;
+  --secondary-theme-800: #FFECD6;
+  --secondary-theme-900: #FFF9F1;
+  --secondary-theme-950: #FFFCF8;
 
   /* === neutral === */
   --neutral-theme-000: #000000;
@@ -408,17 +414,17 @@
   --danger-theme-950: #FFF9FA;
 
   /* === info === */
-  --info-theme-050: #061C30;
-  --info-theme-100: #0B2C47;
-  --info-theme-200: #134A77;
-  --info-theme-300: #1B67A6;
-  --info-theme-400: #207DC9;
-  --info-theme-500: #2693ED;
-  --info-theme-600: #72B9F3;
-  --info-theme-700: #A8D4F8;
-  --info-theme-800: #D4E9FB;
-  --info-theme-900: #F0F7FE;
-  --info-scheme-950: #F8FCFE;
+  --info-theme-050: #0F1733;
+  --info-theme-100: #1A254B;
+  --info-theme-200: #2B3D7D;
+  --info-theme-300: #3C55AE;
+  --info-theme-400: #4968D4;
+  --info-theme-500: #567AF9;
+  --info-theme-600: #91A9FB;
+  --info-theme-700: #BBCAFD;
+  --info-theme-800: #DDE4FE;
+  --info-theme-900: #F3F6FF;
+  --info-scheme-950: #FAFBFF;
 
   /* === warning === */
   --warning-theme-050: #2F2301;
@@ -436,39 +442,39 @@
 
 /* === palette primitives (light/dark agnostic) === */
 :root {
-  --palette-primary-primary-050: #F8FCFE;
-  --palette-primary-primary-100: #F0F7FE;
-  --palette-primary-primary-200: #D4E9FB;
-  --palette-primary-primary-300: #A8D4F8;
-  --palette-primary-primary-400: #72B9F3;
-  --palette-primary-primary-500: #2693ED;
-  --palette-primary-primary-600: #207DC9;
-  --palette-primary-primary-700: #1B67A6;
-  --palette-primary-primary-800: #134A77;
-  --palette-primary-primary-900: #0B2C47;
-  --palette-primary-primary-950: #061C30;
-  --palette-secondary-secondary-050: #F8FDFB;
-  --palette-secondary-secondary-100: #EEFAF6;
-  --palette-secondary-secondary-200: #CFF1E6;
-  --palette-secondary-secondary-300: #9FE3CD;
-  --palette-secondary-secondary-400: #64D2AD;
-  --palette-secondary-secondary-500: #10B981;
-  --palette-secondary-secondary-600: #0E9D6E;
-  --palette-secondary-secondary-700: #0B825A;
-  --palette-secondary-secondary-800: #085D41;
-  --palette-secondary-secondary-900: #053827;
-  --palette-secondary-secondary-950: #032418;
-  --palette-tertiaty-tertiary-050: #F8FDFD;
-  --palette-tertiaty-tertiary-100: #EEFAFA;
-  --palette-tertiaty-tertiary-200: #CFF1F2;
-  --palette-tertiaty-tertiary-300: #9EE2E5;
-  --palette-tertiaty-tertiary-400: #62D0D4;
-  --palette-tertiaty-tertiary-500: #0DB7BD;
-  --palette-tertiaty-tertiary-600: #0B9CA1;
-  --palette-tertiaty-tertiary-700: #098084;
-  --palette-tertiaty-tertiary-800: #075C5F;
-  --palette-tertiaty-tertiary-900: #043739;
-  --palette-tertiaty-tertiary-950: #022425;
+  --palette-primary-primary-050: #F8FEF7;
+  --palette-primary-primary-100: #EDFCEA;
+  --palette-primary-primary-200: #CCF7C7;
+  --palette-primary-primary-300: #9EF093;
+  --palette-primary-primary-400: #78DA6B;
+  --palette-primary-primary-500: #48BE38;
+  --palette-primary-primary-600: #3AA52C;
+  --palette-primary-primary-700: #2A8C20;
+  --palette-primary-primary-800: #17690E;
+  --palette-primary-primary-900: #0C4106;
+  --palette-primary-primary-950: #072A03;
+  --palette-secondary-secondary-050: #DCE7DF;
+  --palette-secondary-secondary-100: #B9CFBF;
+  --palette-secondary-secondary-200: #96B79F;
+  --palette-secondary-secondary-300: #739F7F;
+  --palette-secondary-secondary-400: #50875F;
+  --palette-secondary-secondary-500: #2E6F40;
+  --palette-secondary-secondary-600: #265C35;
+  --palette-secondary-secondary-700: #1E4A2A;
+  --palette-secondary-secondary-800: #173720;
+  --palette-secondary-secondary-900: #0F2515;
+  --palette-secondary-secondary-950: #07120A;
+  --palette-tertiaty-tertiary-050: #FFFCF8;
+  --palette-tertiaty-tertiary-100: #FFF9F1;
+  --palette-tertiaty-tertiary-200: #FFECD6;
+  --palette-tertiaty-tertiary-300: #F8DBB9;
+  --palette-tertiaty-tertiary-400: #E4C7A5;
+  --palette-tertiaty-tertiary-500: #C9AC8A;
+  --palette-tertiaty-tertiary-600: #AE916F;
+  --palette-tertiaty-tertiary-700: #937654;
+  --palette-tertiaty-tertiary-800: #715432;
+  --palette-tertiaty-tertiary-900: #4D300E;
+  --palette-tertiaty-tertiary-950: #3B2000;
   --palette-accent-accent-050: #FFFBF9;
   --palette-accent-accent-100: #FFF5F1;
   --palette-accent-accent-200: #FFE1D8;
@@ -506,7 +512,7 @@
   --palette-functional-success-success-950: #032418;
   --palette-functional-danger-danger-050: #FFF9FA;
   --palette-functional-danger-danger-100: #FEF2F4;
-  --palette-functional-danger-dangered-200: #FDD9DF;
+  --palette-functional-danger-danger-200: #FDD9DF;
   --palette-functional-danger-danger-300: #FBB2BF;
   --palette-functional-danger-danger-400: #F88296;
   --palette-functional-danger-danger-500: #F43F5E;
@@ -515,17 +521,17 @@
   --palette-functional-danger-danger-800: #7A202F;
   --palette-functional-danger-danger-900: #49131C;
   --palette-functional-danger-danger-950: #320A14;
-  --palette-functional-info-info-050: #F8FCFE;
-  --palette-functional-info-info-100: #F0F7FE;
-  --palette-functional-info-info-200: #D4E9FB;
-  --palette-functional-info-info-300: #A8D4F8;
-  --palette-functional-info-info-400: #72B9F3;
-  --palette-functional-info-info-500: #2693ED;
-  --palette-functional-info-info-600: #207DC9;
-  --palette-functional-info-info-700: #1B67A6;
-  --palette-functional-info-info-800: #134A77;
-  --palette-functional-info-info-900: #0B2C47;
-  --palette-functional-info-info-950: #061C30;
+  --palette-functional-info-info-050: #FAFBFF;
+  --palette-functional-info-info-100: #F3F6FF;
+  --palette-functional-info-info-200: #DDE4FE;
+  --palette-functional-info-info-300: #BBCAFD;
+  --palette-functional-info-info-400: #91A9FB;
+  --palette-functional-info-info-500: #567AF9;
+  --palette-functional-info-info-600: #4968D4;
+  --palette-functional-info-info-700: #3C55AE;
+  --palette-functional-info-info-800: #2B3D7D;
+  --palette-functional-info-info-900: #1A254B;
+  --palette-functional-info-info-950: #0F1733;
   --palette-functional-warning-warning-050: #FEFDF8;
   --palette-functional-warning-warning-100: #FEFAEE;
   --palette-functional-warning-warning-200: #FBF0CE;
@@ -1373,6 +1379,50 @@
   --palette-warm-gray-warm-gray-800: #3C3936;
   --palette-warm-gray-warm-gray-900: #242220;
   --palette-warm-gray-warm-gray-950: #181615;
+  --palette-blue-gray-blue-gray-050: #ECF1F8;
+  --palette-blue-gray-blue-gray-100: #DAE3F2;
+  --palette-blue-gray-blue-gray-200: #C7D5EC;
+  --palette-blue-gray-blue-gray-300: #B5C7E6;
+  --palette-blue-gray-blue-gray-400: #A2B9E0;
+  --palette-blue-gray-blue-gray-500: #90ABDA;
+  --palette-blue-gray-blue-gray-600: #788EB5;
+  --palette-blue-gray-blue-gray-700: #607291;
+  --palette-blue-gray-blue-gray-800: #48556D;
+  --palette-blue-gray-blue-gray-900: #303948;
+  --palette-blue-gray-blue-gray-950: #181C24;
+  --palette-green-forest-green-forest-050: #DCE7DF;
+  --palette-green-forest-green-forest-100: #B9CFBF;
+  --palette-green-forest-green-forest-200: #96B79F;
+  --palette-green-forest-green-forest-300: #739F7F;
+  --palette-green-forest-green-forest-400: #50875F;
+  --palette-green-forest-green-forest-500: #2E6F40;
+  --palette-green-forest-green-forest-600: #265C35;
+  --palette-green-forest-green-forest-700: #1E4A2A;
+  --palette-green-forest-green-forest-800: #173720;
+  --palette-green-forest-green-forest-900: #0F2515;
+  --palette-green-forest-green-forest-950: #07120A;
+  --palette-shiny-green-shiny-green-050: #F8FEF7;
+  --palette-shiny-green-shiny-green-100: #EDFCEA;
+  --palette-shiny-green-shiny-green-200: #CCF7C7;
+  --palette-shiny-green-shiny-green-300: #9EF093;
+  --palette-shiny-green-shiny-green-400: #78DA6B;
+  --palette-shiny-green-shiny-green-500: #48BE38;
+  --palette-shiny-green-shiny-green-600: #3AA52C;
+  --palette-shiny-green-shiny-green-700: #2A8C20;
+  --palette-shiny-green-shiny-green-800: #17690E;
+  --palette-shiny-green-shiny-green-900: #0C4106;
+  --palette-shiny-green-shiny-green-950: #072A03;
+  --palette-american-sand-american-sand-050: #FFFCF8;
+  --palette-american-sand-american-sand-100: #FFF9F1;
+  --palette-american-sand-american-sand-200: #FFECD6;
+  --palette-american-sand-american-sand-300: #F8DBB9;
+  --palette-american-sand-american-sand-400: #E4C7A5;
+  --palette-american-sand-american-sand-500: #C9AC8A;
+  --palette-american-sand-american-sand-600: #AE916F;
+  --palette-american-sand-american-sand-700: #937654;
+  --palette-american-sand-american-sand-800: #715432;
+  --palette-american-sand-american-sand-900: #4D300E;
+  --palette-american-sand-american-sand-950: #3B2000;
 }
 
 /* === design variables === */
@@ -1380,7 +1430,7 @@
   --design-accent4: #091753;
   --design-icon-line-width: 2;
   --design-screen-corner-radius: 30px;
-  --design-button-corner-radius: 12px;
+  --design-button-corner-radius: 150px;
   --design-button-line-width: 3;
   --design-card-corner-radius: 32px;
   --design-card-corner-radius-small: 24px;
@@ -1407,4 +1457,28 @@
   --design-grid-extralarge-min-screen-width: 1600;
   --design-collapsed-item-width-el: 250px;
   --design-collapsed-item-width-la: 200px;
+  --design-faq-1-title: "What is APrly and how does it work?";
+  --design-faq-1-text: "APrly is a 30-second debt audit. You connect your accounts securely through Plaid, and APrly shows you what  your interest is actually costing you compared to an 8% baseline — your Interest Waste. You get a Verified Audit  Packet summarizing it all, and, when you choose to, a consent-based introduction to a verified nonprofit credit counseling partner. APrly shows you the math; you decide what to do with it.";
+  --design-faq-2-title: "How is APrly different from debt settlement companies?";
+  --design-faq-2-text: "Debt settlement companies typically charge fees, may ask you to stop paying creditors, and can damage your credit. APrly is different on purpose: we don’t settle, negotiate, or touch your accounts. We show you your numbers and connect you — only with your consent — to verified nonprofit credit counseling partners.";
+  --design-faq-3-title: "Is my financial data secure?";
+  --design-faq-3-text: "Your accounts connect through Plaid, the bank-grade service used by many of the financial apps you already trust. APrly accesses only what it needs to run your audit, and we don’t sell your financial data.";
+  --design-faq-4-title: "Does running an audit affect my credit score? ";
+  --design-faq-4-text: "No. Your audit is a read of your existing numbers, not an application for new credit. There’s no hard inquiry and no impact on your score.";
+  --design-faq-5-title: "Will APrly lower my interest rate?";
+  --design-faq-5-text: "APrly doesn’t change your rates or negotiate with your lenders. What it does is make your rates and their real cost impossible to ignore — and connect you to verified nonprofit help that can work with you on a plan. The clarity is the product.";
+  --design-faq-6-title: "How much does APrly cost?";
+  --design-faq-6-text: "APrly operates on a one-time fee of $39.00 for the \"6-Month Recovery Program\". This serves as your ongoing financial active-defense system to ensure banks play by the rules while you successfully melt your balances down to zero.";
+  --design-faq-7-title: "What happens after 6 months of using APrly?";
+  --design-faq-7-text: "Maintaining your secure connection for at least six months triggers the Month-6 Check-In. At this milestone in your recovery program, the platform provides a structured UI review to assess your improved financial standing. This check-in determines if you are now eligible to request even deeper hardship concessions and lower rates from your lenders.";
+  --design-why-1-title: "Bank-level Security";
+  --design-why-1-text: "Your accounts connect through Plaid, the bank-grade infrastructure behind many of the apps you already use. APrly reads what it needs to run your audit and never sells your financial data.";
+  --design-why-2-title: "No Credit Impact";
+  --design-why-2-text: "Running your audit is not a credit application. There’s no hard pull and no effect on your score — it’s a read of  your numbers, not a request for new credit.";
+  --design-why-3-title: "Verified NonProfit Partners";
+  --design-why-3-text: "When you’re ready for help, APrly connects you — with your consent — to verified nonprofit credit counseling partners, not to commission-driven debt settlement companies.";
+  --design-why-4-title: "Math-First, Not Shame-First ";
+  --design-why-4-text: "We don’t think you’re bad with money. We think most people have never seen their numbers laid out clearly. APrly is built around that one idea: show the math, drop the judgment.";
+  --design-why-5-title: "No Sales Pressure";
+  --design-why-5-text: "Running your audit doesn’t put you in a sales funnel. There’s no closer waiting to call you, no pitch to sit through. You see your numbers and decide what’s next.";
 }

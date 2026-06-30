@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -7,17 +7,18 @@ import {
   getGetPartnersQueryOptions,
   getGetPlanLeadQueryKey,
   getGetPlanLeadQueryOptions,
+  useDeletePlanLead,
   useGetPartners,
   useGetPlanLead,
   useSendPlanLead,
 } from "@workspace/api-client-react";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import type { DashboardTab } from "@/components/dashboard/DashboardTabBar";
-import { AddCardsToPlanFlow } from "@/components/dashboard/plan-lead/AddCardsToPlanFlow";
 import { PlanLeadProgressView } from "@/components/dashboard/plan-lead/PlanLeadProgressView";
 import { PlanLeadSendView } from "@/components/dashboard/plan-lead/PlanLeadSendView";
 import { PlanLeadDeniedView } from "@/components/dashboard/plan-lead/PlanLeadDeniedView";
 import { PlanLeadPartnerModalHost } from "@/components/dashboard/plan-lead/PlanLeadPartnerModalHost";
+import { useAddPlanLeadCardsViaPlaid } from "@/components/dashboard/plan-lead/useAddPlanLeadCardsViaPlaid";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
 import { dashboardTabContent } from "@/content/dashboard-tab";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ import {
 } from "@/lib/plan-lead-navigation";
 import { useAuditReturnUrl } from "@/lib/use-audit-return-url";
 import { useDashboardSubscription } from "@/lib/use-dashboard-subscription";
+import { useCreatePlanViaPlaid } from "@/lib/use-create-plan-via-plaid";
 
 export default function PlanLeadDetailPage() {
   const [location, navigate] = useLocation();
@@ -55,17 +57,19 @@ export default function PlanLeadDetailPage() {
   const { auditSessionId, openPartnerPicker, setOpenPartnerPicker, clearAuditSession } =
     useAuditReturnUrl(onCheckoutCancel);
 
+  const returnTo = useMemo(() => readPlanLeadReturnTo(search), [search]);
+
   const subscription = useDashboardSubscription(auditSessionId);
+  const { startCreatePlan, isCreatingPlan } = useCreatePlanViaPlaid({ returnTo });
 
   const [partnerModalOpen, setPartnerModalOpen] = useState(false);
-  const [addCardFlowOpen, setAddCardFlowOpen] = useState(false);
+  const plaidAutoStartRef = useRef(false);
 
   const planLeadId = useMemo(
     () => parsePlanLeadIdFromPath(location.split("?")[0] ?? ""),
     [location],
   );
 
-  const returnTo = useMemo(() => readPlanLeadReturnTo(search), [search]);
   const planIndex = useMemo(() => readPlanLeadPlanIndex(search), [search]);
   const leadId = planLeadId ?? 0;
   const checkoutReturnPath =
@@ -95,6 +99,26 @@ export default function PlanLeadDetailPage() {
   });
 
   const sendPlanLead = useSendPlanLead();
+  const deletePlanLead = useDeletePlanLead();
+
+  const onDeletePlan = async () => {
+    if (!planLeadId) return;
+    try {
+      await deletePlanLead.mutateAsync({ id: planLeadId });
+      await queryClient.invalidateQueries({ queryKey: getGetDashboardTabQueryKey() });
+      toast({
+        title: planLeadDetailContent.deletePlanSuccessTitle,
+        description: planLeadDetailContent.deletePlanSuccessDescription,
+      });
+      navigate(returnTo);
+    } catch {
+      toast({
+        title: planLeadDetailContent.deletePlanErrorTitle,
+        description: planLeadDetailContent.deletePlanErrorDescription,
+        variant: "destructive",
+      });
+    }
+  };
 
   const saveCardsMutation = useMutation({
     mutationFn: (cards: { brand: string; balance: number; rate: number; accountId?: string }[]) =>
@@ -109,11 +133,29 @@ export default function PlanLeadDetailPage() {
     },
   });
 
+  const clearAddCardFromUrl = useCallback(() => {
+    const path = location.split("?")[0] ?? location;
+    const params = new URLSearchParams(search);
+    if (!params.has("addCard")) return;
+    params.delete("addCard");
+    const nextQuery = params.toString();
+    navigate(nextQuery ? `${path}?${nextQuery}` : path, { replace: true });
+  }, [location, navigate, search]);
+
+  const { startPlaidAdd, isBusy: isAddingCard } = useAddPlanLeadCardsViaPlaid({
+    planLeadId: leadId,
+    existingCards: detailQuery.data?.cards ?? [],
+    onSuccess: clearAddCardFromUrl,
+  });
+
   useEffect(() => {
-    if (detailQuery.data?.status === "recommended" && readPlanLeadAddCard(search)) {
-      setAddCardFlowOpen(true);
-    }
-  }, [detailQuery.data?.status, search]);
+    if (plaidAutoStartRef.current) return;
+    if (detailQuery.data?.status !== "recommended") return;
+    if (!readPlanLeadAddCard(search)) return;
+    plaidAutoStartRef.current = true;
+    clearAddCardFromUrl();
+    startPlaidAdd();
+  }, [detailQuery.data?.status, search, clearAddCardFromUrl, startPlaidAdd]);
 
   useEffect(() => {
     if (auditSessionId && subscription.subscriptionActive) {
@@ -178,15 +220,6 @@ export default function PlanLeadDetailPage() {
     });
   };
 
-  const closeAddCardFlow = () => {
-    setAddCardFlowOpen(false);
-    const path = location.split("?")[0] ?? location;
-    const params = new URLSearchParams(search);
-    params.delete("addCard");
-    const nextQuery = params.toString();
-    navigate(nextQuery ? `${path}?${nextQuery}` : path, { replace: true });
-  };
-
   const shellProps = {
     activeTab: "dashboard" as const,
     onTabChange,
@@ -194,6 +227,8 @@ export default function PlanLeadDetailPage() {
     startCheckout: subscription.startCheckout,
     isCheckoutLoading: subscription.isCheckoutLoading,
     activateReturnPath: checkoutReturnPath,
+    onCreateSavingPlan: startCreatePlan,
+    isCreatingPlan,
   };
 
   if (subscription.isSubscriptionLoading || detailQuery.isLoading) {
@@ -228,23 +263,28 @@ export default function PlanLeadDetailPage() {
   return (
     <DashboardShell {...shellProps}>
       <div className="app-page-cabinet max-w-none py-6 cabinet:max-w-none bp600:py-8">
-        <div className="dash-plan-detail-layout">
-          {detail.status === "recommended" && addCardFlowOpen ? (
-            <AddCardsToPlanFlow
-              planLeadId={planLeadId}
-              existingCards={detail.cards}
-              onCancel={closeAddCardFlow}
-            />
+        <div className="dash-plan-detail-layout relative">
+          {isAddingCard ? (
+            <div
+              className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-white/60"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" aria-hidden="true" />
+            </div>
           ) : null}
 
-          {detail.status === "recommended" && !addCardFlowOpen ? (
+          {detail.status === "recommended" ? (
             <PlanLeadSendView
               detail={detail}
               planIndex={planIndex}
               returnTo={returnTo}
               isSavingCards={saveCardsMutation.isPending}
+              isAddingCard={isAddingCard}
+              isDeletingPlan={deletePlanLead.isPending}
               onDeleteCard={onDeleteCard}
-              onAddCard={() => setAddCardFlowOpen(true)}
+              onDeletePlan={onDeletePlan}
+              onAddCard={startPlaidAdd}
               onOpenPartnerModal={() => setPartnerModalOpen(true)}
             />
           ) : null}

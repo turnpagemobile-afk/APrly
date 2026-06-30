@@ -6,11 +6,11 @@
         "colorSpace": "srgb",
         "components": [
           0.9725490212440491,
-          0.9882352948188782,
-          0.9960784316062927
+          0.9960784316062927,
+          0.9686274528503418
         ],
         "alpha": 1,
-        "hex": "#F8FCFE"
+        "hex": "#F8FEF7"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:382:80585",
@@ -18,9 +18,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:5f8587d69a572bd8e19f12e076a1b93655958d23/-1:-1",
-          "targetVariableName": "karimun/karimun-050",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:14df083d036cb0820118b13d7bcedd9cf145cba9/-1:-1",
+          "targetVariableName": "shiny-green/shiny-green-050",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -30,12 +30,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.9411764740943909,
-          0.9686274528503418,
-          0.9960784316062927
+          0.929411768913269,
+          0.9882352948188782,
+          0.9176470637321472
         ],
         "alpha": 1,
-        "hex": "#F0F7FE"
+        "hex": "#EDFCEA"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:382:80586",
@@ -43,9 +43,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:0bff1cbb4c258322cc4e1bec453b4699f5524b85/-1:-1",
-          "targetVariableName": "karimun/karimun-100",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:383c5315c9ef0dfa487d56f72557c359cd2bb143/-1:-1",
+          "targetVariableName": "shiny-green/shiny-green-100",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -55,12 +55,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.8313725590705872,
-          0.9137254953384399,
-          0.9843137264251709
+          0.800000011920929,
+          0.9686274528503418,
+          0.7803921699523926
         ],
         "alpha": 1,
-        "hex": "#D4E9FB"
+        "hex": "#CCF7C7"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:382:80587",
@@ -68,9 +68,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:5eee95d21a51912c4e916203076b3931966d432a/-1:-1",
-          "targetVariableName": "karimun/karimun-200",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:618ca6353c120cd7279474e3d0c22efdd29e4b53/-1:-1",
+          "targetVariableName": "shiny-green/shiny-green-200",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -80,12 +80,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.658823549747467,
-          0.8313725590705872,
-          0.9725490212440491
+          0.6196078658103943,
+          0.9411764740943909,
+          0.5764706134796143
         ],
         "alpha": 1,
-        "hex": "#A8D4F8"
+        "hex": "#9EF093"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:382:80588",
@@ -93,9 +93,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:e01a42e18c5e30a29b57681e308cb5f960d159dd/-1:-1",
-          "targetVariableName": "karimun/karimun-300",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:7085af70f5e2aab5909097f3c1f82cec42da6140/-1:-1",
+          "targetVariableName": "shiny-green/shiny-green-300",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -105,12 +105,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.4470588266849518,
-          0.7254902124404907,
-          0.9529411792755127
+          0.47058823704719543,
+          0.8549019694328308,
+          0.41960784792900085
         ],
         "alpha": 1,
-        "hex": "#72B9F3"
+        "hex": "#78DA6B"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:382:80589",
@@ -118,9 +118,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:80a3eac9e165b4ef6e6f562bc5142a1a8df703cf/-1:-1",
-          "targetVariableName": "karimun/karimun-400",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:191a0e77cc6699c3fd7d0cace500da74e0848f29/-1:-1",
+          "targetVariableName": "shiny-green/shiny-green-400",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -130,12 +130,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.14901961386203766,
-          0.5764706134796143,
-          0.929411768913269
+          0.2823529541492462,
+          0.7450980544090271,
+          0.21960784494876862
         ],
         "alpha": 1,
-        "hex": "#2693ED"
+        "hex": "#48BE38"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:382:80590",
@@ -143,9 +143,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:3f344e85c137eaee52344691a9820b8949e2a1d4/-1:-1",
-          "targetVariableName": "karimun/karimun-500",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:fb901302dc6caf521389edaec758a3dcfc5b4aa6/-1:-1",
+          "targetVariableName": "shiny-green/shiny-green-500",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -155,12 +155,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.125490203499794,
-          0.4901960790157318,
-          0.7882353067398071
+          0.22745098173618317,
+          0.6470588445663452,
+          0.1725490242242813
         ],
         "alpha": 1,
-        "hex": "#207DC9"
+        "hex": "#3AA52C"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:382:80591",
@@ -168,9 +168,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:80ae112cfa483aa171849500dfaf549cba7ab7b0/-1:-1",
-          "targetVariableName": "karimun/karimun-600",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:a38b73d3e261bfdfdc98c55ff3e409e14696ef84/-1:-1",
+          "targetVariableName": "shiny-green/shiny-green-600",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -180,12 +180,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.10588235408067703,
-          0.40392157435417175,
-          0.6509804129600525
+          0.16470588743686676,
+          0.5490196347236633,
+          0.125490203499794
         ],
         "alpha": 1,
-        "hex": "#1B67A6"
+        "hex": "#2A8C20"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:382:80592",
@@ -193,9 +193,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:bbc9e72479a7c922b72c242d2b8b6b4fe728f2f4/-1:-1",
-          "targetVariableName": "karimun/karimun-700",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:422f434722cc7d746a2e29aa45575f9c12533c50/-1:-1",
+          "targetVariableName": "shiny-green/shiny-green-700",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -205,12 +205,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.07450980693101883,
-          0.29019609093666077,
-          0.46666666865348816
+          0.09019608050584793,
+          0.4117647111415863,
+          0.054901961237192154
         ],
         "alpha": 1,
-        "hex": "#134A77"
+        "hex": "#17690E"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:382:80593",
@@ -218,9 +218,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:5913b82794a06e849ea5053ed98e5d51c5860244/-1:-1",
-          "targetVariableName": "karimun/karimun-800",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:947701e5101bb54b57f9eb93a790df8b01f34563/-1:-1",
+          "targetVariableName": "shiny-green/shiny-green-800",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -230,12 +230,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.04313725605607033,
-          0.1725490242242813,
-          0.27843138575553894
+          0.0470588244497776,
+          0.2549019753932953,
+          0.0235294122248888
         ],
         "alpha": 1,
-        "hex": "#0B2C47"
+        "hex": "#0C4106"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:382:80594",
@@ -243,9 +243,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:cc8ed4ad4f8b558ad37dae2a3ddee158b220dd42/-1:-1",
-          "targetVariableName": "karimun/karimun-900",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:4b7aefe1add909abfb6be9382aa4f4de66224dd8/-1:-1",
+          "targetVariableName": "shiny-green/shiny-green-900",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -255,12 +255,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.0235294122248888,
-          0.10980392247438431,
-          0.1882352977991104
+          0.027450980618596077,
+          0.16470588743686676,
+          0.0117647061124444
         ],
         "alpha": 1,
-        "hex": "#061C30"
+        "hex": "#072A03"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:382:80595",
@@ -268,9 +268,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:d52b597bd03d507df1ccdc3861840118de005858/-1:-1",
-          "targetVariableName": "karimun/karimun-950",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:fb05bf78d823f9e51fd59cd0ecd23d823218580a/-1:-1",
+          "targetVariableName": "shiny-green/shiny-green-950",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -282,12 +282,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.9725490212440491,
-          0.9921568632125854,
-          0.9843137264251709
+          0.8627451062202454,
+          0.9058823585510254,
+          0.8745098114013672
         ],
         "alpha": 1,
-        "hex": "#F8FDFB"
+        "hex": "#DCE7DF"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:1771:175740",
@@ -295,9 +295,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:3d291705eae6eeee663d15cf09a5cfce6ff2436b/-1:-1",
-          "targetVariableName": "mountain-meadow/mountain-meadow-050",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:352c3466fc45abc723387bb9cdc5e20f6ce49da0/-1:-1",
+          "targetVariableName": "green-forest/green-forest-050",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -307,12 +307,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.9333333373069763,
-          0.9803921580314636,
-          0.9647058844566345
+          0.7254902124404907,
+          0.8117647171020508,
+          0.7490196228027344
         ],
         "alpha": 1,
-        "hex": "#EEFAF6"
+        "hex": "#B9CFBF"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:1771:175741",
@@ -320,9 +320,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:f8e91b60a05e3ec1241a8a7344c59d4657722c7c/-1:-1",
-          "targetVariableName": "mountain-meadow/mountain-meadow-100",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:78eb2a555e7e0ce96fd72e28802cb8998b973d2d/-1:-1",
+          "targetVariableName": "green-forest/green-forest-100",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -332,12 +332,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.8117647171020508,
-          0.9450980424880981,
-          0.9019607901573181
+          0.5882353186607361,
+          0.7176470756530762,
+          0.6235294342041016
         ],
         "alpha": 1,
-        "hex": "#CFF1E6"
+        "hex": "#96B79F"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:1771:175742",
@@ -345,9 +345,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:9637f0d020c3ff30f60bf3c59756653b17567217/-1:-1",
-          "targetVariableName": "mountain-meadow/mountain-meadow-200",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:4b4fc73029283a8d85f8a42d24f43ec408d9939c/-1:-1",
+          "targetVariableName": "green-forest/green-forest-200",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -357,12 +357,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
+          0.45098039507865906,
           0.6235294342041016,
-          0.8901960849761963,
-          0.8039215803146362
+          0.49803921580314636
         ],
         "alpha": 1,
-        "hex": "#9FE3CD"
+        "hex": "#739F7F"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:2403:368624",
@@ -370,9 +370,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:537a03d5ac81e0ea6c1ff7958b0b0c527cb5afa3/-1:-1",
-          "targetVariableName": "mountain-meadow/mountain-meadow-300",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:a49fdb7e9723e91f61097dd94776db7ad0904f4b/-1:-1",
+          "targetVariableName": "green-forest/green-forest-300",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -382,12 +382,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.3921568691730499,
-          0.8235294222831726,
-          0.6784313917160034
+          0.3137255012989044,
+          0.529411792755127,
+          0.37254902720451355
         ],
         "alpha": 1,
-        "hex": "#64D2AD"
+        "hex": "#50875F"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:1771:175744",
@@ -395,9 +395,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:c71ada0e0eeffc078db4ccb992c32a8659c0724d/-1:-1",
-          "targetVariableName": "mountain-meadow/mountain-meadow-400",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:5aca7dedc312baa675413b38f5b87763dc88e3f3/-1:-1",
+          "targetVariableName": "green-forest/green-forest-400",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -407,12 +407,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.062745101749897,
-          0.7254902124404907,
-          0.5058823823928833
+          0.18039216101169586,
+          0.43529412150382996,
+          0.250980406999588
         ],
         "alpha": 1,
-        "hex": "#10B981"
+        "hex": "#2E6F40"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:1771:175745",
@@ -420,9 +420,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:8de129eab6bc1ec68c4a8b2577fa2aad34f78a53/-1:-1",
-          "targetVariableName": "mountain-meadow/mountain-meadow-500",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:428b01c4b98da59fe96dd1d4f1755f622d717e12/-1:-1",
+          "targetVariableName": "green-forest/green-forest-500",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -432,12 +432,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.054901961237192154,
-          0.615686297416687,
-          0.4313725531101227
+          0.14901961386203766,
+          0.3607843220233917,
+          0.2078431397676468
         ],
         "alpha": 1,
-        "hex": "#0E9D6E"
+        "hex": "#265C35"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:1771:175746",
@@ -445,9 +445,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:a9353a17a4ffb29057221f39844fc156e65069ee/-1:-1",
-          "targetVariableName": "mountain-meadow/mountain-meadow-600",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:ea2298f23b9474e1b7a59e42363a29cba8d0da61/-1:-1",
+          "targetVariableName": "green-forest/green-forest-600",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -457,12 +457,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.04313725605607033,
-          0.5098039507865906,
-          0.3529411852359772
+          0.11764705926179886,
+          0.29019609093666077,
+          0.16470588743686676
         ],
         "alpha": 1,
-        "hex": "#0B825A"
+        "hex": "#1E4A2A"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:1771:175747",
@@ -470,9 +470,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:dedffd4b5ba812d9b7feb1ed771034d5f706bc37/-1:-1",
-          "targetVariableName": "mountain-meadow/mountain-meadow-700",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:ae6ddce22335f589d7cf55ebb5216c8eae5fa954/-1:-1",
+          "targetVariableName": "green-forest/green-forest-700",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -482,12 +482,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.0313725508749485,
-          0.364705890417099,
-          0.2549019753932953
+          0.09019608050584793,
+          0.21568627655506134,
+          0.125490203499794
         ],
         "alpha": 1,
-        "hex": "#085D41"
+        "hex": "#173720"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:1771:175748",
@@ -495,9 +495,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:069b00c1a97daf6b1242ed5d294ef08e521cb84b/-1:-1",
-          "targetVariableName": "mountain-meadow/mountain-meadow-800",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:8e678e5499c2d55113c5c60a1c826e8c70e03bb5/-1:-1",
+          "targetVariableName": "green-forest/green-forest-800",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -507,12 +507,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.019607843831181526,
-          0.21960784494876862,
-          0.15294118225574493
+          0.05882352963089943,
+          0.14509804546833038,
+          0.08235294371843338
         ],
         "alpha": 1,
-        "hex": "#053827"
+        "hex": "#0F2515"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:1771:175749",
@@ -520,9 +520,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:0b617567e4f4798dbeb7172cf993ec3a4603cf80/-1:-1",
-          "targetVariableName": "mountain-meadow/mountain-meadow-900",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:085f5064d99e5aaad829e40007f8c172da6e7833/-1:-1",
+          "targetVariableName": "green-forest/green-forest-900",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -532,12 +532,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.0117647061124444,
-          0.1411764770746231,
-          0.0941176488995552
+          0.027450980618596077,
+          0.07058823853731155,
+          0.03921568766236305
         ],
         "alpha": 1,
-        "hex": "#032418"
+        "hex": "#07120A"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:1771:175750",
@@ -545,9 +545,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:1e3105a6d8888359e2a1b944536f2b977ced76cf/-1:-1",
-          "targetVariableName": "mountain-meadow/mountain-meadow-950",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:4b7f1b5aa4a03eacca2ec5fe9aaf7a087e25f703/-1:-1",
+          "targetVariableName": "green-forest/green-forest-950",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -559,12 +559,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.9725490212440491,
-          0.9921568632125854,
-          0.9921568632125854
+          1,
+          0.9882352948188782,
+          0.9725490212440491
         ],
         "alpha": 1,
-        "hex": "#F8FDFD"
+        "hex": "#FFFCF8"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:7263:90000",
@@ -572,9 +572,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:28f105f7a6b26bb47be1fa1c83edddf9ddcee441/-1:-1",
-          "targetVariableName": "jade-gravel/jade-gravel-050",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:e3d7a34efa045e1d7795751c0c09043aa6d43fb0/-1:-1",
+          "targetVariableName": "american-sand/american-sand-050",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -584,12 +584,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.9333333373069763,
-          0.9803921580314636,
-          0.9803921580314636
+          1,
+          0.9764705896377563,
+          0.9450980424880981
         ],
         "alpha": 1,
-        "hex": "#EEFAFA"
+        "hex": "#FFF9F1"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:7263:90001",
@@ -597,9 +597,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:bd5b938f8378e639fb41bb9cd2463bb9dc9f2446/-1:-1",
-          "targetVariableName": "jade-gravel/jade-gravel-100",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:57a65531129f49988d12e95c72b14b692068564b/-1:-1",
+          "targetVariableName": "american-sand/american-sand-100",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -609,12 +609,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.8117647171020508,
-          0.9450980424880981,
-          0.9490196108818054
+          1,
+          0.9254902005195618,
+          0.8392156958580017
         ],
         "alpha": 1,
-        "hex": "#CFF1F2"
+        "hex": "#FFECD6"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:7263:90002",
@@ -622,9 +622,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:1d6967af649fbc477cd7aca493683d798d65af0f/-1:-1",
-          "targetVariableName": "jade-gravel/jade-gravel-200",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:df88f442cfc59c115cec5559a3bc62de7078b8b1/-1:-1",
+          "targetVariableName": "american-sand/american-sand-200",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -634,12 +634,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.6196078658103943,
-          0.886274516582489,
-          0.8980392217636108
+          0.9725490212440491,
+          0.8588235378265381,
+          0.7254902124404907
         ],
         "alpha": 1,
-        "hex": "#9EE2E5"
+        "hex": "#F8DBB9"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:7263:90003",
@@ -647,9 +647,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:72850ccea7b6a86df195e242019ead4386cb0384/-1:-1",
-          "targetVariableName": "jade-gravel/jade-gravel-300",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:c17a2ad8ca5cdf4691489c15f7e8b66e23bfcd08/-1:-1",
+          "targetVariableName": "american-sand/american-sand-300",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -659,12 +659,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.3843137323856354,
-          0.8156862854957581,
-          0.8313725590705872
+          0.8941176533699036,
+          0.7803921699523926,
+          0.6470588445663452
         ],
         "alpha": 1,
-        "hex": "#62D0D4"
+        "hex": "#E4C7A5"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:7263:90004",
@@ -672,9 +672,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:0a9bd9ca5d64bd313e4524f6db2af956b7c1da1e/-1:-1",
-          "targetVariableName": "jade-gravel/jade-gravel-400",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:af122d769d980dc919f352dc2a8610c2b2089f3e/-1:-1",
+          "targetVariableName": "american-sand/american-sand-400",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -684,12 +684,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.05098039284348488,
-          0.7176470756530762,
-          0.7411764860153198
+          0.7882353067398071,
+          0.6745098233222961,
+          0.5411764979362488
         ],
         "alpha": 1,
-        "hex": "#0DB7BD"
+        "hex": "#C9AC8A"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:7263:90005",
@@ -697,9 +697,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:7f37375cdcd77604533fa196dce56687a462f93c/-1:-1",
-          "targetVariableName": "jade-gravel/jade-gravel-500",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:b8c606258010e4bc4fddd1865818b639aa1b26a5/-1:-1",
+          "targetVariableName": "american-sand/american-sand-500",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -709,12 +709,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.04313725605607033,
-          0.6117647290229797,
-          0.6313725709915161
+          0.6823529601097107,
+          0.5686274766921997,
+          0.43529412150382996
         ],
         "alpha": 1,
-        "hex": "#0B9CA1"
+        "hex": "#AE916F"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:7263:90006",
@@ -722,9 +722,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:2ff5ff940cb4ce3a25d8c2c0c32a3ab088a64076/-1:-1",
-          "targetVariableName": "jade-gravel/jade-gravel-600",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:9233d31881d4858ffc8b8b363236d321fcaa4083/-1:-1",
+          "targetVariableName": "american-sand/american-sand-600",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -734,12 +734,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.03529411926865578,
-          0.501960813999176,
-          0.5176470875740051
+          0.5764706134796143,
+          0.4627451002597809,
+          0.3294117748737335
         ],
         "alpha": 1,
-        "hex": "#098084"
+        "hex": "#937654"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:7263:90007",
@@ -747,9 +747,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:465555cb95e65b5768771b7ddba40afa007fc537/-1:-1",
-          "targetVariableName": "jade-gravel/jade-gravel-700",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:31e15ececed7673a3a78314d0e8a229eccb220f2/-1:-1",
+          "targetVariableName": "american-sand/american-sand-700",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -759,12 +759,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.027450980618596077,
-          0.3607843220233917,
-          0.37254902720451355
+          0.4431372582912445,
+          0.3294117748737335,
+          0.19607843458652496
         ],
         "alpha": 1,
-        "hex": "#075C5F"
+        "hex": "#715432"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:7263:90008",
@@ -772,9 +772,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:0247ec6c229b1199beab70b6f5fe6dc1c6eb6c14/-1:-1",
-          "targetVariableName": "jade-gravel/jade-gravel-800",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:fc49837821c26f180bb94f3093fa4235226608b0/-1:-1",
+          "targetVariableName": "american-sand/american-sand-800",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -784,12 +784,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.01568627543747425,
-          0.21568627655506134,
-          0.2235294133424759
+          0.3019607961177826,
+          0.1882352977991104,
+          0.054901961237192154
         ],
         "alpha": 1,
-        "hex": "#043739"
+        "hex": "#4D300E"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:7263:90009",
@@ -797,9 +797,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:c92e93feab0006f2cede860d7535d99575969ce1/-1:-1",
-          "targetVariableName": "jade-gravel/jade-gravel-900",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:c577a0b7bd83f74cc3d8d186f4c6587b8c9e5eec/-1:-1",
+          "targetVariableName": "american-sand/american-sand-900",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -809,12 +809,12 @@
       "$value": {
         "colorSpace": "srgb",
         "components": [
-          0.007843137718737125,
-          0.1411764770746231,
-          0.14509804546833038
+          0.23137255012989044,
+          0.125490203499794,
+          0
         ],
         "alpha": 1,
-        "hex": "#022425"
+        "hex": "#3B2000"
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:7263:90010",
@@ -822,9 +822,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:699efedac8e7c765377d2be55d655d87abb24e1d/-1:-1",
-          "targetVariableName": "jade-gravel/jade-gravel-950",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableId": "VariableID:77fc566ba531bd705b2ca9360023b03b0cc61a87/-1:-1",
+          "targetVariableName": "american-sand/american-sand-950",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -849,9 +849,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:14e1428f54d2c11bd293ccb1ac9df0e75de274c9/-1:-1",
+          "targetVariableId": "VariableID:f56a3042b93b1c898e2c7ec0d9399d8d37a38b2c/-1:-1",
           "targetVariableName": "pumpkin/pumpkin-050",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -874,9 +874,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:9601a5865484af0fc6679b7fa82df1d8d493e7c6/-1:-1",
+          "targetVariableId": "VariableID:205c53ba75a692e93a921ceb87313c54b81afb58/-1:-1",
           "targetVariableName": "pumpkin/pumpkin-100",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -899,9 +899,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:878ef252a5110ced438398fcca10fad9648ade31/-1:-1",
+          "targetVariableId": "VariableID:75c5111f40f4c802f5af32c80bc7c71429650442/-1:-1",
           "targetVariableName": "pumpkin/pumpkin-200",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -924,9 +924,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:24715e50d8bd8e3209294f3e3d61b470098a1d10/-1:-1",
+          "targetVariableId": "VariableID:e8fad8991541ddc2669939e1a10a69bb3cddd90c/-1:-1",
           "targetVariableName": "pumpkin/pumpkin-300",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -949,9 +949,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:8f9713e7dc26e562da2887c521a55d70432b4ca0/-1:-1",
+          "targetVariableId": "VariableID:deffbdd9d42d790f17f356d9cb792ae8965aad95/-1:-1",
           "targetVariableName": "pumpkin/pumpkin-400",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -974,9 +974,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:a95cabdbdbdec793e101f4d02f7550b35b50b453/-1:-1",
+          "targetVariableId": "VariableID:0c36323a6efca84b3da9b9843f75ef8e58dda6e7/-1:-1",
           "targetVariableName": "pumpkin/pumpkin-500",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -999,9 +999,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:4dee4af5d953a74e45fa2254f1f54e834365700b/-1:-1",
+          "targetVariableId": "VariableID:a71e5dd0980074949919238fba530f7ef9a161f7/-1:-1",
           "targetVariableName": "pumpkin/pumpkin-600",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1024,9 +1024,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:99a407ffe658e0aafc03834a027d020625157e68/-1:-1",
+          "targetVariableId": "VariableID:54d622e5adb4cef9bc758bb20286f3ccfdd1ff71/-1:-1",
           "targetVariableName": "pumpkin/pumpkin-700",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1049,9 +1049,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:1f628977de512926d3a56c036cad48dadc353633/-1:-1",
+          "targetVariableId": "VariableID:80e15703c70e20d927713569b1083bdfc29f8a6a/-1:-1",
           "targetVariableName": "pumpkin/pumpkin-800",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1074,9 +1074,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:3e8df784114c6ca691082aa3a057ccda91e34b18/-1:-1",
+          "targetVariableId": "VariableID:5e7983f11a3a12f56f11a24fdc72fe58edff250a/-1:-1",
           "targetVariableName": "pumpkin/pumpkin-900",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1099,9 +1099,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:3cec9d7fb453a43cd3fecc610a3f3c4472ffc66c/-1:-1",
+          "targetVariableId": "VariableID:6728bdd6b77faa7755aad8994922391ac2dc2c1d/-1:-1",
           "targetVariableName": "pumpkin/pumpkin-950",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1145,9 +1145,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:3f7ba3678d740fe5c53f18192fba626ac895c158/-1:-1",
+          "targetVariableId": "VariableID:691032467c0e4e844e957a2f5e1f80cafe91259d/-1:-1",
           "targetVariableName": "cool-gray/cool-gray-050",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1170,9 +1170,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:30d3ead8b66438caa2831692158603f0282d1696/-1:-1",
+          "targetVariableId": "VariableID:99bb7a3752234567b320f35bac3507db934b7d49/-1:-1",
           "targetVariableName": "cool-gray/cool-gray-100",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1195,9 +1195,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:e65e90c83f8d4faf122daaa8f0fa7937989fb1de/-1:-1",
+          "targetVariableId": "VariableID:c7a822b04d7864593d644d8f2bc172f91c762011/-1:-1",
           "targetVariableName": "cool-gray/cool-gray-200",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1220,9 +1220,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:97c59654f81cb6136a4b14fd3d5419a3bfedd9dd/-1:-1",
+          "targetVariableId": "VariableID:ee7e57913a67512ea83b9b7346836d9fe12a35a5/-1:-1",
           "targetVariableName": "cool-gray/cool-gray-300",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1245,9 +1245,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:c21a205ba0f2a9fa035fad824e459db6b2c68fa9/-1:-1",
+          "targetVariableId": "VariableID:424a11ddda9caaa6dec9fba662019a2999887a45/-1:-1",
           "targetVariableName": "cool-gray/cool-gray-400",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1270,9 +1270,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:eb67283c7b1d27b418e84899ce521fdc882ca9ec/-1:-1",
+          "targetVariableId": "VariableID:7bffc645e7893a98a76a6e2631ac8e0c0067f788/-1:-1",
           "targetVariableName": "cool-gray/cool-gray-500",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1295,9 +1295,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:e1dccb86a67470c2582668292721ce34ed8d55ab/-1:-1",
+          "targetVariableId": "VariableID:13009120a2c190119bb0e6bca4b776559a9d70ef/-1:-1",
           "targetVariableName": "cool-gray/cool-gray-600",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1320,9 +1320,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:66b528557ef143d3c936b2d491d08264e93a95ca/-1:-1",
+          "targetVariableId": "VariableID:f6f9de6838681898478625e06553f0f7c898181c/-1:-1",
           "targetVariableName": "cool-gray/cool-gray-700",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1345,9 +1345,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:c503770951f7ee9685f22a08fdb24b14fc2c71a0/-1:-1",
+          "targetVariableId": "VariableID:4e0fc6f46eadf58c3ef8d551109c099ac57046ae/-1:-1",
           "targetVariableName": "cool-gray/cool-gray-800",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1370,9 +1370,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:30201dd177e39952fdefc02215d1e5d10e59764b/-1:-1",
+          "targetVariableId": "VariableID:731098850a5f316b67856172b0b50caafc41d7ae/-1:-1",
           "targetVariableName": "cool-gray/cool-gray-900",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1395,9 +1395,9 @@
           "ALL_SCOPES"
         ],
         "com.figma.aliasData": {
-          "targetVariableId": "VariableID:26100d0595823e26524875a9f8b451fe82f266bf/-1:-1",
+          "targetVariableId": "VariableID:b6c80e215f8c34928cba2adf1c98452b604ebf99/-1:-1",
           "targetVariableName": "cool-gray/cool-gray-950",
-          "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+          "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
           "targetVariableSetName": "Color Tokens"
         }
       }
@@ -1442,9 +1442,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:3d291705eae6eeee663d15cf09a5cfce6ff2436b/-1:-1",
+            "targetVariableId": "VariableID:5e2508d090b2128496b229af450cf1a1ca9b434f/-1:-1",
             "targetVariableName": "mountain-meadow/mountain-meadow-050",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1467,9 +1467,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:f8e91b60a05e3ec1241a8a7344c59d4657722c7c/-1:-1",
+            "targetVariableId": "VariableID:141ac7d10b2bfb114647fc76147f7b0aeadab7e4/-1:-1",
             "targetVariableName": "mountain-meadow/mountain-meadow-100",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1492,9 +1492,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:9637f0d020c3ff30f60bf3c59756653b17567217/-1:-1",
+            "targetVariableId": "VariableID:d181d55c46c651a485cbcb29a8d86e5780f662e8/-1:-1",
             "targetVariableName": "mountain-meadow/mountain-meadow-200",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1517,9 +1517,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:537a03d5ac81e0ea6c1ff7958b0b0c527cb5afa3/-1:-1",
+            "targetVariableId": "VariableID:62076f149fada74c20cdddec25fea3eae37f79d8/-1:-1",
             "targetVariableName": "mountain-meadow/mountain-meadow-300",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1542,9 +1542,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:c71ada0e0eeffc078db4ccb992c32a8659c0724d/-1:-1",
+            "targetVariableId": "VariableID:e43e3b91526cfb80ddf5ccef9288117704ebf3fc/-1:-1",
             "targetVariableName": "mountain-meadow/mountain-meadow-400",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1567,9 +1567,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:8de129eab6bc1ec68c4a8b2577fa2aad34f78a53/-1:-1",
+            "targetVariableId": "VariableID:56a36061f33d1a216fd8d6354a2c528a4964ef3a/-1:-1",
             "targetVariableName": "mountain-meadow/mountain-meadow-500",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1592,9 +1592,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:a9353a17a4ffb29057221f39844fc156e65069ee/-1:-1",
+            "targetVariableId": "VariableID:dd08425c848b905bfac1d332ca01209d494d1b71/-1:-1",
             "targetVariableName": "mountain-meadow/mountain-meadow-600",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1617,9 +1617,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:dedffd4b5ba812d9b7feb1ed771034d5f706bc37/-1:-1",
+            "targetVariableId": "VariableID:31feadd55e5bbec9e77cc79d3e6fa550b0246a1a/-1:-1",
             "targetVariableName": "mountain-meadow/mountain-meadow-700",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1642,9 +1642,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:069b00c1a97daf6b1242ed5d294ef08e521cb84b/-1:-1",
+            "targetVariableId": "VariableID:31827d70d47cb064333c55a11c5d177b20537a92/-1:-1",
             "targetVariableName": "mountain-meadow/mountain-meadow-800",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1667,9 +1667,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:0b617567e4f4798dbeb7172cf993ec3a4603cf80/-1:-1",
+            "targetVariableId": "VariableID:689df4900e2e069cfe5e8bdbe7e44f3faf0453de/-1:-1",
             "targetVariableName": "mountain-meadow/mountain-meadow-900",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1692,9 +1692,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:1e3105a6d8888359e2a1b944536f2b977ced76cf/-1:-1",
+            "targetVariableId": "VariableID:9e65e6f11f371cc5e67813e735e5ee8cacb9fb68/-1:-1",
             "targetVariableName": "mountain-meadow/mountain-meadow-950",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1719,9 +1719,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:a5f3cf5dbe92cc08d892b546498e4dbdf1d01b24/-1:-1",
+            "targetVariableId": "VariableID:1fd4e689a8509bd13fc3c870ef47389e552823f2/-1:-1",
             "targetVariableName": "hot-cherry/hot-cherry-050",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1744,14 +1744,14 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:acb1671d844bf5b7ff5eaa33f7125d6b8ee05ae7/-1:-1",
+            "targetVariableId": "VariableID:15c1060ee55ce0a5b0275d06507da20f95d6e831/-1:-1",
             "targetVariableName": "hot-cherry/hot-cherry-100",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
       },
-      "dangered-200": {
+      "danger-200": {
         "$type": "color",
         "$value": {
           "colorSpace": "srgb",
@@ -1769,9 +1769,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:e1650417fc2a86bc4f6340c4678e327a1ab05c8e/-1:-1",
+            "targetVariableId": "VariableID:7f1895802eacc9ae799e0e8cfe74fd4b86b45eab/-1:-1",
             "targetVariableName": "hot-cherry/hot-cherry-200",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1794,9 +1794,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:d2e2b6f9a44244f1e9ea05d8cd714bce876ee98c/-1:-1",
+            "targetVariableId": "VariableID:7f5b182155f53f72deac40e721ed144d70cdd2e8/-1:-1",
             "targetVariableName": "hot-cherry/hot-cherry-300",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1819,9 +1819,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:dcd06db957f5a401f20a45bf1b63615b772566b0/-1:-1",
+            "targetVariableId": "VariableID:64e338a81e69733fb6ccec81a4def88b9d99eb5a/-1:-1",
             "targetVariableName": "hot-cherry/hot-cherry-400",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1844,9 +1844,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:9817ea33bcc7f9f2e4c4a0f746df23c72ef9af51/-1:-1",
+            "targetVariableId": "VariableID:1cd18727bc5c7b43ee428a632de3a85c744552cb/-1:-1",
             "targetVariableName": "hot-cherry/hot-cherry-500",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1869,9 +1869,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:0c53e9e097f990117ac12756657453b958ed91c0/-1:-1",
+            "targetVariableId": "VariableID:0b3500c11a89faa0a3c92089565a77916dad7541/-1:-1",
             "targetVariableName": "hot-cherry/hot-cherry-600",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1894,9 +1894,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:a0cdce2992533192b81aa598772f5f07a0da1e40/-1:-1",
+            "targetVariableId": "VariableID:c4d61a0cc5566a3edd315e5f217f037e9aa4bc58/-1:-1",
             "targetVariableName": "hot-cherry/hot-cherry-700",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1919,9 +1919,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:3e05d4b0212b3835f112afd6633d4edf63183392/-1:-1",
+            "targetVariableId": "VariableID:8216b3c8eda8f9bcba82ea86fe6471e0dc78a1af/-1:-1",
             "targetVariableName": "hot-cherry/hot-cherry-800",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1944,9 +1944,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:2cef9619dfc04bf002bad5cffb3212a7a3a8e041/-1:-1",
+            "targetVariableId": "VariableID:f7ddcf556f4411b70076205ee1abb85529120508/-1:-1",
             "targetVariableName": "hot-cherry/hot-cherry-900",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1969,9 +1969,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:ff1b2cfd00507c7ee7c1c55b72999346ff5b2911/-1:-1",
+            "targetVariableId": "VariableID:a3297152aea12f6bc396bf7d97161376ca9c4f31/-1:-1",
             "targetVariableName": "radical-red/radical-red-950",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -1983,12 +1983,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.9725490212440491,
-            0.9882352948188782,
-            0.9960784316062927
+            0.9803921580314636,
+            0.9843137264251709,
+            1
           ],
           "alpha": 1,
-          "hex": "#F8FCFE"
+          "hex": "#FAFBFF"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:382:79445",
@@ -1996,9 +1996,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:5f8587d69a572bd8e19f12e076a1b93655958d23/-1:-1",
-            "targetVariableName": "karimun/karimun-050",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableId": "VariableID:c7bd5e19166cfb74ea7902536cd9d3041c9a232f/-1:-1",
+            "targetVariableName": "cornflower/cornflower-050",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2008,12 +2008,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.9411764740943909,
-            0.9686274528503418,
-            0.9960784316062927
+            0.9529411792755127,
+            0.9647058844566345,
+            1
           ],
           "alpha": 1,
-          "hex": "#F0F7FE"
+          "hex": "#F3F6FF"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:382:79446",
@@ -2021,9 +2021,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:0bff1cbb4c258322cc4e1bec453b4699f5524b85/-1:-1",
-            "targetVariableName": "karimun/karimun-100",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableId": "VariableID:ae7035638d960914ee06752e75bd3df4de13f8a9/-1:-1",
+            "targetVariableName": "cornflower/cornflower-100",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2033,12 +2033,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.8313725590705872,
-            0.9137254953384399,
-            0.9843137264251709
+            0.8666666746139526,
+            0.8941176533699036,
+            0.9960784316062927
           ],
           "alpha": 1,
-          "hex": "#D4E9FB"
+          "hex": "#DDE4FE"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:382:79447",
@@ -2046,9 +2046,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:5eee95d21a51912c4e916203076b3931966d432a/-1:-1",
-            "targetVariableName": "karimun/karimun-200",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableId": "VariableID:04c0c9dcd0fb9e469ce00719aaf770aa14d0b27b/-1:-1",
+            "targetVariableName": "cornflower/cornflower-200",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2058,12 +2058,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.658823549747467,
-            0.8313725590705872,
-            0.9725490212440491
+            0.7333333492279053,
+            0.7921568751335144,
+            0.9921568632125854
           ],
           "alpha": 1,
-          "hex": "#A8D4F8"
+          "hex": "#BBCAFD"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:382:79448",
@@ -2071,9 +2071,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:e01a42e18c5e30a29b57681e308cb5f960d159dd/-1:-1",
-            "targetVariableName": "karimun/karimun-300",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableId": "VariableID:87a76ec2338659c0db197ece619f8bf017f76bb3/-1:-1",
+            "targetVariableName": "cornflower/cornflower-300",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2083,12 +2083,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.4470588266849518,
-            0.7254902124404907,
-            0.9529411792755127
+            0.5686274766921997,
+            0.6627451181411743,
+            0.9843137264251709
           ],
           "alpha": 1,
-          "hex": "#72B9F3"
+          "hex": "#91A9FB"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:382:79449",
@@ -2096,9 +2096,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:80a3eac9e165b4ef6e6f562bc5142a1a8df703cf/-1:-1",
-            "targetVariableName": "karimun/karimun-400",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableId": "VariableID:d9e5e3ba0571d94eee83ede7b10054002b52f2a5/-1:-1",
+            "targetVariableName": "cornflower/cornflower-400",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2108,12 +2108,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.14901961386203766,
-            0.5764706134796143,
-            0.929411768913269
+            0.33725491166114807,
+            0.47843137383461,
+            0.9764705896377563
           ],
           "alpha": 1,
-          "hex": "#2693ED"
+          "hex": "#567AF9"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:382:79450",
@@ -2121,9 +2121,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:3f344e85c137eaee52344691a9820b8949e2a1d4/-1:-1",
-            "targetVariableName": "karimun/karimun-500",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableId": "VariableID:e7d670887fe356e6983237c7b3b7aa58ad3e24a1/-1:-1",
+            "targetVariableName": "cornflower/cornflower-500",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2133,12 +2133,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.125490203499794,
-            0.4901960790157318,
-            0.7882353067398071
+            0.2862745225429535,
+            0.40784314274787903,
+            0.8313725590705872
           ],
           "alpha": 1,
-          "hex": "#207DC9"
+          "hex": "#4968D4"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:382:79451",
@@ -2146,9 +2146,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:80ae112cfa483aa171849500dfaf549cba7ab7b0/-1:-1",
-            "targetVariableName": "karimun/karimun-600",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableId": "VariableID:b4e71cacbbf6884970cf2d4095b1572d5adea003/-1:-1",
+            "targetVariableName": "cornflower/cornflower-600",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2158,12 +2158,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.10588235408067703,
-            0.40392157435417175,
-            0.6509804129600525
+            0.23529411852359772,
+            0.3333333432674408,
+            0.6823529601097107
           ],
           "alpha": 1,
-          "hex": "#1B67A6"
+          "hex": "#3C55AE"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:382:79452",
@@ -2171,9 +2171,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:bbc9e72479a7c922b72c242d2b8b6b4fe728f2f4/-1:-1",
-            "targetVariableName": "karimun/karimun-700",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableId": "VariableID:d5bd313ef8568c9dc4d71f95515addf37902ddfe/-1:-1",
+            "targetVariableName": "cornflower/cornflower-700",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2183,12 +2183,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.07450980693101883,
-            0.29019609093666077,
-            0.46666666865348816
+            0.16862745583057404,
+            0.239215686917305,
+            0.4901960790157318
           ],
           "alpha": 1,
-          "hex": "#134A77"
+          "hex": "#2B3D7D"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:382:79453",
@@ -2196,9 +2196,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:5913b82794a06e849ea5053ed98e5d51c5860244/-1:-1",
-            "targetVariableName": "karimun/karimun-800",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableId": "VariableID:e475972b666cac0a5e41a4f0b7d8e790d1cdd8d9/-1:-1",
+            "targetVariableName": "cornflower/cornflower-800",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2208,12 +2208,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.04313725605607033,
-            0.1725490242242813,
-            0.27843138575553894
+            0.10196078568696976,
+            0.14509804546833038,
+            0.29411765933036804
           ],
           "alpha": 1,
-          "hex": "#0B2C47"
+          "hex": "#1A254B"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:382:79454",
@@ -2221,9 +2221,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:cc8ed4ad4f8b558ad37dae2a3ddee158b220dd42/-1:-1",
-            "targetVariableName": "karimun/karimun-900",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableId": "VariableID:9a73a0f1dc018d75bb8f5877bea9f71192f5d02d/-1:-1",
+            "targetVariableName": "cornflower/cornflower-900",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2233,12 +2233,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.0235294122248888,
-            0.10980392247438431,
-            0.1882352977991104
+            0.05882352963089943,
+            0.09019608050584793,
+            0.20000000298023224
           ],
           "alpha": 1,
-          "hex": "#061C30"
+          "hex": "#0F1733"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:382:79455",
@@ -2246,9 +2246,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:d52b597bd03d507df1ccdc3861840118de005858/-1:-1",
-            "targetVariableName": "karimun/karimun-950",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableId": "VariableID:8edc1f2b79fb1a9073ce418edeccecc7dae69bb4/-1:-1",
+            "targetVariableName": "cornflower/cornflower-950",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2273,9 +2273,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:8ccd3a7d7c1e63342a2c2288862bd6680e794706/-1:-1",
+            "targetVariableId": "VariableID:45427ea03229347a3ede7cae2358e48a1c911cde/-1:-1",
             "targetVariableName": "gold/gold-050",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2298,9 +2298,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:a7a8c641a285dff7c8c6e3a3e02f9c1e80bca052/-1:-1",
+            "targetVariableId": "VariableID:439e50679fca5375e47bc554a792d586d3ef6e92/-1:-1",
             "targetVariableName": "gold/gold-100",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2323,9 +2323,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:79b745e1f180b978350ee85c7ff97d41093d20aa/-1:-1",
+            "targetVariableId": "VariableID:39f58c3ee7b7f10fc17fd93d0899520ee1f3b937/-1:-1",
             "targetVariableName": "gold/gold-200",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2348,9 +2348,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:ab716d2f93b915efa42415226de9e621e700c99d/-1:-1",
+            "targetVariableId": "VariableID:97a75a7ed6da950cdfcf387edd95fcba7b3b20d3/-1:-1",
             "targetVariableName": "gold/gold-300",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2373,9 +2373,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:d384645487214b968267bc0aaeb8e40253d11f0d/-1:-1",
+            "targetVariableId": "VariableID:4ae31880c9a5ad8f5b5c8c8d6253f2392b420f30/-1:-1",
             "targetVariableName": "gold/gold-400",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2398,9 +2398,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:17fcde5a2d0b83dc892f0de3e6945305bd7242d2/-1:-1",
+            "targetVariableId": "VariableID:6d05a76df22f3ee0736b270fd5cf3d91aed80617/-1:-1",
             "targetVariableName": "gold/gold-500",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2423,9 +2423,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:61e00296e3d721d98fbd4bcd7bd3293c308a4d49/-1:-1",
+            "targetVariableId": "VariableID:965cd47b3e5fb5d7826c08e8c5d781b1c97b2ecf/-1:-1",
             "targetVariableName": "gold/gold-600",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2448,9 +2448,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:e0c033d559665260b847c0c07c4ca0368902dcd3/-1:-1",
+            "targetVariableId": "VariableID:beaff15c6acc770cb2b33bee9915753259e4d69b/-1:-1",
             "targetVariableName": "gold/gold-700",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2473,9 +2473,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:adcc30aab2b719430c8df8d9d8aa5e49626f70ee/-1:-1",
+            "targetVariableId": "VariableID:8a886995df60526febb48e7eb1bc25882d332fd0/-1:-1",
             "targetVariableName": "gold/gold-800",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2498,9 +2498,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:df1ee5caae7b19f48f335654fe24cf7c550df3df/-1:-1",
+            "targetVariableId": "VariableID:0bc1f03f9135ec40f2987f0f35fe86ab1d4c2e42/-1:-1",
             "targetVariableName": "gold/gold-900",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }
@@ -2523,9 +2523,9 @@
             "ALL_SCOPES"
           ],
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:1edc146ca876cb72779e23c0abe6a26045f1b784/-1:-1",
+            "targetVariableId": "VariableID:34fe915392c96bddac6817dbaf55a157a2571f0f/-1:-1",
             "targetVariableName": "gold/gold-950",
-            "targetVariableSetId": "VariableCollectionId:ac6fd2299208870164ab0478dce05fc9630cb465/-1:-1",
+            "targetVariableSetId": "VariableCollectionId:1f822ed422b9d5894ec02330c4671ae559213882/-1:-1",
             "targetVariableSetName": "Color Tokens"
           }
         }

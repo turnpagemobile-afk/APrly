@@ -18,6 +18,7 @@ import { setOnSessionExpired } from "@workspace/api-client-react";
 import { toast } from "@/hooks/use-toast";
 
 type AuthUser = {
+  id: number;
   email: string;
   firstName: string | null;
   lastName: string | null;
@@ -90,6 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const user = meQuery.data
     ? {
+        id: meQuery.data.id,
         email: meQuery.data.email,
         firstName: meQuery.data.firstName ?? null,
         lastName: meQuery.data.lastName ?? null,

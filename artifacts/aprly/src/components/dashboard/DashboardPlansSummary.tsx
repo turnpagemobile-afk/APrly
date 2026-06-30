@@ -29,8 +29,10 @@ function SummaryMetricCard({
     <div
       className={cn(
         "dash-summary-tile",
-        variant === "debt" && "bg-[var(--danger-theme-500)] text-white",
-        variant === "savings" && "bg-[var(--secondary-theme-500)] text-white",
+        variant === "debt" &&
+          "border border-[var(--accent-theme-500)] bg-[var(--accent-theme-500)] text-[var(--neutral-theme-000)]",
+        variant === "savings" &&
+          "border border-[var(--success-theme-500)] bg-[var(--success-theme-500)] text-[var(--neutral-theme-000)]",
         variant === "default" &&
           "border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)]",
       )}
@@ -42,8 +44,8 @@ function SummaryMetricCard({
         <p
           className={cn(
             "dash-display-value",
-            variant === "debt" && "text-white",
-            variant === "savings" && "text-white",
+            variant === "debt" && "text-[var(--neutral-theme-000)]",
+            variant === "savings" && "text-[var(--neutral-theme-000)]",
             variant === "default" && "text-[var(--neutral-theme-900)]",
             valueClassName,
           )}
@@ -55,7 +57,7 @@ function SummaryMetricCard({
             "dash-display-label",
             variant === "default"
               ? "text-[var(--hint-text-color)]"
-              : "text-white/90",
+              : "text-[var(--neutral-theme-000)]",
           )}
         >
           {label}

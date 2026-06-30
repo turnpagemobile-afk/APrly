@@ -71,7 +71,7 @@ export function MeltCountdownSummaryCard({
   return (
     <div
       className={cn(
-        "dash-summary-tile border border-[var(--secondary-theme-200)] bg-[var(--card-1lvl-bg-color)]",
+        "dash-summary-tile border border-[var(--success-theme-400)] bg-[var(--success-theme-100)]",
       )}
     >
       <div className="dash-metric-card-stack">

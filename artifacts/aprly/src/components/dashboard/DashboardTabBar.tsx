@@ -46,8 +46,8 @@ export function DashboardTabBar({
                 ? "flex w-full min-h-[44px] items-center justify-center py-3"
                 : "pb-3 pt-1",
               isActive
-                ? "border-primary font-bold text-[var(--neutral-theme-900)]"
-                : "border-transparent font-semibold text-[var(--info-theme-500)] hover:text-[var(--info-theme-500)]",
+                ? "border-[var(--action-default-color)] font-bold text-[var(--neutral-theme-900)]"
+                : "border-transparent font-semibold text-[var(--primary-theme-600)] hover:text-[var(--primary-theme-700)]",
             )}
             aria-current={isActive ? "page" : undefined}
           >

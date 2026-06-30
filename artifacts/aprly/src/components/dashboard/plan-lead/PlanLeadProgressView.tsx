@@ -58,14 +58,16 @@ export function PlanLeadProgressView({
       ) : null}
 
       {detail.cards.length > 0 ? (
-        <section className="space-y-4">
-          <h2 className="dash-plan-detail-cards-title">{planLeadDetailContent.yourCards}</h2>
+        <section className="dash-plan-detail-cards-section">
+          <h2 className="dash-plan-detail-cards-title app-header-h6 text-average">
+            {planLeadDetailContent.yourCards}
+          </h2>
           <LeadCardsList cards={detail.cards} />
         </section>
       ) : null}
 
       {detail.status === "won" ? (
-        <p className="dash-plan-detail-review-banner">
+        <p className="dash-plan-detail-review-banner app-text-p1-bold text-title">
           {planLeadDetailContent.reviewBanner(formatReviewDate(detail.createdAt))}
         </p>
       ) : null}

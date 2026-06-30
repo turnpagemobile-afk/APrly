@@ -556,6 +556,29 @@ paths:
         "404":
           description: Plan lead not found
 
+    delete:
+      operationId: deletePlanLead
+      tags: [me]
+      summary: Delete plan lead (recommended only, before send)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "204":
+          description: Deleted
+        "400":
+          description: Not deletable (already sent)
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+
   /me/plan-leads/{id}/send:
     post:
       operationId: sendPlanLead

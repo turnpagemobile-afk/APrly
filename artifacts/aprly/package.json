@@ -16,7 +16,8 @@
     "serve": "vite preview --config vite.landing.config.ts --host 0.0.0.0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "check:tailwind-apply": "node ./scripts/check-tailwind-apply.mjs",
-    "tokens": "node ./scripts/build-theme-tokens.mjs",
+    "tokens:text": "node ./scripts/build-text-styles.mjs",
+    "tokens": "node ./scripts/build-theme-tokens.mjs && node ./scripts/build-text-styles.mjs",
     "sync-design": "node ./scripts/sync-design-from-local-docs.mjs",
     "pwa:icons": "node ./scripts/generate-pwa-icons.mjs"
   },

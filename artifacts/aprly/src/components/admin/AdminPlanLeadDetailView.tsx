@@ -131,7 +131,7 @@ export function AdminPlanLeadDetailView({
       ) : null}
 
       {detail.displayStatus === "won" ? (
-        <p className="dash-plan-detail-review-banner">
+        <p className="dash-plan-detail-review-banner text-sm text-[var(--neutral-theme-900)] bp600:text-base">
           {planLeadDetailContent.reviewBanner(formatReviewDate(detail.createdAt))}
         </p>
       ) : null}

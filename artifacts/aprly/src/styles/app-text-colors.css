@@ -1,0 +1,36 @@
+/**
+ * Theme-aware text color utilities (Figma semantic color tokens).
+ * Pair with app-text-styles.css — typography has no embedded color.
+ */
+
+@layer utilities {
+  /* text/hint-text-color */
+  .text-hint {
+    color: var(--hint-text-color);
+  }
+
+  /* text/title-color */
+  .text-title {
+    color: var(--title-color);
+  }
+
+  /* text/average-text-color */
+  .text-average {
+    color: var(--average-text-color);
+  }
+
+  /* action-default-color */
+  .text-action {
+    color: var(--action-default-color);
+  }
+
+  /* neutral-theme/neutral-theme-000 */
+  .text-neutral-000 {
+    color: var(--neutral-theme-000);
+  }
+
+  /* tertiary-theme/secondary-theme-300 */
+  .text-secondary-300 {
+    color: var(--secondary-theme-300);
+  }
+}

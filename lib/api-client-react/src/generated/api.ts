@@ -2264,6 +2264,90 @@ export const useUpdatePlanLeadStatus = <
 };
 
 /**
+ * @summary Delete plan lead (recommended only, before send)
+ */
+export const getDeletePlanLeadUrl = (id: number) => {
+  return `/api/me/plan-leads/${id}`;
+};
+
+export const deletePlanLead = async (
+  id: number,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getDeletePlanLeadUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeletePlanLeadMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deletePlanLead>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deletePlanLead>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deletePlanLead"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deletePlanLead>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deletePlanLead(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeletePlanLeadMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deletePlanLead>>
+>;
+
+export type DeletePlanLeadMutationError = ErrorType<void>;
+
+/**
+ * @summary Delete plan lead (recommended only, before send)
+ */
+export const useDeletePlanLead = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deletePlanLead>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deletePlanLead>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeletePlanLeadMutationOptions(options));
+};
+
+/**
  * @summary Send plan lead to partner (simulated v1)
  */
 export const getSendPlanLeadUrl = (id: number) => {

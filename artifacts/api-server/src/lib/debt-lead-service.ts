@@ -511,6 +511,20 @@ export async function replacePlanLeadCards(
   return loadDebtLeadDetailForUser(leadId, userId);
 }
 
+export async function deletePlanLeadForUser(
+  leadId: number,
+  userId: number,
+): Promise<{ ok: true } | { ok: false; reason: "not_found" | "not_deletable" }> {
+  const loaded = await loadDebtLeadForUser(leadId, userId);
+  if (!loaded) return { ok: false, reason: "not_found" };
+  if (loaded.lead.status !== "recommended" || loaded.lead.sentToPartnerAt) {
+    return { ok: false, reason: "not_deletable" };
+  }
+
+  await db.delete(debtLeadsTable).where(eq(debtLeadsTable.id, leadId));
+  return { ok: true };
+}
+
 export async function loadDebtLeadById(leadId: number): Promise<DebtLead | null> {
   const [row] = await db
     .select()

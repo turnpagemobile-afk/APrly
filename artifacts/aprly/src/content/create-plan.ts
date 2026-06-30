@@ -12,8 +12,11 @@ export const createPlanContent = {
   manualHint: "or add card info manually",
   manualAdd: "Add a card manually",
   savePlan: "Save plan",
+  connectingLabel: "Connecting to your bank…",
+  creatingLabel: "Creating your saving plan…",
   successTitle: "Plan created",
   successDescription: "Your cards have been analyzed. View your dashboard to start negotiating.",
   errorTitle: "Could not create plan",
   errorDescription: "Please check your card details and try again.",
+  noCardsDescription: "No eligible credit cards were found. Try another institution or add a card from your plan.",
 } as const;

@@ -1,6 +1,8 @@
 import { Loader2 } from "lucide-react";
 import { activateAccountContent } from "@/content/activate-account";
+import { dashDialogRadiusClassName } from "@/lib/dashboard-dialog-styles";
 import { landingAsset } from "@/lib/landing-assets";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -28,7 +30,7 @@ export function ActivateAccountModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="dash-modal-panel"
+        className={cn("dash-modal-panel", dashDialogRadiusClassName)}
         overlayClassName="dash-modal-overlay"
         closeClassName="dash-modal-close data-[state=open]:bg-transparent data-[state=open]:text-[var(--action-default-color)]"
       >
@@ -45,7 +47,7 @@ export function ActivateAccountModal({
           {copy.features.map((feature) => (
             <li key={feature} className="dash-modal-feature-item">
               <img
-                src={landingAsset("landing/subscribe/checkmark.svg")}
+                src={landingAsset("shared/check-sky.png")}
                 alt=""
                 aria-hidden
                 className="dash-modal-feature-check"

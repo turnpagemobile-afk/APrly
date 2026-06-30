@@ -35,8 +35,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
               active
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                ? "bg-[var(--primary-theme-100)] text-[var(--title-color)]"
+                : "text-[var(--hint-text-color)] hover:bg-[var(--primary-theme-050)] hover:text-[var(--neutral-theme-900)]",
             )}
           >
             <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
@@ -64,22 +64,22 @@ function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   };
 
   return (
-    <div className="flex h-full flex-col bg-card text-card-foreground">
-      <div className="border-b border-border px-5 py-6">
-        <p className="text-2xl font-black tracking-tight text-foreground">{brandContent.name}</p>
-        <p className="text-sm text-muted-foreground">{adminContent.panelTitle}</p>
+    <div className="flex h-full flex-col bg-[var(--card-1lvl-bg-color)] text-[var(--neutral-theme-900)]">
+      <div className="border-b border-[var(--primary-theme-200)] px-5 py-6">
+        <p className="text-2xl font-black tracking-tight text-[var(--title-color)]">{brandContent.name}</p>
+        <p className="text-sm text-[var(--hint-text-color)]">{adminContent.panelTitle}</p>
         {me ? (
-          <p className="mt-3 text-xs text-muted-foreground">Logged as {me.email}</p>
+          <p className="mt-3 text-xs text-[var(--hint-text-color)]">Logged as {me.email}</p>
         ) : null}
       </div>
       <div className="flex-1 px-3 py-4">
         <NavLinks onNavigate={onNavigate} />
       </div>
-      <div className="border-t border-border p-4">
+      <div className="border-t border-[var(--primary-theme-200)] p-4">
         <Button
           type="button"
           variant="ghost"
-          className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+          className="w-full justify-start gap-2 text-[var(--hint-text-color)] hover:text-[var(--neutral-theme-900)]"
           onClick={() => void onLogout()}
         >
           <LogOut className="h-5 w-5" aria-hidden="true" />
@@ -98,24 +98,30 @@ export function AdminShell({ children }: { children: ReactNode }) {
     adminContent.dashboard.title;
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="hidden w-64 shrink-0 border-r border-border lg:block">
+    <div className="flex min-h-screen bg-[var(--page-bg)] text-[var(--neutral-theme-900)]">
+      <aside className="hidden w-64 shrink-0 border-r border-[var(--primary-theme-200)] lg:block">
         <AdminSidebar />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-border/60 bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:hidden">
+        <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-[var(--primary-theme-200)] bg-[var(--primary-theme-050)]/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-[var(--primary-theme-050)]/90 lg:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button type="button" variant="outline" size="icon" aria-label="Open menu">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="border-[var(--primary-theme-200)]"
+                aria-label="Open menu"
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 border-border bg-card p-0">
+            <SheetContent side="left" className="w-64 border-[var(--primary-theme-200)] bg-[var(--card-1lvl-bg-color)] p-0">
               <AdminSidebar onNavigate={() => setOpen(false)} />
             </SheetContent>
           </Sheet>
-          <span className="font-bold text-foreground">{pageTitle}</span>
+          <span className="font-bold text-[var(--title-color)]">{pageTitle}</span>
         </header>
 
         <main className="flex-1 py-6">

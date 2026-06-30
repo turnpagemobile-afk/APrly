@@ -21,39 +21,12 @@
     @apply mb-4 text-lg font-extrabold uppercase leading-tight tracking-wide text-[var(--neutral-theme-900)];
   }
 
-  .dash-account-field-label {
-    @apply text-xs text-[var(--input-label-text-color)];
-  }
-
-  .dash-account-input {
-    @apply h-[var(--design-input-min-height-x1,52px)] w-full rounded-lg border px-3 text-sm text-[var(--input-text-color)] shadow-none transition-colors focus-visible:outline-none focus-visible:ring-0;
-    border-color: var(--input-default-border-color);
-    background: var(--input-default-bg-color);
-  }
-
-  .dash-account-input:focus {
-    border-color: var(--input-focus-border-color);
-    background: var(--input-focus-bg-color);
-  }
-
-  .dash-account-input--error {
-    border-color: var(--danger-theme-500);
-    background: var(--input-error-bg-color);
-  }
-
-  .dash-account-input--readonly {
-    @apply cursor-not-allowed opacity-100;
-    border-color: var(--input-default-border-color);
-    background: var(--neutral-theme-100);
-    color: var(--hint-text-color);
-  }
-
   .dash-account-field-error {
     @apply text-sm text-[var(--danger-theme-500)];
   }
 
   .dash-account-error-banner {
-    @apply rounded-lg px-3 py-2.5 text-sm text-[var(--danger-theme-500)];
+    @apply rounded-[12px] px-3 py-2.5 text-sm text-[var(--danger-theme-500)];
     background: var(--error-box-bg-color);
   }
 
@@ -149,7 +122,6 @@
 
   .dash-account-confirm-dialog {
     @apply max-w-[min(100%-2rem,420px)] gap-0 border-0 p-6 shadow-lg bp600:p-8;
-    border-radius: var(--design-card-corner-radius-small, 24px);
     background: var(--card-1lvl-bg-color);
   }
 
@@ -175,10 +147,23 @@
     @apply text-base font-medium text-[var(--neutral-theme-900)];
   }
 
+  .dash-account-confirm-actions {
+    @apply mt-8 flex w-full max-w-[280px] flex-col items-stretch gap-3;
+  }
+
   .dash-account-confirm-btn {
     font-family: var(--app-font-display);
-    @apply mt-8 inline-flex min-h-[52px] w-full max-w-[280px] items-center justify-center gap-2 px-5 py-3 text-base font-extrabold uppercase tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60;
+    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-2 px-5 py-3 text-base font-extrabold uppercase tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60;
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--danger-theme-500);
+  }
+
+  .dash-account-confirm-cancel-btn {
+    font-family: var(--app-font-display);
+    border: calc(var(--design-button-line-width, 3) * 1px) solid var(--action-default-color);
+    @apply inline-flex min-h-[52px] w-full items-center justify-center px-5 py-3 text-base font-extrabold uppercase tracking-wide transition-colors hover:bg-[var(--button-secondary-hover-bg-color)] disabled:opacity-60;
+    border-radius: var(--design-button-corner-radius, 12px);
+    background: var(--button-secondary-normal-bg-color);
+    color: var(--action-default-color);
   }
 }

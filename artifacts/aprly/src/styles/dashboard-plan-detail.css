@@ -24,50 +24,61 @@
   }
 
   .dash-plan-detail-title {
-    font-family: var(--app-font-display);
-    @apply truncate text-xl font-extrabold uppercase tracking-wide text-[var(--title-color)] bp600:text-2xl;
+    @apply truncate;
   }
 
   .dash-plan-detail-metrics {
     @apply grid grid-cols-1 gap-4 min-[375px]:grid-cols-2 bp840:grid-cols-3 bp1200:grid-cols-5;
   }
 
-  .dash-plan-detail-status-tile {
+  .dash-plan-detail-metric-tile {
     @apply relative box-border flex h-[104px] min-h-[104px] max-h-[104px] flex-col overflow-hidden rounded-2xl p-4 shadow-sm;
-    border: 1px solid var(--card-border-color);
-    background: var(--card-1lvl-bg-color);
   }
 
-  .dash-plan-detail-status-tile--won {
-    @apply border-0 bg-[var(--secondary-theme-500)] text-white;
+  .dash-plan-detail-metric-tile--status-waiting {
+    border: 1px solid var(--neutral-theme-400);
+    background: var(--neutral-theme-100);
   }
 
-  .dash-plan-detail-status-tile--denied {
+  .dash-plan-detail-metric-tile--status-in-progress {
+    border: 1px solid var(--info-theme-400);
+    background: var(--info-theme-100);
+  }
+
+  .dash-plan-detail-metric-tile--status-won {
+    @apply border-0 bg-[var(--success-theme-500)] text-white;
+  }
+
+  .dash-plan-detail-metric-tile--status-denied {
     @apply border-0 bg-[var(--danger-theme-500)] text-white;
   }
 
-  .dash-plan-detail-status-won-icon {
-    @apply mb-1 h-6 w-6 text-white;
+  .dash-plan-detail-metric-tile--debt {
+    border: 1px solid var(--accent-theme-500);
+    background: var(--accent-theme-500);
   }
 
-  .dash-plan-detail-metric-outline--rate-high {
-    @apply relative box-border flex h-[104px] min-h-[104px] max-h-[104px] flex-col overflow-hidden rounded-2xl p-4 shadow-sm;
-    border: 2px solid var(--danger-theme-200);
-    background: var(--card-1lvl-bg-color);
+  .dash-plan-detail-metric-tile--rate-high {
+    border: 1px solid var(--accent-theme-400);
+    background: var(--accent-theme-100);
   }
 
-  .dash-plan-detail-metric-outline--rate-low {
-    @apply relative box-border flex h-[104px] min-h-[104px] max-h-[104px] flex-col overflow-hidden rounded-2xl p-4 shadow-sm;
-    border: 2px solid var(--secondary-theme-200);
-    background: var(--card-1lvl-bg-color);
+  .dash-plan-detail-metric-tile--savings {
+    border: 1px solid var(--success-theme-500);
+    background: var(--success-theme-500);
   }
 
-  .dash-plan-detail-metric-value--danger {
-    @apply text-[var(--danger-theme-500)];
+  .dash-plan-detail-metric-tile--rate-low {
+    border: 1px solid var(--success-theme-400);
+    background: var(--success-theme-100);
   }
 
-  .dash-plan-detail-metric-value--success {
-    @apply text-[var(--secondary-theme-600)];
+  .dash-metric-card-bg-icon--won {
+    @apply h-24 w-24;
+  }
+
+  .dash-plan-detail-actions-trigger {
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--design-button-corner-radius,12px)] transition-opacity hover:opacity-80;
   }
 
   .dash-plan-detail-negotiate-row {
@@ -75,19 +86,25 @@
   }
 
   .dash-plan-detail-negotiate-btn {
-    font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] min-w-[200px] items-center justify-center px-10 py-3 text-center text-base font-extrabold uppercase tracking-wide text-white transition-opacity hover:opacity-95;
+    @apply inline-flex min-h-[52px] min-w-[200px] items-center justify-center px-10 py-3 text-center transition-opacity hover:opacity-95;
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--action-default-color);
+  }
+
+  .dash-plan-detail-cards-section {
+    @apply w-full space-y-4;
   }
 
   .dash-plan-detail-cards-head {
     @apply flex flex-wrap items-center justify-between gap-3;
   }
 
+  .dash-plan-detail-cards-head .dash-plan-add-card-btn {
+    @apply mx-0;
+  }
+
   .dash-plan-detail-cards-title {
-    font-family: var(--app-font-display);
-    @apply text-sm font-extrabold uppercase tracking-wide text-[var(--neutral-theme-900)] bp600:text-base;
+    @apply min-w-0;
   }
 
   .dash-plan-detail-cards-list {
@@ -98,48 +115,82 @@
     @apply overflow-hidden rounded-2xl border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] shadow-sm;
   }
 
-  .dash-plan-detail-card-body {
-    @apply space-y-3 p-4 bp600:p-5;
+  .dash-plan-detail-card .dash-plan-card-widget {
+    @apply border-0 shadow-none;
   }
 
-  .dash-plan-detail-card-top {
-    @apply flex items-start justify-between gap-3;
+  .dash-plan-card-widget--detail {
+    display: grid;
+    gap: 0.5rem 0.75rem;
+    align-items: start;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "icon brand"
+      "balance balance"
+      "rates rates"
+      "savings savings";
   }
 
-  .dash-plan-detail-card-brand-row {
-    @apply flex min-w-0 flex-1 items-start gap-2;
+  .dash-plan-card-widget--detail-deletable {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "icon brand delete"
+      "balance balance balance"
+      "rates rates rates"
+      "savings savings savings";
   }
 
-  .dash-plan-detail-card-icon-wrap {
-    @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--action-default-color)]/10;
+  .dash-plan-card-grid-icon {
+    grid-area: icon;
   }
 
-  .dash-plan-detail-card-brand {
-    @apply min-w-0 pt-0.5 text-lg font-extrabold leading-tight text-[var(--neutral-theme-900)] bp600:text-xl;
+  .dash-plan-card-grid-brand {
+    grid-area: brand;
+    min-width: 0;
   }
 
-  .dash-plan-detail-card-balance-col {
-    @apply shrink-0 text-right;
+  .dash-plan-card-grid-delete {
+    grid-area: delete;
+    @apply inline-flex self-center rounded-md p-1 text-[var(--danger-theme-500)] transition-colors hover:bg-[var(--danger-theme-100)] disabled:opacity-50;
   }
 
-  .dash-plan-detail-card-balance {
-    @apply text-lg font-extrabold leading-tight text-[var(--neutral-theme-900)] bp600:text-xl;
+  .dash-plan-card-grid-rates {
+    grid-area: rates;
   }
 
-  .dash-plan-detail-card-delete {
-    @apply mt-0.5 inline-flex rounded-md p-1 text-[var(--danger-theme-500)] transition-colors hover:bg-[var(--danger-theme-100)] disabled:opacity-50;
+  .dash-plan-card-grid-balance {
+    grid-area: balance;
+    @apply w-fit max-w-full;
   }
 
-  .dash-plan-detail-card-savings {
-    @apply flex items-center justify-center bg-[var(--secondary-theme-100)] px-4 py-3 text-center;
+  .dash-plan-card-grid-savings {
+    grid-area: savings;
+    @apply w-fit max-w-full justify-self-end;
   }
 
-  .dash-plan-detail-card-savings-text {
-    @apply text-sm text-[var(--neutral-theme-900)] bp600:text-base;
-  }
+  @media (min-width: 600px) {
+    .dash-plan-card-widget--detail {
+      gap: 0.5rem 1rem;
+      grid-template-columns: auto 1fr auto;
+      grid-template-areas:
+        "icon brand balance"
+        "icon rates savings";
+    }
 
-  .dash-plan-detail-card-savings-amount {
-    @apply font-extrabold text-[var(--secondary-theme-700)];
+    .dash-plan-card-widget--detail-deletable {
+      grid-template-columns: auto 1fr auto auto;
+      grid-template-areas:
+        "icon brand balance delete"
+        "icon rates savings delete";
+    }
+
+    .dash-plan-card-grid-balance {
+      @apply justify-self-end;
+    }
+
+    .dash-plan-card-grid-delete {
+      @apply self-center;
+    }
   }
 
   .dash-plan-detail-partner {
@@ -162,86 +213,140 @@
     @apply space-y-4;
   }
 
-  .dash-plan-detail-portal-title {
-    font-family: var(--app-font-display);
-    @apply text-sm font-extrabold uppercase tracking-wide text-[var(--neutral-theme-900)] bp600:text-base;
-  }
-
-  .dash-plan-detail-portal-subtitle {
-    @apply text-sm text-[var(--hint-text-color)];
-  }
-
   .dash-plan-detail-portal-progress-track {
-    @apply h-2 w-full overflow-hidden rounded-full bg-[var(--neutral-theme-200)];
+    @apply h-2 w-full overflow-hidden rounded-full bg-[var(--info-theme-200)];
   }
 
   .dash-plan-detail-portal-progress-fill {
-    @apply h-full rounded-full bg-[var(--secondary-theme-500)] transition-[width];
+    @apply h-full rounded-full bg-[var(--success-theme-500)] transition-[width];
   }
 
   .dash-plan-detail-portal-steps {
-    @apply rounded-2xl border-2 border-[var(--secondary-theme-200)] bg-[var(--secondary-theme-050)] p-4 bp600:p-6;
+    @apply flex list-none flex-col gap-3 p-0;
   }
 
   .dash-plan-detail-step {
-    @apply relative flex gap-4 pb-6 last:pb-0;
+    @apply relative;
+  }
+
+  .dash-plan-detail-step-card {
+    @apply relative min-w-0 rounded-2xl border p-4 bp600:p-5;
+    padding-left: calc(1rem + 2.75rem + 1rem);
+  }
+
+  @media (min-width: 600px) {
+    .dash-plan-detail-step-card {
+      padding-left: calc(1.25rem + 2.75rem + 1rem);
+    }
+  }
+
+  .dash-plan-detail-step--pending {
+    border-color: var(--card-border-color);
+    background: var(--card-1lvl-bg-color);
   }
 
   .dash-plan-detail-step--active {
-    @apply -mx-2 rounded-xl bg-[var(--info-theme-100)] px-2 py-3 bp600:-mx-3 bp600:px-3;
+    border-color: var(--info-theme-300);
+    background: var(--info-theme-100);
+  }
+
+  .dash-plan-detail-step--done {
+    border-color: var(--success-theme-300);
+    background: var(--success-theme-100);
   }
 
   .dash-plan-detail-step-line {
-    @apply absolute left-[15px] top-9 h-[calc(100%-1.25rem)] w-0.5 border-l-2 border-dashed border-[var(--neutral-theme-300)];
+    @apply absolute z-[1] w-0 -translate-x-1/2 border-l-2;
+    left: calc(1rem + 1.375rem);
+  }
+
+  @media (min-width: 600px) {
+    .dash-plan-detail-step-line {
+      left: calc(1.25rem + 1.375rem);
+    }
+  }
+
+  .dash-plan-detail-step-line--first {
+    top: calc(1rem + 1.375rem);
+    height: calc(100% - 1rem - 1.375rem + 0.75rem);
+  }
+
+  @media (min-width: 600px) {
+    .dash-plan-detail-step-line--first {
+      top: calc(1.25rem + 1.375rem);
+      height: calc(100% - 1.25rem - 1.375rem + 0.75rem);
+    }
+  }
+
+  .dash-plan-detail-step-line--continued {
+    top: -0.75rem;
+    height: calc(100% + 0.75rem);
+  }
+
+  .dash-plan-detail-step-line--ingress {
+    top: -0.75rem;
+    height: calc(0.75rem + 1rem + 1.375rem);
+  }
+
+  @media (min-width: 600px) {
+    .dash-plan-detail-step-line--ingress {
+      height: calc(0.75rem + 1.25rem + 1.375rem);
+    }
+  }
+
+  .dash-plan-detail-step-line--done {
+    border-color: var(--success-theme-500);
+    border-style: solid;
+  }
+
+  .dash-plan-detail-step-line--pending {
+    border-color: var(--neutral-theme-400);
+    border-style: dashed;
   }
 
   .dash-plan-detail-step-badge {
-    @apply relative z-10 flex shrink-0 flex-col items-center;
+    @apply absolute z-[2] flex w-11 flex-col items-center;
+    left: 1rem;
+    top: 1rem;
   }
 
-  .dash-plan-detail-step-check {
-    @apply flex h-8 w-8 items-center justify-center rounded-full bg-[var(--secondary-theme-500)] text-white;
+  @media (min-width: 600px) {
+    .dash-plan-detail-step-badge {
+      left: 1.25rem;
+      top: 1.25rem;
+    }
   }
 
   .dash-plan-detail-step-number {
-    @apply flex h-8 w-8 items-center justify-center rounded-full border-2 border-[var(--neutral-theme-300)] bg-white text-sm font-bold text-[var(--hint-text-color)];
+    @apply flex h-11 w-11 items-center justify-center rounded-full border border-[var(--neutral-theme-400)] bg-[var(--card-1lvl-bg-color)];
+  }
+
+  .dash-plan-detail-step-icon {
+    @apply h-11 w-11 shrink-0 object-contain;
   }
 
   .dash-plan-detail-step-pill {
-    @apply mt-2 shrink-0 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide;
+    @apply shrink-0 rounded-full px-3 py-1;
   }
 
   .dash-plan-detail-step-pill--done {
-    @apply bg-[var(--secondary-theme-100)] text-[var(--secondary-theme-700)];
+    @apply bg-[var(--neutral-theme-000)] text-[var(--success-theme-500)];
   }
 
   .dash-plan-detail-step-pill--active {
-    @apply bg-[var(--action-default-color)] text-white;
+    @apply bg-[var(--info-theme-500)] text-[var(--neutral-theme-000)];
   }
 
   .dash-plan-detail-step-content {
-    @apply min-w-0 flex-1 pt-0.5;
+    @apply relative z-[2] min-w-0;
   }
 
   .dash-plan-detail-step-row {
     @apply flex flex-wrap items-start justify-between gap-2;
   }
 
-  .dash-plan-detail-step-name {
-    @apply font-bold text-[var(--neutral-theme-900)];
-  }
-
-  .dash-plan-detail-step-desc {
-    @apply mt-1 text-sm text-[var(--hint-text-color)];
-  }
-
-  .dash-plan-detail-step-cta {
-    font-family: var(--app-font-display);
-    @apply mt-3 inline-flex min-h-[40px] items-center justify-center rounded-[var(--design-button-corner-radius,12px)] border-2 border-[var(--action-default-color)] bg-white px-4 text-xs font-extrabold uppercase tracking-wide text-[var(--action-default-color)] transition-colors hover:bg-[var(--button-secondary-hover-bg-color)];
-  }
-
   .dash-plan-detail-review-banner {
-    @apply rounded-2xl border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] px-5 py-4 text-center text-sm text-[var(--neutral-theme-900)] shadow-sm bp600:text-base;
+    @apply rounded-2xl border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] px-5 py-4 text-center shadow-sm;
   }
 
   .dash-plan-detail-denied-message {

@@ -9,20 +9,21 @@ import {
 } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useCalculateOptimization, useUpsertGuestLead } from "@workspace/api-client-react";
-import { VoiceStore } from "../layout";
+import { usePlaidCardImport } from "@/components/cards/usePlaidCardImport";
 import { OptimizerStep1 } from "./OptimizerStep1";
 import { OptimizerStep2 } from "./OptimizerStep2";
 import { OptimizerStep3 } from "./OptimizerStep3";
 import { OptimizerStepPills } from "./OptimizerStepPills";
 import type { CardEntry } from "./types";
-import { aggregateCardBalances } from "./optimizerAccounts";
+import { aggregateCardBalances, accountsAreComplete } from "./optimizerAccounts";
 import { getOrCreateGuestSessionId } from "@/lib/guest-session";
 import { saveOptimizerSnapshot, snapshotCardsForImport } from "@/lib/optimizerSnapshot";
 import { optimizerContent } from "@/content/landing";
-import { landingAsset } from "@/lib/landing-assets";
 import { cn } from "@/lib/utils";
 
 const TARGET_APR = 8;
+/** Matches AnimatePresence step transition duration in OptimizerStep*.tsx */
+const STEP_TRANSITION_MS = 380;
 
 export type OptimizerSectionHandle = {
   scrollIntoView: (options?: ScrollIntoViewOptions) => void;
@@ -36,56 +37,33 @@ type OptimizerSectionProps = {
 export const OptimizerSection = forwardRef<OptimizerSectionHandle, OptimizerSectionProps>(
   function OptimizerSection({ onActivateClick }, ref) {
     const sectionRef = useRef<HTMLElement>(null);
-    const debtInputRef = useRef<HTMLInputElement>(null);
+    const connectButtonRef = useRef<HTMLButtonElement>(null);
+    const skipStepScrollRef = useRef(true);
     const [step, setStep] = useState<1 | 2 | 3>(1);
-    const [totalDebt, setTotalDebt] = useState<string>("15000");
-    const [interestRate, setInterestRate] = useState<string>("24.99");
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [accounts, setAccounts] = useState<CardEntry[]>([
-      { brand: "", balance: "", rate: "" },
-    ]);
+    const [totalDebt, setTotalDebt] = useState("");
+    const [interestRate, setInterestRate] = useState("");
+    const [accounts, setAccounts] = useState<CardEntry[]>([]);
 
+    const { startPlaid, plaidBusy } = usePlaidCardImport(setAccounts);
     const calculateOpt = useCalculateOptimization();
     const upsertGuestLead = useUpsertGuestLead();
 
-    const goToStep2 = useCallback(() => {
-      setAccounts((prev) => {
-        const next = [...prev];
-        const first = next[0] ?? { brand: "", balance: "", rate: "" };
-        next[0] = {
-          ...first,
-          balance: totalDebt,
-          rate: interestRate,
-        };
-        return next;
-      });
+    const advanceToStep2FromAccounts = useCallback((nextAccounts: CardEntry[]) => {
+      const agg = aggregateCardBalances(nextAccounts);
+      if (!agg || !accountsAreComplete(nextAccounts)) return;
+      setTotalDebt(String(agg.totalDebt));
+      setInterestRate(String(agg.blendedRate));
       setStep(2);
-    }, [totalDebt, interestRate]);
-
-    useEffect(() => {
-      const unsub = VoiceStore.subscribe((data) => {
-        if (data.totalDebt !== undefined) setTotalDebt(data.totalDebt.toString());
-        if (data.interestRate !== undefined)
-          setInterestRate(data.interestRate.toString());
-      });
-      return () => {
-        unsub();
-      };
     }, []);
 
     useEffect(() => {
+      if (step !== 1 || !accounts.length) return;
+      advanceToStep2FromAccounts(accounts);
+    }, [accounts, step, advanceToStep2FromAccounts]);
+
+    useEffect(() => {
       const timeout = setTimeout(() => {
-        if (step === 1) {
-          const debt = parseFloat(totalDebt);
-          const rate = parseFloat(interestRate);
-          if (!Number.isNaN(debt) && !Number.isNaN(rate) && debt > 0 && rate > 0) {
-            calculateOpt.mutate({
-              data: { totalDebt: debt, interestRate: rate, targetRate: TARGET_APR },
-            });
-          }
-          return;
-        }
+        if (step === 1) return;
 
         const agg = aggregateCardBalances(accounts);
         if (agg) {
@@ -100,7 +78,7 @@ export const OptimizerSection = forwardRef<OptimizerSectionHandle, OptimizerSect
       }, 250);
       return () => clearTimeout(timeout);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [step, totalDebt, interestRate, accounts]);
+    }, [step, accounts]);
 
     const res = calculateOpt.data;
 
@@ -115,8 +93,8 @@ export const OptimizerSection = forwardRef<OptimizerSectionHandle, OptimizerSect
       const agg = aggregateCardBalances(accounts);
       const fallbackDebt = parseFloat(totalDebt);
       const snapshot = {
-        name,
-        email,
+        name: "",
+        email: "",
         accounts,
         totalDebt: agg?.totalDebt ?? (Number.isNaN(fallbackDebt) ? 0 : fallbackDebt),
         blendedRate: agg?.blendedRate,
@@ -131,22 +109,41 @@ export const OptimizerSection = forwardRef<OptimizerSectionHandle, OptimizerSect
         void upsertGuestLead.mutateAsync({
           data: {
             guestSessionId: getOrCreateGuestSessionId(),
-            name: name.trim() || undefined,
-            email: email.trim() || undefined,
             cards,
           },
         });
       }
 
       setStep(3);
-    }, [accounts, name, email, totalDebt, res, upsertGuestLead]);
+    }, [accounts, totalDebt, res, upsertGuestLead]);
 
     const focusDebtInput = useCallback(() => {
       setStep(1);
       requestAnimationFrame(() => {
-        debtInputRef.current?.focus({ preventScroll: true });
+        connectButtonRef.current?.focus({ preventScroll: true });
       });
     }, []);
+
+    const onPlaidConnect = useCallback(() => {
+      void startPlaid();
+    }, [startPlaid]);
+
+    const scrollAuditIntoView = useCallback(() => {
+      window.setTimeout(() => {
+        sectionRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, STEP_TRANSITION_MS);
+    }, []);
+
+    useEffect(() => {
+      if (skipStepScrollRef.current) {
+        skipStepScrollRef.current = false;
+        return;
+      }
+      scrollAuditIntoView();
+    }, [step, scrollAuditIntoView]);
 
     useImperativeHandle(
       ref,
@@ -167,41 +164,31 @@ export const OptimizerSection = forwardRef<OptimizerSectionHandle, OptimizerSect
       <section
         id="optimizer"
         ref={sectionRef}
-        className="scroll-mt-24 px-4 py-14 bp840:py-20 bp1200:py-24"
+        className="scroll-mt-24 bg-[var(--secondary-theme-200)] px-4 py-14 bp840:py-20 bp1200:py-24"
       >
-        <div className="app-page-marketing">
+        <div className="app-page-marketing app-page-marketing-content">
           <div
             className={cn(
               "relative overflow-hidden rounded-[var(--design-card-corner-radius-small,24px)]",
               "border border-[var(--primary-theme-200)]",
-              "bg-gradient-to-br from-[var(--primary-theme-050)] via-[var(--primary-theme-100)] to-white",
-              "shadow-sm",
+              "bg-[var(--neutral-theme-050)]",
+              "shadow-[0_10px_20px_0_rgba(29,62,11,0.08)]",
             )}
           >
-            <img
-              src={landingAsset("landing/audit/man.png")}
-              alt=""
-              width={258}
-              height={296}
-              className="pointer-events-none absolute right-0 top-0 z-0 h-[296px] w-[258px] object-contain object-right-top opacity-20"
-              aria-hidden
-            />
-            <img
-              src={landingAsset("landing/audit/peyzaj.png")}
-              alt=""
-              width={757}
-              height={191}
-              className="pointer-events-none absolute bottom-0 right-0 z-0 h-[191px] w-[757px] object-right object-bottom opacity-20"
-              aria-hidden
-            />
-
-            <div className="relative z-10 p-6 bp600:p-8 bp1200:p-10">
+            <div className="relative z-10 flex flex-col p-10">
               <header className="text-left">
-                <h2 className="text-xl font-extrabold uppercase tracking-tight text-[var(--primary-theme-500)] bp600:text-2xl bp1200:text-3xl">
+                <h2 className="font-hero-display text-[clamp(1.75rem,2.5vw+0.5rem,3.125rem)] font-semibold uppercase leading-[1.1] text-[var(--title-beige-color)]">
                   {optimizerContent.title}
                 </h2>
-                <p className="mt-2 text-sm leading-relaxed text-[var(--hint-text-color)] bp600:mt-3 bp600:text-base">
-                  {optimizerContent.subtitle}
+                <p className="app-header-subheadline-regular text-average mt-4">
+                  {optimizerContent.subtitle.body}
+                  <a
+                    href={optimizerContent.subtitle.linkHref}
+                    className="font-bold text-[var(--primary-theme-500)] underline-offset-2 hover:underline"
+                  >
+                    {optimizerContent.subtitle.linkText}
+                  </a>
+                  .
                 </p>
                 <OptimizerStepPills step={step} />
                 <p className="sr-only">{optimizerContent.stepLabels[step]}</p>
@@ -210,7 +197,6 @@ export const OptimizerSection = forwardRef<OptimizerSectionHandle, OptimizerSect
               <div
                 className={cn(
                   "mx-auto mt-8 min-w-0 w-full",
-                  step === 1 && "max-w-lg",
                   step === 2 && "max-w-3xl",
                   step === 3 && "max-w-4xl",
                 )}
@@ -219,12 +205,9 @@ export const OptimizerSection = forwardRef<OptimizerSectionHandle, OptimizerSect
                   {step === 1 && (
                     <OptimizerStep1
                       key="step1"
-                      totalDebt={totalDebt}
-                      setTotalDebt={setTotalDebt}
-                      interestRate={interestRate}
-                      setInterestRate={setInterestRate}
-                      onNext={goToStep2}
-                      debtInputRef={debtInputRef}
+                      onPlaidConnect={onPlaidConnect}
+                      plaidBusy={plaidBusy}
+                      connectButtonRef={connectButtonRef}
                     />
                   )}
                   {step === 2 && (
@@ -232,12 +215,13 @@ export const OptimizerSection = forwardRef<OptimizerSectionHandle, OptimizerSect
                       key="step2"
                       accounts={accounts}
                       setAccounts={setAccounts}
-                      name={name}
-                      setName={setName}
-                      email={email}
-                      setEmail={setEmail}
-                      onBack={() => setStep(1)}
+                      onBack={() => {
+                        setAccounts([]);
+                        setStep(1);
+                      }}
                       onNext={goToStep3}
+                      onPlaidConnect={onPlaidConnect}
+                      plaidBusy={plaidBusy}
                     />
                   )}
                   {step === 3 && (

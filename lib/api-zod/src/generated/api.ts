@@ -792,6 +792,14 @@ export const UpdatePlanLeadStatusResponse = zod
   .describe("Debt lead summary (aggregated across cards in the package)");
 
 /**
+ * @summary Delete plan lead (recommended only, before send)
+ */
+
+export const DeletePlanLeadParams = zod.object({
+  id: zod.coerce.number().min(1),
+});
+
+/**
  * @summary Send plan lead to partner (simulated v1)
  */
 

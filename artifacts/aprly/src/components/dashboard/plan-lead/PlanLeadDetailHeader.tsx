@@ -2,21 +2,36 @@ import { Link } from "wouter";
 import { ArrowLeft } from "lucide-react";
 import { dashboardTabContent } from "@/content/dashboard-tab";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
+import { PlanDetailActionsMenu } from "@/components/dashboard/plan-lead/PlanDetailActionsMenu";
 
 type PlanLeadDetailHeaderProps = {
   planIndex: number;
   returnTo: string;
+  canDeletePlan?: boolean;
+  onDeletePlan?: () => void | Promise<void>;
+  isDeletingPlan?: boolean;
 };
 
-export function PlanLeadDetailHeader({ planIndex, returnTo }: PlanLeadDetailHeaderProps) {
+export function PlanLeadDetailHeader({
+  planIndex,
+  returnTo,
+  canDeletePlan = false,
+  onDeletePlan,
+  isDeletingPlan = false,
+}: PlanLeadDetailHeaderProps) {
   const title = `${dashboardTabContent.planCard.planLabel} #${planIndex}`;
 
   return (
     <header className="dash-plan-detail-header">
       <Link href={returnTo} className="dash-plan-detail-back">
         <ArrowLeft className="dash-plan-detail-back-icon" aria-hidden="true" />
-        <h1 className="dash-plan-detail-title">{title}</h1>
+        <h1 className="dash-plan-detail-title app-header-screen-title-bold text-average">
+          {title}
+        </h1>
       </Link>
+      {canDeletePlan && onDeletePlan ? (
+        <PlanDetailActionsMenu onDeletePlan={onDeletePlan} isDeletingPlan={isDeletingPlan} />
+      ) : null}
       <span className="sr-only">{planLeadDetailContent.backAriaLabel}</span>
     </header>
   );

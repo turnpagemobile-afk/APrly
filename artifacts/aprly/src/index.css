@@ -7,6 +7,8 @@
 @import "./styles/dashboard-plan-detail.css";
 @import "./styles/dashboard-modals.css";
 @import "./styles/reset-password.css";
+@import "./styles/app-text-styles.css";
+@import "./styles/app-text-colors.css";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
@@ -65,6 +67,8 @@
   --font-sans: var(--app-font-sans);
   --font-serif: var(--app-font-serif);
   --font-mono: var(--app-font-mono);
+  --font-hero-display: var(--app-font-hero-display);
+  --font-hero-body: var(--app-font-hero-body);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -102,6 +106,11 @@
  * via Tailwind arbitrary value, e.g. `bg-[var(--primary-theme-500)]`.
  */
 :root {
+  /* Green landing footer — dark forest green per NEW_GREEN_DESIGN */
+  --footer-bg-color: #2D4A2B;
+  --header-bg-color: var(--page-bg);
+  --action-default-color: var(--primary-theme-500);
+
   --background: var(--page-bg);
   --foreground: var(--neutral-theme-900);
 
@@ -149,6 +158,8 @@
   --app-font-display: "Inter Display", "Inter", sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: Menlo, monospace;
+  --app-font-hero-display: "Fraunces", Georgia, serif;
+  --app-font-hero-body: "Figtree", "Inter", sans-serif;
   --radius: var(--design-button-corner-radius, 12px);
 
   --button-outline: rgba(0, 0, 0, 0.1);
@@ -179,6 +190,10 @@
 @layer base {
   * {
     @apply border-border;
+  }
+
+  html {
+    scrollbar-gutter: stable;
   }
 
   html,
@@ -233,6 +248,11 @@
 
   .app-page-marketing {
     @apply mx-auto w-full min-w-0 max-w-full px-4 cabinet:max-w-6xl;
+  }
+
+  /** Figma marketing grid: 1128 / 988 / 948 / 657 / 463 / calc(100% - 40px) */
+  .app-page-marketing-content {
+    @apply mx-auto w-full min-w-0 max-w-[calc(100%-40px)] min-[375px]:max-w-[463px] bp600:max-w-[657px] bp840:max-w-[948px] bp1200:max-w-[988px] bp1600:max-w-[1128px];
   }
 
   .app-page-narrow {

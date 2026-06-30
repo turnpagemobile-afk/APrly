@@ -1,4 +1,3 @@
-import { Link } from "wouter";
 import { Loader2 } from "lucide-react";
 import type {
   DashboardPlansSummary as DashboardPlansSummaryData,
@@ -9,7 +8,6 @@ import { SubscriptionStatusCard } from "@/components/dashboard/SubscriptionStatu
 import { CreatePlanEmptyCard } from "@/components/dashboard/CreatePlanEmptyCard";
 import { DashboardPlansSummary } from "@/components/dashboard/DashboardPlansSummary";
 import { PlanLeadCard } from "@/components/dashboard/PlanLeadCard";
-import { createPlanHref } from "@/lib/create-plan-navigation";
 
 type DashboardDetailTabProps = {
   subscriptionActive: boolean;
@@ -18,6 +16,8 @@ type DashboardDetailTabProps = {
   summary: DashboardPlansSummaryData | undefined;
   isSubscriptionError?: boolean;
   isPollingReturn?: boolean;
+  onCreateSavingPlan: () => void;
+  isCreatingPlan?: boolean;
 };
 
 export function DashboardDetailTab({
@@ -27,6 +27,8 @@ export function DashboardDetailTab({
   summary,
   isSubscriptionError = false,
   isPollingReturn = false,
+  onCreateSavingPlan,
+  isCreatingPlan = false,
 }: DashboardDetailTabProps) {
   if (isPollingReturn) {
     return (
@@ -57,7 +59,10 @@ export function DashboardDetailTab({
         {!hasLeads ? (
           <>
             <SubscriptionStatusCard active={subscriptionActive} />
-            <CreatePlanEmptyCard />
+            <CreatePlanEmptyCard
+              onCreateSavingPlan={onCreateSavingPlan}
+              isCreatingPlan={isCreatingPlan}
+            />
           </>
         ) : (
           <>
@@ -81,12 +86,14 @@ export function DashboardDetailTab({
             </ul>
 
             <div className="flex justify-center">
-              <Link
-                href={createPlanHref("/dashboard?tab=dashboard")}
+              <button
+                type="button"
                 className="dash-plan-create-cta"
+                disabled={isCreatingPlan}
+                onClick={onCreateSavingPlan}
               >
                 {dashboardTabContent.planLeads.addLead}
-              </Link>
+              </button>
             </div>
           </>
         )}

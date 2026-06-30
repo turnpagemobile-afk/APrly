@@ -5,9 +5,15 @@ import { CheckCircle2, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@workspace/api-client-react/custom-fetch";
 import { useResetPassword } from "@workspace/api-client-react";
+import { AuthBrandLogo } from "@/components/auth/AuthBrandLogo";
+import { AuthOverlayShell } from "@/components/auth/AuthOverlayShell";
+import { PillButton } from "@/components/shared/PillButton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { authContent } from "@/content/landing";
 import { syncAuthSession } from "@/lib/auth-session";
 import { goToCabinet } from "@/lib/app-navigation";
+import { useNavigateBack } from "@/lib/navigate-back";
 import { cn } from "@/lib/utils";
 
 type Step = "form" | "success" | "invalid";
@@ -37,6 +43,25 @@ function buildPasswordSchema(copy: typeof authContent.resetPassword) {
     });
 }
 
+const inputBase =
+  "h-[var(--design-input-min-height-x1,52px)] rounded-lg border px-3 text-sm text-[var(--input-text-color)] shadow-none transition-colors focus-visible:outline-none focus-visible:ring-0";
+
+function inputClass(hasError: boolean, isFocused: boolean) {
+  if (hasError) {
+    return cn(inputBase, "border-destructive bg-[var(--input-error-bg-color)]");
+  }
+  if (isFocused) {
+    return cn(
+      inputBase,
+      "border-[var(--input-focus-border-color)] bg-[var(--input-focus-bg-color)]",
+    );
+  }
+  return cn(
+    inputBase,
+    "border-[var(--input-default-border-color)] bg-[var(--input-default-bg-color)]",
+  );
+}
+
 type PasswordFieldProps = {
   id: string;
   label: string;
@@ -58,32 +83,36 @@ function PasswordField({
   hasError,
   errorMessage,
 }: PasswordFieldProps) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="reset-password-field-label">
+      <Label htmlFor={id} className="text-xs text-[var(--input-label-text-color)]">
         {label}
-      </label>
+      </Label>
       <div className="relative">
-        <input
+        <Input
           id={id}
           type={show ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           autoComplete="new-password"
           maxLength={128}
-          className={cn("reset-password-input pr-10", hasError && "reset-password-input--error")}
+          className={cn(inputClass(hasError, focused), "pr-10")}
           aria-invalid={hasError}
         />
         <button
           type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--action-default-color)]"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--primary-theme-500)]"
           onClick={onToggleShow}
           aria-label={show ? "Hide password" : "Show password"}
         >
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       </div>
-      {errorMessage ? <p className="reset-password-field-error">{errorMessage}</p> : null}
+      {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
     </div>
   );
 }
@@ -92,6 +121,7 @@ export default function ResetPasswordPage() {
   const copy = authContent.resetPassword;
   const queryClient = useQueryClient();
   const resetPassword = useResetPassword();
+  const navigateBack = useNavigateBack("/login");
   const token = useMemo(() => readResetToken(), []);
   const passwordSchema = useMemo(() => buildPasswordSchema(copy), [copy]);
 
@@ -163,98 +193,113 @@ export default function ResetPasswordPage() {
 
   if (step === "invalid") {
     return (
-      <div className="reset-password-layout">
-        <h1 className="reset-password-page-title">{copy.pageTitle}</h1>
-        <section className="reset-password-card">
-          <h2 className="reset-password-card-title">{copy.cardTitle}</h2>
-          <p className="reset-password-error-banner">{copy.missingToken}</p>
-          <div className="mt-6 flex justify-center">
-            <Link href="/login" className="reset-password-primary-btn">
-              {copy.backToLogin}
-            </Link>
-          </div>
-        </section>
-      </div>
+      <AuthOverlayShell open onDismiss={navigateBack}>
+        <p className="pr-10 text-xs font-bold uppercase tracking-widest text-[var(--neutral-theme-900)]">
+          {copy.pageTitle}
+        </p>
+        <AuthBrandLogo className="mt-4" />
+        <p className="mt-6 text-sm font-bold uppercase tracking-wide text-[var(--neutral-theme-900)]">
+          {copy.cardTitle}
+        </p>
+        <p className="mt-3 text-sm text-destructive">{copy.missingToken}</p>
+        <div className="mt-6 flex justify-center">
+          <PillButton asChild>
+            <Link href="/login">{copy.backToLogin}</Link>
+          </PillButton>
+        </div>
+      </AuthOverlayShell>
     );
   }
 
   if (step === "success") {
     return (
-      <div className="reset-password-layout">
-        <h1 className="reset-password-page-title">{copy.pageTitle}</h1>
-        <section className="reset-password-card">
-          <h2 className="reset-password-card-title">{copy.cardTitle}</h2>
-          <div className="reset-password-success">
-            <div className="reset-password-success-icon" aria-hidden>
-              <CheckCircle2 className="h-8 w-8" />
-            </div>
-            <p className="reset-password-success-message">{copy.successMessage}</p>
-            <button
-              type="button"
-              className="reset-password-primary-btn mt-6"
-              onClick={() => goToCabinet()}
-            >
-              {copy.goToDashboard}
-            </button>
-          </div>
-        </section>
-      </div>
+      <AuthOverlayShell open onDismiss={() => goToCabinet()} allowDismiss={false}>
+        <p className="pr-10 text-xs font-bold uppercase tracking-widest text-[var(--neutral-theme-900)]">
+          {copy.pageTitle}
+        </p>
+        <AuthBrandLogo className="mt-4" />
+        <div className="flex flex-col items-center py-4 text-center">
+          <CheckCircle2
+            className="h-16 w-16 text-[var(--primary-theme-500)]"
+            strokeWidth={1.5}
+            aria-hidden
+          />
+          <p className="mt-6 text-sm font-bold uppercase tracking-wide text-[var(--neutral-theme-900)]">
+            {copy.cardTitle}
+          </p>
+          <p className="mt-3 text-sm text-[var(--hint-text-color)]">{copy.successMessage}</p>
+          <PillButton type="button" className="mt-8 w-full" onClick={() => goToCabinet()}>
+            {copy.goToDashboard}
+          </PillButton>
+        </div>
+      </AuthOverlayShell>
     );
   }
 
   return (
-    <div className="reset-password-layout">
-      <h1 className="reset-password-page-title">{copy.pageTitle}</h1>
-      <section className="reset-password-card">
-        <h2 className="reset-password-card-title">{copy.cardTitle}</h2>
-        <form className="space-y-4" onSubmit={(e) => void onSubmit(e)}>
-          <PasswordField
-            id="reset-new-password"
-            label={copy.newPassword}
-            value={password}
-            onChange={setPassword}
-            show={showPassword}
-            onToggleShow={() => setShowPassword((v) => !v)}
-            hasError={Boolean(passwordError) || (submitAttempted && !password && !passwordError)}
-            errorMessage={
-              passwordError ??
-              (submitAttempted && !password ? copy.errors.fieldRequired : undefined)
-            }
-          />
+    <AuthOverlayShell
+      open
+      onDismiss={navigateBack}
+      allowDismiss={!resetPassword.isPending}
+    >
+      <p className="pr-10 text-xs font-bold uppercase tracking-widest text-[var(--neutral-theme-900)]">
+        {copy.pageTitle}
+      </p>
+      <AuthBrandLogo className="mt-4" />
+      <p className="mt-4 text-sm font-bold uppercase tracking-wide text-[var(--neutral-theme-900)]">
+        {copy.cardTitle}
+      </p>
 
-          <PasswordField
-            id="reset-confirm-password"
-            label={copy.confirmPassword}
-            value={confirmPassword}
-            onChange={setConfirmPassword}
-            show={showConfirm}
-            onToggleShow={() => setShowConfirm((v) => !v)}
-            hasError={
-              Boolean(confirmError) || (submitAttempted && !confirmPassword && !confirmError)
-            }
-            errorMessage={
-              confirmError ??
-              (submitAttempted && !confirmPassword ? copy.errors.fieldRequired : undefined)
-            }
-          />
+      <form className="mt-6 space-y-4" onSubmit={(e) => void onSubmit(e)}>
+        <PasswordField
+          id="reset-new-password"
+          label={copy.newPassword}
+          value={password}
+          onChange={setPassword}
+          show={showPassword}
+          onToggleShow={() => setShowPassword((v) => !v)}
+          hasError={Boolean(passwordError) || (submitAttempted && !password && !passwordError)}
+          errorMessage={
+            passwordError ??
+            (submitAttempted && !password ? copy.errors.fieldRequired : undefined)
+          }
+        />
 
-          {showBanner && !passwordError && !confirmError ? (
-            <div role="alert" className="reset-password-error-banner">
-              {copy.errors.passwordsMismatch}
-            </div>
-          ) : null}
+        <PasswordField
+          id="reset-confirm-password"
+          label={copy.confirmPassword}
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+          show={showConfirm}
+          onToggleShow={() => setShowConfirm((v) => !v)}
+          hasError={
+            Boolean(confirmError) || (submitAttempted && !confirmPassword && !confirmError)
+          }
+          errorMessage={
+            confirmError ??
+            (submitAttempted && !confirmPassword ? copy.errors.fieldRequired : undefined)
+          }
+        />
 
-          <div className="flex justify-center pt-2">
-            <button type="submit" className="reset-password-primary-btn" disabled={resetPassword.isPending}>
-              {resetPassword.isPending ? (
-                <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
-              ) : (
-                copy.submit
-              )}
-            </button>
+        {showBanner && !passwordError && !confirmError ? (
+          <div
+            role="alert"
+            className="rounded-lg bg-[var(--error-box-bg-color)] px-3 py-2.5 text-sm text-destructive"
+          >
+            {copy.errors.passwordsMismatch}
           </div>
-        </form>
-      </section>
-    </div>
+        ) : null}
+
+        <div className="flex justify-center pt-2">
+          <PillButton type="submit" className="min-w-[160px]" disabled={resetPassword.isPending}>
+            {resetPassword.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              copy.submit
+            )}
+          </PillButton>
+        </div>
+      </form>
+    </AuthOverlayShell>
   );
 }
