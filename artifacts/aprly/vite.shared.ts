@@ -5,6 +5,7 @@ import path from "path";
 import type { PluginOption, UserConfig } from "vite";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { aprlyDevMultiAppProxy } from "./vite-plugin-aprly-dev-proxy";
+import { pwaRegisterStubPlugin } from "./vite-plugin-pwa-register-stub";
 
 export type AprlyAppKind = "landing" | "cabinet" | "admin" | "mono";
 
@@ -104,6 +105,8 @@ export async function createAprlyViteConfig(
         },
       }),
     );
+  } else {
+    plugins.push(pwaRegisterStubPlugin());
   }
 
   // Each dev server must have its own pre-bundle cache (shared .vite/deps → 504 Outdated Optimize Dep).
