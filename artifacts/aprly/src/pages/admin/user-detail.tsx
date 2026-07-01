@@ -6,13 +6,15 @@ import {
   useGetAdminUser,
   useGetAdminUserPlans,
 } from "@workspace/api-client-react";
-import { AdminBreadcrumbs } from "@/components/admin/AdminBreadcrumbs";
-import { AdminDetailTabs } from "@/components/admin/AdminDetailTabs";
-import { AdminInfoGrid } from "@/components/admin/AdminInfoGrid";
-import { AdminSummaryCards } from "@/components/admin/AdminSummaryCards";
+import { AdminTabBar } from "@/components/admin/AdminTabBar";
+import { AdminTablePagination } from "@/components/admin/AdminTablePagination";
+import { AdminUserDetailBreadcrumbs } from "@/components/admin/AdminUserDetailBreadcrumbs";
+import { AdminUserDetailStats } from "@/components/admin/AdminUserDetailStats";
+import { AdminUserInfoCard } from "@/components/admin/AdminUserInfoCard";
 import { AdminUserPlanCard } from "@/components/admin/AdminUserPlanCard";
+import { AdminUserSubscriptionCard } from "@/components/admin/AdminUserSubscriptionCard";
 import { adminContent } from "@/content/admin";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type UserTabId = "details" | "plans";
 
@@ -33,10 +35,18 @@ function formatWhen(iso: string) {
   });
 }
 
+function formatProgramEndDate(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
 function AdminUserDetailContent({ userId }: { userId: number }) {
   const [activeTab, setActiveTab] = useState<UserTabId>("details");
   const [plansPage, setPlansPage] = useState(1);
-  const [plansPageSize, setPlansPageSize] = useState(10);
+  const [plansPageSize, setPlansPageSize] = useState(5);
 
   const { data, isLoading } = useGetAdminUser(userId);
 
@@ -58,35 +68,14 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
 
   const tabs = useMemo(
     () => [
-      { id: "details", label: adminContent.userDetail.tabDetails },
+      { id: "details" as const, label: adminContent.userDetail.tabDetails },
       {
-        id: "plans",
+        id: "plans" as const,
         label: adminContent.userDetail.tabPlans(data?.summary.sentToPartnerPlansCount ?? 0),
       },
     ],
     [data?.summary.sentToPartnerPlansCount],
   );
-
-  const summaryCards = data
-    ? [
-        {
-          value: `${data.summary.registeredMonthsAgo} ${adminContent.userDetail.monthsUnit(data.summary.registeredMonthsAgo)}`,
-          label: adminContent.userDetail.registeredAgo,
-        },
-        {
-          value: data.summary.currentPlansCount,
-          label: adminContent.userDetail.activePlans,
-        },
-        {
-          value: data.summary.notSentPlansCount,
-          label: adminContent.userDetail.notSentPlans,
-        },
-        {
-          value: data.summary.createdPlansCount,
-          label: adminContent.userDetail.totalPlans,
-        },
-      ]
-    : [];
 
   if (isLoading || !data) {
     return (
@@ -96,72 +85,49 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
     );
   }
 
-  const subActive = data.subscription.active;
+  const savingPlansCount = data.summary.sentToPartnerPlansCount;
   const plansTotal = plansData?.total ?? 0;
-  const plansFrom = plansTotal === 0 ? 0 : (plansPage - 1) * plansPageSize + 1;
-  const plansTo = Math.min(plansPage * plansPageSize, plansTotal);
   const plansLastPage = Math.max(1, Math.ceil(plansTotal / plansPageSize));
+
+  const stats = (
+    <AdminUserDetailStats
+      monthsRegistered={data.summary.registeredMonthsAgo}
+      savingPlansCount={savingPlansCount}
+    />
+  );
 
   return (
     <div className="space-y-6">
-      <AdminBreadcrumbs
-        segments={[
-          { label: adminContent.userDetail.breadcrumbUsers, href: "/admin/users" },
-          { label: displayName },
-        ]}
-      />
+      <AdminUserDetailBreadcrumbs userName={displayName} />
 
-      <AdminDetailTabs tabs={tabs} activeId={activeTab} onChange={(id) => setActiveTab(id as UserTabId)} />
+      <AdminTabBar<UserTabId> tabs={tabs} value={activeTab} onChange={setActiveTab} />
 
       {activeTab === "details" ? (
         <div className="space-y-6">
-          <AdminSummaryCards
-            cards={summaryCards}
-            className="sm:grid-cols-2 lg:grid-cols-4"
-          />
-
+          {stats}
           <div className="grid gap-6 lg:grid-cols-2">
-            <AdminInfoGrid
-              title={adminContent.userDetail.userInfoTitle}
-              fields={[
-                { label: adminContent.userDetail.fieldId, value: data.user.id },
-                {
-                  label: adminContent.userDetail.fieldRegistrationDate,
-                  value: formatWhen(data.user.createdAt),
-                },
-                { label: adminContent.userDetail.fieldEmail, value: data.user.email },
-              ]}
+            <AdminUserInfoCard
+              userId={data.user.id}
+              registrationDate={formatWhen(data.user.createdAt)}
+              email={data.user.email}
             />
-
-            <AdminInfoGrid
-              title={adminContent.userDetail.subscriptionTitle}
-              fields={[
-                {
-                  label: adminContent.userDetail.fieldStatus,
-                  value: subActive
-                    ? adminContent.userDetail.subscriptionActive
-                    : adminContent.userDetail.subscriptionInactive,
-                  valueClassName: subActive ? "text-primary" : undefined,
-                },
-                {
-                  label: adminContent.userDetail.fieldNextRenewal,
-                  value: data.subscription.nextRenewalAt
-                    ? formatWhen(data.subscription.nextRenewalAt)
-                    : "—",
-                },
-              ]}
+            <AdminUserSubscriptionCard
+              active={data.subscription.active}
+              programMonths={data.summary.registeredMonthsAgo}
+              programEndDate={
+                data.subscription.active && data.subscription.nextRenewalAt
+                  ? formatProgramEndDate(data.subscription.nextRenewalAt)
+                  : null
+              }
             />
           </div>
         </div>
       ) : (
         <div className="space-y-6">
-          <AdminSummaryCards
-            cards={summaryCards}
-            className="sm:grid-cols-2 lg:grid-cols-4"
-          />
+          {stats}
 
-          <h2 className="text-lg font-bold text-foreground">
-            {adminContent.userDetail.linkedAccountsTitle}
+          <h2 className={cn("admin-user-plans-title app-header-subheadline-bold text-average")}>
+            {adminContent.userDetail.plansSectionTitle}
           </h2>
 
           {plansLoading || !plansData ? (
@@ -184,49 +150,17 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
                 ))}
               </ul>
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>{adminContent.partners.rowsPerPage}</span>
-                  <select
-                    aria-label={adminContent.partners.rowsPerPage}
-                    value={String(plansPageSize)}
-                    onChange={(e) => {
-                      setPlansPageSize(Number(e.target.value));
-                      setPlansPage(1);
-                    }}
-                    className="h-9 w-[72px] rounded-md border border-input bg-transparent px-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                  >
-                    {[10, 20, 50].map((n) => (
-                      <option key={n} value={String(n)}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={plansPage <= 1}
-                    onClick={() => setPlansPage((p) => Math.max(1, p - 1))}
-                  >
-                    {adminContent.partners.prev}
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    {adminContent.partners.rangeOf(plansFrom, plansTo, plansTotal)}
-                  </span>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={plansPage >= plansLastPage}
-                    onClick={() => setPlansPage((p) => p + 1)}
-                  >
-                    {adminContent.partners.next}
-                  </Button>
-                </div>
-              </div>
+              <AdminTablePagination
+                page={plansPage}
+                lastPage={plansLastPage}
+                pageSize={plansPageSize}
+                onPageChange={setPlansPage}
+                onPageSizeChange={(size) => {
+                  setPlansPageSize(size);
+                  setPlansPage(1);
+                }}
+                pageSizeOptions={[5, 10, 20]}
+              />
             </>
           )}
         </div>

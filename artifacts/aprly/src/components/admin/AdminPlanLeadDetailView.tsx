@@ -1,19 +1,15 @@
 import type { AdminPlanLeadDetailResponse } from "@workspace/api-client-react";
 import { HardshipPortalStepper } from "@/components/dashboard/plan-lead/HardshipPortalStepper";
 import { LeadCardsList } from "@/components/dashboard/plan-lead/LeadCardsList";
-import { PlanLeadDetailMetricsStrip } from "@/components/dashboard/plan-lead/PlanLeadDetailMetricsStrip";
 import {
   AdminPlanLeadDetailHeader,
   adminPlanDetailTitle,
 } from "@/components/admin/AdminPlanLeadDetailHeader";
+import { AdminPlanDetailMetricsStrip } from "@/components/admin/AdminPlanDetailMetricsStrip";
 import { AdminPlanPartnerSection } from "@/components/admin/AdminPlanPartnerSection";
 import { adminContent } from "@/content/admin";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
-import {
-  adminPlanDisplayStatusLabel,
-  adminPlanVisualStatus,
-} from "@/lib/admin-plan-lead-status";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type PlanDetailContext =
   | { kind: "user"; userId: number; planId: number }
@@ -23,7 +19,6 @@ type AdminPlanLeadDetailViewProps = {
   detail: AdminPlanLeadDetailResponse;
   ctx: PlanDetailContext;
   backHref: string;
-  planIndex: number | null;
   printPending: boolean;
   isMutating: boolean;
   onPrint: () => void;
@@ -34,12 +29,6 @@ type AdminPlanLeadDetailViewProps = {
   isCompleting?: boolean;
   isRejecting?: boolean;
 };
-
-function formatUserName(first?: string | null, last?: string | null) {
-  const a = (first ?? "").trim();
-  const b = (last ?? "").trim();
-  return `${a} ${b}`.trim() || "—";
-}
 
 function formatReviewDate(createdAt: string): string {
   const d = new Date(createdAt);
@@ -55,7 +44,6 @@ export function AdminPlanLeadDetailView({
   detail,
   ctx,
   backHref,
-  planIndex,
   printPending,
   isMutating,
   onPrint,
@@ -67,22 +55,8 @@ export function AdminPlanLeadDetailView({
   isRejecting,
 }: AdminPlanLeadDetailViewProps) {
   const copy = adminContent.adminPlanDetail;
-  const visualStatus = adminPlanVisualStatus(detail.displayStatus);
-  const statusLabel = adminPlanDisplayStatusLabel(detail.displayStatus);
 
-  const title = adminPlanDetailTitle(
-    ctx.kind === "user" ? planIndex : null,
-    detail.brand,
-  );
-
-  const subtitle =
-    ctx.kind === "partner"
-      ? `${detail.user.email}${
-          detail.user.firstName || detail.user.lastName
-            ? ` · ${formatUserName(detail.user.firstName, detail.user.lastName)}`
-            : ""
-        }`
-      : null;
+  const title = adminPlanDetailTitle(ctx.planId);
 
   const showPartnerSection =
     detail.partner != null &&
@@ -97,17 +71,12 @@ export function AdminPlanLeadDetailView({
       <AdminPlanLeadDetailHeader
         backHref={backHref}
         title={title}
-        subtitle={subtitle}
         printPending={printPending}
         printDisabled={isMutating}
         onPrint={onPrint}
       />
 
-      <PlanLeadDetailMetricsStrip
-        detail={detail}
-        visualStatus={visualStatus}
-        statusLabel={statusLabel}
-      />
+      <AdminPlanDetailMetricsStrip detail={detail} />
 
       {showPartnerSection ? (
         <AdminPlanPartnerSection
@@ -121,7 +90,7 @@ export function AdminPlanLeadDetailView({
 
       {detail.cards.length > 0 ? (
         <section className="space-y-4">
-          <h2 className="dash-plan-detail-cards-title">{planLeadDetailContent.yourCards}</h2>
+          <h2 className="app-header-h6 text-average">{planLeadDetailContent.yourCards}</h2>
           <LeadCardsList cards={detail.cards} />
         </section>
       ) : null}
@@ -143,31 +112,34 @@ export function AdminPlanLeadDetailView({
       {detail.hardshipPortal ? (
         <HardshipPortalStepper
           portal={detail.hardshipPortal}
+          activeStepActionsPlacement="below"
           renderActiveStepActions={
             detail.canCompleteStep || detail.canReject
               ? () => (
-                  <div className="flex shrink-0 flex-wrap gap-2">
+                  <div className="admin-plan-detail-step-actions">
                     {detail.canCompleteStep ? (
-                      <Button
+                      <button
                         type="button"
-                        size="sm"
+                        className={cn(
+                          "admin-plan-detail-btn admin-plan-detail-btn--primary app-button-button-l-m",
+                        )}
                         disabled={isCompleting || isRejecting}
                         onClick={onCompleteStep}
                       >
                         {copy.complete}
-                      </Button>
+                      </button>
                     ) : null}
                     {detail.canReject ? (
-                      <Button
+                      <button
                         type="button"
-                        size="sm"
-                        variant="outline"
-                        className="border-destructive/50 text-destructive hover:bg-destructive/10"
+                        className={cn(
+                          "admin-plan-detail-btn admin-plan-detail-btn--danger app-button-button-l-m",
+                        )}
                         disabled={isCompleting || isRejecting}
                         onClick={onReject}
                       >
                         {copy.reject}
-                      </Button>
+                      </button>
                     ) : null}
                   </div>
                 )

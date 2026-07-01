@@ -705,9 +705,20 @@ export interface AdminDashboardSummary {
 }
 
 export interface AdminPartnerLeadCounts {
-  /** @minimum 0 */
+  /**
+   * Sent to partner; partner has not started working
+   * @minimum 0
+   */
+  waiting: number;
+  /**
+   * Partner accepted; no hardship steps completed yet
+   * @minimum 0
+   */
   onReview: number;
-  /** @minimum 0 */
+  /**
+   * Partner accepted; at least one hardship step completed
+   * @minimum 0
+   */
   inProgress: number;
   /** @minimum 0 */
   won: number;
@@ -846,6 +857,7 @@ export interface AdminPartnerPlanLead {
   lastName?: string | null;
   sentToPartnerAt?: string | null;
   createdAt: string;
+  hardshipPortal?: HardshipPortal;
 }
 
 export interface AdminPartnerPlanLeadsResponse {
@@ -959,6 +971,7 @@ export type GetAdminPartnerPlanLeadsLeadTab =
 
 export const GetAdminPartnerPlanLeadsLeadTab = {
   all: "all",
+  waiting: "waiting",
   on_review: "on_review",
   in_progress: "in_progress",
   won: "won",

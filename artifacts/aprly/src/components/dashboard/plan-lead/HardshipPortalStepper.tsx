@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 type HardshipPortalStepperProps = {
   portal: HardshipPortal;
   renderActiveStepActions?: (step: HardshipStep) => ReactNode;
+  activeStepActionsPlacement?: "inline" | "below";
 };
 
 function stepCardClass(status: HardshipStep["status"]): string {
@@ -23,6 +24,7 @@ function stepCardClass(status: HardshipStep["status"]): string {
 export function HardshipPortalStepper({
   portal,
   renderActiveStepActions,
+  activeStepActionsPlacement = "inline",
 }: HardshipPortalStepperProps) {
   const copy = planLeadDetailContent;
   const progress = Math.min(100, Math.max(0, portal.progress));
@@ -53,6 +55,9 @@ export function HardshipPortalStepper({
           const isActive = step.status === "active";
           const isDone = step.status === "done";
           const prevDone = index > 0 && portal.steps[index - 1].status === "done";
+
+          const activeActions =
+            isActive && renderActiveStepActions ? renderActiveStepActions(step) : null;
 
           return (
             <li key={step.name} className="dash-plan-detail-step">
@@ -108,17 +113,16 @@ export function HardshipPortalStepper({
                       </span>
                     ) : null}
                     {isActive ? (
-                      <>
-                        <span className="dash-plan-detail-step-pill dash-plan-detail-step-pill--active app-text-p2-bold">
-                          {copy.stepInProgress}
-                        </span>
-                        {renderActiveStepActions ? renderActiveStepActions(step) : null}
-                      </>
+                      <span className="dash-plan-detail-step-pill dash-plan-detail-step-pill--active app-text-p2-bold">
+                        {copy.stepInProgress}
+                      </span>
                     ) : null}
+                    {isActive && activeStepActionsPlacement === "inline" ? activeActions : null}
                   </div>
                   {step.description ? (
                     <p className="app-text-p1-regular text-average mt-1">{step.description}</p>
                   ) : null}
+                  {isActive && activeStepActionsPlacement === "below" ? activeActions : null}
                 </div>
               </div>
             </li>

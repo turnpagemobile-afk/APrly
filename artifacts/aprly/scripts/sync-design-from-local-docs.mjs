@@ -161,6 +161,118 @@ const MEDIA = [
     dest: join(APRLY_ROOT, "public", "cabinet", "dashboard", "checked.png"),
   },
   {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "logo.png"),
+    dest: join(APRLY_ROOT, "public", "admin", "login", "logo.png"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "unsplash_AOjmfr3ofSY.png"),
+    dest: join(APRLY_ROOT, "public", "admin", "login", "bg.png"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Dashboard", "logo (1).png"),
+    dest: join(APRLY_ROOT, "public", "admin", "dashboard", "logo.png"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Dashboard", "dashboardIcon.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "dashboard", "dashboard-icon.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Dashboard", "usersIcon.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "dashboard", "users-icon.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Dashboard", "partnersIcon.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "dashboard", "partners-icon.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Users", "search.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "search.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Users", "first.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "pagination-first.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Users", "left.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "pagination-prev.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Users", "right.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "pagination-next.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Users", "Number.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "pagination-last.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Users", "Skip.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "search-clear.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Users", "NoSearch.png"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "no-search.png"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Partners", "plus.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "partners", "plus.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Partners", "3dots.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "partners", "menu-dots.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Partners", "iIcon.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "partners", "menu-view.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Partners", "close.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "partners", "menu-close.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Partners", "trash.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "partners", "menu-trash.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Partners", "Details", "close.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "partners", "detail-close.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Partners", "Details", "trash.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "partners", "detail-trash.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Partners", "Details", "userIcon.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "user-icon.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Users", "Details", "heroicon.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "detail-heroicon.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Users", "Details", "checked.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "detail-checked.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Users", "Details", "print.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "detail-print.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "Users", "Details", "arrow.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "users", "detail-arrow.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "PlanDetails", "arrowRight.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "plans", "arrow-right.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "PlanDetails", "label-icon.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "plans", "label-icon.svg"),
+  },
+  {
+    src: join(DESIGN_ROOT, "fix", "AdminPanel", "PlanDetails", "arrow2.svg"),
+    dest: join(APRLY_ROOT, "public", "admin", "plans", "arrow-link.svg"),
+  },
+  {
     src: join(IMAGE_NEW, "eye.svg"),
     dest: join(SHARED_DEST, "eye.svg"),
   },

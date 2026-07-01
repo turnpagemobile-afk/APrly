@@ -1,0 +1,179 @@
+/**
+ * Admin Users list — Figma AdminPanel/Users.
+ */
+
+@layer components {
+  .admin-search-input-wrap {
+    @apply relative w-full sm:w-64;
+  }
+
+  .admin-search-input-icon {
+    @apply pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2;
+  }
+
+  .admin-search-input {
+    @apply w-full min-h-[var(--design-input-min-height-x1,52px)] border shadow-none transition-colors;
+    @apply rounded-[12px] py-[14px] pr-[14px] text-sm;
+    @apply focus-visible:outline-none focus-visible:ring-0;
+    padding-left: 42px;
+    border-color: var(--input-default-border-color);
+    background: var(--input-default-bg-color);
+    color: var(--input-text-color);
+  }
+
+  .admin-search-input:focus-visible {
+    border-color: var(--input-focus-border-color);
+    background: var(--input-focus-bg-color);
+  }
+
+  .admin-search-input--has-clear {
+    padding-right: 42px;
+  }
+
+  .admin-search-clear-btn {
+    @apply absolute right-3 top-1/2 inline-flex h-[18px] w-[18px] -translate-y-1/2 items-center justify-center;
+  }
+
+  .admin-users-search-status {
+    @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .admin-users-search-clear-btn {
+    @apply shrink-0 rounded-[12px] border px-5 py-3 uppercase transition-colors;
+    border-color: var(--action-default-color);
+    background: var(--button-secondary-normal-bg-color);
+  }
+
+  .admin-users-search-clear-btn:hover {
+    background: var(--button-secondary-hover-bg-color);
+  }
+
+  .admin-users-search-empty {
+    @apply flex flex-col items-center gap-4 py-12;
+  }
+
+  .admin-tab-bar {
+    @apply flex border-b;
+    border-color: var(--palette-neutral-neutral-300);
+  }
+
+  .admin-tab {
+    @apply flex-1 px-4 py-3 text-center transition-colors;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #44464f;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+  }
+
+  .admin-tab--active {
+    color: #6750a4;
+    border-bottom-color: #485e92;
+  }
+
+  .admin-table-shell {
+    @apply overflow-hidden rounded-[10px] border;
+    border-color: var(--palette-neutral-neutral-300);
+  }
+
+  .admin-table {
+    @apply w-full border-collapse text-left;
+  }
+
+  .admin-table-head {
+    background: var(--palette-neutral-neutral-100);
+  }
+
+  .admin-table-head th {
+    padding: 12px 16px;
+    font-family: var(--app-font-hero-body);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 16px;
+    color: var(--neutral-theme-600);
+    text-transform: none;
+  }
+
+  .admin-table-body {
+    background: var(--neutral-theme-050);
+  }
+
+  .admin-table-row {
+    @apply cursor-pointer border-t transition-colors;
+    border-color: var(--palette-neutral-neutral-300);
+  }
+
+  .admin-table-row:hover {
+    background: rgba(86, 122, 249, 0.06);
+  }
+
+  .admin-table-row td {
+    padding: 14px 16px;
+    font-family: var(--app-font-hero-body);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    color: var(--neutral-theme-900);
+  }
+
+  .admin-table-cell-bold {
+    font-weight: 700;
+    color: var(--primary-theme-950);
+  }
+
+  .admin-table-footer {
+    @apply flex flex-col gap-3 border-t px-4 py-3 sm:flex-row sm:items-center sm:justify-between;
+    border-color: var(--palette-neutral-neutral-300);
+    background: var(--neutral-theme-050);
+    color: #49454f;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .admin-table-pagination-nav {
+    @apply flex flex-wrap items-center gap-1;
+  }
+
+  .admin-table-pagination-btn {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-md transition-opacity disabled:opacity-40;
+  }
+
+  .admin-table-pagination-btn:not(:disabled):hover {
+    @apply opacity-80;
+  }
+
+  .admin-table-pagination-icon {
+    @apply h-10 w-10;
+  }
+
+  .admin-table-pagination-icon--prev {
+    transform: scaleX(-1);
+  }
+
+  .admin-table-pagination-page {
+    @apply inline-flex h-10 min-w-10 items-center justify-center rounded-md px-2 text-sm font-medium;
+    color: #49454f;
+  }
+
+  .admin-table-pagination-page--active {
+    color: #6750a4;
+    font-weight: 700;
+  }
+
+  .admin-table-rows-select {
+    @apply h-9 w-[72px] appearance-none border bg-transparent pl-2 pr-7 text-sm;
+    @apply focus:outline-none focus:ring-1;
+    border-radius: 4px;
+    border-color: var(--palette-neutral-neutral-300);
+    color: #49454f;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%2349454F' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+  }
+
+  .admin-table-rows-select:focus {
+    --tw-ring-color: var(--palette-neutral-neutral-300);
+  }
+}

@@ -1,0 +1,141 @@
+/**
+ * Admin User detail — Figma AdminPanel/Users/Details.
+ */
+
+@layer components {
+  .admin-user-breadcrumb {
+    @apply flex flex-wrap items-center gap-1.5;
+  }
+
+  .admin-user-breadcrumb-link {
+    @apply uppercase transition-opacity hover:opacity-80;
+  }
+
+  .admin-user-breadcrumb-current {
+    @apply uppercase;
+  }
+
+  .admin-user-stat-card {
+    @apply rounded-[12px] border bg-[var(--card-1lvl-bg-color)] px-6 py-8 text-center shadow-sm;
+    border-color: var(--palette-neutral-neutral-300);
+  }
+
+  .admin-user-stat-value {
+    font-family: var(--app-font-inter-display, "Inter Display", Inter, sans-serif);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 28px;
+  }
+
+  .admin-user-stat-value--registered {
+    color: #10b981;
+  }
+
+  .admin-user-stat-value--plans {
+    color: #567af9;
+  }
+
+  .admin-user-stat-label {
+    @apply mt-2;
+    font-family: var(--app-font-inter-display, "Inter Display", Inter, sans-serif);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    color: var(--neutral-theme-600);
+  }
+
+  .admin-user-info-card,
+  .admin-user-subscription-card {
+    @apply rounded-[12px] border bg-[var(--card-1lvl-bg-color)] p-6 shadow-sm;
+    border-color: var(--palette-neutral-neutral-300);
+  }
+
+  .admin-user-info-header,
+  .admin-user-subscription-header {
+    @apply mb-6 flex items-center justify-between gap-3 border-b pb-4;
+    border-color: var(--palette-neutral-neutral-300);
+  }
+
+  .admin-user-info-header-main,
+  .admin-user-subscription-header-main {
+    @apply flex min-w-0 items-center gap-3;
+  }
+
+  .admin-user-info-id {
+    @apply shrink-0;
+    color: var(--neutral-theme-600);
+  }
+
+  .admin-user-info-fields {
+    @apply grid gap-6 sm:grid-cols-2;
+  }
+
+  .admin-user-info-field-label {
+    @apply mb-1;
+    color: var(--text-hint-color, #6b7280);
+  }
+
+  .admin-user-subscription-badge {
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1.5 uppercase;
+  }
+
+  .admin-user-subscription-badge-dot {
+    @apply h-5 w-5 shrink-0 rounded-full bg-[var(--neutral-theme-000)];
+  }
+
+  .admin-user-subscription-badge--active {
+    background: #10b981;
+    color: var(--neutral-theme-000);
+  }
+
+  .admin-user-subscription-badge--inactive {
+    background: var(--danger-theme-500);
+    color: var(--neutral-theme-000);
+  }
+
+  .admin-user-subscription-footer {
+    @apply text-center;
+    color: var(--neutral-theme-900);
+  }
+
+  .admin-user-plans-title {
+    @apply uppercase;
+  }
+
+  .admin-user-plan-status-badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 uppercase;
+    font-family: var(--app-font-hero-body);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    color: var(--neutral-theme-000);
+  }
+
+  .admin-user-plan-status-badge--waiting {
+    background: var(--neutral-theme-500);
+  }
+
+  .admin-user-plan-status-badge--on-review {
+    background: var(--warning-theme-500);
+  }
+
+  .admin-user-plan-status-badge--in-progress {
+    background: var(--info-theme-500);
+  }
+
+  .admin-user-plan-status-badge--won {
+    background: var(--success-theme-500);
+  }
+
+  .admin-user-plan-status-badge--reject {
+    background: var(--danger-theme-500);
+  }
+
+  .admin-user-plan-status-badge--not-sent {
+    background: var(--neutral-theme-500);
+  }
+
+  .admin-user-plan-action-btn {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-md bg-transparent transition-opacity hover:opacity-80;
+  }
+}

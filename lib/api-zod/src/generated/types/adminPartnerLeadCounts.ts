@@ -7,9 +7,20 @@
  */
 
 export interface AdminPartnerLeadCounts {
-  /** @minimum 0 */
+  /**
+   * Sent to partner; partner has not started working
+   * @minimum 0
+   */
+  waiting: number;
+  /**
+   * Partner accepted; no hardship steps completed yet
+   * @minimum 0
+   */
   onReview: number;
-  /** @minimum 0 */
+  /**
+   * Partner accepted; at least one hardship step completed
+   * @minimum 0
+   */
   inProgress: number;
   /** @minimum 0 */
   won: number;

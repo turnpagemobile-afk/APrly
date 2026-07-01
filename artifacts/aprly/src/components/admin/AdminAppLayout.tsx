@@ -7,7 +7,6 @@ import AdminUserDetailPage from "@/pages/admin/user-detail";
 import AdminPartnersPage from "@/pages/admin/partners";
 import AdminPartnerDetailPage from "@/pages/admin/partner-detail";
 import AdminPlanLeadDetailPage from "@/pages/admin/plan-lead-detail";
-import AdminSubscriptionPage from "@/pages/admin/subscription";
 import NotFound from "@/pages/not-found";
 
 /** Shared shell + auth guard for all protected /admin/* routes (single mount on navigation). */
@@ -29,7 +28,6 @@ export default function AdminAppLayout() {
           />
           <Route path="/admin/partners/:id" component={AdminPartnerDetailPage} />
           <Route path="/admin/partners" component={AdminPartnersPage} />
-          <Route path="/admin/subscription" component={AdminSubscriptionPage} />
           <Route path="/admin">
             <Redirect to="/admin/dashboard" />
           </Route>

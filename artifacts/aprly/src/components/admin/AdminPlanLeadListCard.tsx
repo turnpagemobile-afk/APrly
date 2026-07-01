@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { Link } from "wouter";
-import type { AdminUserPlanDisplayStatus, LeadCardItem } from "@workspace/api-client-react";
+import type { AdminUserPlanDisplayStatus, HardshipPortal, LeadCardItem } from "@workspace/api-client-react";
 import { PlanLeadCardPreviewRow } from "@/components/dashboard/plan-lead/PlanLeadCardPreviewRow";
 import { PlanLeadTotalSavingsFooter } from "@/components/dashboard/plan-lead/PlanLeadTotalSavingsFooter";
 import {
-  adminPlanDisplayStatusLabel,
-  adminPlanStatusBadgeClass,
+  adminUserPlanDisplayStatusLabel,
+  adminUserPlanStatusBadgeClass,
 } from "@/lib/admin-plan-lead-status";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +13,7 @@ type AdminPlanLeadListCardProps = {
   title: string;
   subtitle?: string | null;
   displayStatus: AdminUserPlanDisplayStatus;
+  hardshipPortal?: HardshipPortal | null;
   cards: LeadCardItem[];
   balance: number;
   currentApr: number;
@@ -38,6 +39,7 @@ export function AdminPlanLeadListCard({
   title,
   subtitle,
   displayStatus,
+  hardshipPortal,
   cards,
   balance,
   currentApr,
@@ -63,6 +65,8 @@ export function AdminPlanLeadListCard({
       ? cards.reduce((sum, c) => sum + c.estimatedAnnualSavings, 0)
       : estimatedAnnualSavings;
 
+  const badgeCtx = { displayStatus, hardshipPortal };
+
   return (
     <article className="dash-plan-lead-card dash-plan-lead-card--interactive">
       <div className="dash-plan-lead-card-inner">
@@ -70,8 +74,8 @@ export function AdminPlanLeadListCard({
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <h3 className="app-header-screen-title-bold text-average truncate">{title}</h3>
-              <span className={cn(adminPlanStatusBadgeClass(displayStatus))}>
-                {adminPlanDisplayStatusLabel(displayStatus)}
+              <span className={cn(adminUserPlanStatusBadgeClass(badgeCtx))}>
+                {adminUserPlanDisplayStatusLabel(badgeCtx)}
               </span>
             </div>
             {subtitle ? (

@@ -1,0 +1,90 @@
+/**
+ * Admin Partners list — Figma AdminPanel/Partners.
+ */
+
+@layer components {
+  .admin-partners-create-btn {
+    @apply inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[12px] px-5 py-3 uppercase;
+    background: var(--button-disable-color);
+    color: var(--button-primary-disable-text-color);
+  }
+
+  .admin-partner-status-badge {
+    @apply inline-flex items-center rounded-full px-3 py-1;
+    font-family: var(--app-font-inter-display, "Inter Display", Inter, sans-serif);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+
+  .admin-partner-status-badge--active {
+    background: #10b981;
+    color: var(--neutral-theme-000);
+  }
+
+  .admin-partner-status-badge--deactivated {
+    @apply border bg-transparent;
+    border-color: var(--neutral-theme-600);
+    color: var(--neutral-theme-600);
+  }
+
+  .admin-partner-row-menu-trigger {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-md bg-transparent transition-opacity hover:opacity-80;
+  }
+
+  .admin-partner-row-menu-content {
+    @apply z-50 min-w-[12rem] overflow-hidden border bg-[var(--card-1lvl-bg-color)] p-2 shadow-md;
+    border-radius: 6px;
+    border-color: var(--palette-neutral-neutral-300);
+  }
+
+  .admin-partner-row-menu-item {
+    @apply flex w-full cursor-pointer items-center gap-3 px-3 py-3 uppercase transition-colors;
+    border-radius: 0;
+  }
+
+  .admin-partner-row-menu-item:hover {
+    background: rgba(86, 122, 249, 0.06);
+  }
+
+  .admin-partner-row-menu-item--danger {
+    color: var(--danger-theme-500);
+  }
+
+  .admin-partner-confirm-dialog {
+    @apply max-w-[480px] gap-0 rounded-[24px] border border-[var(--primary-theme-200)] bg-[var(--card-1lvl-bg-color)] p-0 shadow-[0_10px_20px_0_rgba(29,62,11,0.08)];
+  }
+
+  .admin-partner-confirm-dialog-header {
+    @apply border-b px-6 py-5;
+    border-color: var(--palette-neutral-neutral-300);
+  }
+
+  .admin-partner-confirm-dialog-body {
+    @apply px-6 py-5;
+  }
+
+  .admin-partner-confirm-dialog-footer {
+    @apply flex flex-col gap-3 px-6 pb-6 sm:flex-row sm:justify-center;
+  }
+
+  .admin-confirm-btn--cancel {
+    @apply min-h-[52px] flex-1 rounded-full border px-6 py-3 uppercase transition-colors;
+    border-color: var(--action-default-color);
+    background: var(--button-secondary-normal-bg-color);
+    color: var(--action-default-color);
+  }
+
+  .admin-confirm-btn--cancel:hover {
+    background: var(--button-secondary-hover-bg-color);
+  }
+
+  .admin-confirm-btn--danger {
+    @apply min-h-[52px] flex-1 rounded-full px-6 py-3 uppercase text-[var(--neutral-theme-000)] transition-opacity hover:opacity-95;
+    background: var(--danger-theme-500);
+  }
+
+  .admin-confirm-btn--danger:disabled {
+    @apply opacity-50;
+  }
+}

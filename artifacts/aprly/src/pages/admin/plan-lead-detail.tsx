@@ -12,7 +12,7 @@ import {
   usePostAdminPlanLeadReject,
   usePostAdminPlanLeadStartWorking,
 } from "@workspace/api-client-react";
-import { AdminBreadcrumbs } from "@/components/admin/AdminBreadcrumbs";
+import { AdminPlanDetailBreadcrumbs } from "@/components/admin/AdminPlanDetailBreadcrumbs";
 import { AdminPlanLeadDetailView } from "@/components/admin/AdminPlanLeadDetailView";
 import {
   AlertDialog,
@@ -66,20 +66,11 @@ function formatUserName(first?: string | null, last?: string | null) {
   return `${a} ${b}`.trim() || "—";
 }
 
-function readPlanIndexFromSearch(): number | null {
-  if (typeof window === "undefined") return null;
-  const raw = new URLSearchParams(window.location.search).get("planIndex");
-  if (!raw) return null;
-  const n = Number(raw);
-  return Number.isInteger(n) && n > 0 ? n : null;
-}
-
 function AdminPlanLeadDetailContent({ ctx }: { ctx: PlanDetailContext }) {
   const queryClient = useQueryClient();
   const copy = adminContent.adminPlanDetail;
   const [rejectOpen, setRejectOpen] = useState(false);
   const [printPending, setPrintPending] = useState(false);
-  const planIndex = useMemo(() => readPlanIndexFromSearch(), []);
 
   const userQuery = useGetAdminUserPlan(ctx.kind === "user" ? ctx.userId : 0, ctx.planId, {
     query: {
@@ -176,24 +167,21 @@ function AdminPlanLeadDetailContent({ ctx }: { ctx: PlanDetailContext }) {
     return `/admin/partners/${ctx.partnerId}?tab=${tab}`;
   }, [ctx]);
 
-  const breadcrumbs = useMemo(() => {
-    if (!detail) return [];
+  const breadcrumbProps = useMemo(() => {
+    if (!detail) return null;
     if (ctx.kind === "user") {
       const name = formatUserName(detail.user.firstName, detail.user.lastName);
-      return [
-        { label: adminContent.userDetail.breadcrumbUsers, href: "/admin/users" },
-        { label: name, href: `/admin/users/${ctx.userId}` },
-        { label: detail.brand },
-      ];
+      return {
+        kind: "user" as const,
+        userId: ctx.userId,
+        userName: name,
+      };
     }
-    return [
-      { label: adminContent.partnerDetail.breadcrumbPartners, href: "/admin/partners" },
-      {
-        label: detail.partner?.name ?? "Partner",
-        href: `/admin/partners/${ctx.partnerId}`,
-      },
-      { label: detail.brand },
-    ];
+    return {
+      kind: "partner" as const,
+      partnerId: ctx.partnerId,
+      partnerName: detail.partner?.name ?? "Partner",
+    };
   }, [ctx, detail]);
 
   if (detailQuery.isLoading || !detail) {
@@ -226,14 +214,13 @@ function AdminPlanLeadDetailContent({ ctx }: { ctx: PlanDetailContext }) {
 
   return (
     <div className="space-y-6 py-2">
-      <AdminBreadcrumbs segments={breadcrumbs} />
+      {breadcrumbProps ? <AdminPlanDetailBreadcrumbs {...breadcrumbProps} /> : null}
 
       <div className="dash-plan-detail-layout">
         <AdminPlanLeadDetailView
           detail={detail}
           ctx={ctx}
           backHref={backHref}
-          planIndex={planIndex}
           printPending={printPending}
           isMutating={isMutating}
           onPrint={() => void onPrint()}

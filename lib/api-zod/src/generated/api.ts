@@ -1933,7 +1933,7 @@ export const getAdminPartnerPlanLeadsQueryPageSizeMax = 50;
 
 export const GetAdminPartnerPlanLeadsQueryParams = zod.object({
   leadTab: zod
-    .enum(["all", "on_review", "in_progress", "won", "rejected"])
+    .enum(["all", "waiting", "on_review", "in_progress", "won", "rejected"])
     .default(getAdminPartnerPlanLeadsQueryLeadTabDefault),
   page: zod.coerce
     .number()
@@ -1946,6 +1946,8 @@ export const GetAdminPartnerPlanLeadsQueryParams = zod.object({
     .default(getAdminPartnerPlanLeadsQueryPageSizeDefault),
 });
 
+export const getAdminPartnerPlanLeadsResponseLeadCountsWaitingMin = 0;
+
 export const getAdminPartnerPlanLeadsResponseLeadCountsOnReviewMin = 0;
 
 export const getAdminPartnerPlanLeadsResponseLeadCountsInProgressMin = 0;
@@ -1955,6 +1957,9 @@ export const getAdminPartnerPlanLeadsResponseLeadCountsWonMin = 0;
 export const getAdminPartnerPlanLeadsResponseLeadCountsRejectedMin = 0;
 
 export const getAdminPartnerPlanLeadsResponsePlanLeadsItemCardCountMin = 0;
+
+export const getAdminPartnerPlanLeadsResponsePlanLeadsItemHardshipPortalProgressMin = 0;
+export const getAdminPartnerPlanLeadsResponsePlanLeadsItemHardshipPortalProgressMax = 100;
 
 export const getAdminPartnerPlanLeadsResponseTotalMin = 0;
 
@@ -1972,12 +1977,18 @@ export const GetAdminPartnerPlanLeadsResponse = zod.object({
       .describe("Included in admin partner payloads"),
   }),
   leadCounts: zod.object({
+    waiting: zod
+      .number()
+      .min(getAdminPartnerPlanLeadsResponseLeadCountsWaitingMin)
+      .describe("Sent to partner; partner has not started working"),
     onReview: zod
       .number()
-      .min(getAdminPartnerPlanLeadsResponseLeadCountsOnReviewMin),
+      .min(getAdminPartnerPlanLeadsResponseLeadCountsOnReviewMin)
+      .describe("Partner accepted; no hardship steps completed yet"),
     inProgress: zod
       .number()
-      .min(getAdminPartnerPlanLeadsResponseLeadCountsInProgressMin),
+      .min(getAdminPartnerPlanLeadsResponseLeadCountsInProgressMin)
+      .describe("Partner accepted; at least one hardship step completed"),
     won: zod.number().min(getAdminPartnerPlanLeadsResponseLeadCountsWonMin),
     rejected: zod
       .number()
@@ -2016,6 +2027,28 @@ export const GetAdminPartnerPlanLeadsResponse = zod.object({
       lastName: zod.string().nullish(),
       sentToPartnerAt: zod.coerce.date().nullish(),
       createdAt: zod.coerce.date(),
+      hardshipPortal: zod
+        .object({
+          stage: zod.string(),
+          progress: zod
+            .number()
+            .min(
+              getAdminPartnerPlanLeadsResponsePlanLeadsItemHardshipPortalProgressMin,
+            )
+            .max(
+              getAdminPartnerPlanLeadsResponsePlanLeadsItemHardshipPortalProgressMax,
+            ),
+          etaDays: zod.number(),
+          steps: zod.array(
+            zod.object({
+              name: zod.string(),
+              status: zod.enum(["done", "active", "pending"]),
+              description: zod.string().optional(),
+              cta: zod.string().optional(),
+            }),
+          ),
+        })
+        .optional(),
     }),
   ),
   total: zod.number().min(getAdminPartnerPlanLeadsResponseTotalMin),

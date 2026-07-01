@@ -1,13 +1,11 @@
 import { Link } from "wouter";
-import { ArrowLeft, Loader2, Printer } from "lucide-react";
-import { dashboardTabContent } from "@/content/dashboard-tab";
+import { Loader2 } from "lucide-react";
 import { adminContent } from "@/content/admin";
-import { Button } from "@/components/ui/button";
+import { adminAsset } from "@/lib/admin-assets";
 
 type AdminPlanLeadDetailHeaderProps = {
   backHref: string;
   title: string;
-  subtitle?: string | null;
   printPending?: boolean;
   printDisabled?: boolean;
   onPrint: () => void;
@@ -16,7 +14,6 @@ type AdminPlanLeadDetailHeaderProps = {
 export function AdminPlanLeadDetailHeader({
   backHref,
   title,
-  subtitle,
   printPending = false,
   printDisabled = false,
   onPrint,
@@ -24,40 +21,41 @@ export function AdminPlanLeadDetailHeader({
   const copy = adminContent.adminPlanDetail;
 
   return (
-    <header className="dash-plan-detail-header">
-      <Link href={backHref} className="dash-plan-detail-back">
-        <ArrowLeft className="dash-plan-detail-back-icon" aria-hidden="true" />
-        <div className="min-w-0">
-          <h1 className="dash-plan-detail-title">{title}</h1>
-          {subtitle ? (
-            <p className="mt-0.5 truncate text-sm font-normal normal-case tracking-normal text-muted-foreground">
-              {subtitle}
-            </p>
-          ) : null}
-        </div>
+    <header className="admin-plan-detail-header">
+      <Link href={backHref} className="admin-plan-detail-back" aria-label={copy.backAria}>
+        <img
+          src={adminAsset("plans/arrow-right.svg")}
+          alt=""
+          width={44}
+          height={44}
+          className="admin-plan-detail-back-icon"
+          aria-hidden
+        />
+        <h1 className="app-header-screen-title-bold min-w-0 truncate text-average">{title}</h1>
       </Link>
-      <Button
+      <button
         type="button"
-        variant="ghost"
-        size="icon"
-        className="h-9 w-9 shrink-0 text-primary"
+        className="admin-plan-detail-print-btn"
         aria-label={copy.printAria}
         disabled={printPending || printDisabled}
         onClick={onPrint}
       >
         {printPending ? (
-          <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+          <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
         ) : (
-          <Printer className="h-5 w-5" />
+          <img
+            src={adminAsset("users/detail-print.svg")}
+            alt=""
+            width={24}
+            height={24}
+            aria-hidden
+          />
         )}
-      </Button>
+      </button>
     </header>
   );
 }
 
-export function adminPlanDetailTitle(planIndex: number | null, brand: string): string {
-  if (planIndex != null && planIndex > 0) {
-    return `${dashboardTabContent.planCard.planLabel} #${planIndex}`;
-  }
-  return brand;
+export function adminPlanDetailTitle(planId: number): string {
+  return adminContent.adminPlanDetail.planDetailTitle(planId);
 }

@@ -1,8 +1,8 @@
-import { Building2, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 import type { AdminPlanLeadDetailResponse } from "@workspace/api-client-react";
 import { adminContent } from "@/content/admin";
-import { Button } from "@/components/ui/button";
+import { adminAsset } from "@/lib/admin-assets";
+import { cn } from "@/lib/utils";
 
 type AdminPlanPartnerSectionProps = {
   detail: AdminPlanLeadDetailResponse;
@@ -37,45 +37,58 @@ export function AdminPlanPartnerSection({
     : null;
 
   return (
-    <div className="space-y-4">
-      <article className="dash-plan-detail-partner">
-        <span className="dash-plan-detail-partner-icon" aria-hidden="true">
-          <Building2 className="h-5 w-5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="dash-plan-detail-partner-name">{partner.name}</p>
-          {sentText ? <p className="dash-plan-detail-partner-meta">{sentText}</p> : null}
-        </div>
-        <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0" asChild>
-          <Link href={`/admin/partners/${partner.id}`} aria-label={copy.openPartnerAria}>
-            <ChevronRight className="h-5 w-5" />
-          </Link>
-        </Button>
-      </article>
-
+    <article className="admin-plan-detail-partner">
+      <img
+        src={adminAsset("plans/label-icon.svg")}
+        alt=""
+        width={44}
+        height={44}
+        className="admin-plan-detail-partner-icon"
+        aria-hidden
+      />
+      <div className="admin-plan-detail-partner-content min-w-0 flex-1">
+        <p className="app-header-screen-title-bold text-average">
+          {copy.partnerNameTitle(partner.name, partner.id)}
+        </p>
+        {sentText ? (
+          <p className="mt-1 app-text-p1-regular text-average">{sentText}</p>
+        ) : null}
+      </div>
       {detail.canStartWorking ? (
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <Button
+        <div className="admin-plan-detail-partner-actions">
+          <button
             type="button"
-            variant="outline"
+            className={cn("admin-plan-detail-btn admin-plan-detail-btn--primary app-button-button-l-m")}
             disabled={isStarting || isRejecting}
             onClick={onStartWorking}
           >
             {copy.startWorking}
-          </Button>
+          </button>
           {detail.canReject ? (
-            <Button
+            <button
               type="button"
-              variant="outline"
-              className="border-destructive/50 text-destructive hover:bg-destructive/10"
+              className={cn("admin-plan-detail-btn admin-plan-detail-btn--danger app-button-button-l-m")}
               disabled={isStarting || isRejecting}
               onClick={onReject}
             >
               {copy.reject}
-            </Button>
+            </button>
           ) : null}
         </div>
       ) : null}
-    </div>
+      <Link
+        href={`/admin/partners/${partner.id}`}
+        className="admin-plan-detail-partner-link"
+        aria-label={copy.openPartnerAria}
+      >
+        <img
+          src={adminAsset("plans/arrow-link.svg")}
+          alt=""
+          width={24}
+          height={24}
+          aria-hidden
+        />
+      </Link>
+    </article>
   );
 }

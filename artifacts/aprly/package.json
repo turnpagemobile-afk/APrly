@@ -14,7 +14,7 @@
     "build:cabinet": "PORT=5173 vite build --config vite.cabinet.config.ts",
     "build:admin": "PORT=5173 vite build --config vite.admin.config.ts",
     "serve": "vite preview --config vite.landing.config.ts --host 0.0.0.0",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && node ./scripts/check-tailwind-apply.mjs",
     "check:tailwind-apply": "node ./scripts/check-tailwind-apply.mjs",
     "tokens:text": "node ./scripts/build-text-styles.mjs",
     "tokens": "node ./scripts/build-theme-tokens.mjs && node ./scripts/build-text-styles.mjs",
