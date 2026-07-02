@@ -1,8 +1,17 @@
 import crypto from "node:crypto";
 import { logger } from "./logger";
 
+const DEFAULT_PASSWORD_RESET_TTL_SEC = 86_400;
+
 export function passwordResetTtlSec(): number {
-  return Number(process.env["PASSWORD_RESET_TTL_SEC"] ?? "3600");
+  const raw = process.env["PASSWORD_RESET_TTL_SEC"];
+  if (raw == null || raw === "") return DEFAULT_PASSWORD_RESET_TTL_SEC;
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : DEFAULT_PASSWORD_RESET_TTL_SEC;
+}
+
+export function passwordResetExpiryHours(): number {
+  return Math.max(1, Math.round(passwordResetTtlSec() / 3600));
 }
 
 export function hashPasswordResetToken(raw: string): string {
@@ -19,6 +28,17 @@ export function buildResetPasswordUrl(frontendOrigin: string, rawToken: string):
   return `${base}/reset-password?token=${encodeURIComponent(rawToken)}`;
 }
 
+export function formatPasswordResetRecipientName(
+  firstName: string | null | undefined,
+  lastName: string | null | undefined,
+  email: string,
+): string {
+  const first = (firstName ?? "").trim();
+  const last = (lastName ?? "").trim();
+  const full = `${first} ${last}`.trim();
+  return full || email;
+}
+
 export function logPasswordResetLinkForDev(email: string, url: string): void {
-  logger.info(`[password-reset] reset link for ${email}: ${url} (email not sent in v1)`);
+  logger.info(`[password-reset] reset link for ${email}: ${url} (email not sent — missing SENDGRID_API_KEY)`);
 }

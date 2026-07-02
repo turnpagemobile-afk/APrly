@@ -4,11 +4,12 @@ import bcrypt from "bcryptjs";
 import { and, eq, gt, isNull } from "drizzle-orm";
 import {
   buildResetPasswordUrl,
+  formatPasswordResetRecipientName,
   generatePasswordResetToken,
   hashPasswordResetToken,
-  logPasswordResetLinkForDev,
   passwordResetTtlSec,
 } from "../lib/password-reset";
+import { sendForgotPasswordEmail } from "../lib/email/send-forgot-password-email";
 import { USER_ROLE } from "../lib/user-roles";
 import type Stripe from "stripe";
 import {
@@ -355,7 +356,13 @@ router.post("/auth/forgot-password", async (req, res, next) => {
 
     const email = parsed.data.email.trim().toLowerCase();
     const [row] = await db
-      .select({ id: usersTable.id, email: usersTable.email, role: usersTable.role })
+      .select({
+        id: usersTable.id,
+        email: usersTable.email,
+        role: usersTable.role,
+        firstName: usersTable.firstName,
+        lastName: usersTable.lastName,
+      })
       .from(usersTable)
       .where(eq(usersTable.email, email))
       .limit(1);
@@ -382,7 +389,15 @@ router.post("/auth/forgot-password", async (req, res, next) => {
       });
 
       const url = buildResetPasswordUrl(frontendOrigin(), raw);
-      logPasswordResetLinkForDev(row.email, url);
+      await sendForgotPasswordEmail({
+        to: row.email,
+        fullName: formatPasswordResetRecipientName(
+          row.firstName,
+          row.lastName,
+          row.email,
+        ),
+        resetUrl: url,
+      });
     }
 
     res.status(204).end();
