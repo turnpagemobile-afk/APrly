@@ -86,6 +86,7 @@ COPY --from=builder --chown=app:app /deploy/api-server/node_modules ./node_modul
 COPY --from=builder --chown=app:app /app/artifacts/api-server/dist ./dist
 COPY --from=builder --chown=app:app /app/artifacts/api-server/assets/aprly-logo.png ./assets/aprly-logo.png
 COPY --from=builder --chown=app:app /app/artifacts/api-server/assets/email/logo.png ./assets/email/logo.png
+COPY --from=builder --chown=app:app /app/artifacts/api-server/assets/email/copy.svg ./assets/email/copy.svg
 
 USER app
 

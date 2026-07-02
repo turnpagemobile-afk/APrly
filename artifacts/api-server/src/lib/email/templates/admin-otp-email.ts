@@ -1,7 +1,7 @@
-export type ForgotPasswordEmailContent = {
+export type AdminOtpEmailContent = {
   fullName: string;
-  resetUrl: string;
-  expiryHours: number;
+  code: string;
+  expiryMinutes: number;
   businessName: string;
   businessAddress: string;
 };
@@ -26,21 +26,26 @@ function horizontalDivider(): string {
           </table>`;
 }
 
-export const FORGOT_PASSWORD_EMAIL_SUBJECT = "Reset your APrly password";
+export const ADMIN_OTP_EMAIL_SUBJECT = "Your verification code for APrly Admin Panel";
 
-export function buildForgotPasswordPlainText(input: ForgotPasswordEmailContent): string {
-  const expiryLabel = input.expiryHours === 1 ? "1 hour" : `${input.expiryHours} hours`;
+export function adminOtpExpiryMinutes(ttlSec: number): number {
+  return Math.max(1, Math.round(ttlSec / 60));
+}
+
+export function buildAdminOtpPlainText(input: AdminOtpEmailContent): string {
+  const expiryLabel =
+    input.expiryMinutes === 1 ? "1 minute" : `${input.expiryMinutes} minutes`;
   return [
-    "Reset your APrly password",
+    "Your Verification Code for APrly Admin Panel Sign-in",
     "",
     `Hello ${input.fullName},`,
     "",
-    "We received a request to reset the password for your APrly account. No problem, it happens to the best of us!",
+    "Your one-time verification code (OTP) for the Admin Panel sign-in is:",
+    input.code,
     "",
-    "You can easily set up a new password by clicking the link below:",
-    input.resetUrl,
+    `This code is valid for ${expiryLabel}. Please do not share this code with anyone.`,
     "",
-    `For your security, this password reset link is temporary and will expire in ${expiryLabel}. If you don't reset your password within this timeframe, you will need to submit a new request on our website.`,
+    "If you did not attempt to sign in, please ignore this email.",
     "",
     "— The APrly Team",
     "",
@@ -48,17 +53,35 @@ export function buildForgotPasswordPlainText(input: ForgotPasswordEmailContent):
   ].join("\n");
 }
 
-export function buildForgotPasswordHtml(
-  input: ForgotPasswordEmailContent,
-  options?: { includeLogo: boolean },
+function buildCodeBlock(code: string, includeCopyIcon: boolean): string {
+  const copyIconCell = includeCopyIcon
+    ? `<td style="padding:14px 20px 14px 8px;vertical-align:middle;">
+                <img src="cid:aprly-copy-icon" alt="" width="24" height="24" style="display:block;border:0;" />
+              </td>`
+    : "";
+
+  return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:0 auto 24px;background-color:#FFFFFF;border:1px solid #C4C7CC;border-radius:12px;">
+                  <tr>
+                    <td style="padding:14px 8px 14px 20px;vertical-align:middle;">
+                      <span style="font-family:${FONT_STACK};font-size:24px;line-height:32px;font-weight:600;color:#202226;letter-spacing:6px;">${code}</span>
+                    </td>
+                    ${copyIconCell}
+                  </tr>
+                </table>`;
+}
+
+export function buildAdminOtpHtml(
+  input: AdminOtpEmailContent,
+  options?: { includeLogo?: boolean; includeCopyIcon?: boolean },
 ): string {
   const includeLogo = options?.includeLogo ?? true;
+  const includeCopyIcon = options?.includeCopyIcon ?? true;
   const fullName = escapeHtml(input.fullName);
-  const resetUrl = escapeHtml(input.resetUrl);
+  const code = escapeHtml(input.code);
   const businessName = escapeHtml(input.businessName);
   const businessAddress = escapeHtml(input.businessAddress);
   const expiryLabel =
-    input.expiryHours === 1 ? "1 hour" : `${input.expiryHours} hours`;
+    input.expiryMinutes === 1 ? "1 minute" : `${input.expiryMinutes} minutes`;
 
   const logoBlock = includeLogo
     ? `<tr>
@@ -77,7 +100,7 @@ export function buildForgotPasswordHtml(
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${FORGOT_PASSWORD_EMAIL_SUBJECT}</title>
+    <title>${ADMIN_OTP_EMAIL_SUBJECT}</title>
   </head>
   <body style="margin:0;padding:0;background-color:#CCF7C7;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#CCF7C7;padding:24px 12px;">
@@ -88,29 +111,21 @@ export function buildForgotPasswordHtml(
             <tr>
               <td style="background-color:#FFFFFF;padding:32px 28px 24px;">
                 <h1 style="margin:0 0 24px;font-family:${FONT_STACK};font-size:28px;line-height:32px;font-weight:700;color:#000000;text-align:center;">
-                  Reset your APrly password
+                  Your Verification Code for APrly Admin Panel Sign-in
                 </h1>
                 ${horizontalDivider()}
                 <p style="margin:0 0 16px;font-family:${FONT_STACK};font-size:16px;line-height:22px;font-weight:500;color:#000000;">
                   Hello ${fullName},
                 </p>
+                <p style="margin:0 0 24px;font-family:${FONT_STACK};font-size:16px;line-height:22px;font-weight:500;color:#000000;">
+                  Your one-time verification code (OTP) for the Admin Panel sign-in is:
+                </p>
+                ${buildCodeBlock(code, includeCopyIcon)}
                 <p style="margin:0 0 16px;font-family:${FONT_STACK};font-size:16px;line-height:22px;font-weight:500;color:#000000;">
-                  We received a request to reset the password for your APrly account. No problem, it happens to the best of us!
+                  This code is valid for ${expiryLabel}. Please do not share this code with anyone.
                 </p>
                 <p style="margin:0 0 24px;font-family:${FONT_STACK};font-size:16px;line-height:22px;font-weight:500;color:#000000;">
-                  You can easily set up a new password by clicking the button below:
-                </p>
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:0 auto 24px;">
-                  <tr>
-                    <td align="center" bgcolor="#48BE38" style="border-radius:999px;">
-                      <a href="${resetUrl}" style="display:inline-block;padding:14px 28px;font-family:${FONT_STACK};font-size:18px;line-height:24px;font-weight:800;color:#FFFFFF;text-decoration:none;text-transform:uppercase;">
-                        Set a new password
-                      </a>
-                    </td>
-                  </tr>
-                </table>
-                <p style="margin:0 0 24px;font-family:${FONT_STACK};font-size:16px;line-height:22px;font-weight:500;color:#000000;">
-                  For your security, this password reset link is temporary and will expire in ${expiryLabel}. If you don't reset your password within this timeframe, you will need to submit a new request on our website.
+                  If you did not attempt to sign in, please ignore this email.
                 </p>
                 <p style="margin:0 0 24px;font-family:${FONT_STACK};font-size:16px;line-height:22px;font-weight:700;color:#000000;">
                   — The APrly Team

@@ -20,6 +20,10 @@ const COPIES = [
     src: join(EMAIL_DOCS, "logo.png"),
     dest: join(DEST_DIR, "logo.png"),
   },
+  {
+    src: join(EMAIL_DOCS, "copy.svg"),
+    dest: join(DEST_DIR, "copy.svg"),
+  },
 ];
 
 let copied = 0;
