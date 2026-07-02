@@ -23,42 +23,49 @@ const SEED_LEADS = [
   },
 ] as const;
 
-const ADMIN_EMAIL = (process.env["ADMIN_SEED_EMAIL"] ?? "super.admin@aprly.ai")
-  .trim()
-  .toLowerCase();
+const SEED_ADMINS = [
+  { email: "super.admin@aprly.ai", firstName: "Super", lastName: "Admin" },
+  { email: "cliff@aprly.ai", firstName: "Cliff", lastName: "Owner" },
+  { email: "maxim@aprly.ai", firstName: "Maksym", lastName: "Markin" },
+] as const;
+
 const ADMIN_PASSWORD = process.env["ADMIN_SEED_PASSWORD"] ?? "";
 
-async function seedAdmin(): Promise<void> {
+async function seedAdmins(): Promise<void> {
   if (!ADMIN_PASSWORD) {
     console.log(
-      "[seed] skip admin user (ADMIN_SEED_PASSWORD is empty — set it in .env.prod and pass it to the db-seed container)",
+      "[seed] skip admin users (ADMIN_SEED_PASSWORD is empty — set it in .env.prod and pass it to the db-seed container)",
     );
     return;
   }
 
   const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
-  const [row] = await db
-    .insert(usersTable)
-    .values({
-      email: ADMIN_EMAIL,
-      passwordHash,
-      firstName: "Super",
-      lastName: "Admin",
-      role: "admin",
-    })
-    .onConflictDoUpdate({
-      target: usersTable.email,
-      set: {
-        firstName: "Super",
-        lastName: "Admin",
-        role: "admin",
-        passwordHash,
-      },
-    })
-    .returning({ id: usersTable.id, email: usersTable.email });
 
-  if (row) {
-    console.log(`[seed] admin user id=${row.id} email=${row.email}`);
+  for (const admin of SEED_ADMINS) {
+    const email = admin.email.trim().toLowerCase();
+    const [row] = await db
+      .insert(usersTable)
+      .values({
+        email,
+        passwordHash,
+        firstName: admin.firstName,
+        lastName: admin.lastName,
+        role: "admin",
+      })
+      .onConflictDoUpdate({
+        target: usersTable.email,
+        set: {
+          firstName: admin.firstName,
+          lastName: admin.lastName,
+          role: "admin",
+          passwordHash,
+        },
+      })
+      .returning({ id: usersTable.id, email: usersTable.email });
+
+    if (row) {
+      console.log(`[seed] admin user id=${row.id} email=${row.email}`);
+    }
   }
 }
 
@@ -73,7 +80,7 @@ async function main(): Promise<void> {
     console.log(`[seed] inserted partner id=${partnerRows[0]!.id}`);
   }
 
-  await seedAdmin();
+  await seedAdmins();
 
   console.log(`[seed] inserting ${SEED_LEADS.length} demo leads (ON CONFLICT DO NOTHING)`);
 

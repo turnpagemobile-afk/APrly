@@ -8,12 +8,10 @@ import {
   AdminVerifyOtpBody,
 } from "@workspace/api-zod";
 import { db, usersTable } from "@workspace/db";
-import { generateAdminOtpCode, logAdminOtpForDev } from "../lib/admin-otp";
+import { hashAdminOtpCode, issueAdminOtpChallenge } from "../lib/admin-otp";
 import {
-  adminOtpExpiresInSeconds,
   clearAuthCookies,
   issueAuthCookies,
-  signAdminOtpChallengeToken,
   verifyAdminOtpChallengeToken,
 } from "../lib/auth-tokens";
 import { buildAdminMeResponse } from "../lib/build-admin-me";
@@ -48,15 +46,18 @@ router.post("/admin/auth/login", async (req, res, next) => {
       return;
     }
 
-    const code = generateAdminOtpCode();
-    logAdminOtpForDev(row.email, code);
+    const { challengeToken, expiresInSeconds } = await issueAdminOtpChallenge({
+      userId: row.id,
+      email: row.email,
+      firstName: row.firstName,
+      lastName: row.lastName,
+    });
 
-    const challengeToken = signAdminOtpChallengeToken(row.id);
     res.json(
       AdminLoginResponse.parse({
         challengeToken,
         email: row.email,
-        expiresInSeconds: adminOtpExpiresInSeconds(),
+        expiresInSeconds,
       }),
     );
   } catch (err) {
@@ -78,7 +79,7 @@ router.post("/admin/auth/verify-otp", async (req, res, next) => {
       return;
     }
 
-    if (parsed.data.code !== generateAdminOtpCode()) {
+    if (hashAdminOtpCode(parsed.data.code) !== pending.otpHash) {
       res.status(401).json({ error: "Invalid verification code." });
       return;
     }
@@ -126,15 +127,18 @@ router.post("/admin/auth/resend-otp", async (req, res, next) => {
       return;
     }
 
-    const code = generateAdminOtpCode();
-    logAdminOtpForDev(row.email, code);
+    const { challengeToken, expiresInSeconds } = await issueAdminOtpChallenge({
+      userId: row.id,
+      email: row.email,
+      firstName: row.firstName,
+      lastName: row.lastName,
+    });
 
-    const challengeToken = signAdminOtpChallengeToken(row.id);
     res.json(
       AdminLoginResponse.parse({
         challengeToken,
         email: row.email,
-        expiresInSeconds: adminOtpExpiresInSeconds(),
+        expiresInSeconds,
       }),
     );
   } catch (err) {

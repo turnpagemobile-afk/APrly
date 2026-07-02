@@ -805,7 +805,7 @@ paths:
     post:
       operationId: adminResendOtp
       tags: [admin]
-      summary: Re-issue OTP challenge (v1 logs code, no email)
+      summary: Re-issue OTP challenge and resend email
       requestBody:
         required: true
         content:

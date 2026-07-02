@@ -1,20 +1,18 @@
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import { z } from "zod";
-import { CheckCircle2, Eye, EyeOff, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@workspace/api-client-react/custom-fetch";
 import { useResetPassword } from "@workspace/api-client-react";
 import { AuthBrandLogo } from "@/components/auth/AuthBrandLogo";
 import { AuthOverlayShell } from "@/components/auth/AuthOverlayShell";
+import { AuthPasswordInput } from "@/components/shared/auth-form/AuthPasswordInput";
 import { PillButton } from "@/components/shared/PillButton";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { authContent } from "@/content/landing";
 import { syncAuthSession } from "@/lib/auth-session";
 import { goToCabinet } from "@/lib/app-navigation";
 import { useNavigateBack } from "@/lib/navigate-back";
-import { cn } from "@/lib/utils";
 
 type Step = "form" | "success" | "invalid";
 
@@ -43,80 +41,6 @@ function buildPasswordSchema(copy: typeof authContent.resetPassword) {
     });
 }
 
-const inputBase =
-  "h-[var(--design-input-min-height-x1,52px)] rounded-lg border px-3 text-sm text-[var(--input-text-color)] shadow-none transition-colors focus-visible:outline-none focus-visible:ring-0";
-
-function inputClass(hasError: boolean, isFocused: boolean) {
-  if (hasError) {
-    return cn(inputBase, "border-destructive bg-[var(--input-error-bg-color)]");
-  }
-  if (isFocused) {
-    return cn(
-      inputBase,
-      "border-[var(--input-focus-border-color)] bg-[var(--input-focus-bg-color)]",
-    );
-  }
-  return cn(
-    inputBase,
-    "border-[var(--input-default-border-color)] bg-[var(--input-default-bg-color)]",
-  );
-}
-
-type PasswordFieldProps = {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  show: boolean;
-  onToggleShow: () => void;
-  hasError: boolean;
-  errorMessage?: string;
-};
-
-function PasswordField({
-  id,
-  label,
-  value,
-  onChange,
-  show,
-  onToggleShow,
-  hasError,
-  errorMessage,
-}: PasswordFieldProps) {
-  const [focused, setFocused] = useState(false);
-
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id} className="text-xs text-[var(--input-label-text-color)]">
-        {label}
-      </Label>
-      <div className="relative">
-        <Input
-          id={id}
-          type={show ? "text" : "password"}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          autoComplete="new-password"
-          maxLength={128}
-          className={cn(inputClass(hasError, focused), "pr-10")}
-          aria-invalid={hasError}
-        />
-        <button
-          type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--primary-theme-500)]"
-          onClick={onToggleShow}
-          aria-label={show ? "Hide password" : "Show password"}
-        >
-          {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-        </button>
-      </div>
-      {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
-    </div>
-  );
-}
-
 export default function ResetPasswordPage() {
   const copy = authContent.resetPassword;
   const queryClient = useQueryClient();
@@ -127,8 +51,6 @@ export default function ResetPasswordPage() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [showBanner, setShowBanner] = useState(false);
@@ -251,31 +173,27 @@ export default function ResetPasswordPage() {
       </p>
 
       <form className="mt-6 space-y-4" onSubmit={(e) => void onSubmit(e)}>
-        <PasswordField
+        <AuthPasswordInput
           id="reset-new-password"
           label={copy.newPassword}
           value={password}
-          onChange={setPassword}
-          show={showPassword}
-          onToggleShow={() => setShowPassword((v) => !v)}
-          hasError={Boolean(passwordError) || (submitAttempted && !password && !passwordError)}
-          errorMessage={
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete="new-password"
+          maxLength={128}
+          error={
             passwordError ??
             (submitAttempted && !password ? copy.errors.fieldRequired : undefined)
           }
         />
 
-        <PasswordField
+        <AuthPasswordInput
           id="reset-confirm-password"
           label={copy.confirmPassword}
           value={confirmPassword}
-          onChange={setConfirmPassword}
-          show={showConfirm}
-          onToggleShow={() => setShowConfirm((v) => !v)}
-          hasError={
-            Boolean(confirmError) || (submitAttempted && !confirmPassword && !confirmError)
-          }
-          errorMessage={
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          autoComplete="new-password"
+          maxLength={128}
+          error={
             confirmError ??
             (submitAttempted && !confirmPassword ? copy.errors.fieldRequired : undefined)
           }
