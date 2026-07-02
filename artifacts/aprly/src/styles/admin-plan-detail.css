@@ -1,0 +1,106 @@
+/**
+ * Admin Plan detail — Figma AdminPanel/PlanDetails.
+ */
+
+@layer components {
+  .admin-plan-detail-breadcrumb {
+    @apply flex flex-wrap items-center gap-1.5;
+  }
+
+  .admin-plan-detail-breadcrumb-link {
+    @apply uppercase transition-opacity hover:opacity-80;
+  }
+
+  .admin-plan-detail-breadcrumb-current {
+    @apply uppercase transition-opacity hover:opacity-80;
+  }
+
+  .admin-plan-detail-header {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .admin-plan-detail-back {
+    @apply inline-flex min-w-0 flex-1 items-center gap-3 transition-opacity hover:opacity-80;
+  }
+
+  .admin-plan-detail-back-icon {
+    @apply h-11 w-11 shrink-0;
+  }
+
+  .admin-plan-detail-print-btn {
+    @apply inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-transparent transition-opacity hover:opacity-80 disabled:opacity-50;
+  }
+
+  .admin-plan-detail-metric-tile--waiting {
+    border: 1px solid var(--neutral-theme-400);
+    background: var(--neutral-theme-100);
+  }
+
+  .admin-plan-detail-metric-tile--on-review {
+    border: 1px solid var(--warning-theme-400);
+    background: var(--warning-theme-100);
+  }
+
+  .admin-plan-detail-metric-tile--in-progress {
+    border: 1px solid var(--info-theme-300);
+    background: var(--info-theme-100);
+  }
+
+  .admin-plan-detail-metric-tile--won {
+    border: 1px solid var(--success-theme-400);
+    background: var(--success-theme-100);
+  }
+
+  .admin-plan-detail-metric-tile--reject {
+    border: 1px solid var(--accent-theme-400);
+    background: var(--accent-theme-100);
+  }
+
+  .admin-plan-detail-metric-tile--not-sent {
+    border: 1px solid var(--neutral-theme-400);
+    background: var(--neutral-theme-100);
+  }
+
+  .admin-plan-detail-partner {
+    @apply flex flex-row flex-wrap items-center gap-4 rounded-2xl border p-4 shadow-sm;
+    border-color: var(--palette-neutral-neutral-300);
+    background: var(--card-1lvl-bg-color);
+  }
+
+  .admin-plan-detail-partner-icon {
+    @apply h-11 w-11 shrink-0;
+  }
+
+  .admin-plan-detail-partner-content {
+    @apply min-w-0 flex-1;
+  }
+
+  .admin-plan-detail-partner-link {
+    @apply inline-flex h-6 w-6 shrink-0 items-center justify-center transition-opacity hover:opacity-80;
+  }
+
+  .admin-plan-detail-partner-actions {
+    @apply flex shrink-0 flex-wrap items-center gap-3;
+  }
+
+  .admin-plan-detail-partner-actions .admin-plan-detail-btn {
+    @apply rounded-full px-5;
+  }
+
+  .admin-plan-detail-btn {
+    @apply inline-flex min-h-[44px] items-center justify-center rounded-xl px-6 py-2 uppercase transition-opacity hover:opacity-90 disabled:opacity-50;
+    color: var(--neutral-theme-000);
+  }
+
+  .admin-plan-detail-btn--primary {
+    background: var(--action-default-color);
+  }
+
+  .admin-plan-detail-btn--danger {
+    background: var(--danger-theme-500);
+  }
+
+  .admin-plan-detail-step-actions {
+    @apply mt-3 flex flex-wrap gap-3;
+  }
+}

@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, Link } from "wouter";
 import { Mic, Loader2, Square } from "lucide-react";
-import { useAuth } from "@/lib/auth-session";
 import {
   useAudioPlayback,
   useVoiceRecorder,
 } from "@workspace/integrations-openai-ai-react/audio";
 import { Button } from "@/components/ui/button";
-import { AuthBrandLogo } from "@/components/auth/AuthBrandLogo";
+import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { footerContent, navContent, brandContent } from "@/content/landing";
 import {
@@ -246,160 +245,56 @@ export function VoiceAssistant() {
   );
 }
 
-function HeaderActions({
-  isDashboard,
-  onSignOut,
-  onGetStarted,
-}: {
-  isDashboard: boolean;
-  onSignOut: () => void;
-  onGetStarted: () => void;
-}) {
-  if (isDashboard) {
-    return (
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        className="font-semibold"
-        onClick={onSignOut}
-      >
-        Sign out
-      </Button>
-    );
-  }
-
-  return (
-    <div className="flex shrink-0 items-center gap-2 cabinet:gap-3">
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        className="shrink-0 border-primary font-bold uppercase tracking-wide text-primary"
-        asChild
-      >
-        <Link href={navContent.logIn.href}>{navContent.logIn.label}</Link>
-      </Button>
-      <Button
-        type="button"
-        size="sm"
-        onClick={onGetStarted}
-        className="shrink-0 font-bold uppercase tracking-wide"
-      >
-        {navContent.getStarted.label}
-      </Button>
-    </div>
-  );
-}
-
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
-  const { logout } = useAuth();
   const isDashboard = isCabinetShellPath(location);
   const isLandingApp =
     __APRLY_APP__ === "landing" ||
     (__APRLY_APP__ === "mono" && isLandingMarketingPath(location));
 
-  const goToAnchor = (href: string) => {
-    if (!href.startsWith("#")) {
-      setLocation(href);
-      return;
-    }
-    const id = href.slice(1);
-    if (location !== "/") {
-      setLocation(`/${href}`);
-      return;
-    }
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  const goToAnchor = useCallback(
+    (href: string) => {
+      if (!href.startsWith("#")) {
+        setLocation(href);
+        return;
+      }
+      const id = href.slice(1);
+      if (location !== "/") {
+        setLocation(`/${href}`);
+        return;
+      }
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+    [location, setLocation],
+  );
 
   const copyright = footerContent.copyrightTemplate.replace(
     "{year}",
     String(new Date().getFullYear()),
   );
+  const [pathname] = location.split("?");
+  const showStandaloneLandingFooter = isLandingApp && pathname !== "/";
 
   return (
     <div
       className={cn(
-        "min-h-[100dvh] flex flex-col",
-        isLandingApp
-          ? "bg-[#F8FCFE] text-[#202226]"
-          : "bg-background text-foreground",
+        "min-h-[100dvh] flex flex-col bg-[var(--page-bg)] text-[var(--neutral-theme-900)]",
+        !isLandingApp && "bg-background text-foreground",
       )}
     >
       {!isDashboard ? (
-      <header
-        className={cn(
-          "sticky top-0 z-50 w-full border-b backdrop-blur",
-          isLandingApp
-            ? "border-[#D8DEE4] bg-[#F8FCFE]/95 supports-[backdrop-filter]:bg-[#F8FCFE]/90"
-            : "border-[var(--neutral-theme-200)] bg-[var(--page-bg)]/95 supports-[backdrop-filter]:bg-[var(--page-bg)]/90",
-        )}
-      >
-        <div
-          className={cn(
-            "container mx-auto gap-3 px-4 py-3",
-            isLandingApp
-              ? "flex flex-col items-center cabinet:h-16 cabinet:flex-row cabinet:justify-between cabinet:py-0"
-              : "flex h-16 items-center justify-between",
-          )}
-        >
-          <Link
-            href="/"
-            className={cn(
-              "flex shrink-0 items-center",
-              isLandingApp && "cabinet:mr-0",
-            )}
-            aria-label={`${brandContent.name} home`}
-          >
-            <AuthBrandLogo size="header" className="!text-left" />
-          </Link>
-
-          {!isLandingApp && navContent.links.length > 0 ? (
-            <nav
-              className="hidden cabinet:flex items-center gap-7 text-sm font-semibold text-primary"
-              aria-label="Primary"
-            >
-              {navContent.links.map((link) => (
-                <button
-                  key={link.id}
-                  type="button"
-                  onClick={() => goToAnchor(link.href)}
-                  className="hover:opacity-80 transition-opacity"
-                >
-                  {link.label}
-                </button>
-              ))}
-            </nav>
-          ) : !isLandingApp ? (
-            <div className="flex-1" aria-hidden />
-          ) : null}
-
-          <div
-            className={cn(
-              "flex shrink-0 items-center gap-2 sm:gap-3",
-              isLandingApp && "justify-center",
-            )}
-          >
-            <div className="hidden" aria-hidden="true">
-              <VoiceAssistant />
-            </div>
-            <HeaderActions
-              isDashboard={false}
-              onSignOut={() => void logout()}
-              onGetStarted={() => goToAnchor(navContent.getStarted.target)}
-            />
-          </div>
-        </div>
-      </header>
+        <LandingHeader
+          onGetStarted={() => goToAnchor(navContent.getStarted.target)}
+          onNavigateAnchor={goToAnchor}
+        />
       ) : null}
 
       <main className="flex-1">{children}</main>
 
-      {isLandingApp ? (
+      {showStandaloneLandingFooter ? (
         <LandingFooter copyright={copyright} />
-      ) : isDashboard ? null : (
+      ) : isDashboard || isLandingApp ? null : (
         <footer className="mt-16 border-t border-border/60 bg-card py-8 text-card-foreground">
           <div className="container mx-auto px-4">
             <div className="flex flex-col items-center justify-between gap-4 text-sm text-muted-foreground cabinet:flex-row">

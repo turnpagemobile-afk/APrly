@@ -1,3 +1,4 @@
+import { AuthTextInput } from "@/components/shared/auth-form/AuthTextInput";
 import { dashboardProfileContent } from "@/content/dashboard-profile";
 
 type AccountLoginEmailCardProps = {
@@ -10,20 +11,16 @@ export function AccountLoginEmailCard({ email }: AccountLoginEmailCardProps) {
   return (
     <section className="dash-account-card">
       <h2 className="dash-account-section-title">{copy.title}</h2>
-      <div className="space-y-2">
-        <label htmlFor="account-login-email" className="dash-account-field-label">
-          {copy.emailLabel}
-        </label>
-        <input
-          id="account-login-email"
-          type="email"
-          value={email}
-          disabled
-          readOnly
-          autoComplete="email"
-          className="dash-account-input dash-account-input--readonly"
-        />
-      </div>
+      <AuthTextInput
+        id="account-login-email"
+        label={copy.emailLabel}
+        type="email"
+        value={email}
+        readOnly
+        disabled
+        autoComplete="email"
+        className="cursor-not-allowed bg-[var(--neutral-theme-100)] text-[var(--hint-text-color)]"
+      />
     </section>
   );
 }

@@ -4,7 +4,7 @@ import { getGetMeQueryKey, usePatchMe } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth-session";
 import { dashboardProfileContent } from "@/content/dashboard-profile";
 import { toast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import { AuthTextInput } from "@/components/shared/auth-form/AuthTextInput";
 import { AccountSubmitButton, AccountSuccessView } from "@/components/dashboard/account/AccountShared";
 
 export function AccountPersonalInfoCard() {
@@ -69,41 +69,25 @@ export function AccountPersonalInfoCard() {
     <section className="dash-account-card">
       <h2 className="dash-account-section-title">{copy.title}</h2>
       <form className="space-y-4" onSubmit={(e) => void onSave(e)}>
-        <div className="space-y-2">
-          <label htmlFor="account-first-name" className="dash-account-field-label">
-            {copy.firstName}
-          </label>
-          <input
-            id="account-first-name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            autoComplete="given-name"
-            maxLength={120}
-            className={cn("dash-account-input", firstNameError && "dash-account-input--error")}
-            aria-invalid={firstNameError}
-          />
-          {firstNameError ? (
-            <p className="dash-account-field-error">{fieldRequired}</p>
-          ) : null}
-        </div>
+        <AuthTextInput
+          id="account-first-name"
+          label={copy.firstName}
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          autoComplete="given-name"
+          maxLength={120}
+          error={firstNameError ? fieldRequired : null}
+        />
 
-        <div className="space-y-2">
-          <label htmlFor="account-last-name" className="dash-account-field-label">
-            {copy.lastName}
-          </label>
-          <input
-            id="account-last-name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            autoComplete="family-name"
-            maxLength={120}
-            className={cn("dash-account-input", lastNameError && "dash-account-input--error")}
-            aria-invalid={lastNameError}
-          />
-          {lastNameError ? (
-            <p className="dash-account-field-error">{fieldRequired}</p>
-          ) : null}
-        </div>
+        <AuthTextInput
+          id="account-last-name"
+          label={copy.lastName}
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          autoComplete="family-name"
+          maxLength={120}
+          error={lastNameError ? fieldRequired : null}
+        />
 
         <AccountSubmitButton label={copy.save} pending={patchMe.isPending} />
       </form>

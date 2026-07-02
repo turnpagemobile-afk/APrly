@@ -14,8 +14,25 @@ import {
   type PlaidLinkHandler,
 } from "@/components/landing/plaidLink";
 
-export function usePlaidCardImport(setAccounts: Dispatch<SetStateAction<CardEntry[]>>) {
+export type PlaidImportedCard = {
+  brand: string;
+  balance: number;
+  rate: number;
+  accountId?: string;
+};
+
+export type UsePlaidCardImportOptions = {
+  onImported?: (cards: PlaidImportedCard[]) => void;
+  onExit?: () => void;
+};
+
+export function usePlaidCardImport(
+  setAccounts?: Dispatch<SetStateAction<CardEntry[]>>,
+  options?: UsePlaidCardImportOptions,
+) {
   const { toast } = useToast();
+  const onImported = options?.onImported;
+  const onExit = options?.onExit;
   const linkHandlerRef = useRef<PlaidLinkHandler | null>(null);
   const plaidClickLockRef = useRef(false);
   const [plaidOpening, setPlaidOpening] = useState(false);
@@ -32,7 +49,8 @@ export function usePlaidCardImport(setAccounts: Dispatch<SetStateAction<CardEntr
   }, []);
 
   const appendImported = useCallback(
-    (rows: { brand: string; balance: number; rate: number; accountId?: string }[]) => {
+    (rows: PlaidImportedCard[]) => {
+      if (!setAccounts) return;
       setAccounts((prev) => {
         const seen = new Set(
           prev.map((a) => a.accountId).filter((id): id is string => !!id),
@@ -60,6 +78,7 @@ export function usePlaidCardImport(setAccounts: Dispatch<SetStateAction<CardEntr
           },
         });
         appendImported(result.importedCards);
+        onImported?.(result.importedCards);
         if (!result.importedCards.length) {
           toast({
             title: "No card debt imported",
@@ -78,7 +97,7 @@ export function usePlaidCardImport(setAccounts: Dispatch<SetStateAction<CardEntr
         linkHandlerRef.current = null;
       }
     },
-    [appendImported, exchangeToken, toast],
+    [appendImported, exchangeToken, onImported, toast],
   );
 
   const startPlaid = async () => {
@@ -106,6 +125,7 @@ export function usePlaidCardImport(setAccounts: Dispatch<SetStateAction<CardEntr
           setPlaidOpening(false);
           destroyPlaidHandler(linkHandlerRef.current);
           linkHandlerRef.current = null;
+          onExit?.();
         },
         onEvent: (eventName: string) => {
           if (eventName === "ERROR") {

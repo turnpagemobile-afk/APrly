@@ -1,37 +1,52 @@
 ---
-description: Tailwind v4 — never @apply custom dash-* component classes in CSS
+description: Tailwind v4 — never @apply custom project classes (dash-*, app-*, semantic text-*) in CSS
 globs: artifacts/aprly/**/*.css
 alwaysApply: true
 ---
 
-# Tailwind v4 `@apply` — custom component classes
+# Tailwind v4 `@apply` — custom project classes
 
-Tailwind v4 (`@tailwindcss/vite`) **rejects `@apply` of project component classes** (e.g. `.dash-text-sm-sb`, `.dash-text-md-xb`), even when defined in the same `@layer components` file. Dev/build fails with:
+Tailwind v4 (`@tailwindcss/vite`) **rejects `@apply` of project component classes**, even when defined in imported CSS (`app-text-styles.css`, `app-text-colors.css`, dashboard `dash-*`). Dev/build fails with:
 
-`Cannot apply unknown utility class 'dash-…'`
+`Cannot apply unknown utility class 'dash-…'` or `'app-text-…'`
+
+## Forbidden in `@apply`
+
+| Prefix / class | Source |
+|---|---|
+| `dash-*` | Dashboard component classes |
+| `app-*` | Figma typography (`app-text-*`, `app-header-*`, `app-button-*`) |
+| `text-average`, `text-action`, `text-hint`, `text-title`, `text-neutral-000`, `text-secondary-300` | Semantic colors from `app-text-colors.css` |
 
 ## Rules
 
 1. **Never** put custom project classes inside `@apply`:
    - Bad: `@apply flex dash-text-sm-sb;`
+   - Bad: `@apply app-text-p1-regular text-average;`
    - Good: `@apply flex text-sm font-semibold;`
 
 2. **`@apply` may only use built-in Tailwind utilities** (`flex`, `text-sm`, `font-semibold`, `rounded-md`, …).
 
 3. **To compose custom styles:**
    - Expand utilities inline in `@apply`, or
-   - Apply the component class in TSX/HTML (`className="dash-text-sm-sb"`), or
+   - Apply the component class in TSX/HTML (`className="app-text-p1-regular text-average"`), or
    - Use plain CSS properties instead of `@apply` for that part.
 
-4. **After editing any `*.css` with `@apply`**, run:
+4. **Figma / design alignment workflow:**
+   - Layout and spacing in CSS: `@apply flex gap-6 rounded-md …` (built-in only).
+   - Typography + semantic color: **in TSX** or raw CSS properties (`font-family`, `color: var(--average-text-color)`).
+   - After editing `artifacts/aprly/src/styles/**/*.css`, run `check:tailwind-apply`.
+
+5. **After editing any `*.css` with `@apply`**, run:
    ```bash
    pnpm --filter @workspace/aprly run check:tailwind-apply
    ```
 
 ## Examples from this repo
 
-| Custom class | Expand to in `@apply` |
+| Custom class | Where to use |
 |---|---|
-| `dash-text-sm-sb` | `text-sm font-semibold` |
-| `dash-text-md-xb` | `text-lg font-extrabold leading-snug` |
-| `dash-text-lg-xb` | `text-xl font-extrabold leading-tight` |
+| `dash-text-sm-sb` | TSX, or expand to `text-sm font-semibold` in `@apply` |
+| `app-text-p1-regular` | TSX `className`, or `font-family`/`font-size`/`font-weight` in CSS |
+| `text-average` | TSX `className`, or `color: var(--average-text-color)` in CSS |
+| `app-button-button-l-m` | TSX only |

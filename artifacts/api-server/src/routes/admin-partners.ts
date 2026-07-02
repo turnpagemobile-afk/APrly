@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { and, count, desc, eq, ilike, isNotNull, isNull } from "drizzle-orm";
+import { and, count, desc, eq, gt, ilike, isNotNull, isNull } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import {
   GetAdminPartnerPlanLeadsParams,
@@ -16,6 +16,7 @@ import { db, debtLeadsTable, partnersTable, usersTable } from "@workspace/db";
 import {
   fetchPartnerLeadCounts,
   fetchPartnerLeadCountsMap,
+  partnerListLeadCounts,
 } from "../lib/admin-partner-lead-counts";
 import { loadLeadCards } from "../lib/debt-lead-service";
 import { mapAdminPartnerPlanLeadRow } from "../lib/admin-plan-lead-mapper";
@@ -23,22 +24,30 @@ import { requireAdmin } from "../middleware/requireAdmin";
 
 const router: IRouter = Router();
 
-type LeadTab = "all" | "on_review" | "in_progress" | "won" | "rejected";
+type LeadTab = "all" | "waiting" | "on_review" | "in_progress" | "won" | "rejected";
 
 function leadTabFilter(partnerId: number, leadTab: LeadTab): SQL | undefined {
   const base = eq(debtLeadsTable.partnerId, partnerId);
   switch (leadTab) {
-    case "on_review":
+    case "waiting":
       return and(
         base,
         eq(debtLeadsTable.status, "in_progress"),
         isNull(debtLeadsTable.partnerAcceptedAt),
+      );
+    case "on_review":
+      return and(
+        base,
+        eq(debtLeadsTable.status, "in_progress"),
+        isNotNull(debtLeadsTable.partnerAcceptedAt),
+        eq(debtLeadsTable.hardshipStepsCompleted, 0),
       );
     case "in_progress":
       return and(
         base,
         eq(debtLeadsTable.status, "in_progress"),
         isNotNull(debtLeadsTable.partnerAcceptedAt),
+        gt(debtLeadsTable.hardshipStepsCompleted, 0),
       );
     case "all":
       return base;
@@ -179,6 +188,7 @@ router.patch("/admin/partners/:id", ...requireAdmin, async (req, res, next) => {
     }
 
     const counts = await fetchPartnerLeadCounts(id);
+    const listCounts = partnerListLeadCounts(counts);
 
     res.json(
       PatchAdminPartnerResponse.parse({
@@ -186,8 +196,8 @@ router.patch("/admin/partners/:id", ...requireAdmin, async (req, res, next) => {
         name: updated.name,
         createdAt: updated.createdAt.toISOString(),
         isActive: updated.isActive,
-        onReviewCount: counts.onReview,
-        inProgressCount: counts.inProgress,
+        onReviewCount: listCounts.onReviewCount,
+        inProgressCount: listCounts.inProgressCount,
       }),
     );
   } catch (err) {
@@ -252,18 +262,20 @@ router.get("/admin/partners", ...requireAdmin, async (req, res, next) => {
       GetAdminPartnersResponse.parse({
         partners: rows.map((r) => {
           const counts = countsMap.get(r.id) ?? {
+            waiting: 0,
             onReview: 0,
             inProgress: 0,
             won: 0,
             rejected: 0,
           };
+          const listCounts = partnerListLeadCounts(counts);
           return {
             id: r.id,
             name: r.name,
             createdAt: r.createdAt.toISOString(),
             isActive: r.isActive,
-            onReviewCount: counts.onReview,
-            inProgressCount: counts.inProgress,
+            onReviewCount: listCounts.onReviewCount,
+            inProgressCount: listCounts.inProgressCount,
           };
         }),
         total,

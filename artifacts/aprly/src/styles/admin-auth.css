@@ -1,0 +1,66 @@
+/**
+ * Admin auth pages (login, verify) — Figma AdminPanel/login.
+ */
+
+@layer components {
+  .admin-auth-page {
+    @apply relative flex min-h-[100dvh] w-full items-center justify-center px-4 py-10;
+    background-image: url("/admin/login/bg.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .admin-auth-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(23, 105, 14, 0.72);
+  }
+
+  .admin-auth-card {
+    @apply relative z-[1] w-full max-w-[480px] rounded-[var(--design-card-corner-radius-small,24px)] border border-[var(--primary-theme-200)] bg-[var(--card-1lvl-bg-color)] p-8 shadow-[0_10px_20px_0_rgba(29,62,11,0.08)];
+  }
+
+  .admin-auth-logo {
+    @apply mx-auto block h-12 w-auto object-contain bp600:h-14;
+  }
+
+  .admin-auth-submit-btn {
+    @apply mt-2 flex w-full min-h-[52px] items-center justify-center rounded-full border border-transparent bg-[var(--action-default-color)] px-6 py-3 transition-colors hover:bg-[var(--action-hover-color)] disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .admin-auth-verify-header {
+    @apply flex items-center gap-3;
+  }
+
+  .admin-auth-back-link {
+    @apply inline-flex shrink-0 items-center justify-center transition-opacity hover:opacity-80;
+  }
+
+  .admin-auth-email-badge {
+    @apply rounded-full bg-[var(--primary-theme-200)] px-4 py-1.5;
+  }
+
+  .admin-auth-otp-group {
+    @apply flex w-full justify-between;
+  }
+
+  .admin-auth-otp-slot {
+    @apply relative flex h-[78px] w-[71px] shrink-0 items-center justify-center rounded-[12px] border border-[var(--input-default-border-color)] bg-[var(--input-default-bg-color)] text-xl shadow-none;
+    border-radius: 12px !important;
+    border-width: 1px !important;
+  }
+
+  .admin-auth-otp-slot--error {
+    @apply border-destructive bg-[var(--input-error-bg-color)];
+  }
+
+  .admin-auth-verify-error {
+    @apply rounded-[12px] bg-[var(--error-box-bg-color)] px-3 py-2.5 text-sm text-destructive;
+  }
+
+  .admin-auth-resend-link {
+    @apply font-semibold text-[var(--action-default-color)] disabled:opacity-50;
+  }
+}

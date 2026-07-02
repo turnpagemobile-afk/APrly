@@ -22,9 +22,9 @@ function FaqAccordionCard({ item }: { item: FaqItem }) {
   return (
     <AccordionItem
       value={item.id}
-      className="overflow-hidden rounded-xl border border-[var(--card-border-color)] border-b-0 bg-[var(--card-1lvl-bg-color)] px-4"
+      className="flex flex-col gap-5 overflow-hidden rounded-[24px] border-b-0 bg-[var(--card-1lvl-bg-color)] p-5"
     >
-      <AccordionTrigger className="group py-4 text-left text-sm font-bold uppercase tracking-wide text-[var(--info-theme-500)] hover:no-underline cabinet:text-base [&>svg]:hidden">
+      <AccordionTrigger className="group app-header-h6 text-action py-0 hover:no-underline [&>svg]:hidden">
         <span className="flex flex-1 items-center justify-between gap-4">
           {item.q}
           <span className="relative h-8 w-8 shrink-0">
@@ -43,8 +43,8 @@ function FaqAccordionCard({ item }: { item: FaqItem }) {
           </span>
         </span>
       </AccordionTrigger>
-      <AccordionContent className="pb-4 text-sm leading-relaxed text-[var(--neutral-theme-700)]">
-        {item.a}
+      <AccordionContent className="pb-0">
+        <p className="app-text-p1-regular text-average pr-[30px]">{item.a}</p>
       </AccordionContent>
     </AccordionItem>
   );
@@ -70,12 +70,12 @@ export function FaqSection({ content = faqContent, className }: FaqSectionProps)
     <section
       id="faq"
       className={cn(
-        "scroll-mt-24 bg-[var(--page-bg)] px-4 py-16 cabinet:py-24",
+        "scroll-mt-24 bg-[var(--secondary-theme-200)] px-4 py-12 bp600:py-14 bp1200:py-16",
         className,
       )}
     >
-      <div className="app-page-marketing mx-auto max-w-3xl bp1200:max-w-none">
-        <h2 className="text-center text-xl font-extrabold uppercase tracking-tight text-[var(--primary-theme-900)] cabinet:text-3xl">
+      <div className="app-page-marketing app-page-marketing-content">
+        <h2 className="app-header-h3 text-center text-[var(--title-beige-color)]">
           {content.title}
         </h2>
         {content.subtitle ? (
@@ -88,23 +88,23 @@ export function FaqSection({ content = faqContent, className }: FaqSectionProps)
           type="single"
           collapsible
           defaultValue={firstId}
-          className="mt-10 w-full cabinet:mt-14"
+          className="mt-10 w-full bp1200:mt-14"
         >
           {twoColumns ? (
-            <div className="flex items-start gap-3">
-              <div className="flex min-w-0 flex-1 flex-col gap-3">
+            <div className="flex items-start gap-5">
+              <div className="flex min-w-0 flex-1 flex-col gap-5">
                 {leftItems.map((item) => (
                   <FaqAccordionCard key={item.id} item={item} />
                 ))}
               </div>
-              <div className="flex min-w-0 flex-1 flex-col gap-3">
+              <div className="flex min-w-0 flex-1 flex-col gap-5">
                 {rightItems.map((item) => (
                   <FaqAccordionCard key={item.id} item={item} />
                 ))}
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-5">
               {content.items.map((item) => (
                 <FaqAccordionCard key={item.id} item={item} />
               ))}

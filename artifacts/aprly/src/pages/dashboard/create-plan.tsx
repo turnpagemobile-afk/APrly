@@ -1,25 +1,12 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { readCreatePlanReturnTo } from "@/lib/create-plan-navigation";
 import { useLocation } from "wouter";
-import { useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import {
-  getGetDashboardTabQueryKey,
-  useCreateDetailedPlan,
-} from "@workspace/api-client-react";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { CabinetPageLoader } from "@/components/dashboard/CabinetPageLoader";
 import type { DashboardTab } from "@/components/dashboard/DashboardTabBar";
-import { CreateSavingPlanCardList } from "@/components/dashboard/create-plan/CreateSavingPlanCardList";
-import { mapCardEntriesToImportItems } from "@/components/cards/mapCardEntries";
-import { usePlaidCardImport } from "@/components/cards/usePlaidCardImport";
-import type { CardEntry } from "@/components/landing/types";
-import { createPlanContent } from "@/content/create-plan";
-import { dashboardPromoContent } from "@/content/dashboard-home";
 import { useDashboardSubscription } from "@/lib/use-dashboard-subscription";
-import { requireOnlineForCabinetAction } from "@/lib/pwa/use-cabinet-pwa";
-import { createPlanCardsAreComplete } from "@/lib/create-plan-cards";
+import { useCreatePlanViaPlaid } from "@/lib/use-create-plan-via-plaid";
 import { dashboardTabPath, parseDashboardTab } from "@/lib/dashboard-tab-url";
-import { toast } from "@/hooks/use-toast";
 
 function activeTabFromReturnTo(returnTo: string): DashboardTab {
   try {
@@ -32,14 +19,8 @@ function activeTabFromReturnTo(returnTo: string): DashboardTab {
 
 export default function CreateDetailedPlanPage() {
   const [, navigate] = useLocation();
-  const queryClient = useQueryClient();
   const subscription = useDashboardSubscription(null);
-  const createPlan = useCreateDetailedPlan();
-
-  const [accounts, setAccounts] = useState<CardEntry[]>([]);
-  const { startPlaid, plaidBusy } = usePlaidCardImport(setAccounts);
-
-  const cardsReady = useMemo(() => createPlanCardsAreComplete(accounts), [accounts]);
+  const plaidAutoStartRef = useRef(false);
 
   const returnTo = useMemo(
     () =>
@@ -51,6 +32,15 @@ export default function CreateDetailedPlanPage() {
 
   const activeTab = useMemo(() => activeTabFromReturnTo(returnTo), [returnTo]);
 
+  const onPlaidCancel = useCallback(() => {
+    navigate(returnTo);
+  }, [navigate, returnTo]);
+
+  const { startCreatePlan, isCreatingPlan, loaderLabel } = useCreatePlanViaPlaid({
+    returnTo,
+    onPlaidCancel,
+  });
+
   const onTabChange = useCallback(
     (tab: DashboardTab) => {
       navigate(dashboardTabPath(tab));
@@ -58,56 +48,18 @@ export default function CreateDetailedPlanPage() {
     [navigate],
   );
 
-  const addManualCard = () => {
-    setAccounts((prev) => [...prev, { brand: "", balance: "", rate: "" }]);
-  };
+  useEffect(() => {
+    if (plaidAutoStartRef.current) return;
+    if (subscription.isSubscriptionLoading) return;
+    plaidAutoStartRef.current = true;
+    startCreatePlan();
+  }, [subscription.isSubscriptionLoading, startCreatePlan]);
 
-  const onPlaid = () => {
-    if (!requireOnlineForCabinetAction()) {
-      toast({
-        title: dashboardPromoContent.offlineBanner,
-        variant: "destructive",
-      });
-      return;
-    }
-    void startPlaid();
-  };
-
-  const onSavePlan = async () => {
-    if (!cardsReady) return;
-    if (!requireOnlineForCabinetAction()) {
-      toast({
-        title: dashboardPromoContent.offlineBanner,
-        variant: "destructive",
-      });
-      return;
-    }
-    const cards = mapCardEntriesToImportItems(accounts);
-    if (!cards.length) return;
-
-    try {
-      await createPlan.mutateAsync({ data: { cards } });
-      await queryClient.invalidateQueries({ queryKey: getGetDashboardTabQueryKey() });
-      toast({
-        title: createPlanContent.successTitle,
-        description: createPlanContent.successDescription,
-      });
-      navigate("/dashboard?tab=dashboard");
-    } catch {
-      toast({
-        title: createPlanContent.errorTitle,
-        description: createPlanContent.errorDescription,
-        variant: "destructive",
-      });
-    }
-  };
-
-  if (subscription.isSubscriptionLoading) {
+  if (subscription.isSubscriptionLoading || isCreatingPlan) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center gap-2 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
-        Loading…
-      </div>
+      <CabinetPageLoader
+        label={subscription.isSubscriptionLoading ? "Loading…" : loaderLabel}
+      />
     );
   }
 
@@ -118,53 +70,10 @@ export default function CreateDetailedPlanPage() {
       subscriptionActive={subscription.subscriptionActive}
       startCheckout={subscription.startCheckout}
       isCheckoutLoading={subscription.isCheckoutLoading}
+      onCreateSavingPlan={startCreatePlan}
+      isCreatingPlan={isCreatingPlan}
     >
-      <div className="app-page-cabinet max-w-none py-6 cabinet:max-w-none bp600:py-8">
-        <div className="dash-create-plan-layout dash-create-plan-stack">
-          <h1 className="dash-create-plan-page-title">{createPlanContent.title}</h1>
-
-          <CreateSavingPlanCardList accounts={accounts} setAccounts={setAccounts} />
-
-          <div className="dash-create-plan-add-section">
-            <button
-              type="button"
-              className="dash-create-plan-plaid-btn"
-              disabled={plaidBusy}
-              onClick={onPlaid}
-            >
-              {plaidBusy ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-              ) : null}
-              {createPlanContent.plaidCta}
-            </button>
-
-            <p className="dash-create-plan-manual-row">
-              <span>{createPlanContent.manualHint}</span>
-              <button
-                type="button"
-                className="dash-create-plan-manual-link"
-                onClick={addManualCard}
-              >
-                {createPlanContent.manualAdd}
-              </button>
-            </p>
-          </div>
-
-          <div className="dash-create-plan-save-row">
-            <button
-              type="button"
-              className="dash-create-plan-save-btn"
-              disabled={!cardsReady || createPlan.isPending}
-              onClick={() => void onSavePlan()}
-            >
-              {createPlan.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-              ) : null}
-              {createPlanContent.savePlan}
-            </button>
-          </div>
-        </div>
-      </div>
+      <CabinetPageLoader label={loaderLabel} />
     </DashboardShell>
   );
 }

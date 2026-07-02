@@ -3,7 +3,7 @@ import { ProgressStatsSection } from "@/components/landing/ProgressStatsSection"
 import { EasyStepsSection } from "@/components/landing/EasyStepsSection";
 import { WhySection } from "@/components/landing/WhySection";
 import { DashboardPreviewSection } from "@/components/landing/DashboardPreviewSection";
-import { FirstStepsSection } from "@/components/landing/FirstStepsSection";
+import { StatsSection } from "@/components/landing/StatsSection";
 import { FaqSection } from "@/components/landing/FaqSection";
 import { FooterCtaSection } from "@/components/landing/FooterCtaSection";
 import { HeroSection } from "@/components/landing/HeroSection";
@@ -26,7 +26,7 @@ export function DashboardHomeTab({ onGoToDashboard }: DashboardHomeTabProps) {
       <EasyStepsSection />
       <WhySection />
       <DashboardPreviewSection />
-      <FirstStepsSection />
+      <StatsSection />
       <FaqSection content={dashboardFaqContent} />
       <FooterCtaSection
         onAuditClick={onGoToDashboard}

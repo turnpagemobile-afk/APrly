@@ -1,78 +1,97 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
-import { ApiError } from "@workspace/api-client-react/custom-fetch";
 import { useAdminLogin } from "@workspace/api-client-react";
 import { AdminAuthLayout } from "@/components/admin/AdminAuthLayout";
+import { AuthPasswordInput } from "@/components/shared/auth-form/AuthPasswordInput";
+import { AuthTextInput } from "@/components/shared/auth-form/AuthTextInput";
 import { adminContent } from "@/content/admin";
+import { brandContent } from "@/content/landing";
+import { adminAsset } from "@/lib/admin-assets";
 import { saveAdminChallenge } from "@/lib/admin-auth-flow";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "@/hooks/use-toast";
 
 export default function AdminLoginPage() {
   const [, navigate] = useLocation();
   const login = useAdminLogin();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [authError, setAuthError] = useState(false);
+
+  const emailEmpty = submitAttempted && !email.trim();
+  const passwordEmpty = submitAttempted && !password;
+  const credentialsInvalid = authError && !emailEmpty && !passwordEmpty;
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitAttempted(true);
+    setAuthError(false);
+    if (!email.trim() || !password) return;
+
     try {
       const result = await login.mutateAsync({
         data: { email: email.trim(), password },
       });
       saveAdminChallenge(result.challengeToken, result.email);
       navigate("/admin/verify");
-    } catch (err: unknown) {
-      const apiMsg =
-        err instanceof ApiError && typeof err.data === "object" && err.data && "error" in err.data
-          ? String((err.data as { error?: unknown }).error ?? "")
-          : "";
-      toast({
-        title: adminContent.login.failed,
-        description: apiMsg || adminContent.login.failedDescription,
-        variant: "destructive",
-      });
+    } catch {
+      setAuthError(true);
     }
   };
 
   return (
     <AdminAuthLayout>
-      <h1 className="mt-2 text-center text-2xl font-bold tracking-tight text-foreground">
-        {adminContent.login.title}
-      </h1>
-      <form className="mt-8 grid gap-4" onSubmit={(e) => void onSubmit(e)}>
-        <div className="grid gap-2">
-          <Label htmlFor="admin-email">{adminContent.login.email}</Label>
-          <Input
-            id="admin-email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="admin-password">{adminContent.login.password}</Label>
-          <Input
-            id="admin-password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <Button type="submit" className="mt-2 w-full font-semibold" disabled={login.isPending}>
+      <img
+        src={adminAsset("login/logo.png")}
+        alt={brandContent.name}
+        className="admin-auth-logo"
+      />
+      <h1 className="app-header-h6 text-average mt-6 text-center">{adminContent.login.title}</h1>
+      <form className="mt-6 space-y-5" onSubmit={(e) => void onSubmit(e)}>
+        <AuthTextInput
+          id="admin-email"
+          label={adminContent.login.email}
+          type="email"
+          autoComplete="email"
+          value={email}
+          invalid={emailEmpty || credentialsInvalid}
+          error={emailEmpty ? adminContent.login.errors.emailRequired : null}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setAuthError(false);
+          }}
+        />
+        <AuthPasswordInput
+          id="admin-password"
+          label={adminContent.login.password}
+          autoComplete="current-password"
+          value={password}
+          invalid={passwordEmpty || credentialsInvalid}
+          error={passwordEmpty ? adminContent.login.errors.passwordRequired : null}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setAuthError(false);
+          }}
+        />
+        {credentialsInvalid ? (
+          <div
+            role="alert"
+            className="rounded-[12px] bg-[var(--error-box-bg-color)] px-3 py-2.5 text-sm text-destructive"
+          >
+            {adminContent.login.errors.invalid}
+          </div>
+        ) : null}
+        <button
+          type="submit"
+          className="admin-auth-submit-btn app-button-button-l-m text-neutral-000"
+          disabled={login.isPending}
+        >
           {login.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
           ) : (
             adminContent.login.submit
           )}
-        </Button>
+        </button>
       </form>
     </AdminAuthLayout>
   );

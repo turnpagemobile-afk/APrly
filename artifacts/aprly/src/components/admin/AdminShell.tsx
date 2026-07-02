@@ -1,31 +1,36 @@
 import { useState, type ReactNode } from "react";
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, LogOut, Menu, Users, Handshake, CreditCard } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   getGetAdminMeQueryKey,
   useAdminLogout,
   useGetAdminMe,
 } from "@workspace/api-client-react";
+import { AdminNavIcon, type AdminNavIconName } from "@/components/admin/AdminNavIcon";
 import { adminContent } from "@/content/admin";
 import { brandContent } from "@/content/landing";
+import { adminAsset } from "@/lib/admin-assets";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-const NAV = [
-  { href: "/admin/dashboard", label: adminContent.nav.dashboard, icon: LayoutDashboard },
-  { href: "/admin/users", label: adminContent.nav.users, icon: Users },
-  { href: "/admin/partners", label: adminContent.nav.partners, icon: Handshake },
-  { href: "/admin/subscription", label: adminContent.nav.subscription, icon: CreditCard },
-] as const;
+const NAV: {
+  href: string;
+  label: string;
+  icon: AdminNavIconName;
+}[] = [
+  { href: "/admin/dashboard", label: adminContent.nav.dashboard, icon: "dashboard" },
+  { href: "/admin/users", label: adminContent.nav.users, icon: "users" },
+  { href: "/admin/partners", label: adminContent.nav.partners, icon: "partners" },
+];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const [location] = useLocation();
 
   return (
     <nav className="flex flex-col gap-1" aria-label="Admin navigation">
-      {NAV.map(({ href, label, icon: Icon }) => {
+      {NAV.map(({ href, label, icon }) => {
         const active = location === href || location.startsWith(`${href}/`);
         return (
           <Link
@@ -33,13 +38,11 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             href={href}
             onClick={onNavigate}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-              active
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+              "admin-nav-link app-button-button-l-m",
+              active ? "admin-nav-link--active" : "admin-nav-link--inactive",
             )}
           >
-            <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+            <AdminNavIcon name={icon} />
             {label}
           </Link>
         );
@@ -64,27 +67,31 @@ function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   };
 
   return (
-    <div className="flex h-full flex-col bg-card text-card-foreground">
-      <div className="border-b border-border px-5 py-6">
-        <p className="text-2xl font-black tracking-tight text-foreground">{brandContent.name}</p>
-        <p className="text-sm text-muted-foreground">{adminContent.panelTitle}</p>
-        {me ? (
-          <p className="mt-3 text-xs text-muted-foreground">Logged as {me.email}</p>
-        ) : null}
+    <div className="admin-sidebar">
+      <div className="admin-sidebar-logo-wrap admin-sidebar-logo-divider">
+        <img
+          src={adminAsset("dashboard/logo.png")}
+          alt={brandContent.name}
+          className="admin-sidebar-logo"
+        />
       </div>
-      <div className="flex-1 px-3 py-4">
+      <div className="admin-sidebar-nav">
         <NavLinks onNavigate={onNavigate} />
       </div>
-      <div className="border-t border-border p-4">
-        <Button
+      <div className="admin-sidebar-footer">
+        {me ? (
+          <p className="app-text-p2-regular text-[var(--primary-theme-300)]">
+            Logged as {me.email}
+          </p>
+        ) : null}
+        <button
           type="button"
-          variant="ghost"
-          className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+          className="app-button-button-l-m text-neutral-000 mt-3 flex items-center gap-2 transition-opacity hover:opacity-80"
           onClick={() => void onLogout()}
         >
-          <LogOut className="h-5 w-5" aria-hidden="true" />
+          <LogOut className="h-5 w-5 shrink-0" aria-hidden="true" />
           {adminContent.nav.logout}
-        </Button>
+        </button>
       </div>
     </div>
   );
@@ -98,24 +105,30 @@ export function AdminShell({ children }: { children: ReactNode }) {
     adminContent.dashboard.title;
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="hidden w-64 shrink-0 border-r border-border lg:block">
+    <div className="flex min-h-screen bg-[var(--page-bg)] text-[var(--neutral-theme-900)]">
+      <aside className="hidden w-64 shrink-0 lg:block">
         <AdminSidebar />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-border/60 bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:hidden">
+        <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-[var(--primary-theme-200)] bg-[var(--page-bg)]/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-[var(--page-bg)]/90 lg:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button type="button" variant="outline" size="icon" aria-label="Open menu">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="border-[var(--primary-theme-200)]"
+                aria-label="Open menu"
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 border-border bg-card p-0">
+            <SheetContent side="left" className="w-64 border-0 bg-transparent p-0">
               <AdminSidebar onNavigate={() => setOpen(false)} />
             </SheetContent>
           </Sheet>
-          <span className="font-bold text-foreground">{pageTitle}</span>
+          <span className="app-header-h6 text-average">{pageTitle}</span>
         </header>
 
         <main className="flex-1 py-6">

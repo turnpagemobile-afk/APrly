@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { goToCabinet } from "@/lib/app-navigation";
-import { cn } from "@/lib/utils";
 import { releaseDialogScrollLock } from "@/lib/release-dialog-scroll-lock";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
@@ -19,16 +18,16 @@ import {
   loadOptimizerSnapshot,
   snapshotCardsForImport,
 } from "@/lib/optimizerSnapshot";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { AuthBrandLogo } from "@/components/auth/AuthBrandLogo";
+import { AuthCheckbox } from "@/components/shared/auth-form/AuthCheckbox";
+import { AuthPasswordInput } from "@/components/shared/auth-form/AuthPasswordInput";
+import { AuthTextInput } from "@/components/shared/auth-form/AuthTextInput";
 import { SignupCheckoutModal } from "@/components/auth/SignupCheckoutModal";
-import { SignupProgressBar } from "@/components/auth/SignupProgressBar";
+import { PillButton } from "@/components/shared/PillButton";
+import { StepProgressPills } from "@/components/shared/StepProgressPills";
 import { authContent } from "@/content/landing";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { CheckCircle2, Eye, EyeOff, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 
 const step1Schema = z
   .object({
@@ -47,12 +46,9 @@ const step1Schema = z
     }
   });
 
-type Step = 1 | 2 | "success";
+type Step = 1 | 2;
 
 type FieldErrors = Record<string, string[]>;
-
-const underlineInputClass =
-  "h-11 border-b border-x-0 border-t-0 rounded-none bg-transparent px-0 shadow-none focus-visible:ring-0";
 
 function readFieldErrors(err: unknown): FieldErrors | null {
   if (!(err instanceof ApiError) || err.data == null || typeof err.data !== "object") {
@@ -67,6 +63,16 @@ function readFieldErrors(err: unknown): FieldErrors | null {
     }
   }
   return Object.keys(out).length ? out : null;
+}
+
+function parseInitialName(initialName?: string | null) {
+  const trimmed = initialName?.trim();
+  if (!trimmed) return null;
+  const parts = trimmed.split(/\s+/);
+  return {
+    firstName: parts[0] ?? "",
+    lastName: parts.slice(1).join(" "),
+  };
 }
 
 type SignupCheckoutWizardProps = {
@@ -95,11 +101,8 @@ export function SignupCheckoutWizard({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [checkoutUserEmail, setCheckoutUserEmail] = useState<string | null>(null);
 
   const registerMutation = useMutation({
     mutationFn: (data: {
@@ -116,7 +119,6 @@ export function SignupCheckoutWizard({
   const sessionSyncedRef = useRef(false);
   const checkoutPaidRef = useRef(false);
   const profileSideEffectsStartedRef = useRef(false);
-  const [isFinishing, setIsFinishing] = useState(false);
 
   const step1Parsed = useMemo(
     () =>
@@ -144,22 +146,40 @@ export function SignupCheckoutWizard({
     !step1Parsed.success &&
     (step1Parsed.error.flatten().fieldErrors.confirmPassword ?? []).length > 0;
 
+  const emailError = fieldErrors.email?.length
+    ? fieldErrors.email.join(" ")
+    : emailEmpty
+      ? authContent.signup.errors.emailRequired
+      : emailInvalid
+        ? authContent.signup.errors.emailInvalid
+        : null;
+
+  const passwordError = fieldErrors.password?.length
+    ? fieldErrors.password.join(" ")
+    : passwordEmpty
+      ? authContent.signup.errors.passwordRequired
+      : null;
+
+  const confirmPasswordError = fieldErrors.confirmPassword?.length
+    ? fieldErrors.confirmPassword.join(" ")
+    : confirmEmpty
+      ? authContent.signup.errors.confirmRequired
+      : confirmMismatch
+        ? authContent.signup.errors.passwordsMismatch
+        : null;
+
   const resetForm = useCallback(() => {
     setStep(1);
     setEmail("");
     setPassword("");
     setConfirmPassword("");
     setTermsAccepted(false);
-    setShowPassword(false);
-    setShowConfirmPassword(false);
     setSubmitAttempted(false);
     setFieldErrors({});
-    setCheckoutUserEmail(null);
     cardsImportStartedRef.current = false;
     sessionSyncedRef.current = false;
     checkoutPaidRef.current = false;
     profileSideEffectsStartedRef.current = false;
-    setIsFinishing(false);
   }, []);
 
   useEffect(() => {
@@ -237,8 +257,23 @@ export function SignupCheckoutWizard({
         guestSessionId: readGuestSessionId() ?? undefined,
       });
       await refreshAuthSession();
-      setCheckoutUserEmail(email.trim().toLowerCase());
       checkoutPaidRef.current = true;
+
+      const parsedName = parseInitialName(initialName);
+      if (parsedName?.firstName) {
+        try {
+          await patchMutation.mutateAsync({
+            data: {
+              firstName: parsedName.firstName,
+              lastName: parsedName.lastName,
+            },
+          });
+          await refreshAuthSession();
+        } catch {
+          // Non-blocking: account is created even if profile patch fails.
+        }
+      }
+
       setStep(2);
     } catch (err: unknown) {
       const fe = readFieldErrors(err);
@@ -262,57 +297,18 @@ export function SignupCheckoutWizard({
     }
   };
 
-  const [profileFirst, setProfileFirst] = useState("");
-  const [profileLast, setProfileLast] = useState("");
-
-  useEffect(() => {
-    if (step !== 2 || !checkoutUserEmail) return;
-    const trimmed = initialName?.trim();
-    if (trimmed) {
-      const parts = trimmed.split(/\s+/);
-      setProfileFirst(parts[0] ?? "");
-      setProfileLast(parts.slice(1).join(" "));
-      return;
-    }
-    setProfileFirst("");
-    setProfileLast("");
-  }, [step, checkoutUserEmail, initialName]);
-
-  const handleProfileSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsFinishing(true);
-    try {
-      await patchMutation.mutateAsync({
-        data: { firstName: profileFirst.trim(), lastName: profileLast.trim() },
-      });
-      await refreshAuthSession();
-      setIsFinishing(false);
-      setStep("success");
-    } catch (err: unknown) {
-      setIsFinishing(false);
-      toast({
-        title: "Could not save profile",
-        description: err instanceof Error ? err.message : "Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleSuccessOk = () => {
     onOpenChange(false);
     releaseDialogScrollLock();
     goToCabinet();
   };
 
-  const allowDismiss =
-    !registerMutation.isPending && !isFinishing && !patchMutation.isPending;
+  const allowDismiss = !registerMutation.isPending;
 
   const handleRequestClose = () => {
     if (!allowDismiss) return;
     onOpenChange(false);
   };
-
-  const progressStep: 1 | 2 = step === "success" ? 2 : step;
 
   return (
     <SignupCheckoutModal
@@ -320,27 +316,21 @@ export function SignupCheckoutWizard({
       onRequestClose={handleRequestClose}
       allowDismiss={allowDismiss}
     >
-      {step !== "success" ? (
+      {step === 1 ? (
         <>
-          <p className="text-xs font-bold uppercase tracking-widest text-[var(--neutral-theme-900)]">
+          <p className="app-header-h6 text-average pr-10">
             {authContent.signup.step1Title}
           </p>
-          <AuthBrandLogo className="mt-4" />
-          <SignupProgressBar currentStep={progressStep} />
-        </>
-      ) : null}
+          <StepProgressPills totalSteps={2} currentStep={step} className="mt-3" />
 
-      {step === 1 ? (
-        <form className="mt-6 space-y-5" onSubmit={handleRegisterSubmit}>
-          <div className="space-y-2">
-            <Label htmlFor="su-email" className="text-xs text-[var(--hint-text-color)]">
-              Email
-            </Label>
-            <Input
+          <form className="mt-6 space-y-5" onSubmit={handleRegisterSubmit}>
+            <AuthTextInput
               id="su-email"
+              label="Email"
               type="email"
               autoComplete="email"
               value={email}
+              error={emailError}
               onChange={(ev) => {
                 setEmail(ev.target.value);
                 setFieldErrors((prev) => {
@@ -349,231 +339,98 @@ export function SignupCheckoutWizard({
                   return rest;
                 });
               }}
-              className={cn(
-                underlineInputClass,
-                (emailEmpty || emailInvalid || fieldErrors.email?.length) &&
-                  "border-destructive bg-[var(--error-box-bg-color)]",
+            />
+
+            <AuthPasswordInput
+              id="su-password"
+              label="Password"
+              autoComplete="new-password"
+              minLength={8}
+              maxLength={20}
+              value={password}
+              error={passwordError}
+              onChange={(ev) => setPassword(ev.target.value)}
+            />
+
+            <AuthPasswordInput
+              id="su-confirm"
+              label="Confirm password"
+              autoComplete="new-password"
+              minLength={8}
+              maxLength={20}
+              value={confirmPassword}
+              error={confirmPasswordError}
+              onChange={(ev) => setConfirmPassword(ev.target.value)}
+            />
+
+            <div className="flex items-start gap-2">
+              <AuthCheckbox
+                id="su-terms"
+                checked={termsAccepted}
+                onCheckedChange={(v) => setTermsAccepted(v === true)}
+              />
+              <Label htmlFor="su-terms" className="app-text-p1-regular text-average leading-snug">
+                <span>I&apos;ve read and agree to the </span>
+                <Link
+                  href="/terms"
+                  className="app-text-p1-bold text-action hover:underline"
+                >
+                  Terms of Service
+                </Link>
+                <span> and </span>
+                <Link
+                  href="/privacy"
+                  className="app-text-p1-bold text-action hover:underline"
+                >
+                  Privacy Policy
+                </Link>
+                <span>.</span>
+              </Label>
+            </div>
+            {fieldErrors.termsAccepted?.length ? (
+              <p className="text-sm text-destructive">{fieldErrors.termsAccepted.join(" ")}</p>
+            ) : null}
+
+            <PillButton
+              type="submit"
+              size="lg"
+              className="w-full"
+              disabled={registerMutation.isPending}
+            >
+              {registerMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait…
+                </>
+              ) : (
+                authContent.signup.submit
               )}
-            />
-            {fieldErrors.email?.length ? (
-              <p className="text-sm text-destructive">{fieldErrors.email.join(" ")}</p>
-            ) : emailEmpty ? (
-              <p className="text-sm text-destructive">{authContent.signup.errors.emailRequired}</p>
-            ) : emailInvalid ? (
-              <p className="text-sm text-destructive">{authContent.signup.errors.emailInvalid}</p>
-            ) : null}
-          </div>
+            </PillButton>
+          </form>
 
-          <div className="space-y-2">
-            <Label htmlFor="su-password" className="text-xs text-[var(--hint-text-color)]">
-              Password (8–20 characters)
-            </Label>
-            <div className="relative">
-              <Input
-                id="su-password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="new-password"
-                minLength={8}
-                maxLength={20}
-                value={password}
-                onChange={(ev) => setPassword(ev.target.value)}
-                className={cn(
-                  underlineInputClass,
-                  "pr-10",
-                  (passwordEmpty || fieldErrors.password?.length) &&
-                    "border-destructive bg-[var(--error-box-bg-color)]",
-                )}
-              />
-              <button
-                type="button"
-                className="absolute right-0 top-1/2 -translate-y-1/2 text-[var(--hint-text-color)]"
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-            {fieldErrors.password?.length ? (
-              <p className="text-sm text-destructive">{fieldErrors.password.join(" ")}</p>
-            ) : passwordEmpty ? (
-              <p className="text-sm text-destructive">
-                {authContent.signup.errors.passwordRequired}
-              </p>
-            ) : null}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="su-confirm" className="text-xs text-[var(--hint-text-color)]">
-              Confirm password
-            </Label>
-            <div className="relative">
-              <Input
-                id="su-confirm"
-                type={showConfirmPassword ? "text" : "password"}
-                autoComplete="new-password"
-                minLength={8}
-                maxLength={20}
-                value={confirmPassword}
-                onChange={(ev) => setConfirmPassword(ev.target.value)}
-                className={cn(
-                  underlineInputClass,
-                  "pr-10",
-                  (confirmEmpty ||
-                    confirmMismatch ||
-                    fieldErrors.confirmPassword?.length) &&
-                    "border-destructive bg-[var(--error-box-bg-color)]",
-                )}
-              />
-              <button
-                type="button"
-                className="absolute right-0 top-1/2 -translate-y-1/2 text-[var(--hint-text-color)]"
-                onClick={() => setShowConfirmPassword((v) => !v)}
-                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-            {fieldErrors.confirmPassword?.length ? (
-              <p className="text-sm text-destructive">
-                {fieldErrors.confirmPassword.join(" ")}
-              </p>
-            ) : confirmEmpty ? (
-              <p className="text-sm text-destructive">
-                {authContent.signup.errors.confirmRequired}
-              </p>
-            ) : confirmMismatch ? (
-              <p className="text-sm text-destructive">
-                {authContent.signup.errors.passwordsMismatch}
-              </p>
-            ) : null}
-          </div>
-
-          <div className="flex items-start gap-2">
-            <Checkbox
-              id="su-terms"
-              checked={termsAccepted}
-              onCheckedChange={(v) => setTermsAccepted(v === true)}
-            />
-            <Label htmlFor="su-terms" className="text-sm font-normal leading-snug">
-              <span className="text-[var(--neutral-theme-900)]">
-                I&apos;ve read and agree to the{" "}
-              </span>
-              <Link href="/terms" className="font-semibold text-primary hover:underline">
-                Terms of Service
-              </Link>
-              <span className="text-[var(--neutral-theme-900)]"> and </span>
-              <Link href="/privacy" className="font-semibold text-primary hover:underline">
-                Privacy Policy
-              </Link>
-              <span className="text-[var(--neutral-theme-900)]">.</span>
-            </Label>
-          </div>
-          {fieldErrors.termsAccepted?.length ? (
-            <p className="text-sm text-destructive">{fieldErrors.termsAccepted.join(" ")}</p>
-          ) : null}
-
-          <Button
-            type="submit"
-            className="w-full font-bold uppercase tracking-wide"
-            disabled={registerMutation.isPending}
-          >
-            {registerMutation.isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait…
-              </>
-            ) : (
-              authContent.signup.submit
-            )}
-          </Button>
-
-          <p className="text-center text-sm text-[var(--hint-text-color)]">
-            {authContent.signup.loginPrompt}{" "}
+          <div className="mx-2.5 mt-6 border-t border-[var(--primary-theme-200)] pt-5 text-center">
+            <span className="app-text-p1-regular text-hint">
+              {authContent.signup.loginPrompt}{" "}
+            </span>
             <Link
               href="/login"
-              className="font-bold uppercase text-primary hover:underline"
+              className="app-button-button-s text-action hover:underline"
               onClick={() => onOpenChange(false)}
             >
               {authContent.signup.loginLink}
             </Link>
-          </p>
-        </form>
-      ) : null}
-
-      {step === 2 ? (
-        <>
-          <p className="mt-4 text-sm text-[var(--hint-text-color)]">
-            {authContent.signup.step2Subtitle}
-          </p>
-          {isFinishing ? (
-            <div className="flex items-center gap-2 py-6 text-sm text-[var(--hint-text-color)]">
-              <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
-              Finishing your account…
-            </div>
-          ) : (
-            <form className="mt-6 space-y-5" onSubmit={handleProfileSubmit}>
-              <div className="space-y-2">
-                <Label className="text-xs text-[var(--hint-text-color)]">Email</Label>
-                <Input
-                  value={checkoutUserEmail ?? ""}
-                  readOnly
-                  disabled
-                  className={cn(underlineInputClass, "opacity-70")}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="su-fn" className="text-xs text-[var(--hint-text-color)]">
-                  First name
-                </Label>
-                <Input
-                  id="su-fn"
-                  required
-                  autoComplete="given-name"
-                  value={profileFirst}
-                  onChange={(ev) => setProfileFirst(ev.target.value)}
-                  className={underlineInputClass}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="su-ln" className="text-xs text-[var(--hint-text-color)]">
-                  Last name
-                </Label>
-                <Input
-                  id="su-ln"
-                  required
-                  autoComplete="family-name"
-                  value={profileLast}
-                  onChange={(ev) => setProfileLast(ev.target.value)}
-                  className={underlineInputClass}
-                />
-              </div>
-              <Button
-                type="submit"
-                className="w-full font-bold uppercase tracking-wide"
-                disabled={patchMutation.isPending}
-              >
-                {patchMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving…
-                  </>
-                ) : (
-                  authContent.signup.saveToAccount
-                )}
-              </Button>
-            </form>
-          )}
+          </div>
         </>
       ) : null}
 
-      {step === "success" ? (
+      {step === 2 ? (
         <div className="flex flex-col items-center py-4 text-center">
+          <p className="app-header-h6 text-average w-full pr-10 text-left">
+            {authContent.signup.step1Title}
+          </p>
+          <StepProgressPills totalSteps={2} currentStep={2} className="mt-3 w-full" />
           <CheckCircle2
-            className="h-16 w-16 text-[var(--secondary-theme-500)]"
+            className="mt-6 h-16 w-16 text-[var(--primary-theme-500)]"
             strokeWidth={1.5}
             aria-hidden
           />
@@ -583,13 +440,9 @@ export function SignupCheckoutWizard({
           <p className="mt-3 text-sm text-[var(--hint-text-color)]">
             {authContent.signup.successSubtitle}
           </p>
-          <Button
-            type="button"
-            className="mt-8 w-full font-bold uppercase tracking-wide"
-            onClick={handleSuccessOk}
-          >
+          <PillButton type="button" size="lg" className="mt-8 w-full" onClick={handleSuccessOk}>
             {authContent.signup.successOk}
-          </Button>
+          </PillButton>
         </div>
       ) : null}
     </SignupCheckoutModal>

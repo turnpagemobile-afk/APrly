@@ -8,7 +8,7 @@ import {
   AuthForgotEmailIllustration,
   AuthForgotLockIllustration,
 } from "@/components/auth/AuthForgotIllustrations";
-import { Button } from "@/components/ui/button";
+import { PillButton } from "@/components/shared/PillButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authContent } from "@/content/landing";
@@ -130,17 +130,13 @@ export function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswordModalP
             </div>
 
             <div className="flex justify-center pt-2">
-              <Button
-                type="submit"
-                disabled={forgot.isPending}
-                className="min-w-[160px] font-bold uppercase tracking-wide"
-              >
+              <PillButton type="submit" disabled={forgot.isPending} className="min-w-[160px]">
                 {forgot.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   copy.submit
                 )}
-              </Button>
+              </PillButton>
             </div>
           </form>
         </>
@@ -154,13 +150,9 @@ export function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswordModalP
             {copy.successSubtitle}
           </p>
           <div className="flex justify-center pt-6">
-            <Button
-              type="button"
-              className="min-w-[120px] font-bold uppercase tracking-wide"
-              onClick={dismiss}
-            >
+            <PillButton type="button" className="min-w-[120px]" onClick={dismiss}>
               {copy.successOk}
-            </Button>
+            </PillButton>
           </div>
         </>
       )}

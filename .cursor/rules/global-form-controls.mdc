@@ -1,0 +1,53 @@
+---
+description: Prefer shared form controls (inputs, checkbox, radio, buttons) for consistent Figma-aligned UI across aprly
+alwaysApply: true
+---
+
+# Global form controls (Debt-Optimizer-Pro / aprly)
+
+When building or restyling UI in `artifacts/aprly`, keep a **single visual language** for interactive controls. Prefer shared components over one-off inline styles.
+
+## Use shared components first
+
+| Control | Preferred location | Notes |
+|---------|-------------------|--------|
+| Text / email fields | `src/components/shared/auth-form/AuthTextInput` | Marketing/auth forms |
+| Password fields | `src/components/shared/auth-form/AuthPasswordInput` | Includes show/hide toggle |
+| Checkbox | `src/components/shared/auth-form/AuthCheckbox` | Figma green marketing style |
+| Radio (when added) | `src/components/shared/auth-form/` or `shared/` | Add when a screen needs radios |
+| Pill / primary CTA | `src/components/shared/PillButton` | Landing, auth modals |
+| Step progress | `src/components/shared/StepProgressPills` | `variant="audit"` for Figma pills |
+
+Before adding new field markup, search `src/components/shared/` for an existing wrapper.
+
+## Do not change lightly
+
+- **Do not** restyle global shadcn primitives (`src/components/ui/input.tsx`, `checkbox.tsx`, `button.tsx`) for one feature — that risks regressions on pages already aligned to Figma.
+- **Do** extend or add wrappers under `shared/` with design tokens (`--input-*`, `--primary-theme-*`, `--design-input-min-height-x1`).
+
+## Migration strategy
+
+1. Introduce or extend shared component on the **current** screen (e.g. Sign Up).
+2. Migrate other surfaces **incrementally** (login, forgot password, dashboard) in separate tasks — not bundled unless requested.
+3. When migrating, preserve ids, `autoComplete`, validation, and event handlers — **UI only**.
+
+## Styling conventions
+
+- Input height: `h-[var(--design-input-min-height-x1,52px)]` where Figma specifies 52px.
+- Borders/focus/error: `auth-field-styles` tokens, not ad-hoc colors.
+- Buttons: `rounded-full`, `primary-theme-500` for marketing CTAs unless Figma specifies otherwise.
+
+## Border radius (important)
+
+`--design-button-corner-radius` (150px) and Tailwind `rounded-sm` / `rounded-lg` scale from `--radius` — both produce **pill/circle** shapes on small controls. Do **not** use them for auth inputs or checkboxes.
+
+| Control | Radius |
+|---------|--------|
+| Auth text/password inputs | explicit `rounded-[12px]` via `auth-field-styles` |
+| Auth checkbox | explicit `rounded-[2px]` via `AuthCheckbox` |
+| Pill / marketing CTA | `rounded-full` (`PillButton`) |
+
+## When inline styles are OK
+
+- Truly unique one-off layout (not a reusable control).
+- Prototype behind a flag — still plan extraction to `shared/` before merge when the pattern repeats.

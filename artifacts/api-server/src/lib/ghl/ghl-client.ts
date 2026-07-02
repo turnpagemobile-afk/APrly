@@ -1,4 +1,5 @@
 import type { GhlConfig } from "./ghl-config";
+import type { GhlWebhookEventType } from "./ghl-tags";
 
 const GHL_API_BASE = "https://services.leadconnectorhq.com";
 
@@ -18,13 +19,14 @@ export type GhlUpsertContactResult = {
 };
 
 export type GhlWebhookPayload = {
-  event_type: string;
+  event_type: GhlWebhookEventType;
   lead_id: string;
   plan_index: number;
   has_paid_audit: boolean;
   email: string;
   timestamp: string;
   partner_name?: string;
+  hardship_step_index?: number;
 };
 
 function ghlHeaders(apiKey: string): Record<string, string> {

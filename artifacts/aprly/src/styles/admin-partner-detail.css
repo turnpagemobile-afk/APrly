@@ -1,0 +1,119 @@
+/**
+ * Admin Partner detail — Figma AdminPanel/Partners/Details.
+ */
+
+@layer components {
+  .admin-partner-detail-header {
+    @apply flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between;
+  }
+
+  .admin-partner-detail-actions {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  .admin-partner-detail-btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-5 py-2 uppercase transition-opacity hover:opacity-90 disabled:opacity-50;
+    color: var(--neutral-theme-000);
+  }
+
+  .admin-partner-detail-btn-icon {
+    @apply h-6 w-6 shrink-0;
+  }
+
+  .admin-partner-detail-btn--deactivate {
+    background: var(--action-default-color);
+  }
+
+  .admin-partner-detail-btn--delete {
+    background: var(--danger-theme-500);
+  }
+
+  .admin-partner-status-card {
+    @apply w-full rounded-[12px] border p-6 shadow-sm;
+    max-width: 220px;
+  }
+
+  .admin-partner-status-card-stack {
+    @apply flex flex-col gap-2;
+  }
+
+  .admin-partner-status-card--active {
+    background: var(--card-1lvl-bg-color);
+    border-color: var(--success-theme-400);
+  }
+
+  .admin-partner-status-card--inactive {
+    background: var(--accent-theme-100);
+    border-color: var(--danger-theme-500);
+  }
+
+  .admin-partner-status-badge {
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1.5 uppercase;
+  }
+
+  .admin-partner-status-badge-dot {
+    @apply h-5 w-5 shrink-0 rounded-full bg-[var(--neutral-theme-000)];
+  }
+
+  .admin-partner-status-badge--active {
+    background: var(--success-theme-500);
+    color: var(--neutral-theme-000);
+  }
+
+  .admin-partner-status-badge--inactive {
+    background: var(--danger-theme-500);
+    color: var(--neutral-theme-000);
+  }
+
+  .admin-partner-info-card {
+    @apply rounded-[12px] border bg-[var(--card-1lvl-bg-color)] p-6 shadow-sm;
+    border-color: var(--palette-neutral-neutral-300);
+  }
+
+  .admin-partner-info-header {
+    @apply mb-6 flex items-center justify-between gap-3;
+  }
+
+  .admin-partner-info-header-main {
+    @apply flex min-w-0 items-center gap-3;
+  }
+
+  .admin-partner-info-id {
+    color: var(--neutral-theme-600);
+  }
+
+  .admin-partner-info-fields {
+    @apply grid gap-6 sm:grid-cols-3;
+  }
+
+  .admin-partner-info-field-label {
+    @apply mb-1;
+    color: var(--text-hint-color, #6b7280);
+  }
+
+  .admin-partner-lead-group {
+    @apply flex gap-4;
+  }
+
+  .admin-partner-lead-group-rail {
+    @apply flex w-10 shrink-0 flex-col items-center;
+  }
+
+  .admin-partner-lead-group-user-icon {
+    @apply h-10 w-10 shrink-0;
+  }
+
+  .admin-partner-lead-group-line {
+    @apply mt-2 w-[6px] flex-1 rounded-full;
+    background: var(--info-theme-200);
+    min-height: 24px;
+  }
+
+  .admin-partner-lead-group-content {
+    @apply min-w-0 flex-1 space-y-4;
+  }
+
+  .admin-partner-lead-group-user {
+    @apply mb-2;
+  }
+}

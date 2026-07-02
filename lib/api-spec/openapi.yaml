@@ -556,6 +556,29 @@ paths:
         "404":
           description: Plan lead not found
 
+    delete:
+      operationId: deletePlanLead
+      tags: [me]
+      summary: Delete plan lead (recommended only, before send)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "204":
+          description: Deleted
+        "400":
+          description: Not deletable (already sent)
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+
   /me/plan-leads/{id}/send:
     post:
       operationId: sendPlanLead
@@ -1294,7 +1317,7 @@ paths:
           in: query
           schema:
             type: string
-            enum: [all, on_review, in_progress, won, rejected]
+            enum: [all, waiting, on_review, in_progress, won, rejected]
             default: all
         - name: page
           in: query
@@ -2407,14 +2430,20 @@ components:
 
     AdminPartnerLeadCounts:
       type: object
-      required: [onReview, inProgress, won, rejected]
+      required: [waiting, onReview, inProgress, won, rejected]
       properties:
+        waiting:
+          type: integer
+          minimum: 0
+          description: Sent to partner; partner has not started working
         onReview:
           type: integer
           minimum: 0
+          description: Partner accepted; no hardship steps completed yet
         inProgress:
           type: integer
           minimum: 0
+          description: Partner accepted; at least one hardship step completed
         won:
           type: integer
           minimum: 0
@@ -2699,6 +2728,8 @@ components:
         createdAt:
           type: string
           format: date-time
+        hardshipPortal:
+          $ref: "#/components/schemas/HardshipPortal"
 
     AdminPartnerPlanLeadsResponse:
       type: object

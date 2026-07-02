@@ -1,19 +1,19 @@
 import type { ReactNode } from "react";
 import { Link } from "wouter";
-import type { AdminUserPlanDisplayStatus, LeadCardItem } from "@workspace/api-client-react";
+import type { AdminUserPlanDisplayStatus, HardshipPortal, LeadCardItem } from "@workspace/api-client-react";
 import { PlanLeadCardPreviewRow } from "@/components/dashboard/plan-lead/PlanLeadCardPreviewRow";
-import { dashboardTabContent } from "@/content/dashboard-tab";
+import { PlanLeadTotalSavingsFooter } from "@/components/dashboard/plan-lead/PlanLeadTotalSavingsFooter";
 import {
-  adminPlanDisplayStatusLabel,
-  adminPlanStatusBadgeClass,
+  adminUserPlanDisplayStatusLabel,
+  adminUserPlanStatusBadgeClass,
 } from "@/lib/admin-plan-lead-status";
-import { formatDashboardCurrency } from "@/lib/format-currency";
 import { cn } from "@/lib/utils";
 
 type AdminPlanLeadListCardProps = {
   title: string;
   subtitle?: string | null;
   displayStatus: AdminUserPlanDisplayStatus;
+  hardshipPortal?: HardshipPortal | null;
   cards: LeadCardItem[];
   balance: number;
   currentApr: number;
@@ -39,6 +39,7 @@ export function AdminPlanLeadListCard({
   title,
   subtitle,
   displayStatus,
+  hardshipPortal,
   cards,
   balance,
   currentApr,
@@ -48,7 +49,6 @@ export function AdminPlanLeadListCard({
   detailAriaLabel,
   actions,
 }: AdminPlanLeadListCardProps) {
-  const copy = dashboardTabContent.planCard;
   const previewCards = cards.length > 0 ? cards : [aggregateFallbackCard({
     title,
     displayStatus,
@@ -65,7 +65,7 @@ export function AdminPlanLeadListCard({
       ? cards.reduce((sum, c) => sum + c.estimatedAnnualSavings, 0)
       : estimatedAnnualSavings;
 
-  const footerLabel = `${copy.totalEstSaving} ${formatDashboardCurrency(totalYearlySavings, 0, { spaceAfterDollar: false })}${copy.perYear}`;
+  const badgeCtx = { displayStatus, hardshipPortal };
 
   return (
     <article className="dash-plan-lead-card dash-plan-lead-card--interactive">
@@ -73,9 +73,9 @@ export function AdminPlanLeadListCard({
         <div className="dash-plan-lead-header">
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <h3 className="dash-text-lg-xb truncate uppercase">{title}</h3>
-              <span className={cn(adminPlanStatusBadgeClass(displayStatus))}>
-                {adminPlanDisplayStatusLabel(displayStatus)}
+              <h3 className="app-header-screen-title-bold text-average truncate">{title}</h3>
+              <span className={cn(adminUserPlanStatusBadgeClass(badgeCtx))}>
+                {adminUserPlanDisplayStatusLabel(badgeCtx)}
               </span>
             </div>
             {subtitle ? (
@@ -97,7 +97,7 @@ export function AdminPlanLeadListCard({
           </ul>
 
           <Link href={detailHref} className="dash-plan-lead-total-btn" aria-label={detailAriaLabel}>
-            {footerLabel}
+            <PlanLeadTotalSavingsFooter totalYearlySavings={totalYearlySavings} />
           </Link>
         </div>
       </div>

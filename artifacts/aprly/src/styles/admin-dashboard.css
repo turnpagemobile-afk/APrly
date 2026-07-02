@@ -1,0 +1,156 @@
+/**
+ * Admin panel shell + dashboard — Figma AdminPanel/Dashboard.
+ */
+
+@layer components {
+  .admin-sidebar {
+    @apply flex h-full flex-col;
+    background: var(--palette-secondary-secondary-900);
+  }
+
+  .admin-sidebar-logo-wrap {
+    @apply px-5 pb-5 pt-6;
+  }
+
+  .admin-sidebar-logo {
+    @apply block h-8 w-auto object-contain;
+  }
+
+  .admin-sidebar-logo-divider {
+    border-bottom: 1px solid var(--palette-secondary-secondary-700);
+  }
+
+  .admin-sidebar-nav {
+    @apply flex-1 px-3 py-4;
+  }
+
+  .admin-nav-link {
+    @apply flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors;
+  }
+
+  .admin-nav-link--active {
+    background: var(--palette-secondary-secondary-700);
+    color: var(--neutral-theme-000);
+  }
+
+  .admin-nav-link--inactive {
+    color: var(--primary-theme-500);
+  }
+
+  .admin-nav-link--inactive:hover {
+    color: var(--neutral-theme-000);
+  }
+
+  .admin-sidebar-footer {
+    background: rgba(255, 255, 255, 0.05);
+    @apply px-5 py-4;
+  }
+
+  .admin-dash-card {
+    @apply rounded-[12px] border border-[var(--primary-theme-200)] bg-[var(--card-1lvl-bg-color)] p-5 shadow-[0_4px_12px_0_rgba(29,62,11,0.08)];
+  }
+
+  .admin-dash-card-title {
+    font-family: var(--app-font-hero-body);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    color: var(--primary-theme-950);
+  }
+
+  .admin-dash-card-total {
+    font-family: var(--app-font-hero-body);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    color: var(--neutral-theme-600);
+  }
+
+  .admin-dash-card-hint {
+    font-family: var(--app-font-display);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    color: var(--neutral-theme-600);
+  }
+
+  .admin-dash-legend-label {
+    font-family: var(--app-font-display);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    color: var(--neutral-theme-600);
+  }
+
+  .admin-dash-legend-value {
+    font-family: var(--app-font-hero-body);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    color: var(--primary-theme-950);
+  }
+
+  .admin-dash-legend-dot {
+    @apply h-[14px] w-[14px] shrink-0 rounded-full;
+  }
+
+  .admin-dash-period-tabs {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .admin-dash-period-tab {
+    @apply rounded-full border px-3 py-1.5 transition-colors;
+    border-color: var(--neutral-theme-400);
+    background: var(--card-1lvl-bg-color);
+    color: var(--average-text-color);
+  }
+
+  .admin-dash-period-tab--active {
+    border-color: transparent;
+    background: var(--info-theme-500);
+    color: var(--neutral-theme-000);
+  }
+
+  .admin-page-title-icon {
+    @apply inline-flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full;
+    background: var(--primary-theme-200);
+  }
+
+  .admin-dash-trend-row {
+    @apply flex w-full items-center justify-between gap-3;
+  }
+
+  .admin-dash-revenue-periods {
+    @apply mt-4 flex flex-col gap-3;
+  }
+
+  .admin-dash-revenue-period {
+    @apply rounded-[12px] border p-4;
+    border-color: var(--neutral-theme-400);
+    background: var(--card-1lvl-bg-color);
+  }
+
+  .admin-dash-trend-label {
+    font-family: var(--app-font-display);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    color: var(--neutral-theme-600);
+  }
+
+  .admin-dash-trend-value {
+    font-family: var(--app-font-hero-body);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 24px;
+    color: var(--primary-theme-950);
+  }
+
+  .admin-dash-trend-change--up {
+    color: var(--success-theme-500);
+  }
+
+  .admin-dash-trend-change--down {
+    color: var(--accent-theme-500);
+  }
+}

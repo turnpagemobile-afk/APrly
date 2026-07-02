@@ -1,7 +1,11 @@
-import type { ReactNode } from "react";
-import { Link, useLocation } from "wouter";
+import { useCallback } from "react";
+import { useLocation } from "wouter";
 import { NotFoundSection } from "@/components/landing/NotFoundSection";
-import { brandContent } from "@/content/landing";
+import { LandingHeader } from "@/components/landing/LandingHeader";
+import { LandingFooter } from "@/components/landing/LandingFooter";
+import { CabinetHeader } from "@/components/dashboard/CabinetHeader";
+import { footerContent } from "@/content/landing";
+import { createPlanHref } from "@/lib/create-plan-navigation";
 import { cn } from "@/lib/utils";
 
 function isCabinetNotFoundContext(location: string): boolean {
@@ -15,38 +19,75 @@ function isCabinetNotFoundContext(location: string): boolean {
   return false;
 }
 
-function CabinetNotFoundChrome({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex min-h-[100dvh] w-full flex-col bg-background text-foreground">
-      <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div className="app-page-cabinet flex h-14 items-center justify-between gap-3">
-          <Link
-            href="/dashboard"
-            className="text-2xl font-black tracking-tight text-foreground"
-            aria-label={brandContent.name}
-          >
-            {brandContent.name}
-          </Link>
-        </div>
-      </header>
-      <main className="flex min-h-0 flex-1 flex-col">{children}</main>
-    </div>
-  );
+function isLandingNotFoundInLayout(): boolean {
+  return __APRLY_APP__ === "landing" || __APRLY_APP__ === "mono";
 }
 
 export default function NotFound() {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const cabinetContext = isCabinetNotFoundContext(location);
+  const landingInLayout = !cabinetContext && isLandingNotFoundInLayout();
+
+  const onCreateSavingPlan = useCallback(() => {
+    navigate(createPlanHref("/dashboard?tab=home"));
+  }, [navigate]);
+
+  const copyright = footerContent.copyrightTemplate.replace(
+    "{year}",
+    String(new Date().getFullYear()),
+  );
+
+  const onNavigateAnchor = useCallback(
+    (href: string) => {
+      if (!href.startsWith("#")) {
+        navigate(href);
+        return;
+      }
+      if (location !== "/") {
+        navigate(`/${href}`);
+        return;
+      }
+      const el = document.getElementById(href.slice(1));
+      el?.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+    [location, navigate],
+  );
+
+  const onGetStarted = useCallback(() => {
+    onNavigateAnchor("#optimizer");
+  }, [onNavigateAnchor]);
 
   const section = (
     <NotFoundSection
-      className={cn(!cabinetContext && "min-h-[50dvh] bg-[#F8FCFE]")}
+      className={cn(!cabinetContext && !landingInLayout && "min-h-[50dvh] bg-[var(--page-bg)]")}
     />
   );
 
   if (cabinetContext) {
-    return <CabinetNotFoundChrome>{section}</CabinetNotFoundChrome>;
+    return (
+      <div className="flex min-h-[100dvh] w-full flex-col bg-[var(--page-bg)] text-[var(--neutral-theme-900)]">
+        <CabinetHeader
+          activeTab="home"
+          onTabChange={() => {}}
+          showTabs={false}
+          onCreateSavingPlan={onCreateSavingPlan}
+          isOffline={false}
+        />
+        <main className="flex min-h-0 flex-1 flex-col">{section}</main>
+        <LandingFooter copyright={copyright} homeHref="/dashboard?tab=home" />
+      </div>
+    );
   }
 
-  return section;
+  if (landingInLayout) {
+    return section;
+  }
+
+  return (
+    <div className="flex min-h-[100dvh] w-full flex-col bg-[var(--page-bg)] text-[var(--neutral-theme-900)]">
+      <LandingHeader onGetStarted={onGetStarted} onNavigateAnchor={onNavigateAnchor} />
+      <main className="flex min-h-0 flex-1 flex-col">{section}</main>
+      <LandingFooter copyright={copyright} />
+    </div>
+  );
 }

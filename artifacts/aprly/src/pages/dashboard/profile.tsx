@@ -17,6 +17,7 @@ import { dashboardTabPath } from "@/lib/dashboard-tab-url";
 import { toast } from "@/hooks/use-toast";
 import { useAuditReturnUrl } from "@/lib/use-audit-return-url";
 import { useDashboardSubscription } from "@/lib/use-dashboard-subscription";
+import { useCreatePlanViaPlaid } from "@/lib/use-create-plan-via-plaid";
 
 function ProfileAccountAccessCard({
   subscriptionActive,
@@ -50,6 +51,9 @@ export default function DashboardProfilePage() {
 
   const { auditSessionId, clearAuditSession } = useAuditReturnUrl(onCheckoutCancel);
   const subscription = useDashboardSubscription(auditSessionId);
+  const { startCreatePlan, isCreatingPlan } = useCreatePlanViaPlaid({
+    returnTo: "/dashboard?tab=dashboard",
+  });
 
   useEffect(() => {
     if (auditSessionId && subscription.subscriptionActive) {
@@ -81,6 +85,8 @@ export default function DashboardProfilePage() {
       startCheckout={subscription.startCheckout}
       isCheckoutLoading={subscription.isCheckoutLoading}
       activateReturnPath={profileAuditCheckoutReturnPath()}
+      onCreateSavingPlan={startCreatePlan}
+      isCreatingPlan={isCreatingPlan}
     >
       <div className="app-page-cabinet max-w-none py-6 cabinet:max-w-none bp600:py-8">
         <div className="dash-account-layout space-y-4 bp600:space-y-5">

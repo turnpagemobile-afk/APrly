@@ -14,6 +14,7 @@ import { db, debtLeadsTable, partnersTable, usersTable } from "@workspace/db";
 import { requireAuth } from "../middleware/requireAuth";
 import {
   createDetailedDebtLead,
+  deletePlanLeadForUser,
   loadDebtLeadDetailForUser,
   loadDebtLeadForUser,
   loadLeadCards,
@@ -225,6 +226,31 @@ router.put("/me/plan-leads/:id/cards", requireAuth, async (req, res, next) => {
     }
 
     res.json(GetPlanLeadResponse.parse(detail));
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete("/me/plan-leads/:id", requireAuth, async (req, res, next) => {
+  try {
+    const userId = req.userId!;
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      res.status(400).json({ error: "Invalid plan lead id" });
+      return;
+    }
+
+    const result = await deletePlanLeadForUser(id, userId);
+    if (!result.ok) {
+      if (result.reason === "not_found") {
+        res.status(404).json({ error: "Plan lead not found" });
+        return;
+      }
+      res.status(400).json({ error: "Plan lead is not deletable" });
+      return;
+    }
+
+    res.status(204).send();
   } catch (err) {
     next(err);
   }

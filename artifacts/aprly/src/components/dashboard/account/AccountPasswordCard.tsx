@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { z } from "zod";
-import { Eye, EyeOff } from "lucide-react";
 import { ApiError } from "@workspace/api-client-react/custom-fetch";
 import { usePatchMePassword } from "@workspace/api-client-react";
 import { dashboardProfileContent } from "@/content/dashboard-profile";
 import { toast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import { AuthPasswordInput } from "@/components/shared/auth-form/AuthPasswordInput";
 import { AccountSubmitButton, AccountSuccessView } from "@/components/dashboard/account/AccountShared";
 
 function buildPasswordSchema(copy: typeof dashboardProfileContent.password) {
@@ -26,59 +25,6 @@ function buildPasswordSchema(copy: typeof dashboardProfileContent.password) {
     });
 }
 
-type PasswordFieldProps = {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  show: boolean;
-  onToggleShow: () => void;
-  hasError: boolean;
-  errorMessage?: string;
-  autoComplete: string;
-};
-
-function PasswordField({
-  id,
-  label,
-  value,
-  onChange,
-  show,
-  onToggleShow,
-  hasError,
-  errorMessage,
-  autoComplete,
-}: PasswordFieldProps) {
-  return (
-    <div className="space-y-2">
-      <label htmlFor={id} className="dash-account-field-label">
-        {label}
-      </label>
-      <div className="relative">
-        <input
-          id={id}
-          type={show ? "text" : "password"}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          autoComplete={autoComplete}
-          maxLength={128}
-          className={cn("dash-account-input pr-10", hasError && "dash-account-input--error")}
-          aria-invalid={hasError}
-        />
-        <button
-          type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--action-default-color)]"
-          onClick={onToggleShow}
-          aria-label={show ? "Hide password" : "Show password"}
-        >
-          {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-        </button>
-      </div>
-      {errorMessage ? <p className="dash-account-field-error">{errorMessage}</p> : null}
-    </div>
-  );
-}
-
 export function AccountPasswordCard() {
   const patchPassword = usePatchMePassword();
   const copy = dashboardProfileContent.password;
@@ -88,9 +34,6 @@ export function AccountPasswordCard() {
   const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showOld, setShowOld] = useState(false);
-  const [showNew, setShowNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -178,50 +121,41 @@ export function AccountPasswordCard() {
     <section className="dash-account-card">
       <h2 className="dash-account-section-title">{copy.title}</h2>
       <form className="space-y-4" onSubmit={(e) => void onSubmit(e)}>
-        <PasswordField
+        <AuthPasswordInput
           id="account-old-password"
           label={copy.oldPassword}
           value={oldPassword}
-          onChange={setOldPassword}
-          show={showOld}
-          onToggleShow={() => setShowOld((v) => !v)}
-          hasError={Boolean(oldError) || (submitAttempted && !oldPassword && !oldError)}
-          errorMessage={
-            oldError ??
-            (submitAttempted && !oldPassword ? fieldRequired : undefined)
-          }
+          onChange={(e) => setOldPassword(e.target.value)}
           autoComplete="current-password"
+          maxLength={128}
+          error={
+            oldError ?? (submitAttempted && !oldPassword ? fieldRequired : null)
+          }
         />
 
-        <PasswordField
+        <AuthPasswordInput
           id="account-new-password"
           label={copy.newPassword}
           value={password}
-          onChange={setPassword}
-          show={showNew}
-          onToggleShow={() => setShowNew((v) => !v)}
-          hasError={Boolean(newError) || (submitAttempted && !password && !newError)}
-          errorMessage={
-            newError ?? (submitAttempted && !password ? fieldRequired : undefined)
-          }
+          onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"
+          maxLength={128}
+          error={
+            newError ?? (submitAttempted && !password ? fieldRequired : null)
+          }
         />
 
-        <PasswordField
+        <AuthPasswordInput
           id="account-confirm-password"
           label={copy.confirmPassword}
           value={confirmPassword}
-          onChange={setConfirmPassword}
-          show={showConfirm}
-          onToggleShow={() => setShowConfirm((v) => !v)}
-          hasError={
-            Boolean(confirmError) || (submitAttempted && !confirmPassword && !confirmError)
-          }
-          errorMessage={
-            confirmError ??
-            (submitAttempted && !confirmPassword ? fieldRequired : undefined)
-          }
+          onChange={(e) => setConfirmPassword(e.target.value)}
           autoComplete="new-password"
+          maxLength={128}
+          error={
+            confirmError ??
+            (submitAttempted && !confirmPassword ? fieldRequired : null)
+          }
         />
 
         {showBanner ? (

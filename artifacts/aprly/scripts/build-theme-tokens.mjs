@@ -109,6 +109,11 @@ function tokenToCssValue(name, token, tokenMap = new Map()) {
     if (name.includes("line-width") || name.endsWith("-width")) return String(n);
     return `${n}px`;
   }
+  if (token.$type === "string") {
+    const s = token.$value;
+    if (typeof s !== "string") throw new Error(`Token "${name}": bad string`);
+    return JSON.stringify(s);
+  }
   throw new Error(`Token "${name}": unsupported $type "${token.$type}"`);
 }
 

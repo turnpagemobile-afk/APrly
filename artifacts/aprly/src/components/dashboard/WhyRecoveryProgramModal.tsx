@@ -1,5 +1,7 @@
 import { ShieldCheck, Umbrella, Wallet } from "lucide-react";
 import { activateAccountContent } from "@/content/activate-account";
+import { dashDialogRadiusClassName } from "@/lib/dashboard-dialog-styles";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +27,7 @@ export function WhyRecoveryProgramModal({ open, onClose }: WhyRecoveryProgramMod
       }}
     >
       <DialogContent
-        className="dash-modal-panel dash-modal-panel--wide"
+        className={cn("dash-modal-panel dash-modal-panel--wide", dashDialogRadiusClassName)}
         overlayClassName="dash-modal-overlay"
         closeClassName="dash-modal-close data-[state=open]:bg-transparent data-[state=open]:text-[var(--action-default-color)]"
       >

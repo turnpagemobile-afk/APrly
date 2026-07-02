@@ -1,0 +1,341 @@
+/**
+ * AUTO-GENERATED. Do not edit by hand.
+ * Source: artifacts/aprly/design-tokens/textStyles.json (Figma text styles)
+ * Regenerate: pnpm --filter @workspace/aprly run sync-design && pnpm tokens
+ *
+ * Colors are NOT part of text styles — use app-text-colors.css utilities.
+ */
+
+@layer components {
+  /* Figma: app/header/h1 */
+  .app-header-h1 {
+    font-family: var(--app-font-display);
+    font-size: 80px;
+    font-weight: 900;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/header/h2 */
+  .app-header-h2 {
+    font-family: var(--app-font-hero-display);
+    font-size: 64px;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/header/h2-bold-italic */
+  .app-header-h2-bold-italic {
+    font-family: var(--app-font-hero-display);
+    font-size: 64px;
+    font-weight: 700;
+    font-style: italic;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/header/h3 */
+  .app-header-h3 {
+    font-family: var(--app-font-hero-display);
+    font-size: 50px;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/header/h3-bold-italic */
+  .app-header-h3-bold-italic {
+    font-family: var(--app-font-hero-display);
+    font-size: 50px;
+    font-weight: 700;
+    font-style: italic;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/header/h4 */
+  .app-header-h4 {
+    font-family: var(--app-font-hero-display);
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/header/h5 */
+  .app-header-h5 {
+    font-family: var(--app-font-hero-display);
+    font-size: 26px;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/header/h6 */
+  .app-header-h6 {
+    font-family: var(--app-font-hero-body);
+    font-size: 22px;
+    font-weight: 800;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/header/title-1 */
+  .app-header-title-1 {
+    font-family: var(--app-font-display);
+    font-size: 34px;
+    font-weight: 800;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/header/screen-title */
+  .app-header-screen-title {
+    font-family: var(--app-font-hero-body);
+    font-size: 26px;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/header/screen-title-bold */
+  .app-header-screen-title-bold {
+    font-family: var(--app-font-hero-body);
+    font-size: 26px;
+    font-weight: 800;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/header/subheadline-regular */
+  .app-header-subheadline-regular {
+    font-family: var(--app-font-hero-body);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/header/subheadline-bold */
+  .app-header-subheadline-bold {
+    font-family: var(--app-font-hero-body);
+    font-size: 20px;
+    font-weight: 800;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/text/p1-regular */
+  .app-text-p1-regular {
+    font-family: var(--app-font-hero-body);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/text/p1-bold */
+  .app-text-p1-bold {
+    font-family: var(--app-font-hero-body);
+    font-size: 18px;
+    font-weight: 800;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/text/p2-regular */
+  .app-text-p2-regular {
+    font-family: var(--app-font-hero-body);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/text/p2-bold */
+  .app-text-p2-bold {
+    font-family: var(--app-font-hero-body);
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 20px;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/text/p3-regular */
+  .app-text-p3-regular {
+    font-family: var(--app-font-hero-body);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/text/p3-bold */
+  .app-text-p3-bold {
+    font-family: var(--app-font-hero-body);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/text/badge-text */
+  .app-text-badge-text {
+    font-family: var(--app-font-hero-body);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: 0em;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/input/x1/input-x1-text */
+  .app-input-x1-input-x1-text {
+    font-family: var(--app-font-display);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/input/x1/input-x1-hint */
+  .app-input-x1-input-x1-hint {
+    font-family: var(--app-font-display);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/input/x1/input-x1-label */
+  .app-input-x1-input-x1-label {
+    font-family: var(--app-font-display);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/input/x1.5/input-x1.5-text */
+  .app-input-x1-5-input-x1-5-text {
+    font-family: var(--app-font-display);
+    font-size: 27px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/input/x1.5/input-x1.5-hint */
+  .app-input-x1-5-input-x1-5-hint {
+    font-family: var(--app-font-display);
+    font-size: 27px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/input/x1.5/input-x1.5-label */
+  .app-input-x1-5-input-x1-5-label {
+    font-family: var(--app-font-display);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/input/x2/input-x2-text */
+  .app-input-x2-input-x2-text {
+    font-family: var(--app-font-display);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/input/x2/input-x2-hint */
+  .app-input-x2-input-x2-hint {
+    font-family: var(--app-font-display);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/input/x2/input-x2-label */
+  .app-input-x2-input-x2-label {
+    font-family: var(--app-font-display);
+    font-size: 32px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  /* Figma: app/button/button-xxl */
+  .app-button-button-xxl {
+    font-family: var(--app-font-hero-body);
+    font-size: 36px;
+    font-weight: 800;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/button/button-xl */
+  .app-button-button-xl {
+    font-family: var(--app-font-hero-body);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/button/button-l-m */
+  .app-button-button-l-m {
+    font-family: var(--app-font-hero-body);
+    font-size: 18px;
+    font-weight: 800;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+
+  /* Figma: app/button/button-s */
+  .app-button-button-s {
+    font-family: var(--app-font-hero-body);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: normal;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+  }
+}

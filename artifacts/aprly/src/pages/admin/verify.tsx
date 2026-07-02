@@ -8,19 +8,19 @@ import {
   useAdminVerifyOtp,
 } from "@workspace/api-client-react";
 import { AdminAuthLayout } from "@/components/admin/AdminAuthLayout";
-import { adminContent } from "@/content/admin";
-import {
-  clearAdminChallenge,
-  readAdminChallenge,
-  saveAdminChallenge,
-} from "@/lib/admin-auth-flow";
-import { Button } from "@/components/ui/button";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { adminContent } from "@/content/admin";
 import { toast } from "@/hooks/use-toast";
+import {
+  clearAdminChallenge,
+  readAdminChallenge,
+  saveAdminChallenge,
+} from "@/lib/admin-auth-flow";
+import { cn } from "@/lib/utils";
 
 const RESEND_SECONDS = 59;
 
@@ -32,6 +32,8 @@ export default function AdminVerifyPage() {
   const resend = useAdminResendOtp();
   const [code, setCode] = useState("");
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [verifyError, setVerifyError] = useState(false);
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -43,9 +45,16 @@ export default function AdminVerifyPage() {
     return <Redirect to="/admin/login" />;
   }
 
+  const codeIncomplete = submitAttempted && code.length !== 6;
+  const codeInvalid = verifyError && code.length === 6;
+  const hasOtpError = codeIncomplete || codeInvalid;
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitAttempted(true);
+    setVerifyError(false);
     if (code.length !== 6) return;
+
     try {
       await verify.mutateAsync({
         data: { challengeToken: challenge.token, code },
@@ -54,11 +63,7 @@ export default function AdminVerifyPage() {
       await queryClient.invalidateQueries({ queryKey: getGetAdminMeQueryKey() });
       navigate("/admin/dashboard");
     } catch {
-      toast({
-        title: adminContent.verify.invalid,
-        description: adminContent.verify.invalidDescription,
-        variant: "destructive",
-      });
+      setVerifyError(true);
     }
   };
 
@@ -72,8 +77,8 @@ export default function AdminVerifyPage() {
       setSecondsLeft(RESEND_SECONDS);
     } catch {
       toast({
-        title: adminContent.verify.invalid,
-        description: adminContent.verify.invalidDescription,
+        title: "Resend failed",
+        description: adminContent.verify.errors.resendFailed,
         variant: "destructive",
       });
     }
@@ -81,51 +86,80 @@ export default function AdminVerifyPage() {
 
   return (
     <AdminAuthLayout>
-      <div className="mb-4 flex items-center gap-2">
-        <Button type="button" variant="ghost" size="icon" className="shrink-0" asChild>
-          <Link href="/admin/login" aria-label={adminContent.verify.backAria}>
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-        </Button>
-        <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-          {challenge.email}
-        </span>
+      <div className="admin-auth-verify-header">
+        <Link
+          href="/admin/login"
+          className="admin-auth-back-link text-title"
+          aria-label={adminContent.verify.backAria}
+        >
+          <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+        </Link>
+        <span className="admin-auth-email-badge app-text-p1-regular text-title">{challenge.email}</span>
       </div>
-      <h1 className="text-xl font-bold tracking-tight text-foreground">{adminContent.verify.title}</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        {adminContent.verify.description(challenge.email)}
-      </p>
-      <form className="mt-8 space-y-6" onSubmit={(e) => void onSubmit(e)}>
-        <InputOTP maxLength={6} value={code} onChange={setCode}>
-          <InputOTPGroup className="w-full justify-between">
+
+      <h1 className="app-header-h6 text-title mt-6">{adminContent.verify.title}</h1>
+      <p className="app-text-p1-regular text-average mt-2">{adminContent.verify.description}</p>
+
+      <form className="mt-6 space-y-5" onSubmit={(e) => void onSubmit(e)}>
+        <InputOTP
+          maxLength={6}
+          value={code}
+          onChange={(value) => {
+            setCode(value);
+            setVerifyError(false);
+          }}
+        >
+          <InputOTPGroup className="admin-auth-otp-group">
             {[0, 1, 2, 3, 4, 5].map((i) => (
-              <InputOTPSlot key={i} index={i} className="h-12 w-11 text-lg" />
+              <InputOTPSlot
+                key={i}
+                index={i}
+                className={cn("admin-auth-otp-slot", hasOtpError && "admin-auth-otp-slot--error")}
+              />
             ))}
           </InputOTPGroup>
         </InputOTP>
-        <Button
+
+        {codeIncomplete ? (
+          <div role="alert" className="admin-auth-verify-error">
+            {adminContent.verify.errors.codeRequired}
+          </div>
+        ) : null}
+
+        {codeInvalid ? (
+          <div role="alert" className="admin-auth-verify-error">
+            {adminContent.verify.errors.invalid}
+          </div>
+        ) : null}
+
+        <button
           type="submit"
-          className="w-full font-semibold"
-          disabled={code.length !== 6 || verify.isPending}
+          className="admin-auth-submit-btn app-button-button-l-m text-neutral-000"
+          disabled={verify.isPending}
         >
           {verify.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
           ) : (
             adminContent.verify.submit
           )}
-        </Button>
-        <p className="text-center text-sm text-muted-foreground">
-          Didn&apos;t receive the code?{" "}
+        </button>
+
+        <p className="app-text-p1-regular text-average text-center">
+          {adminContent.verify.resendPrompt}{" "}
           <button
             type="button"
-            className="font-semibold text-primary disabled:opacity-50"
+            className="admin-auth-resend-link uppercase"
             disabled={secondsLeft > 0 || resend.isPending}
             onClick={() => void onResend()}
           >
-            {secondsLeft > 0
-              ? adminContent.verify.resendWait(secondsLeft)
-              : adminContent.verify.resend}
+            {adminContent.verify.resend}
           </button>
+          {secondsLeft > 0 ? (
+            <span className="app-text-p1-regular text-average">
+              {" "}
+              {adminContent.verify.resendWait(secondsLeft)}
+            </span>
+          ) : null}
         </p>
       </form>
     </AdminAuthLayout>

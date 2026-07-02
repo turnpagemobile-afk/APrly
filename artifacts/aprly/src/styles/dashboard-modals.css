@@ -4,7 +4,7 @@
 
 @layer components {
   .dash-modal-overlay {
-    background: rgba(74, 96, 114, 0.92);
+    background: rgba(23, 105, 14, 0.35);
   }
 
   .dash-modal-panel {
@@ -15,6 +15,14 @@
 
   .dash-modal-panel--wide {
     @apply max-w-[min(100%-2rem,540px)] bp600:max-w-[560px];
+  }
+
+  .dash-modal-panel--name {
+    @apply max-w-[min(100%-2rem,420px)];
+  }
+
+  .dash-modal-panel--name .dash-modal-subtitle {
+    @apply mt-3;
   }
 
   .dash-modal-close {
@@ -37,7 +45,8 @@
 
   .dash-modal-price-banner {
     @apply mt-5 rounded-xl px-4 py-4 text-center;
-    background: var(--info-theme-100);
+    background: var(--primary-theme-100);
+    border: 1px solid var(--primary-theme-200);
   }
 
   .dash-modal-price-lead {
@@ -91,7 +100,7 @@
 
   .dash-modal-why-icon {
     @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-full;
-    background: var(--info-theme-100);
+    background: var(--primary-theme-100);
     color: var(--action-default-color);
   }
 
@@ -115,8 +124,8 @@
   }
 
   .dash-modal-partner-option--selected {
-    border-color: var(--secondary-theme-500);
-    background: color-mix(in srgb, var(--secondary-theme-500) 8%, white);
+    border-color: var(--action-default-color);
+    background: color-mix(in srgb, var(--primary-theme-100) 80%, white);
   }
 
   .dash-modal-partner-radio {
@@ -125,12 +134,12 @@
   }
 
   .dash-modal-partner-option--selected .dash-modal-partner-radio {
-    border-color: var(--secondary-theme-500);
+    border-color: var(--action-default-color);
   }
 
   .dash-modal-partner-radio-dot {
     @apply h-2.5 w-2.5 rounded-full opacity-0;
-    background: var(--secondary-theme-500);
+    background: var(--action-default-color);
   }
 
   .dash-modal-partner-option--selected .dash-modal-partner-radio-dot {
@@ -139,5 +148,28 @@
 
   .dash-modal-partner-name {
     @apply min-w-0 flex-1 truncate text-base font-bold text-[var(--neutral-theme-900)];
+  }
+
+  .dash-modal-field-label {
+    @apply mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--hint-text-color)];
+  }
+
+  .dash-modal-input {
+    @apply h-12 w-full rounded-lg border px-3 text-sm text-[var(--input-text-color)] shadow-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-theme-300)];
+    border-color: var(--input-default-border-color);
+    background: var(--input-default-bg-color);
+  }
+
+  .dash-modal-input:focus {
+    border-color: var(--input-focus-border-color);
+    background: var(--input-focus-bg-color);
+  }
+
+  .dash-modal-input--error {
+    border-color: var(--danger-theme-500);
+  }
+
+  .dash-modal-field-error {
+    @apply mt-1 text-xs text-[var(--danger-theme-500)];
   }
 }

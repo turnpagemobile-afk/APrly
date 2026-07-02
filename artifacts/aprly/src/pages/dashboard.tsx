@@ -7,6 +7,7 @@ import { DashboardHomeTab } from "@/components/dashboard/home/DashboardHomeTab";
 import { DashboardDetailTab } from "@/components/dashboard/DashboardDetailTab";
 import { DashboardTabErrorBoundary } from "@/components/dashboard/DashboardTabErrorBoundary";
 import { useDashboardSubscription } from "@/lib/use-dashboard-subscription";
+import { useCreatePlanViaPlaid } from "@/lib/use-create-plan-via-plaid";
 import { toast } from "@/hooks/use-toast";
 import { dashboardTabContent } from "@/content/dashboard-tab";
 import {
@@ -32,6 +33,9 @@ export default function DashboardPage() {
   const [auditSessionId, setAuditSessionId] = useState<string | null>(readAuditSessionFromUrl);
 
   const subscription = useDashboardSubscription(auditSessionId);
+  const { startCreatePlan, isCreatingPlan, loaderLabel } = useCreatePlanViaPlaid({
+    returnTo: "/dashboard?tab=dashboard",
+  });
 
   useEffect(() => {
     const onPopState = () => setActiveTab(readTabFromUrl());
@@ -92,6 +96,10 @@ export default function DashboardPage() {
     return <CabinetPageLoader />;
   }
 
+  if (isCreatingPlan) {
+    return <CabinetPageLoader label={loaderLabel} />;
+  }
+
   if (subscription.isSubscriptionError && !subscription.tabQuery.data) {
     return (
       <div className="app-page-cabinet py-16 text-center">
@@ -117,6 +125,8 @@ export default function DashboardPage() {
       subscriptionActive={subscription.subscriptionActive}
       startCheckout={subscription.startCheckout}
       isCheckoutLoading={subscription.isCheckoutLoading}
+      onCreateSavingPlan={startCreatePlan}
+      isCreatingPlan={isCreatingPlan}
     >
       <DashboardTabErrorBoundary>
         {activeTab === "dashboard" ? (
@@ -127,6 +137,8 @@ export default function DashboardPage() {
             summary={subscription.summary}
             isSubscriptionError={subscription.isSubscriptionError}
             isPollingReturn={subscription.isPollingReturn}
+            onCreateSavingPlan={startCreatePlan}
+            isCreatingPlan={isCreatingPlan}
           />
         ) : (
           <DashboardHomeTab onGoToDashboard={() => setTab("dashboard")} />

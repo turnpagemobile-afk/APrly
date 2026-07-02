@@ -1,0 +1,368 @@
+{
+  "fileName": "APrly (Green-beige)",
+  "textStyles": [
+    {
+      "name": "app/header/h1",
+      "fontFamily": "Inter Display",
+      "fontWeight": "Black",
+      "fontSize": 80,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/header/h2",
+      "fontFamily": "Fraunces",
+      "fontWeight": "SemiBold",
+      "fontSize": 64,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/header/h2-bold-italic",
+      "fontFamily": "Fraunces",
+      "fontWeight": "Bold Italic",
+      "fontSize": 64,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/header/h3",
+      "fontFamily": "Fraunces",
+      "fontWeight": "SemiBold",
+      "fontSize": 50,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/header/h3-bold-italic",
+      "fontFamily": "Fraunces",
+      "fontWeight": "Bold Italic",
+      "fontSize": 50,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/header/h4",
+      "fontFamily": "Fraunces",
+      "fontWeight": "SemiBold",
+      "fontSize": 40,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/header/h5",
+      "fontFamily": "Fraunces",
+      "fontWeight": "SemiBold",
+      "fontSize": 26,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/header/h6",
+      "fontFamily": "Figtree",
+      "fontWeight": "ExtraBold",
+      "fontSize": 22,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/header/title-1",
+      "fontFamily": "Inter Display",
+      "fontWeight": "ExtraBold",
+      "fontSize": 34,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/header/screen-title",
+      "fontFamily": "Figtree",
+      "fontWeight": "SemiBold",
+      "fontSize": 26,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/header/screen-title-bold",
+      "fontFamily": "Figtree",
+      "fontWeight": "ExtraBold",
+      "fontSize": 26,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/header/subheadline-regular",
+      "fontFamily": "Figtree",
+      "fontWeight": "Medium",
+      "fontSize": 20,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/header/subheadline-bold",
+      "fontFamily": "Figtree",
+      "fontWeight": "ExtraBold",
+      "fontSize": 20,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/text/p1-regular",
+      "fontFamily": "Figtree",
+      "fontWeight": "Medium",
+      "fontSize": 18,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/text/p1-bold",
+      "fontFamily": "Figtree",
+      "fontWeight": "ExtraBold",
+      "fontSize": 18,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/text/p2-regular",
+      "fontFamily": "Figtree",
+      "fontWeight": "Medium",
+      "fontSize": 14,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/text/p2-bold",
+      "fontFamily": "Figtree",
+      "fontWeight": "ExtraBold",
+      "fontSize": 14,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/text/p3-regular",
+      "fontFamily": "Figtree",
+      "fontWeight": "SemiBold",
+      "fontSize": 12,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/text/p3-bold",
+      "fontFamily": "Figtree",
+      "fontWeight": "Bold",
+      "fontSize": 12,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/text/badge-text",
+      "fontFamily": "Figtree",
+      "fontWeight": "Bold",
+      "fontSize": 10,
+      "letterSpacing": {
+        "unit": "PERCENT",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/input/x1/input-x1-text",
+      "fontFamily": "Inter Display",
+      "fontWeight": "Medium",
+      "fontSize": 18,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/input/x1/input-x1-hint",
+      "fontFamily": "Inter Display",
+      "fontWeight": "Medium",
+      "fontSize": 18,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/input/x1/input-x1-label",
+      "fontFamily": "Inter Display",
+      "fontWeight": "Medium",
+      "fontSize": 16,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/input/x1.5/input-x1.5-text",
+      "fontFamily": "Inter Display",
+      "fontWeight": "Medium",
+      "fontSize": 27,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/input/x1.5/input-x1.5-hint",
+      "fontFamily": "Inter Display",
+      "fontWeight": "Medium",
+      "fontSize": 27,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/input/x1.5/input-x1.5-label",
+      "fontFamily": "Inter Display",
+      "fontWeight": "Medium",
+      "fontSize": 24,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/input/x2/input-x2-text",
+      "fontFamily": "Inter Display",
+      "fontWeight": "Medium",
+      "fontSize": 36,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/input/x2/input-x2-hint",
+      "fontFamily": "Inter Display",
+      "fontWeight": "Medium",
+      "fontSize": 36,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/input/x2/input-x2-label",
+      "fontFamily": "Inter Display",
+      "fontWeight": "Medium",
+      "fontSize": 32,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "ORIGINAL"
+    },
+    {
+      "name": "app/button/button-xxl",
+      "fontFamily": "Figtree",
+      "fontWeight": "ExtraBold",
+      "fontSize": 36,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/button/button-xl",
+      "fontFamily": "Figtree",
+      "fontWeight": "ExtraBold",
+      "fontSize": 28,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/button/button-l-m",
+      "fontFamily": "Figtree",
+      "fontWeight": "ExtraBold",
+      "fontSize": 18,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    },
+    {
+      "name": "app/button/button-s",
+      "fontFamily": "Figtree",
+      "fontWeight": "ExtraBold",
+      "fontSize": 16,
+      "letterSpacing": {
+        "unit": "PIXELS",
+        "value": 0
+      },
+      "textCase": "UPPER"
+    }
+  ]
+}

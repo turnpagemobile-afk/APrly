@@ -3,9 +3,6 @@ import { progressContent, type ProgressRatePair } from "@/content/landing";
 import { ProgressRateBar, useProgressPillHeight } from "./ProgressRateBar";
 import { cn } from "@/lib/utils";
 
-const TITLE_BG = "var(--primary-theme-200)";
-const CHART_BG = "var(--primary-theme-100)";
-
 function heightPercents(rates: readonly ProgressRatePair[]) {
   const maxHigh = Math.max(...rates.map((r) => r.high), 1);
   return rates.map((r) => (r.high / maxHigh) * 100);
@@ -72,30 +69,22 @@ function ProgressRateChart({
 
 export function ProgressStatsSection() {
   return (
-    <section className="bg-[var(--page-bg)] px-4 py-10 bp840:py-14 bp1200:py-16">
+    <section className="bg-[var(--primary-theme-100)] px-4 py-10 bp840:py-14 bp1200:py-16">
       <div className="app-page-marketing">
         <div
           className={cn(
-            "overflow-hidden rounded-[28px]",
+            "overflow-hidden rounded-[28px] bg-white shadow-sm",
             "grid grid-cols-1",
-            "bp600:grid-cols-[minmax(0,34%)_minmax(0,1fr)]",
-            "bp840:grid-cols-[minmax(0,36%)_minmax(0,1fr)]",
-            "bp1200:grid-cols-[minmax(0,38%)_minmax(0,1fr)]",
+            "bp840:grid-cols-[minmax(0,42%)_minmax(0,1fr)]",
           )}
         >
-          <div
-            className="flex items-center px-5 py-6 bp600:min-h-[176px] bp600:px-6 bp600:py-8 bp840:min-h-[200px] bp840:px-7 bp840:py-9 bp1200:min-h-[228px] bp1200:px-9 bp1200:py-10"
-            style={{ backgroundColor: TITLE_BG }}
-          >
-            <h2 className="font-extrabold uppercase leading-[1.12] tracking-tight text-[var(--primary-theme-900)] text-base bp600:text-lg bp840:text-xl bp1200:text-2xl">
-              {progressContent.title}
-            </h2>
+          <div className="flex flex-col justify-center px-6 py-8 bp840:px-8 bp840:py-10 bp1200:px-10 bp1200:py-12">
+            <p className="app-text-p2-bold text-hint">{progressContent.subtitle}</p>
+            <h2 className="app-header-h4 text-title mt-3 bp840:mt-4">{progressContent.title}</h2>
+            <p className="app-text-p1-regular text-average mt-4 bp840:mt-5">{progressContent.body}</p>
           </div>
 
-          <div
-            className="flex flex-col justify-end px-5 pb-4 pt-5 bp600:min-h-[176px] bp600:px-6 bp600:pb-5 bp600:pt-6 bp840:min-h-[200px] bp840:px-7 bp840:pb-6 bp1200:min-h-[228px] bp1200:px-8"
-            style={{ backgroundColor: CHART_BG }}
-          >
+          <div className="flex flex-col justify-end bg-[var(--primary-theme-050)] px-5 pb-4 pt-5 bp840:px-7 bp840:pb-6 bp840:pt-8">
             <ProgressRateChart
               rates={progressContent.ratesWide}
               className="mx-auto hidden w-full max-w-md bp600:flex"
@@ -104,7 +93,7 @@ export function ProgressStatsSection() {
               rates={progressContent.ratesNarrow}
               className="mx-auto flex w-full max-w-xs bp600:hidden"
             />
-            <p className="mt-3 text-center text-[10px] leading-snug text-[var(--hint-text-color)] bp840:text-xs bp1200:text-sm">
+            <p className="app-text-p2-regular text-average mt-3 text-center">
               <span className="hidden bp600:inline">{progressContent.captionWide}</span>
               <span className="bp600:hidden">{progressContent.captionNarrow}</span>
             </p>

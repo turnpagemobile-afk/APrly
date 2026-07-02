@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "wouter";
-import { Handshake, Loader2, MoreHorizontal } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   getGetAdminPartnersQueryKey,
@@ -8,40 +7,26 @@ import {
   useGetAdminPartners,
   usePatchAdminPartner,
 } from "@workspace/api-client-react";
+import { AdminDataTable } from "@/components/admin/AdminDataTable";
 import { AdminListPageHeader } from "@/components/admin/AdminListPageHeader";
+import { AdminPartnerConfirmDialog } from "@/components/admin/AdminPartnerConfirmDialog";
+import { AdminPartnerRowMenu } from "@/components/admin/AdminPartnerRowMenu";
+import { AdminPartnerStatusBadge } from "@/components/admin/AdminPartnerStatusBadge";
+import { AdminTablePagination } from "@/components/admin/AdminTablePagination";
+import { AdminUsersSearchEmpty } from "@/components/admin/AdminUsersSearchEmpty";
+import { AdminUsersSearchStatus } from "@/components/admin/AdminUsersSearchStatus";
 import { adminContent } from "@/content/admin";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { adminAsset } from "@/lib/admin-assets";
 import { toast } from "@/hooks/use-toast";
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString(undefined, {
+function formatWhen(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleString(undefined, {
     day: "2-digit",
     month: "2-digit",
     year: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -51,10 +36,14 @@ function AdminPartnersContent() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deactivateId, setDeactivateId] = useState<number | null>(null);
+
+  const searchQuery = search.trim();
+  const isSearchActive = searchQuery.length > 0;
 
   const params = useMemo(
-    () => ({ search: search.trim(), page, pageSize }),
-    [search, page, pageSize],
+    () => ({ search: searchQuery, page, pageSize }),
+    [searchQuery, page, pageSize],
   );
 
   const { data, isLoading } = useGetAdminPartners(params, {
@@ -64,14 +53,18 @@ function AdminPartnersContent() {
   const patchPartner = usePatchAdminPartner();
   const deletePartner = useDeleteAdminPartner();
 
+  const lastPage = Math.max(1, Math.ceil((data?.total ?? 0) / pageSize));
+  const hasSearchResults = (data?.total ?? 0) > 0;
+  const showSearchEmpty = isSearchActive && !isLoading && data && !hasSearchResults;
+
   const invalidatePartners = () => {
     void queryClient.invalidateQueries({ queryKey: ["/api/admin/partners"] });
   };
 
-  const total = data?.total ?? 0;
-  const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
-  const to = Math.min(page * pageSize, total);
-  const lastPage = Math.max(1, Math.ceil(total / pageSize));
+  const clearSearch = () => {
+    setSearch("");
+    setPage(1);
+  };
 
   const setActive = async (id: number, isActive: boolean) => {
     try {
@@ -80,6 +73,16 @@ function AdminPartnersContent() {
     } catch {
       toast({ title: "Update failed", variant: "destructive" });
     }
+  };
+
+  const onDeactivateConfirm = async () => {
+    if (deactivateId == null) return;
+    await setActive(deactivateId, false);
+    setDeactivateId(null);
+  };
+
+  const onActivate = async (id: number) => {
+    await setActive(id, true);
   };
 
   const onDelete = async () => {
@@ -98,152 +101,128 @@ function AdminPartnersContent() {
     <div className="space-y-6">
       <AdminListPageHeader
         title={adminContent.partners.title}
-        icon={Handshake}
+        icon="partners"
         search={search}
+        searchPlaceholder={adminContent.partners.searchPlaceholder}
         onSearchChange={(v) => {
           setSearch(v);
           setPage(1);
         }}
+        actions={
+          <button type="button" disabled className="admin-partners-create-btn app-button-button-l-m">
+            <img
+              src={adminAsset("partners/plus.svg")}
+              alt=""
+              className="h-6 w-6"
+              aria-hidden="true"
+            />
+            {adminContent.partners.createPartner}
+          </button>
+        }
       />
 
-      {isLoading || !data ? (
-        <div className="flex min-h-[40vh] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
+      {isSearchActive && !isLoading && data ? (
+        <AdminUsersSearchStatus
+          message={
+            hasSearchResults
+              ? adminContent.users.searchResults(data.total, searchQuery)
+              : adminContent.users.noSearchResults(searchQuery)
+          }
+          onClear={clearSearch}
+        />
+      ) : null}
+
+      {showSearchEmpty ? (
+        <AdminUsersSearchEmpty />
       ) : (
         <>
-          <div className="overflow-x-auto rounded-xl border border-border/60 bg-card shadow-sm">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-14 text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.partners.rowNumber}
-                  </TableHead>
-                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.partners.company}
-                  </TableHead>
-                  <TableHead className="w-24 text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.partners.onReview}
-                  </TableHead>
-                  <TableHead className="w-24 text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.partners.inProgress}
-                  </TableHead>
-                  <TableHead className="w-28 text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.partners.created}
-                  </TableHead>
-                  <TableHead className="w-32 text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.partners.status}
-                  </TableHead>
-                  <TableHead className="w-12" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.partners.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground">
-                      No partners
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  data.partners.map((p, index) => (
-                    <TableRow key={p.id}>
-                      <TableCell className="font-medium">{(page - 1) * pageSize + index + 1}</TableCell>
-                      <TableCell className="font-semibold text-foreground">{p.name}</TableCell>
-                      <TableCell>{p.onReviewCount}</TableCell>
-                      <TableCell>{p.inProgressCount}</TableCell>
-                      <TableCell className="text-muted-foreground">{formatDate(p.createdAt)}</TableCell>
-                      <TableCell className="font-semibold">
-                        {p.isActive ? adminContent.partners.active : adminContent.partners.deactivated}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button type="button" variant="ghost" size="icon" aria-label="Actions">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link href={`/admin/partners/${p.id}`}>{adminContent.partners.menuView}</Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => void setActive(p.id, !p.isActive)}
-                              disabled={patchPartner.isPending}
-                            >
-                              {p.isActive ? adminContent.partners.menuDeactivate : adminContent.partners.menuActivate}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive"
-                              onClick={() => setDeleteId(p.id)}
-                            >
-                              {adminContent.partners.menuDelete}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>{adminContent.partners.rowsPerPage}</span>
-              <select
-                aria-label={adminContent.partners.rowsPerPage}
-                value={String(pageSize)}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setPage(1);
-                }}
-                className="h-9 w-[72px] rounded-md border border-input bg-transparent px-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-              >
-                {[10, 20, 50].map((n) => (
-                  <option key={n} value={String(n)}>
-                    {n}
-                  </option>
-                ))}
-              </select>
+          {isLoading || !data ? (
+            <div className="flex min-h-[40vh] items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage((x) => Math.max(1, x - 1))}
-              >
-                {adminContent.partners.prev}
-              </Button>
-              <span className="text-sm text-muted-foreground">{adminContent.partners.rangeOf(from, to, total)}</span>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={page >= lastPage}
-                onClick={() => setPage((x) => x + 1)}
-              >
-                {adminContent.partners.next}
-              </Button>
-            </div>
-          </div>
+          ) : (
+            <AdminDataTable>
+              <AdminDataTable.Scroll>
+                <AdminDataTable.Table>
+                  <AdminDataTable.Header>
+                    <AdminDataTable.HeadCell>{adminContent.partners.id}</AdminDataTable.HeadCell>
+                    <AdminDataTable.HeadCell>{adminContent.partners.company}</AdminDataTable.HeadCell>
+                    <AdminDataTable.HeadCell>{adminContent.partners.onReview}</AdminDataTable.HeadCell>
+                    <AdminDataTable.HeadCell>{adminContent.partners.inProgress}</AdminDataTable.HeadCell>
+                    <AdminDataTable.HeadCell>{adminContent.partners.created}</AdminDataTable.HeadCell>
+                    <AdminDataTable.HeadCell>{adminContent.partners.status}</AdminDataTable.HeadCell>
+                    <AdminDataTable.HeadCell className="w-12">
+                      <span className="sr-only">Actions</span>
+                    </AdminDataTable.HeadCell>
+                  </AdminDataTable.Header>
+                  <AdminDataTable.Body>
+                    {data.partners.length === 0 ? (
+                      <AdminDataTable.Row>
+                        <AdminDataTable.Cell colSpan={7}>{adminContent.partners.empty}</AdminDataTable.Cell>
+                      </AdminDataTable.Row>
+                    ) : (
+                      data.partners.map((p, index) => (
+                        <AdminDataTable.Row key={p.id}>
+                          <AdminDataTable.Cell>{(page - 1) * pageSize + index + 1}</AdminDataTable.Cell>
+                          <AdminDataTable.Cell bold>{p.name}</AdminDataTable.Cell>
+                          <AdminDataTable.Cell>{p.onReviewCount}</AdminDataTable.Cell>
+                          <AdminDataTable.Cell>{p.inProgressCount}</AdminDataTable.Cell>
+                          <AdminDataTable.Cell>{formatWhen(String(p.createdAt))}</AdminDataTable.Cell>
+                          <AdminDataTable.Cell>
+                            <AdminPartnerStatusBadge isActive={p.isActive} />
+                          </AdminDataTable.Cell>
+                          <AdminDataTable.Cell className="text-right">
+                            <AdminPartnerRowMenu
+                              partnerId={p.id}
+                              isActive={p.isActive}
+                              onDeactivate={() => setDeactivateId(p.id)}
+                              onActivate={() => void onActivate(p.id)}
+                              onDelete={() => setDeleteId(p.id)}
+                              disabled={patchPartner.isPending || deletePartner.isPending}
+                            />
+                          </AdminDataTable.Cell>
+                        </AdminDataTable.Row>
+                      ))
+                    )}
+                  </AdminDataTable.Body>
+                </AdminDataTable.Table>
+              </AdminDataTable.Scroll>
+              <AdminDataTable.Footer>
+                <AdminTablePagination
+                  page={page}
+                  lastPage={lastPage}
+                  pageSize={pageSize}
+                  onPageChange={setPage}
+                  onPageSizeChange={(size) => {
+                    setPageSize(size);
+                    setPage(1);
+                  }}
+                />
+              </AdminDataTable.Footer>
+            </AdminDataTable>
+          )}
         </>
       )}
 
-      <AlertDialog open={deleteId != null} onOpenChange={(o) => !o && setDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{adminContent.partners.deleteTitle}</AlertDialogTitle>
-            <AlertDialogDescription>{adminContent.partners.deleteDescription}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{adminContent.partners.cancel}</AlertDialogCancel>
-            <AlertDialogAction onClick={() => void onDelete()}>{adminContent.partners.confirmDelete}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AdminPartnerConfirmDialog
+        open={deleteId != null}
+        title={adminContent.partners.deleteTitle}
+        description={adminContent.partners.deleteDescription}
+        confirmLabel={adminContent.partners.confirmDelete}
+        pending={deletePartner.isPending}
+        onConfirm={() => void onDelete()}
+        onCancel={() => setDeleteId(null)}
+      />
+
+      <AdminPartnerConfirmDialog
+        open={deactivateId != null}
+        title={adminContent.partners.deactivateTitle}
+        description={adminContent.partners.deactivateDescription}
+        confirmLabel={adminContent.partners.confirmDeactivate}
+        pending={patchPartner.isPending}
+        onConfirm={() => void onDeactivateConfirm()}
+        onCancel={() => setDeactivateId(null)}
+      />
     </div>
   );
 }

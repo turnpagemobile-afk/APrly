@@ -11,6 +11,7 @@ export type GetAdminPartnerPlanLeadsLeadTab =
 
 export const GetAdminPartnerPlanLeadsLeadTab = {
   all: "all",
+  waiting: "waiting",
   on_review: "on_review",
   in_progress: "in_progress",
   won: "won",

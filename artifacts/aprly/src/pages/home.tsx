@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
 import { HeroSection } from "../components/landing/HeroSection";
-import { FunctionsSection } from "../components/landing/FunctionsSection";
 import { ProgressStatsSection } from "../components/landing/ProgressStatsSection";
 import { LandingThemeEffect } from "../components/landing/LandingThemeEffect";
 import { EasyStepsSection } from "../components/landing/EasyStepsSection";
@@ -10,7 +9,7 @@ import {
 } from "../components/landing/OptimizerSection";
 import { WhySection } from "../components/landing/WhySection";
 import { DashboardPreviewSection } from "../components/landing/DashboardPreviewSection";
-import { FirstStepsSection } from "../components/landing/FirstStepsSection";
+import { StatsSection } from "../components/landing/StatsSection";
 import { FaqSection } from "../components/landing/FaqSection";
 import { FooterCtaSection } from "../components/landing/FooterCtaSection";
 import { loadOptimizerSnapshot } from "@/lib/optimizerSnapshot";
@@ -76,16 +75,15 @@ export default function Home() {
   }, [focusOptimizerDebt]);
 
   return (
-    <div className="flex flex-col bg-[#F8FCFE] text-[#202226]">
+    <div className="flex flex-col bg-[var(--page-bg)] text-[var(--neutral-theme-900)]">
       <LandingThemeEffect />
       <HeroSection onSeeOptimizer={scrollToOptimizer} />
-      <FunctionsSection />
       <ProgressStatsSection />
-      <EasyStepsSection />
       <OptimizerSection ref={optimizerRef} onActivateClick={openSignupFromSnapshot} />
+      <EasyStepsSection />
       <WhySection />
       <DashboardPreviewSection />
-      <FirstStepsSection />
+      <StatsSection />
       <FaqSection />
       <FooterCtaSection onAuditClick={scrollToOptimizer} />
     </div>

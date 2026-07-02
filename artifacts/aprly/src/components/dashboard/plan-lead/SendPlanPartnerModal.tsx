@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import type { Partner } from "@workspace/api-client-react";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
+import { dashDialogRadiusClassName } from "@/lib/dashboard-dialog-styles";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -46,7 +47,7 @@ export function SendPlanPartnerModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="dash-modal-panel dash-modal-panel--wide"
+        className={cn("dash-modal-panel dash-modal-panel--wide", dashDialogRadiusClassName)}
         overlayClassName="dash-modal-overlay"
         closeClassName="dash-modal-close data-[state=open]:bg-transparent data-[state=open]:text-[var(--action-default-color)]"
       >

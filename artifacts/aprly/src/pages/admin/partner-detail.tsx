@@ -1,31 +1,28 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRoute } from "wouter";
 import { Loader2 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   GetAdminPartnerPlanLeadsLeadTab,
   getGetAdminPartnerPlanLeadsQueryKey,
   useGetAdminPartnerPlanLeads,
-  usePatchAdminPartner,
+  type AdminPartnerPlanLead,
 } from "@workspace/api-client-react";
-import { AdminBreadcrumbs } from "@/components/admin/AdminBreadcrumbs";
-import { AdminDetailTabs } from "@/components/admin/AdminDetailTabs";
-import { AdminInfoGrid } from "@/components/admin/AdminInfoGrid";
-import { AdminPartnerLeadCard } from "@/components/admin/AdminPartnerLeadCard";
+import { AdminPartnerDetailHeader } from "@/components/admin/AdminPartnerDetailHeader";
+import { AdminPartnerInfoCard } from "@/components/admin/AdminPartnerInfoCard";
+import { AdminPartnerLeadGroup } from "@/components/admin/AdminPartnerLeadGroup";
+import { AdminPartnerStatusCard } from "@/components/admin/AdminPartnerStatusCard";
+import { AdminTabBar } from "@/components/admin/AdminTabBar";
+import { AdminTablePagination } from "@/components/admin/AdminTablePagination";
 import { adminContent } from "@/content/admin";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "@/hooks/use-toast";
 
-type PartnerTabId = "details" | "on_review" | "in_progress" | "won" | "rejected";
+type PartnerTabId = "details" | "waiting" | "on_review" | "in_progress" | "won" | "rejected";
 
-const LEAD_TABS: PartnerTabId[] = ["on_review", "in_progress", "won", "rejected"];
+const LEAD_TABS: PartnerTabId[] = ["waiting", "on_review", "in_progress", "won", "rejected"];
 
 function tabFromSearch(): PartnerTabId {
   if (typeof window === "undefined") return "details";
   const raw = new URLSearchParams(window.location.search).get("tab");
+  if (raw === "details") return "details";
   if (raw && LEAD_TABS.includes(raw as PartnerTabId)) {
     return raw as PartnerTabId;
   }
@@ -47,12 +44,45 @@ function formatDateTime(iso: string) {
   });
 }
 
+function formatUserName(first?: string | null, last?: string | null) {
+  const a = (first ?? "").trim();
+  const b = (last ?? "").trim();
+  const s = `${a} ${b}`.trim();
+  return s || "—";
+}
+
+function groupLeadsByUser(leads: AdminPartnerPlanLead[]) {
+  const order: number[] = [];
+  const map = new Map<
+    number,
+    {
+      userId: number;
+      userName: string;
+      userEmail: string;
+      leads: AdminPartnerPlanLead[];
+    }
+  >();
+
+  for (const lead of leads) {
+    if (!map.has(lead.userId)) {
+      order.push(lead.userId);
+      map.set(lead.userId, {
+        userId: lead.userId,
+        userName: formatUserName(lead.firstName, lead.lastName),
+        userEmail: lead.userEmail,
+        leads: [],
+      });
+    }
+    map.get(lead.userId)!.leads.push(lead);
+  }
+
+  return order.map((userId) => map.get(userId)!);
+}
+
 function AdminPartnerDetailContent({ partnerId }: { partnerId: number }) {
-  const queryClient = useQueryClient();
-  const patch = usePatchAdminPartner();
   const [activeTab, setActiveTab] = useState<PartnerTabId>(tabFromSearch);
   const [leadsPage, setLeadsPage] = useState(1);
-  const [leadsPageSize, setLeadsPageSize] = useState(10);
+  const [leadsPageSize, setLeadsPageSize] = useState(5);
 
   useEffect(() => {
     setActiveTab(tabFromSearch());
@@ -74,15 +104,6 @@ function AdminPartnerDetailContent({ partnerId }: { partnerId: number }) {
     },
   });
 
-  const [name, setName] = useState("");
-  const [isActive, setIsActive] = useState(true);
-
-  useEffect(() => {
-    if (!data?.partner) return;
-    setName(data.partner.name);
-    setIsActive(data.partner.isActive ?? true);
-  }, [data?.partner]);
-
   useEffect(() => {
     if (activeTab !== "details") {
       setLeadsPage(1);
@@ -92,54 +113,31 @@ function AdminPartnerDetailContent({ partnerId }: { partnerId: number }) {
   const counts = data?.leadCounts;
   const tabs = useMemo(
     () => [
-      { id: "details", label: adminContent.partnerDetail.tabDetails },
+      { id: "details" as const, label: adminContent.partnerDetail.tabDetails },
+      { id: "waiting" as const, label: adminContent.partnerDetail.tabWaiting(counts?.waiting ?? 0) },
       {
-        id: "on_review",
+        id: "on_review" as const,
         label: adminContent.partnerDetail.tabOnReview(counts?.onReview ?? 0),
       },
       {
-        id: "in_progress",
+        id: "in_progress" as const,
         label: adminContent.partnerDetail.tabInProgress(counts?.inProgress ?? 0),
       },
-      { id: "won", label: adminContent.partnerDetail.tabWon(counts?.won ?? 0) },
+      { id: "won" as const, label: adminContent.partnerDetail.tabWon(counts?.won ?? 0) },
       {
-        id: "rejected",
+        id: "rejected" as const,
         label: adminContent.partnerDetail.tabRejected(counts?.rejected ?? 0),
       },
     ],
     [counts],
   );
 
-  const dirty =
-    data &&
-    (name.trim() !== data.partner.name || isActive !== (data.partner.isActive ?? true));
-
-  const onSave = async () => {
-    if (!data) return;
-    const n = name.trim();
-    if (!n) {
-      toast({ title: "Name required", variant: "destructive" });
-      return;
-    }
-    const payload: { name?: string; isActive?: boolean } = {};
-    if (n !== data.partner.name) payload.name = n;
-    if (isActive !== (data.partner.isActive ?? true)) payload.isActive = isActive;
-    if (Object.keys(payload).length === 0) return;
-    try {
-      await patch.mutateAsync({ id: partnerId, data: payload });
-      toast({ title: adminContent.partnerDetail.saved });
-      void queryClient.invalidateQueries({
-        queryKey: getGetAdminPartnerPlanLeadsQueryKey(partnerId),
-      });
-      void queryClient.invalidateQueries({ queryKey: ["/api/admin/partners"] });
-    } catch {
-      toast({ title: "Save failed", variant: "destructive" });
-    }
-  };
+  const leadGroups = useMemo(
+    () => (data?.planLeads ? groupLeadsByUser(data.planLeads) : []),
+    [data?.planLeads],
+  );
 
   const leadsTotal = data?.total ?? 0;
-  const leadsFrom = leadsTotal === 0 ? 0 : (leadsPage - 1) * leadsPageSize + 1;
-  const leadsTo = Math.min(leadsPage * leadsPageSize, leadsTotal);
   const leadsLastPage = Math.max(1, Math.ceil(leadsTotal / leadsPageSize));
 
   if (isLoading || !data) {
@@ -154,114 +152,53 @@ function AdminPartnerDetailContent({ partnerId }: { partnerId: number }) {
 
   return (
     <div className="space-y-6">
-      <AdminBreadcrumbs
-        segments={[
-          { label: adminContent.partnerDetail.breadcrumbPartners, href: "/admin/partners" },
-          { label: data.partner.name },
-        ]}
+      <AdminPartnerDetailHeader
+        partnerId={partnerId}
+        partnerName={data.partner.name}
+        isActive={partnerActive}
       />
 
-      <AdminDetailTabs tabs={tabs} activeId={activeTab} onChange={(id) => setActiveTab(id as PartnerTabId)} />
+      <AdminTabBar<PartnerTabId> tabs={tabs} value={activeTab} onChange={setActiveTab} />
 
       {activeTab === "details" ? (
         <div className="space-y-6">
-          <AdminInfoGrid
-            title={adminContent.partnerDetail.partnerInfoTitle}
-            fields={[
-              { label: adminContent.partnerDetail.fieldNumber, value: data.partner.id },
-              {
-                label: adminContent.partnerDetail.fieldRegisteredOn,
-                value: data.partner.createdAt ? formatDateTime(String(data.partner.createdAt)) : "—",
-              },
-              {
-                label: adminContent.partnerDetail.fieldStatus,
-                value: partnerActive
-                  ? adminContent.partners.active
-                  : adminContent.partners.deactivated,
-                valueClassName: partnerActive ? "text-primary" : undefined,
-              },
-            ]}
+          <AdminPartnerStatusCard active={partnerActive} />
+          <AdminPartnerInfoCard
+            partnerId={data.partner.id}
+            createdOn={
+              data.partner.createdAt ? formatDateTime(String(data.partner.createdAt)) : "—"
+            }
+            companyName={data.partner.name}
+            email="—"
           />
-
-          <section className="rounded-xl border border-border/60 bg-card p-5 shadow-sm">
-            <h2 className="mb-4 text-lg font-bold text-foreground">
-              {adminContent.partnerDetail.sectionProfile}
-            </h2>
-            <div className="grid max-w-md gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="partner-name">{adminContent.partnerDetail.nameLabel}</Label>
-                <Input id="partner-name" value={name} onChange={(e) => setName(e.target.value)} />
-              </div>
-              <div className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-3">
-                <span className="text-sm font-medium">{adminContent.partnerDetail.statusLabel}</span>
-                <Switch checked={isActive} onCheckedChange={setIsActive} />
-              </div>
-              <Button
-                type="button"
-                className="w-fit"
-                disabled={!dirty || patch.isPending}
-                onClick={() => void onSave()}
-              >
-                {adminContent.partnerDetail.save}
-              </Button>
-            </div>
-          </section>
         </div>
       ) : data.planLeads.length === 0 ? (
-        <p className="text-muted-foreground">{adminContent.partners.empty}</p>
+        <p className="text-muted-foreground">{adminContent.partners.listEmpty}</p>
       ) : (
-        <div className="space-y-6">
-          <ul className="space-y-4">
-            {data.planLeads.map((lead) => (
-              <li key={lead.id}>
-                <AdminPartnerLeadCard lead={lead} partnerId={partnerId} tab={activeTab} />
-              </li>
-            ))}
-          </ul>
+        <div className="space-y-8">
+          {leadGroups.map((group) => (
+            <AdminPartnerLeadGroup
+              key={group.userId}
+              userId={group.userId}
+              userName={group.userName}
+              userEmail={group.userEmail}
+              leads={group.leads}
+              partnerId={partnerId}
+              tab={activeTab}
+            />
+          ))}
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>{adminContent.partners.rowsPerPage}</span>
-              <select
-                aria-label={adminContent.partners.rowsPerPage}
-                value={String(leadsPageSize)}
-                onChange={(e) => {
-                  setLeadsPageSize(Number(e.target.value));
-                  setLeadsPage(1);
-                }}
-                className="h-9 w-[72px] rounded-md border border-input bg-transparent px-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-              >
-                {[10, 20, 50].map((n) => (
-                  <option key={n} value={String(n)}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={leadsPage <= 1}
-                onClick={() => setLeadsPage((p) => Math.max(1, p - 1))}
-              >
-                {adminContent.partners.prev}
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                {adminContent.partners.rangeOf(leadsFrom, leadsTo, leadsTotal)}
-              </span>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={leadsPage >= leadsLastPage}
-                onClick={() => setLeadsPage((p) => p + 1)}
-              >
-                {adminContent.partners.next}
-              </Button>
-            </div>
-          </div>
+          <AdminTablePagination
+            page={leadsPage}
+            lastPage={leadsLastPage}
+            pageSize={leadsPageSize}
+            onPageChange={setLeadsPage}
+            onPageSizeChange={(size) => {
+              setLeadsPageSize(size);
+              setLeadsPage(1);
+            }}
+            pageSizeOptions={[5, 10, 20]}
+          />
         </div>
       )}
     </div>

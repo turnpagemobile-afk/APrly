@@ -1,16 +1,8 @@
 import { useState } from "react";
 import type { LeadCardItem } from "@workspace/api-client-react";
 import { PlanLeadDetailCard } from "@/components/dashboard/plan-lead/PlanLeadDetailCard";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { AccountConfirmDialog } from "@/components/dashboard/account/AccountConfirmDialog";
+import { planLeadDetailContent } from "@/content/plan-lead-detail";
 
 type PlanLeadEditableCardsProps = {
   cards: LeadCardItem[];
@@ -24,8 +16,15 @@ export function PlanLeadEditableCards({
   isDeleting = false,
 }: PlanLeadEditableCardsProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+  const copy = planLeadDetailContent;
 
   if (!cards.length) return null;
+
+  const onConfirmDelete = () => {
+    if (pendingDeleteId == null) return;
+    onDeleteCard(pendingDeleteId);
+    setPendingDeleteId(null);
+  };
 
   return (
     <>
@@ -43,30 +42,16 @@ export function PlanLeadEditableCards({
         ))}
       </ul>
 
-      <AlertDialog
+      <AccountConfirmDialog
         open={pendingDeleteId != null}
         onOpenChange={(open) => !open && setPendingDeleteId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete card</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this card? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (pendingDeleteId != null) onDeleteCard(pendingDeleteId);
-                setPendingDeleteId(null);
-              }}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        title={copy.deleteCardConfirmTitle}
+        message={copy.deleteCardConfirmMessage}
+        confirmLabel={copy.deleteCardConfirm}
+        cancelLabel={copy.cancel}
+        onConfirm={onConfirmDelete}
+        isPending={isDeleting}
+      />
     </>
   );
 }

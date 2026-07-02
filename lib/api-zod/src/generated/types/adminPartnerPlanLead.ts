@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AdminUserPlanDisplayStatus } from "./adminUserPlanDisplayStatus";
+import type { HardshipPortal } from "./hardshipPortal";
 import type { LeadCardItem } from "./leadCardItem";
 import type { PlanLeadStatus } from "./planLeadStatus";
 
@@ -27,4 +28,5 @@ export interface AdminPartnerPlanLead {
   lastName?: string | null;
   sentToPartnerAt?: Date | null;
   createdAt: Date;
+  hardshipPortal?: HardshipPortal;
 }

@@ -1,22 +1,17 @@
 import { useMemo, useState } from "react";
 import { useLocation } from "wouter";
-import { Loader2, Users } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   getGetAdminUsersQueryKey,
   useGetAdminUsers,
 } from "@workspace/api-client-react";
+import { AdminDataTable } from "@/components/admin/AdminDataTable";
 import { AdminListPageHeader } from "@/components/admin/AdminListPageHeader";
+import { AdminTabBar } from "@/components/admin/AdminTabBar";
+import { AdminTablePagination } from "@/components/admin/AdminTablePagination";
+import { AdminUsersSearchEmpty } from "@/components/admin/AdminUsersSearchEmpty";
+import { AdminUsersSearchStatus } from "@/components/admin/AdminUsersSearchStatus";
 import { adminContent } from "@/content/admin";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 
 type Tab = "subscribed" | "unsubscribed";
 
@@ -45,9 +40,12 @@ function AdminUsersContent() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  const searchQuery = search.trim();
+  const isSearchActive = searchQuery.length > 0;
+
   const params = useMemo(
-    () => ({ tab, search: search.trim(), page, pageSize }),
-    [tab, search, page, pageSize],
+    () => ({ tab, search: searchQuery, page, pageSize }),
+    [tab, searchQuery, page, pageSize],
   );
 
   const { data, isLoading } = useGetAdminUsers(params, {
@@ -56,155 +54,114 @@ function AdminUsersContent() {
     },
   });
 
-  const total = data?.total ?? 0;
-  const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
-  const to = Math.min(page * pageSize, total);
-  const lastPage = Math.max(1, Math.ceil(total / pageSize));
+  const lastPage = Math.max(1, Math.ceil((data?.total ?? 0) / pageSize));
+  const hasSearchResults = (data?.total ?? 0) > 0;
+  const showSearchEmpty = isSearchActive && !isLoading && data && !hasSearchResults;
+
+  const clearSearch = () => {
+    setSearch("");
+    setPage(1);
+  };
 
   const onTab = (t: Tab) => {
     setTab(t);
     setPage(1);
   };
 
+  const tabs = useMemo(
+    () => [
+      { id: "subscribed" as const, label: adminContent.users.activeTab(data?.tabCounts.subscribed ?? 0) },
+      {
+        id: "unsubscribed" as const,
+        label: adminContent.users.nonactiveTab(data?.tabCounts.unsubscribed ?? 0),
+      },
+    ],
+    [data?.tabCounts.subscribed, data?.tabCounts.unsubscribed],
+  );
+
   return (
     <div className="space-y-6">
       <AdminListPageHeader
         title={adminContent.users.title}
-        icon={Users}
+        icon="users"
         search={search}
+        searchPlaceholder={adminContent.users.searchPlaceholder}
         onSearchChange={(v) => {
           setSearch(v);
           setPage(1);
         }}
       />
 
-      <div className="flex border-b border-border/60">
-        <button
-          type="button"
-          className={cn(
-            "flex-1 py-3 text-sm font-semibold transition-colors",
-            tab === "subscribed"
-              ? "border-b-2 border-primary text-[var(--tabs-title-selected)]"
-              : "text-muted-foreground hover:text-foreground",
-          )}
-          onClick={() => onTab("subscribed")}
-        >
-          {adminContent.users.subscribedTab(data?.tabCounts.subscribed ?? 0)}
-        </button>
-        <button
-          type="button"
-          className={cn(
-            "flex-1 py-3 text-sm font-semibold transition-colors",
-            tab === "unsubscribed"
-              ? "border-b-2 border-primary text-[var(--tabs-title-selected)]"
-              : "text-muted-foreground hover:text-foreground",
-          )}
-          onClick={() => onTab("unsubscribed")}
-        >
-          {adminContent.users.unsubscribedTab(data?.tabCounts.unsubscribed ?? 0)}
-        </button>
-      </div>
+      {isSearchActive && !isLoading && data ? (
+        <AdminUsersSearchStatus
+          message={
+            hasSearchResults
+              ? adminContent.users.searchResults(data.total, searchQuery)
+              : adminContent.users.noSearchResults(searchQuery)
+          }
+          onClear={clearSearch}
+        />
+      ) : null}
 
-      {isLoading || !data ? (
-        <div className="flex min-h-[40vh] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
+      {showSearchEmpty ? (
+        <AdminUsersSearchEmpty />
       ) : (
         <>
-          <div className="overflow-x-auto rounded-xl border border-border/60 bg-card shadow-sm">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-14 text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.users.rowNumber}
-                  </TableHead>
-                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.users.name}
-                  </TableHead>
-                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.users.email}
-                  </TableHead>
-                  <TableHead className="w-16 text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.users.activePlans}
-                  </TableHead>
-                  <TableHead className="w-20 text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.users.totalPlans}
-                  </TableHead>
-                  <TableHead className="text-xs font-medium uppercase text-muted-foreground">
-                    {adminContent.users.registrationDate}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.users.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">
-                      No users
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  data.users.map((u, index) => (
-                    <TableRow
-                      key={u.id}
-                      className="cursor-pointer hover:bg-muted/40"
-                      onClick={() => setLocation(`/admin/users/${u.id}`)}
-                    >
-                      <TableCell className="font-medium">{(page - 1) * pageSize + index + 1}</TableCell>
-                      <TableCell className="font-semibold text-foreground">
-                        {formatName(u.firstName ?? undefined, u.lastName ?? undefined)}
-                      </TableCell>
-                      <TableCell>{u.email}</TableCell>
-                      <TableCell>{u.level}</TableCell>
-                      <TableCell>{u.planCount}</TableCell>
-                      <TableCell className="text-muted-foreground">{formatWhen(u.createdAt)}</TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <AdminTabBar tabs={tabs} value={tab} onChange={onTab} />
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>{adminContent.partners.rowsPerPage}</span>
-              <select
-                aria-label={adminContent.partners.rowsPerPage}
-                value={String(pageSize)}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setPage(1);
-                }}
-                className="h-9 w-[72px] rounded-md border border-input bg-transparent px-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-              >
-                {[10, 20, 50].map((n) => (
-                  <option key={n} value={String(n)}>
-                    {n}
-                  </option>
-                ))}
-              </select>
+          {isLoading || !data ? (
+            <div className="flex min-h-[40vh] items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-              >
-                {adminContent.partners.prev}
-              </Button>
-              <span className="text-sm text-muted-foreground">{adminContent.partners.rangeOf(from, to, total)}</span>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={page >= lastPage}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                {adminContent.partners.next}
-              </Button>
-            </div>
-          </div>
+          ) : (
+            <AdminDataTable>
+              <AdminDataTable.Scroll>
+                <AdminDataTable.Table>
+                  <AdminDataTable.Header>
+                    <AdminDataTable.HeadCell>{adminContent.users.id}</AdminDataTable.HeadCell>
+                    <AdminDataTable.HeadCell>{adminContent.users.user}</AdminDataTable.HeadCell>
+                    <AdminDataTable.HeadCell>{adminContent.users.email}</AdminDataTable.HeadCell>
+                    <AdminDataTable.HeadCell>{adminContent.users.plans}</AdminDataTable.HeadCell>
+                    <AdminDataTable.HeadCell>{adminContent.users.registrationDate}</AdminDataTable.HeadCell>
+                  </AdminDataTable.Header>
+                  <AdminDataTable.Body>
+                    {data.users.length === 0 ? (
+                      <AdminDataTable.Row>
+                        <AdminDataTable.Cell colSpan={5}>{adminContent.users.empty}</AdminDataTable.Cell>
+                      </AdminDataTable.Row>
+                    ) : (
+                      data.users.map((u, index) => (
+                        <AdminDataTable.Row
+                          key={u.id}
+                          onClick={() => setLocation(`/admin/users/${u.id}`)}
+                        >
+                          <AdminDataTable.Cell>{(page - 1) * pageSize + index + 1}</AdminDataTable.Cell>
+                          <AdminDataTable.Cell bold>
+                            {formatName(u.firstName ?? undefined, u.lastName ?? undefined)}
+                          </AdminDataTable.Cell>
+                          <AdminDataTable.Cell>{u.email}</AdminDataTable.Cell>
+                          <AdminDataTable.Cell>{u.planCount}</AdminDataTable.Cell>
+                          <AdminDataTable.Cell>{formatWhen(u.createdAt)}</AdminDataTable.Cell>
+                        </AdminDataTable.Row>
+                      ))
+                    )}
+                  </AdminDataTable.Body>
+                </AdminDataTable.Table>
+              </AdminDataTable.Scroll>
+              <AdminDataTable.Footer>
+                <AdminTablePagination
+                  page={page}
+                  lastPage={lastPage}
+                  pageSize={pageSize}
+                  onPageChange={setPage}
+                  onPageSizeChange={(size) => {
+                    setPageSize(size);
+                    setPage(1);
+                  }}
+                />
+              </AdminDataTable.Footer>
+            </AdminDataTable>
+          )}
         </>
       )}
     </div>

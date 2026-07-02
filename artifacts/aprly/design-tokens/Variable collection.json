@@ -40,7 +40,7 @@
   },
   "button-corner-radius": {
     "$type": "number",
-    "$value": 12,
+    "$value": 150,
     "$extensions": {
       "com.figma.variableId": "VariableID:5007:31694",
       "com.figma.scopes": [
@@ -309,6 +309,276 @@
         "com.figma.scopes": [
           "ALL_SCOPES"
         ]
+      }
+    }
+  },
+  "texts": {
+    "faq": {
+      "faq-1-title": {
+        "$type": "string",
+        "$value": "What is APrly and how does it work?",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170707",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-1-text": {
+        "$type": "string",
+        "$value": "APrly is a 30-second debt audit. You connect your accounts securely through Plaid, and APrly shows you what  your interest is actually costing you compared to an 8% baseline — your Interest Waste. You get a Verified Audit  Packet summarizing it all, and, when you choose to, a consent-based introduction to a verified nonprofit credit counseling partner. APrly shows you the math; you decide what to do with it.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170708",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-2-title": {
+        "$type": "string",
+        "$value": "How is APrly different from debt settlement companies?",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170709",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-2-text": {
+        "$type": "string",
+        "$value": "Debt settlement companies typically charge fees, may ask you to stop paying creditors, and can damage your credit. APrly is different on purpose: we don’t settle, negotiate, or touch your accounts. We show you your numbers and connect you — only with your consent — to verified nonprofit credit counseling partners.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170710",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-3-title": {
+        "$type": "string",
+        "$value": "Is my financial data secure?",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170711",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-3-text": {
+        "$type": "string",
+        "$value": "Your accounts connect through Plaid, the bank-grade service used by many of the financial apps you already trust. APrly accesses only what it needs to run your audit, and we don’t sell your financial data.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170712",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-4-title": {
+        "$type": "string",
+        "$value": "Does running an audit affect my credit score? ",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170713",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-4-text": {
+        "$type": "string",
+        "$value": "No. Your audit is a read of your existing numbers, not an application for new credit. There’s no hard inquiry and no impact on your score.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170714",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-5-title": {
+        "$type": "string",
+        "$value": "Will APrly lower my interest rate?",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170715",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-5-text": {
+        "$type": "string",
+        "$value": "APrly doesn’t change your rates or negotiate with your lenders. What it does is make your rates and their real cost impossible to ignore — and connect you to verified nonprofit help that can work with you on a plan. The clarity is the product.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170716",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-6-title": {
+        "$type": "string",
+        "$value": "How much does APrly cost?",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170717",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-6-text": {
+        "$type": "string",
+        "$value": "APrly operates on a one-time fee of $39.00 for the \"6-Month Recovery Program\". This serves as your ongoing financial active-defense system to ensure banks play by the rules while you successfully melt your balances down to zero.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170718",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-7-title": {
+        "$type": "string",
+        "$value": "What happens after 6 months of using APrly?",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170719",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "faq-7-text": {
+        "$type": "string",
+        "$value": "Maintaining your secure connection for at least six months triggers the Month-6 Check-In. At this milestone in your recovery program, the platform provides a structured UI review to assess your improved financial standing. This check-in determines if you are now eligible to request even deeper hardship concessions and lower rates from your lenders.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9013:170720",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      }
+    },
+    "landing-why": {
+      "why-1-title": {
+        "$type": "string",
+        "$value": "Bank-level Security",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9009:169954",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "why-1-text": {
+        "$type": "string",
+        "$value": "Your accounts connect through Plaid, the bank-grade infrastructure behind many of the apps you already use. APrly reads what it needs to run your audit and never sells your financial data.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9006:169949",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "why-2-title": {
+        "$type": "string",
+        "$value": "No Credit Impact",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9009:169955",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "why-2-text": {
+        "$type": "string",
+        "$value": "Running your audit is not a credit application. There’s no hard pull and no effect on your score — it’s a read of  your numbers, not a request for new credit.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9006:169950",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "why-3-title": {
+        "$type": "string",
+        "$value": "Verified NonProfit Partners",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9009:169956",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "why-3-text": {
+        "$type": "string",
+        "$value": "When you’re ready for help, APrly connects you — with your consent — to verified nonprofit credit counseling partners, not to commission-driven debt settlement companies.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9006:169951",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "why-4-title": {
+        "$type": "string",
+        "$value": "Math-First, Not Shame-First ",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9009:169957",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "why-4-text": {
+        "$type": "string",
+        "$value": "We don’t think you’re bad with money. We think most people have never seen their numbers laid out clearly. APrly is built around that one idea: show the math, drop the judgment.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9006:169952",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "why-5-title": {
+        "$type": "string",
+        "$value": "No Sales Pressure",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9009:169958",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
+      },
+      "why-5-text": {
+        "$type": "string",
+        "$value": "Running your audit doesn’t put you in a sales funnel. There’s no closer waiting to call you, no pitch to sit through. You see your numbers and decide what’s next.",
+        "$extensions": {
+          "com.figma.variableId": "VariableID:9006:169953",
+          "com.figma.scopes": [
+            "ALL_SCOPES"
+          ],
+          "com.figma.type": "string"
+        }
       }
     }
   },

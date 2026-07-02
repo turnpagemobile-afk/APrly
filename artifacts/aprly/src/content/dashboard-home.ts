@@ -16,7 +16,7 @@ export const cabinetHomeContent = {
 } as const;
 
 export const dashboardPromoContent = {
-  bannerTitle: "APrly. SYNC EVERYWHERE.",
+  bannerTitle: "APrly. Sync Everywhere.",
   bannerBody:
     "Full APrly experience on both iOS and Android. Get easy access to APrly in a way that works best for you.",
   title: "APrly. Sync Everywhere.",
