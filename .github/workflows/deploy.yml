@@ -20,6 +20,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  notify-skipped:
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event_name == 'workflow_run' &&
+          github.event.workflow_run.head_branch == 'main' &&
+          github.event.workflow_run.conclusion != 'success' }}
+    steps:
+      - name: Report skipped deploy
+        run: |
+          echo "::warning::validate on main ended with '${{ github.event.workflow_run.conclusion }}' — deploy was skipped."
+          exit 1
+
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 50
