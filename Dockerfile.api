@@ -85,6 +85,7 @@ WORKDIR /app
 COPY --from=builder --chown=app:app /deploy/api-server/node_modules ./node_modules
 COPY --from=builder --chown=app:app /app/artifacts/api-server/dist ./dist
 COPY --from=builder --chown=app:app /app/artifacts/api-server/assets/aprly-logo.png ./assets/aprly-logo.png
+COPY --from=builder --chown=app:app /app/artifacts/api-server/assets/email/logo.png ./assets/email/logo.png
 
 USER app
 
