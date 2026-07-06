@@ -83,6 +83,31 @@ services:
         condition: service_healthy
     restart: "no"
 
+  # Daily GHL nurture + inactivity jobs (not run by `docker compose up`):
+  #   docker compose run --rm ghl-scheduler
+  ghl-scheduler:
+    platform: linux/amd64
+    build:
+      context: .
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      CI: "true"
+      DATABASE_URL: postgres://user:password@db:5432/aprly
+    volumes:
+      - .:/app
+      - app-node-modules:/app/node_modules
+    command: ["sh", "-c", "pnpm --filter @workspace/api-server run build && pnpm --filter @workspace/api-server run ghl-scheduler"]
+    depends_on:
+      install-deps:
+        condition: service_completed_successfully
+      db-migrate:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    restart: "no"
+
   api-server:
     platform: linux/amd64
     build:

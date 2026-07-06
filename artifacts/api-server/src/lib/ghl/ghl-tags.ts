@@ -9,7 +9,13 @@ export const GHL_TAGS = {
 } as const;
 
 export type GhlWebhookEventType =
-  | "plan_created"
+  | "nurture_unlock"
+  | "nurture_need_send"
+  | "inactivity_warning_free"
+  | "inactivity_warning_paid"
+  | "account_saved"
+  | "account_deleted"
+  | "payment_declined"
   | "plan_sent"
   | "partner_review_started"
   | "plan_denied"

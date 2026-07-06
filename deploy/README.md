@@ -173,6 +173,7 @@ After rollback, fix the bug on `petrychenko_dev` and merge a forward fix to
 | Re-run migrations only | `$COMPOSE --profile ops run --rm db-migrate` (applies SQL from `lib/db/migrations/` via `drizzle-kit migrate`) |
 | Local dev (repo root) | `pnpm run db:migrate` with `DATABASE_URL`, or `docker compose run --rm db-migrate` after new files in `lib/db/migrations/` |
 | Re-run seed only | `$COMPOSE --profile ops run --rm db-seed` (check logs for `[seed] admin user id=…`; `skip admin user` means `ADMIN_SEED_PASSWORD` was not passed into the container) |
+| Run GHL scheduler manually | `$COMPOSE --profile ops run --rm ghl-scheduler` (requires `GHL_ENABLED=true` in `.env.prod`; daily on prod via `/etc/cron.d/aprly-ghl-scheduler`) |
 | Quick row count | `$COMPOSE exec db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c 'SELECT count(*) FROM leads;'` |
 | Backup (tar+psql dump) | `$COMPOSE exec db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > /var/www/aprly/backups/aprly-$(date -u +%Y%m%dT%H%M%SZ).sql` |
 
@@ -286,6 +287,68 @@ Use `certbot renew` + re-copy PEMs + recreate `frontend`, or a `--deploy-hook`; 
 
 **Fix cron example:** files under `/etc/cron.d/` must include a user column, e.g.  
 `0 3 * * * root certbot renew -q --deploy-hook /usr/local/sbin/aprly-ssl-deploy.sh`
+
+### GHL daily scheduler (nurture + inactivity)
+
+One-shot job (nurture 7d, inactivity 6mo/14d, GHL queue replay). **Not** started by `docker compose up` — schedule via host cron once per day (e.g. 00:00 UTC).
+
+Prerequisites in `.env.prod`: `GHL_ENABLED=true`, all `GHL_*` vars (see `.env.example`). Requires `aprly-api:local` image from a normal deploy (`$COMPOSE build api-server`).
+
+#### Step 0 — smoke test (manual, once after deploy)
+
+```bash
+cd /var/www/aprly
+COMPOSE="docker compose -f docker-compose.prod.yml --env-file .env.prod"
+$COMPOSE --profile ops run --rm ghl-scheduler
+```
+
+Expect log `ghl scheduler completed` with `nurtureCount`, `warned`, `deleted`, `queueReplayed`, exit code 0. If `GHL_ENABLED=false`, expect `ghl scheduler skipped`.
+
+#### Step 1 — install cron (once on droplet)
+
+User `ubuntu` must be in group `docker` (`groups ubuntu | grep docker`).
+
+```bash
+sudo tee /etc/cron.d/aprly-ghl-scheduler >/dev/null <<'CRON'
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# APrly GHL scheduler — daily at 00:00 UTC
+0 0 * * * ubuntu cd /var/www/aprly && docker compose -f docker-compose.prod.yml --env-file .env.prod --profile ops run --rm ghl-scheduler >> /var/log/aprly-ghl-scheduler.log 2>&1
+CRON
+
+sudo chmod 644 /etc/cron.d/aprly-ghl-scheduler
+sudo touch /var/log/aprly-ghl-scheduler.log
+sudo chown ubuntu:ubuntu /var/log/aprly-ghl-scheduler.log
+```
+
+#### Step 2 — verify
+
+```bash
+# same command cron uses
+cd /var/www/aprly && docker compose -f docker-compose.prod.yml --env-file .env.prod --profile ops run --rm ghl-scheduler
+
+# after scheduled run
+tail -50 /var/log/aprly-ghl-scheduler.log
+```
+
+#### Step 3 — optional log rotation
+
+```bash
+sudo tee /etc/logrotate.d/aprly-ghl-scheduler >/dev/null <<'ROT'
+/var/log/aprly-ghl-scheduler.log {
+  weekly
+  rotate 8
+  compress
+  missingok
+  notifempty
+}
+ROT
+```
+
+See also `local_docs/GHL/workflows-setup.md` and [ghl-e2e-test-checklist.md](./ghl-e2e-test-checklist.md).
+
+**Повна покрокова інструкція GHL (workflows, custom fields, тести):** [ghl-panel-setup.md](./ghl-panel-setup.md).
 
 ## What is NOT here yet
 
