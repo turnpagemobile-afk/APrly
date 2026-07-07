@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForgotPasswordFlow } from "@/lib/forgot-password-context";
 import { Loader2 } from "lucide-react";
 import { goToCabinet } from "@/lib/app-navigation";
+import { readLoginReturnTo } from "@/lib/login-return-to";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLogin } from "@workspace/api-client-react";
 import { syncAuthSession, useAuth } from "@/lib/auth-session";
@@ -25,12 +26,16 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [authError, setAuthError] = useState(false);
+  const returnTo = useMemo(
+    () => readLoginReturnTo(window.location.search),
+    [],
+  );
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      goToCabinet();
+      goToCabinet(returnTo);
     }
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, returnTo]);
 
   if (!isLoading && isAuthenticated) {
     return null;
@@ -50,7 +55,7 @@ export default function LoginPage() {
     try {
       await login.mutateAsync({ data: { email, password } });
       await syncAuthSession(queryClient);
-      goToCabinet();
+      goToCabinet(returnTo);
     } catch {
       setAuthError(true);
     }

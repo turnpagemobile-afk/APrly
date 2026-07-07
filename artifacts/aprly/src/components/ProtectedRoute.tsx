@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Redirect } from "wouter";
 import { goToAdmin, goToLanding } from "@/lib/app-navigation";
+import { currentReturnToPath, loginHref } from "@/lib/login-return-to";
 import { useAuth } from "@/lib/auth-session";
 import { CabinetPageLoader } from "@/components/dashboard/CabinetPageLoader";
 
@@ -12,11 +13,12 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   }
 
   if (!isAuthenticated) {
+    const loginPath = loginHref(currentReturnToPath());
     if (__APRLY_APP__ === "cabinet") {
-      goToLanding("/login");
+      goToLanding(loginPath);
       return <CabinetPageLoader />;
     }
-    return <Redirect to="/login" />;
+    return <Redirect to={loginPath} />;
   }
 
   if (user?.role === "admin") {

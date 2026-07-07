@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import { db, debtLeadsTable, ghlSyncQueueTable, usersTable, type UserRow } from "@workspace/db";
 import { logger } from "../logger";
 import { getGhlConfig } from "./ghl-config";
@@ -14,6 +14,10 @@ const RETRY_DELAYS_MS = [1000, 3000, 9000] as const;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getAppBaseUrl(): string {
+  return (process.env["FRONTEND_ORIGIN"] ?? "http://localhost:5173").replace(/\/+$/, "");
 }
 
 function paidAuditValue(hasPaid: boolean): string {
@@ -54,6 +58,20 @@ async function planIndexForLead(userId: number, leadId: number): Promise<number>
   return idx >= 0 ? idx + 1 : rows.length;
 }
 
+async function newestUserLead(
+  userId: number,
+): Promise<{ leadId: number; planIndex: number } | null> {
+  const [row] = await db
+    .select({ id: debtLeadsTable.id })
+    .from(debtLeadsTable)
+    .where(eq(debtLeadsTable.userId, userId))
+    .orderBy(desc(debtLeadsTable.createdAt))
+    .limit(1);
+  if (!row) return null;
+  const planIndex = await planIndexForLead(userId, row.id);
+  return { leadId: row.id, planIndex };
+}
+
 function buildCustomFields(
   config: NonNullable<ReturnType<typeof getGhlConfig>>,
   fields: Partial<{
@@ -82,6 +100,7 @@ function buildCustomFields(
   if (fields.partnerName) {
     out.push({ id: cf.partnerName, value: fields.partnerName });
   }
+  out.push({ id: cf.appBaseUrl, value: getAppBaseUrl() });
 
   return out;
 }
@@ -156,6 +175,7 @@ function userWebhookPayload(
     event_type: eventType,
     email: user.email,
     has_paid_audit: Boolean(user.paidAuditAt),
+    app_base_url: getAppBaseUrl(),
     timestamp: isoNow(),
   };
 }
@@ -174,6 +194,7 @@ function leadWebhookPayload(
     lead_id: String(leadId),
     plan_index: planIndex,
     has_paid_audit: Boolean(user.paidAuditAt),
+    app_base_url: getAppBaseUrl(),
     timestamp: isoNow(),
   };
   if (partnerName) payload.partner_name = partnerName;
@@ -207,9 +228,19 @@ export async function ghlSyncRegistration(userId: number, attachedLeadCount: num
 
   const hasPlan = attachedLeadCount > 0;
   const tag = hasPlan ? GHL_TAGS.registeredWithPlan : GHL_TAGS.registeredNoPlan;
-  const customFields = hasPlan
-    ? buildCustomFields(config, { hasPaidAudit: Boolean(user.paidAuditAt) })
-    : [];
+  let customFields: GhlCustomFieldInput[] = [];
+
+  if (hasPlan) {
+    const lead = await newestUserLead(userId);
+    customFields = buildCustomFields(config, {
+      hasPaidAudit: Boolean(user.paidAuditAt),
+      ...(lead
+        ? { leadId: String(lead.leadId), planIndex: lead.planIndex }
+        : {}),
+    });
+  } else {
+    customFields = buildCustomFields(config, {});
+  }
 
   try {
     await ensureContact(user, [tag], customFields);

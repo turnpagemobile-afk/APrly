@@ -18,6 +18,7 @@ fi
 
 DELAY="${GHL_TEST_DELAY_SEC:-1}"
 TS="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+APP_BASE="${GHL_TEST_APP_BASE_URL:-https://dev.aprly.ai}"
 
 post() {
   event_type="$1"
@@ -34,19 +35,19 @@ post() {
 }
 
 # User-level events (no lead_id)
-post "payment_declined" "{\"event_type\":\"payment_declined\",\"email\":\"$EMAIL\",\"has_paid_audit\":false,\"timestamp\":\"$TS\"}"
-post "inactivity_warning_free" "{\"event_type\":\"inactivity_warning_free\",\"email\":\"$EMAIL\",\"has_paid_audit\":false,\"timestamp\":\"$TS\"}"
-post "inactivity_warning_paid" "{\"event_type\":\"inactivity_warning_paid\",\"email\":\"$EMAIL\",\"has_paid_audit\":true,\"timestamp\":\"$TS\"}"
-post "account_saved" "{\"event_type\":\"account_saved\",\"email\":\"$EMAIL\",\"timestamp\":\"$TS\"}"
-post "account_deleted" "{\"event_type\":\"account_deleted\",\"email\":\"$EMAIL\",\"timestamp\":\"$TS\"}"
+post "payment_declined" "{\"event_type\":\"payment_declined\",\"email\":\"$EMAIL\",\"has_paid_audit\":false,\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
+post "inactivity_warning_free" "{\"event_type\":\"inactivity_warning_free\",\"email\":\"$EMAIL\",\"has_paid_audit\":false,\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
+post "inactivity_warning_paid" "{\"event_type\":\"inactivity_warning_paid\",\"email\":\"$EMAIL\",\"has_paid_audit\":true,\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
+post "account_saved" "{\"event_type\":\"account_saved\",\"email\":\"$EMAIL\",\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
+post "account_deleted" "{\"event_type\":\"account_deleted\",\"email\":\"$EMAIL\",\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
 
 # Lead-level events
-post "nurture_unlock" "{\"event_type\":\"nurture_unlock\",\"email\":\"$EMAIL\",\"lead_id\":\"1\",\"plan_index\":1,\"has_paid_audit\":false,\"timestamp\":\"$TS\"}"
-post "nurture_need_send" "{\"event_type\":\"nurture_need_send\",\"email\":\"$EMAIL\",\"lead_id\":\"1\",\"plan_index\":1,\"has_paid_audit\":true,\"timestamp\":\"$TS\"}"
-post "plan_sent" "{\"event_type\":\"plan_sent\",\"email\":\"$EMAIL\",\"lead_id\":\"42\",\"plan_index\":1,\"has_paid_audit\":true,\"partner_name\":\"Test Partner\",\"timestamp\":\"$TS\"}"
-post "partner_review_started" "{\"event_type\":\"partner_review_started\",\"email\":\"$EMAIL\",\"lead_id\":\"42\",\"plan_index\":1,\"has_paid_audit\":true,\"partner_name\":\"Test Partner\",\"timestamp\":\"$TS\"}"
-post "plan_denied" "{\"event_type\":\"plan_denied\",\"email\":\"$EMAIL\",\"lead_id\":\"42\",\"plan_index\":1,\"has_paid_audit\":true,\"partner_name\":\"Test Partner\",\"timestamp\":\"$TS\"}"
-post "hardship_step" "{\"event_type\":\"hardship_step\",\"email\":\"$EMAIL\",\"lead_id\":\"42\",\"plan_index\":1,\"has_paid_audit\":true,\"partner_name\":\"Test Partner\",\"hardship_step_index\":2,\"timestamp\":\"$TS\"}"
-post "plan_won" "{\"event_type\":\"plan_won\",\"email\":\"$EMAIL\",\"lead_id\":\"42\",\"plan_index\":1,\"has_paid_audit\":true,\"partner_name\":\"Test Partner\",\"hardship_step_index\":5,\"timestamp\":\"$TS\"}"
+post "nurture_unlock" "{\"event_type\":\"nurture_unlock\",\"email\":\"$EMAIL\",\"lead_id\":\"1\",\"plan_index\":1,\"has_paid_audit\":false,\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
+post "nurture_need_send" "{\"event_type\":\"nurture_need_send\",\"email\":\"$EMAIL\",\"lead_id\":\"1\",\"plan_index\":1,\"has_paid_audit\":true,\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
+post "plan_sent" "{\"event_type\":\"plan_sent\",\"email\":\"$EMAIL\",\"lead_id\":\"42\",\"plan_index\":1,\"has_paid_audit\":true,\"partner_name\":\"Test Partner\",\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
+post "partner_review_started" "{\"event_type\":\"partner_review_started\",\"email\":\"$EMAIL\",\"lead_id\":\"42\",\"plan_index\":1,\"has_paid_audit\":true,\"partner_name\":\"Test Partner\",\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
+post "plan_denied" "{\"event_type\":\"plan_denied\",\"email\":\"$EMAIL\",\"lead_id\":\"42\",\"plan_index\":1,\"has_paid_audit\":true,\"partner_name\":\"Test Partner\",\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
+post "hardship_step" "{\"event_type\":\"hardship_step\",\"email\":\"$EMAIL\",\"lead_id\":\"42\",\"plan_index\":1,\"has_paid_audit\":true,\"partner_name\":\"Test Partner\",\"hardship_step_index\":2,\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
+post "plan_won" "{\"event_type\":\"plan_won\",\"email\":\"$EMAIL\",\"lead_id\":\"42\",\"plan_index\":1,\"has_paid_audit\":true,\"partner_name\":\"Test Partner\",\"hardship_step_index\":5,\"app_base_url\":\"$APP_BASE\",\"timestamp\":\"$TS\"}"
 
 echo "Done. Check GHL workflow Enrollment history / Execution logs for $EMAIL"

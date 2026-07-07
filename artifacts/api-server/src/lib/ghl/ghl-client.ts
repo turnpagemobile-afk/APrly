@@ -27,6 +27,7 @@ export type GhlWebhookPayload = {
   plan_index?: number;
   partner_name?: string;
   hardship_step_index?: number;
+  app_base_url?: string;
 };
 
 function ghlHeaders(apiKey: string): Record<string, string> {

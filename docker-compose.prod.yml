@@ -70,6 +70,7 @@ services:
       GHL_CF_LEAD_ID: ${GHL_CF_LEAD_ID:-}
       GHL_CF_PLAN_INDEX: ${GHL_CF_PLAN_INDEX:-}
       GHL_CF_PARTNER_NAME: ${GHL_CF_PARTNER_NAME:-}
+      GHL_CF_APP_BASE_URL: ${GHL_CF_APP_BASE_URL:-}
     depends_on:
       db:
         condition: service_healthy
@@ -158,6 +159,7 @@ services:
       GHL_CF_LEAD_ID: ${GHL_CF_LEAD_ID:-}
       GHL_CF_PLAN_INDEX: ${GHL_CF_PLAN_INDEX:-}
       GHL_CF_PARTNER_NAME: ${GHL_CF_PARTNER_NAME:-}
+      GHL_CF_APP_BASE_URL: ${GHL_CF_APP_BASE_URL:-}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
     depends_on:
       db:
