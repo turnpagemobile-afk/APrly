@@ -148,7 +148,19 @@ async function ensureContact(
   return result.contactId;
 }
 
-function webhookPayload(
+function userWebhookPayload(
+  user: UserRow,
+  eventType: GhlWebhookEventType,
+): GhlWebhookPayload {
+  return {
+    event_type: eventType,
+    email: user.email,
+    has_paid_audit: Boolean(user.paidAuditAt),
+    timestamp: isoNow(),
+  };
+}
+
+function leadWebhookPayload(
   user: UserRow,
   eventType: GhlWebhookEventType,
   leadId: number,
@@ -158,15 +170,31 @@ function webhookPayload(
 ): GhlWebhookPayload {
   const payload: GhlWebhookPayload = {
     event_type: eventType,
+    email: user.email,
     lead_id: String(leadId),
     plan_index: planIndex,
     has_paid_audit: Boolean(user.paidAuditAt),
-    email: user.email,
     timestamp: isoNow(),
   };
   if (partnerName) payload.partner_name = partnerName;
   if (hardshipStepIndex !== undefined) payload.hardship_step_index = hardshipStepIndex;
   return payload;
+}
+
+async function postUserWebhook(
+  user: UserRow,
+  eventType: GhlWebhookEventType,
+  queueLabel: string,
+): Promise<void> {
+  const config = getGhlConfig();
+  if (!config) return;
+
+  const payload = userWebhookPayload(user, eventType);
+  const queuePayload = { ...payload };
+
+  await withRetry(queueLabel, user.id, queuePayload, async () => {
+    await postGhlWebhook(config, payload);
+  });
 }
 
 /** E1a / E1b — registration welcome */
@@ -190,7 +218,7 @@ export async function ghlSyncRegistration(userId: number, attachedLeadCount: num
   }
 }
 
-/** E2 — plan created */
+/** E2 — plan created (contact tag only; nurture email via scheduler after 7 days) */
 export async function ghlSyncPlanCreated(userId: number, leadId: number): Promise<void> {
   const config = getGhlConfig();
   if (!config) return;
@@ -207,12 +235,29 @@ export async function ghlSyncPlanCreated(userId: number, leadId: number): Promis
 
   try {
     await ensureContact(user, [GHL_TAGS.planCreated], customFields);
-
-    const payload = webhookPayload(user, "plan_created", leadId, planIndex);
-    await postGhlWebhook(config, payload);
   } catch (err) {
     logger.warn({ err, userId, leadId, event: "E2" }, "ghl plan created sync failed");
   }
+}
+
+/** E2 nurture — plan 7+ days without send to partner */
+export async function ghlSyncNurture(userId: number, leadId: number): Promise<void> {
+  const config = getGhlConfig();
+  if (!config) return;
+
+  const user = await loadUser(userId);
+  if (!user) return;
+
+  const planIndex = await planIndexForLead(userId, leadId);
+  const eventType: GhlWebhookEventType = user.paidAuditAt
+    ? "nurture_need_send"
+    : "nurture_unlock";
+  const payload = leadWebhookPayload(user, eventType, leadId, planIndex);
+  const queuePayload = { ...payload };
+
+  await withRetry(eventType, userId, queuePayload, async () => {
+    await postGhlWebhook(config, payload);
+  });
 }
 
 /** E3 — $39 paid (transactional, with retry) */
@@ -236,6 +281,59 @@ export async function ghlSyncPaidAudit(userId: number): Promise<void> {
   });
 }
 
+/** E3 — payment declined */
+export async function ghlSyncPaymentDeclined(userId: number): Promise<void> {
+  const config = getGhlConfig();
+  if (!config) return;
+
+  const user = await loadUser(userId);
+  if (!user) return;
+
+  await postUserWebhook(user, "payment_declined", "payment_declined");
+}
+
+/** Inactivity warning 04a / 04b */
+export async function ghlSyncInactivityWarning(userId: number): Promise<void> {
+  const config = getGhlConfig();
+  if (!config) return;
+
+  const user = await loadUser(userId);
+  if (!user) return;
+
+  const eventType: GhlWebhookEventType = user.paidAuditAt
+    ? "inactivity_warning_paid"
+    : "inactivity_warning_free";
+
+  await postUserWebhook(user, eventType, eventType);
+}
+
+/** Account saved after inactivity warning (05) */
+export async function ghlSyncAccountSaved(userId: number): Promise<void> {
+  const config = getGhlConfig();
+  if (!config) return;
+
+  const user = await loadUser(userId);
+  if (!user) return;
+
+  await postUserWebhook(user, "account_saved", "account_saved");
+}
+
+/** Account deleted (03) — call before user row is removed */
+export async function ghlSyncAccountDeleted(user: UserRow): Promise<void> {
+  const config = getGhlConfig();
+  if (!config) return;
+
+  const payload = userWebhookPayload(user, "account_deleted");
+  const queuePayload = { ...payload };
+
+  try {
+    await postGhlWebhook(config, payload);
+  } catch (err) {
+    await enqueueFailedSync("account_deleted", user.id, queuePayload, err);
+    logger.warn({ err, userId: user.id, event: "account_deleted" }, "ghl account deleted sync failed");
+  }
+}
+
 /** E4 — plan sent to partner (transactional, with retry) */
 export async function ghlSyncPlanSent(
   userId: number,
@@ -249,7 +347,7 @@ export async function ghlSyncPlanSent(
   if (!user) return;
 
   const planIndex = await planIndexForLead(userId, leadId);
-  const payload = webhookPayload(user, "plan_sent", leadId, planIndex, partnerName);
+  const payload = leadWebhookPayload(user, "plan_sent", leadId, planIndex, partnerName);
   const queuePayload = { ...payload };
 
   await withRetry("E4", userId, queuePayload, async () => {
@@ -290,7 +388,7 @@ async function ghlSyncAdminLeadEvent(
     partnerName,
   });
 
-  const payload = webhookPayload(
+  const payload = leadWebhookPayload(
     user,
     opts.eventType,
     leadId,
@@ -368,4 +466,26 @@ export async function ghlSyncPlanWon(
     { eventType: "plan_won", tags: [GHL_TAGS.planWon], hardshipStepIndex },
     "E8",
   );
+}
+
+export async function replayGhlSyncQueueItem(
+  eventType: string,
+  userId: number,
+  payload: Record<string, unknown>,
+): Promise<boolean> {
+  const config = getGhlConfig();
+  if (!config) return false;
+
+  if (eventType === "E3") {
+    await ghlSyncPaidAudit(userId);
+    return true;
+  }
+
+  if (typeof payload.event_type === "string" && typeof payload.email === "string") {
+    await postGhlWebhook(config, payload as GhlWebhookPayload);
+    return true;
+  }
+
+  logger.warn({ eventType, userId }, "ghl queue replay: unknown event type");
+  return false;
 }

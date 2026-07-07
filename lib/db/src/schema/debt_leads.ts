@@ -36,6 +36,7 @@ export const debtLeadsTable = pgTable(
       onDelete: "set null",
     }),
     sentToPartnerAt: timestamp("sent_to_partner_at", { withTimezone: true }),
+    nurtureSentAt: timestamp("nurture_sent_at", { withTimezone: true }),
     partnerAcceptedAt: timestamp("partner_accepted_at", { withTimezone: true }),
     hardshipStepsCompleted: integer("hardship_steps_completed").notNull().default(0),
     displayStatusChangedAt: timestamp("display_status_changed_at", { withTimezone: true })

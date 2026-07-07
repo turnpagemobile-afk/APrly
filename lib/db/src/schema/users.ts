@@ -13,6 +13,8 @@ export const usersTable = pgTable(
     stripeSubscriptionId: text("stripe_subscription_id"),
     paidAuditAt: timestamp("paid_audit_at", { withTimezone: true }),
     ghlContactId: text("ghl_contact_id"),
+    lastActiveAt: timestamp("last_active_at", { withTimezone: true }).defaultNow().notNull(),
+    inactivityWarningAt: timestamp("inactivity_warning_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [uniqueIndex("users_email_idx").on(table.email)],

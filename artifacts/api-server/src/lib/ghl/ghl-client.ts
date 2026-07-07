@@ -20,11 +20,11 @@ export type GhlUpsertContactResult = {
 
 export type GhlWebhookPayload = {
   event_type: GhlWebhookEventType;
-  lead_id: string;
-  plan_index: number;
-  has_paid_audit: boolean;
   email: string;
   timestamp: string;
+  has_paid_audit?: boolean;
+  lead_id?: string;
+  plan_index?: number;
   partner_name?: string;
   hardship_step_index?: number;
 };

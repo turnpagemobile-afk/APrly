@@ -85,6 +85,13 @@
       "when": 1779900000000,
       "tag": "0011_ghl_integration",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1780000000000,
+      "tag": "0012_ghl_task1_activity_nurture",
+      "breakpoints": true
     }
   ]
 }

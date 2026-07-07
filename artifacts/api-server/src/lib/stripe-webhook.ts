@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import Stripe from "stripe";
 import { getStripe } from "./stripe-client";
 import { finalizeAuditCheckoutIfNeeded } from "./stripe-audit-finalize";
+import { handleAuditPaymentDeclined } from "./stripe-audit-declined";
 import { finalizeCheckoutSessionIfNeeded } from "./stripe-checkout-finalize";
 import { finalizeSubscriptionRenewalIfNeeded } from "./stripe-subscription-renewal";
 import { syncUserSubscriptionFromStripe } from "./subscription-status";
@@ -33,6 +34,16 @@ export async function handleStripeWebhook(req: Request, res: Response): Promise<
     await finalizeCheckoutSessionIfNeeded(session);
     await finalizeAuditCheckoutIfNeeded(session);
     await finalizeSubscriptionRenewalIfNeeded(session);
+  }
+
+  if (event.type === "checkout.session.async_payment_failed") {
+    const session = event.data.object as Stripe.Checkout.Session;
+    await handleAuditPaymentDeclined(session);
+  }
+
+  if (event.type === "payment_intent.payment_failed") {
+    const intent = event.data.object as Stripe.PaymentIntent;
+    await handleAuditPaymentDeclined(intent);
   }
 
   if (

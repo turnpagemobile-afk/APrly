@@ -7,6 +7,7 @@
     "dev": "export NODE_ENV=development && pnpm run build && pnpm run start",
     "build": "node ./build.mjs",
     "start": "node --enable-source-maps ./dist/index.mjs",
+    "ghl-scheduler": "node --enable-source-maps ./dist/scripts/run-ghl-scheduler.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "sync-email-assets": "node ./scripts/sync-email-assets-from-local-docs.mjs"
   },

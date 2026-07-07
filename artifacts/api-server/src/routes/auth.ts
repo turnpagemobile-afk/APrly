@@ -28,6 +28,8 @@ import {
 } from "@workspace/api-zod";
 import { attachGuestLeadsToUser } from "../lib/debt-lead-service";
 import { ghlCountUserLeads, ghlSyncRegistration } from "../lib/ghl/ghl-sync";
+import { touchUserActivity } from "../lib/user-activity";
+import { deleteUserAccount } from "../lib/delete-user-account";
 import {
   db,
   registrationIntentsTable,
@@ -163,6 +165,9 @@ router.post("/auth/register", async (req, res, next) => {
     }
 
     await attachGuestLeadsToUser(inserted.id, guestSessionId);
+    void touchUserActivity(inserted.id).catch((err) =>
+      logger.warn({ err, userId: inserted.id }, "touch user activity on register failed"),
+    );
     void ghlCountUserLeads(inserted.id)
       .then((leadCount) => ghlSyncRegistration(inserted.id, leadCount))
       .catch((err) => logger.warn({ err, userId: inserted.id }, "ghl E1 sync failed"));
@@ -334,6 +339,9 @@ router.post("/auth/login", async (req, res, next) => {
     }
 
     await issueAuthCookies(res, row.id, row.role);
+    void touchUserActivity(row.id).catch((err) =>
+      logger.warn({ err, userId: row.id }, "touch user activity on login failed"),
+    );
     res.json(LoginResponse.parse(await buildMeResponse(row)));
   } catch (err) {
     next(err);
@@ -466,6 +474,9 @@ router.post("/auth/reset-password", async (req, res, next) => {
       .where(eq(passwordResetTokensTable.id, tokenRow.id));
 
     await issueAuthCookies(res, user.id, user.role);
+    void touchUserActivity(user.id).catch((err) =>
+      logger.warn({ err, userId: user.id }, "touch user activity on reset-password failed"),
+    );
     res.json(LoginResponse.parse(await buildMeResponse(user)));
   } catch (err) {
     next(err);
@@ -528,6 +539,9 @@ router.post("/auth/refresh", async (req, res, next) => {
     }
 
     await issueAuthCookies(res, user.id, user.role);
+    void touchUserActivity(user.id).catch((err) =>
+      logger.warn({ err, userId: user.id }, "touch user activity on refresh failed"),
+    );
     res.json(RefreshSessionResponse.parse(await buildMeResponse(user)));
   } catch (err) {
     next(err);
@@ -626,23 +640,11 @@ router.patch("/auth/me/password", requireAuth, async (req, res, next) => {
 router.delete("/auth/me", requireAuth, async (req, res, next) => {
   try {
     const id = req.userId!;
-    const [row] = await db.select().from(usersTable).where(eq(usersTable.id, id)).limit(1);
-    if (!row) {
+    const deleted = await deleteUserAccount(id);
+    if (!deleted) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }
-
-    const subId = row.stripeSubscriptionId?.trim();
-    if (subId) {
-      try {
-        const stripe = getStripe();
-        await stripe.subscriptions.cancel(subId);
-      } catch (stripeErr) {
-        logger.warn({ err: stripeErr, userId: id, subId }, "Stripe subscription cancel failed during account delete");
-      }
-    }
-
-    await db.delete(usersTable).where(eq(usersTable.id, id));
     clearAuthCookies(res);
     res.status(204).send();
   } catch (err) {
