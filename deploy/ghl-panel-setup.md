@@ -85,6 +85,7 @@
 | Lead ID | `{{inboundWebhookRequest.lead_id}}` |
 | Plan index | `{{inboundWebhookRequest.plan_index}}` |
 | Partner name | `{{inboundWebhookRequest.partner_name}}` |
+| App base URL | `{{inboundWebhookRequest.app_base_url}}` |
 
 Якщо merge field не працює — **Execution logs** після тесту (може бути `trigger.inboundWebhookRequest.*`).
 
@@ -127,6 +128,7 @@
   "plan_index": 1,
   "has_paid_audit": true,
   "partner_name": "Test",
+  "app_base_url": "https://dev.aprly.ai",
   "timestamp": "2026-07-03T12:00:00.000Z"
 }
 ```

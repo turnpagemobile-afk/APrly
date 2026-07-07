@@ -9,6 +9,7 @@ export type GhlConfig = {
     leadId: string;
     planIndex: string;
     partnerName: string;
+    appBaseUrl: string;
   };
 };
 
@@ -37,6 +38,7 @@ export function getGhlConfig(): GhlConfig | null {
       leadId: requireEnv("GHL_CF_LEAD_ID"),
       planIndex: requireEnv("GHL_CF_PLAN_INDEX"),
       partnerName: requireEnv("GHL_CF_PARTNER_NAME"),
+      appBaseUrl: requireEnv("GHL_CF_APP_BASE_URL"),
     },
   };
 }
