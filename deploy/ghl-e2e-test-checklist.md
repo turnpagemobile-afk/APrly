@@ -26,7 +26,18 @@
 | 10 | Admin: plan won | webhook `plan_won` | 11 |
 | 11 | 6 міс. неактивність | webhook `inactivity_warning_*` | 04a/04b |
 | 12 | Login після warn | webhook `account_saved` | 05 |
-| 13 | 14 днів без login | webhook `account_deleted` | 03 |
+| 13 | 14 днів без login | webhook `account_deleted` | 03 → **Delete Contact** |
+
+## Видалення акаунта (ручне)
+
+1. Зареєструвати тестового юзера на dev.aprly.ai (email має існувати в GHL Contacts).
+2. **Profile → Delete account** → підтвердити.
+3. **Frontend:** повне завантаження landing `/` (не білий екран).
+4. **GHL Execution logs:** `account_deleted` → Send Email 03 → **Delete Contact** (success).
+5. **GHL Contacts:** запис з email **відсутній**.
+6. Повторний login старим паролем — 401.
+
+Передумова workflow: на гілці `account_deleted` після Send Email 03 — крок **Delete Contact** (див. [ghl-panel-setup.md](./ghl-panel-setup.md)).
 
 ## Швидкі тести
 

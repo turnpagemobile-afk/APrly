@@ -39,3 +39,9 @@ export function normalizeAdminUrl(path: string): string {
 export function goToAdmin(path = "/admin/dashboard"): void {
   window.location.assign(normalizeAdminUrl(path));
 }
+
+export const ADMIN_LOGIN_PATH = "/admin/login";
+
+export function goToAdminLogin(): void {
+  window.location.assign(ADMIN_LOGIN_PATH);
+}

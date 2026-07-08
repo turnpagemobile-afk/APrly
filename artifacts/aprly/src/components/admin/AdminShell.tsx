@@ -1,16 +1,12 @@
 import { useState, type ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { LogOut, Menu } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  getGetAdminMeQueryKey,
-  useAdminLogout,
-  useGetAdminMe,
-} from "@workspace/api-client-react";
+import { useAdminLogout, useGetAdminMe } from "@workspace/api-client-react";
 import { AdminNavIcon, type AdminNavIconName } from "@/components/admin/AdminNavIcon";
 import { adminContent } from "@/content/admin";
 import { brandContent } from "@/content/landing";
 import { adminAsset } from "@/lib/admin-assets";
+import { goToAdminLogin } from "@/lib/app-navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -52,7 +48,6 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
-  const queryClient = useQueryClient();
   const logout = useAdminLogout();
   const { data: me } = useGetAdminMe();
 
@@ -60,9 +55,7 @@ function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
     try {
       await logout.mutateAsync();
     } finally {
-      queryClient.removeQueries({ queryKey: getGetAdminMeQueryKey() });
-      queryClient.clear();
-      window.location.href = "/admin/login";
+      goToAdminLogin();
     }
   };
 
