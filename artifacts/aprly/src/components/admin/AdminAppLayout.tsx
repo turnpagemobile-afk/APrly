@@ -15,18 +15,31 @@ export default function AdminAppLayout() {
     <AdminProtectedRoute>
       <AdminShell>
         <Switch>
+          <Route path="/admin/dashboard/" component={AdminDashboardPage} />
           <Route path="/admin/dashboard" component={AdminDashboardPage} />
+          <Route
+            path="/admin/users/:userId/plans/:planId/"
+            component={AdminPlanLeadDetailPage}
+          />
           <Route
             path="/admin/users/:userId/plans/:planId"
             component={AdminPlanLeadDetailPage}
           />
+          <Route path="/admin/users/:id/" component={AdminUserDetailPage} />
           <Route path="/admin/users/:id" component={AdminUserDetailPage} />
+          <Route path="/admin/users/" component={AdminUsersPage} />
           <Route path="/admin/users" component={AdminUsersPage} />
+          <Route
+            path="/admin/partners/:partnerId/leads/:planId/"
+            component={AdminPlanLeadDetailPage}
+          />
           <Route
             path="/admin/partners/:partnerId/leads/:planId"
             component={AdminPlanLeadDetailPage}
           />
+          <Route path="/admin/partners/:id/" component={AdminPartnerDetailPage} />
           <Route path="/admin/partners/:id" component={AdminPartnerDetailPage} />
+          <Route path="/admin/partners/" component={AdminPartnersPage} />
           <Route path="/admin/partners" component={AdminPartnersPage} />
           <Route path="/admin">
             <Redirect to="/admin/dashboard" />
