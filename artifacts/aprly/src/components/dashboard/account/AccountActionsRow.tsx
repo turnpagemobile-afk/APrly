@@ -2,14 +2,13 @@ import { useState } from "react";
 import { LogOut, XCircle } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteMe } from "@workspace/api-client-react";
-import { useLocation } from "wouter";
+import { goToLanding } from "@/lib/app-navigation";
 import { dashboardProfileContent } from "@/content/dashboard-profile";
 import { toast } from "@/hooks/use-toast";
 import { AccountConfirmDialog } from "@/components/dashboard/account/AccountConfirmDialog";
 import { LogoutConfirmDialog } from "@/components/dashboard/LogoutConfirmDialog";
 
 export function AccountActionsRow() {
-  const [, navigate] = useLocation();
   const queryClient = useQueryClient();
   const deleteMe = useDeleteMe();
   const copy = dashboardProfileContent;
@@ -23,7 +22,7 @@ export function AccountActionsRow() {
       await deleteMe.mutateAsync();
       setDeleteOpen(false);
       queryClient.clear();
-      navigate("/");
+      goToLanding("/");
     } catch {
       toast({
         ...copy.toast.deleteError,

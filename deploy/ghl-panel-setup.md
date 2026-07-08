@@ -99,12 +99,25 @@
 | `inactivity_warning_free` | 04a 14 days before delete (free) |
 | `inactivity_warning_paid` | 04b 14 days before delete (paid) |
 | `account_saved` | 05 account saved |
-| `account_deleted` | 03 account deleted |
+| `account_deleted` | 03 account deleted → **Delete Contact** (див. нижче) |
 | `plan_sent` | E4 07 Sent-to-partner |
 | `partner_review_started` | 09a plan accepted |
 | `plan_denied` | 09b plan declined |
 | `hardship_step` | 10 milestone completed |
 | `plan_won` | 11 plan won |
+
+### Видалення контакту після `account_deleted`
+
+APrly шле webhook `account_deleted` (ручне видалення акаунта або scheduler після 14 днів неактивності). Лист **03 account deleted** має відправитись **до** видалення контакту з CRM.
+
+На гілці **`account_deleted`** у блоці **Webhook emails** (після **Find contact** → **Upsert from webhook**):
+
+1. **Send Email** → шаблон **03 account deleted** (вже є)
+2. **+** → **Delete Contact** (або **Remove Contact**)
+3. Контакт: з контексту workflow (contact з кроку **Find contact**)
+4. **Save action** → **Publish**
+
+Порядок обовʼязковий: спочатку лист, потім Delete Contact. Не видаляти контакт через API з коду — інакше workflow може не встигнути надіслати лист 03.
 
 ## Крок 6. Settings
 
@@ -154,8 +167,9 @@
 3. [ ] Debug видалено
 4. [ ] If/Else: empty event_type → теги; інакше → Create Contact + event_type
 5. [ ] Allow Re-entry ON, Publish
-6. [ ] Тест webhook + тег + реєстрація на сайті
-7. [ ] Cron `0 0 * * *` (якщо ще немає)
+6. [ ] `account_deleted`: після Send Email 03 — **Delete Contact**
+7. [ ] Тест webhook + тег + реєстрація на сайті
+8. [ ] Cron `0 0 * * *` (якщо ще немає)
 
 ## Типові помилки
 
@@ -165,6 +179,7 @@
 | If/Else не спрацьовує | Execution logs → правильний merge field |
 | Welcome при `plan_sent` | Перша розвилка має бути **event_type Is Empty**, не перевірка тегу |
 | hardship_step один раз | Allow Re-entry ON |
+| Контакт лишається після delete | На гілці `account_deleted` додати **Delete Contact** після Send Email 03 |
 
 ## Не робити
 
