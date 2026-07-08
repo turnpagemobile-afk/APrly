@@ -27,11 +27,19 @@ export function goToLanding(path = "/"): void {
 
 /** Admin Vite build uses `base: /admin/`. */
 export function normalizeAdminUrl(path: string): string {
-  const q = path.indexOf("?");
-  const pathname = q === -1 ? path : path.slice(0, q);
-  const search = q === -1 ? "" : path.slice(q);
+  const hashIdx = path.indexOf("#");
+  const beforeHash = hashIdx === -1 ? path : path.slice(0, hashIdx);
+  const hash = hashIdx === -1 ? "" : path.slice(hashIdx);
+
+  const q = beforeHash.indexOf("?");
+  const pathname = q === -1 ? beforeHash : beforeHash.slice(0, q);
+  const search = q === -1 ? "" : beforeHash.slice(q);
+
   if (pathname === "/admin") {
-    return `/admin/${search}`;
+    return `/admin/${search}${hash}`;
+  }
+  if (pathname.length > "/admin/".length && pathname.endsWith("/")) {
+    return `${pathname.replace(/\/+$/, "")}${search}${hash}`;
   }
   return path;
 }

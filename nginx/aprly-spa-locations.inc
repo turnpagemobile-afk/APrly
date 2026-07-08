@@ -58,10 +58,13 @@ location ^~ /admin/assets/ {
     add_header Cache-Control "public, immutable";
 }
 
+# Strip trailing slash on admin sub-routes (not bare /admin/).
+rewrite ^(/admin/.+)/$ $1 permanent;
+
 location /admin/ {
-    try_files $uri $uri/ /admin/index.html;
+    try_files $uri /admin/index.html;
 }
 
 location = /admin {
-    return 302 /admin/;
+    return 301 /admin/$is_args$args;
 }
