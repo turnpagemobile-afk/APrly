@@ -10,6 +10,7 @@ servers:
 tags:
   - name: health
   - name: leads
+  - name: waitlist
   - name: optimizer
   - name: plaid
   - name: stripe
@@ -48,6 +49,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Lead"
+
+  /waitlist:
+    post:
+      operationId: joinWaitlist
+      tags: [waitlist]
+      summary: Join the APRly waitlist (coming soon page)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JoinWaitlistInput"
+      responses:
+        "200":
+          description: Already on the waitlist (same success UX)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JoinWaitlistResponse"
+        "201":
+          description: Added to the waitlist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JoinWaitlistResponse"
+
 
   /optimizer/calculate:
     post:
@@ -1359,6 +1386,26 @@ components:
       properties:
         status:
           type: string
+
+    JoinWaitlistInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        source:
+          type: string
+          maxLength: 64
+
+    JoinWaitlistResponse:
+      type: object
+      required: [ok]
+      properties:
+        ok:
+          type: boolean
+
 
     CreateLeadInput:
       type: object

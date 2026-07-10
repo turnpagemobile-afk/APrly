@@ -9,6 +9,17 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface JoinWaitlistInput {
+  /** @maxLength 254 */
+  email: string;
+  /** @maxLength 64 */
+  source?: string;
+}
+
+export interface JoinWaitlistResponse {
+  ok: boolean;
+}
+
 export interface CreateLeadInput {
   /**
    * @minLength 1

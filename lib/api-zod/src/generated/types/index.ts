@@ -69,6 +69,8 @@ export * from "./importCardItem";
 export * from "./importCardItemSource";
 export * from "./importCardsInput";
 export * from "./importCardsResponse";
+export * from "./joinWaitlistInput";
+export * from "./joinWaitlistResponse";
 export * from "./lead";
 export * from "./leadCardItem";
 export * from "./linkedAccountSummary";

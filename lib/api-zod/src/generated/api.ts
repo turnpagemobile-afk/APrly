@@ -51,6 +51,22 @@ export const CreateLeadResponse = zod.object({
 });
 
 /**
+ * @summary Join the APRly waitlist (coming soon page)
+ */
+export const joinWaitlistBodyEmailMax = 254;
+
+export const joinWaitlistBodySourceMax = 64;
+
+export const JoinWaitlistBody = zod.object({
+  email: zod.string().email().max(joinWaitlistBodyEmailMax),
+  source: zod.string().max(joinWaitlistBodySourceMax).optional(),
+});
+
+export const JoinWaitlistResponse = zod.object({
+  ok: zod.boolean(),
+});
+
+/**
  * @summary Calculate debt interest savings
  */
 export const calculateOptimizationBodyTotalDebtMin = 0;

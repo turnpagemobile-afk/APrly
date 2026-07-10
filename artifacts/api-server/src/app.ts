@@ -65,6 +65,7 @@ const leadsRateLimit = rateLimit({
 });
 
 app.use("/api/leads", leadsRateLimit);
+app.use("/api/waitlist", leadsRateLimit);
 app.use(
   "/api/voice",
   express.json({ limit: "50mb" }),
