@@ -18,6 +18,7 @@ import type { CardEntry } from "./types";
 import { aggregateCardBalances, accountsAreComplete } from "./optimizerAccounts";
 import { getOrCreateGuestSessionId } from "@/lib/guest-session";
 import { saveOptimizerSnapshot, snapshotCardsForImport } from "@/lib/optimizerSnapshot";
+import { loadAndClearPlaidPendingAccounts } from "@/lib/plaid-oauth-session";
 import { optimizerContent } from "@/content/landing";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +45,10 @@ export const OptimizerSection = forwardRef<OptimizerSectionHandle, OptimizerSect
     const [interestRate, setInterestRate] = useState("");
     const [accounts, setAccounts] = useState<CardEntry[]>([]);
 
-    const { startPlaid, plaidBusy } = usePlaidCardImport(setAccounts);
+    const { startPlaid, plaidBusy } = usePlaidCardImport(setAccounts, {
+      oauthFlow: "landing",
+      oauthReturnTo: "/",
+    });
     const calculateOpt = useCalculateOptimization();
     const upsertGuestLead = useUpsertGuestLead();
 
@@ -54,6 +58,18 @@ export const OptimizerSection = forwardRef<OptimizerSectionHandle, OptimizerSect
       setTotalDebt(String(agg.totalDebt));
       setInterestRate(String(agg.blendedRate));
       setStep(2);
+    }, []);
+
+    useEffect(() => {
+      const pending = loadAndClearPlaidPendingAccounts();
+      if (!pending?.length) return;
+      setAccounts((prev) => {
+        const seen = new Set(
+          prev.map((a) => a.accountId).filter((id): id is string => !!id),
+        );
+        const fresh = pending.filter((r) => !r.accountId || !seen.has(r.accountId));
+        return [...prev, ...fresh];
+      });
     }, []);
 
     useEffect(() => {

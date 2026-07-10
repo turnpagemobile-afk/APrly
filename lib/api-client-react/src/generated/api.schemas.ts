@@ -71,6 +71,8 @@ export interface PlaidLinkToken {
   linkToken: string;
   expiration: string;
   sandbox: boolean;
+  /** OAuth redirect URI registered with Plaid; null when not configured */
+  redirectUri: string | null;
 }
 
 export interface PlaidExchangeInput {

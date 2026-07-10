@@ -151,6 +151,12 @@ export const CreatePlaidLinkTokenResponse = zod.object({
   linkToken: zod.string(),
   expiration: zod.coerce.date(),
   sandbox: zod.boolean(),
+  redirectUri: zod
+    .string()
+    .nullable()
+    .describe(
+      "OAuth redirect URI registered with Plaid; null when not configured",
+    ),
 });
 
 /**
@@ -1065,7 +1071,7 @@ export const AdminVerifyOtpResponse = zod.object({
 });
 
 /**
- * @summary Re-issue OTP challenge (v1 logs code, no email)
+ * @summary Re-issue OTP challenge and resend email
  */
 export const AdminResendOtpBody = zod.object({
   challengeToken: zod.string(),

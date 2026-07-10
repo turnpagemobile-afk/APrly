@@ -53,11 +53,13 @@ nano /var/www/aprly/.env.prod
 FRONTEND_ORIGIN=https://aprly.ai
 ```
 
-За потреби Plaid:
+За потреби Plaid OAuth (або явний override redirect):
 
 ```bash
-PLAID_REDIRECT_URI=https://aprly.ai/
+PLAID_REDIRECT_URI=https://aprly.ai/plaid/oauth
 ```
+
+Якщо рядок не заданий, api-server підставляє `{FRONTEND_ORIGIN}/plaid/oauth`.
 
 Зберегти. **api-server** треба перезапустити після зміни (крок 6).
 

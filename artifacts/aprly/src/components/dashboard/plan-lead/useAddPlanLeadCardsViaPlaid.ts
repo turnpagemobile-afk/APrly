@@ -16,6 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import { mapLeadCardsToImport } from "@/lib/plan-lead-cards";
 import { updatePlanLeadCards } from "@/lib/payment-api";
 import { requireOnlineForCabinetAction } from "@/lib/pwa/use-cabinet-pwa";
+import { normalizeCabinetUrl } from "@/lib/app-navigation";
 
 type UseAddPlanLeadCardsViaPlaidOptions = {
   planLeadId: number;
@@ -73,7 +74,18 @@ export function useAddPlanLeadCardsViaPlaid({
     [existingCards, saveMutation],
   );
 
-  const { startPlaid, plaidBusy } = usePlaidCardImport(undefined, { onImported });
+  const oauthReturnTo = normalizeCabinetUrl(
+    typeof window !== "undefined"
+      ? `${window.location.pathname}${window.location.search}`
+      : `/dashboard/plan-leads/${planLeadId}`,
+  );
+
+  const { startPlaid, plaidBusy } = usePlaidCardImport(undefined, {
+    onImported,
+    oauthFlow: "add-plan-cards",
+    oauthReturnTo,
+    oauthPlanLeadId: planLeadId,
+  });
 
   const startPlaidAdd = useCallback(() => {
     if (!requireOnlineForCabinetAction()) {

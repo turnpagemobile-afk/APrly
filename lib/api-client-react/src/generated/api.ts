@@ -3085,7 +3085,7 @@ export const useAdminVerifyOtp = <
 };
 
 /**
- * @summary Re-issue OTP challenge (v1 logs code, no email)
+ * @summary Re-issue OTP challenge and resend email
  */
 export const getAdminResendOtpUrl = () => {
   return `/api/admin/auth/resend-otp`;
@@ -3148,7 +3148,7 @@ export type AdminResendOtpMutationBody = BodyType<AdminResendOtpInput>;
 export type AdminResendOtpMutationError = ErrorType<void>;
 
 /**
- * @summary Re-issue OTP challenge (v1 logs code, no email)
+ * @summary Re-issue OTP challenge and resend email
  */
 export const useAdminResendOtp = <
   TError = ErrorType<void>,

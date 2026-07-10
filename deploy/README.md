@@ -9,8 +9,8 @@ Quick reference for operating the production droplet.
 - Env file: `/var/www/aprly/.env.prod` (mode `0600`, NOT in git). Must define
   Postgres + `DATABASE_URL`, OpenAI (`AI_INTEGRATIONS_OPENAI_*`), and for Plaid
   routes: `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV` (`sandbox` /
-  `development` / `production`). Optional: `PLAID_REDIRECT_URI` (required for
-  some Link flows once DNS/TLS is live).
+  `development` / `production`). Optional: `PLAID_REDIRECT_URI` (OAuth return URL;
+  default `{FRONTEND_ORIGIN}/plaid/oauth` when unset — register in Plaid Dashboard).
 - Super admin seed (passed into the `db-seed` container via compose):
   `ADMIN_SEED_EMAIL` (default `super.admin@aprly.ai`) and **`ADMIN_SEED_PASSWORD`**
   (required — if empty, seed skips admin and `/admin/login` will always 401).

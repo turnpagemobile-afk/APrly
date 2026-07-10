@@ -1456,7 +1456,7 @@ components:
 
     PlaidLinkToken:
       type: object
-      required: [linkToken, expiration, sandbox]
+      required: [linkToken, expiration, sandbox, redirectUri]
       properties:
         linkToken:
           type: string
@@ -1465,6 +1465,10 @@ components:
           format: date-time
         sandbox:
           type: boolean
+        redirectUri:
+          type: string
+          nullable: true
+          description: OAuth redirect URI registered with Plaid; null when not configured
 
     PlaidExchangeInput:
       type: object

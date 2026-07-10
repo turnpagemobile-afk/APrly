@@ -72,6 +72,8 @@ export function useCreatePlanViaPlaid({ returnTo, onPlaidCancel }: UseCreatePlan
   const { startPlaid, plaidBusy } = usePlaidCardImport(undefined, {
     onImported,
     onExit: onPlaidCancel,
+    oauthFlow: "create-plan",
+    oauthReturnTo: returnTo,
   });
 
   const startCreatePlan = useCallback(() => {

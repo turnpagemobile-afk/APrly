@@ -13,6 +13,11 @@ import {
   openPlaidLinkDeferred,
   type PlaidLinkHandler,
 } from "@/components/landing/plaidLink";
+import {
+  clearPlaidOAuthSession,
+  type PlaidOAuthFlow,
+  savePlaidOAuthSession,
+} from "@/lib/plaid-oauth-session";
 
 export type PlaidImportedCard = {
   brand: string;
@@ -24,6 +29,9 @@ export type PlaidImportedCard = {
 export type UsePlaidCardImportOptions = {
   onImported?: (cards: PlaidImportedCard[]) => void;
   onExit?: () => void;
+  oauthFlow?: PlaidOAuthFlow;
+  oauthReturnTo?: string;
+  oauthPlanLeadId?: number;
 };
 
 export function usePlaidCardImport(
@@ -33,6 +41,9 @@ export function usePlaidCardImport(
   const { toast } = useToast();
   const onImported = options?.onImported;
   const onExit = options?.onExit;
+  const oauthFlow = options?.oauthFlow;
+  const oauthReturnTo = options?.oauthReturnTo;
+  const oauthPlanLeadId = options?.oauthPlanLeadId;
   const linkHandlerRef = useRef<PlaidLinkHandler | null>(null);
   const plaidClickLockRef = useRef(false);
   const [plaidOpening, setPlaidOpening] = useState(false);
@@ -109,20 +120,34 @@ export function usePlaidCardImport(
       destroyPlaidHandler(linkHandlerRef.current);
       linkHandlerRef.current = null;
 
-      const { linkToken } = await createLinkToken.mutateAsync();
+      const { linkToken, redirectUri } = await createLinkToken.mutateAsync();
       const token = typeof linkToken === "string" ? linkToken.trim() : "";
       if (!token) throw new Error("Empty link_token from API");
+
+      if (redirectUri && oauthFlow) {
+        const returnTo =
+          oauthReturnTo ??
+          `${window.location.pathname}${window.location.search}`;
+        savePlaidOAuthSession({
+          linkToken: token,
+          flow: oauthFlow,
+          returnTo,
+          planLeadId: oauthPlanLeadId,
+        });
+      }
 
       const handler = createPlaidLink({
         token,
         onSuccess: (publicToken: string, metadata: PlaidLinkOnSuccessMetadata) => {
           plaidClickLockRef.current = false;
           setPlaidOpening(false);
+          clearPlaidOAuthSession();
           void runExchange(publicToken, metadata);
         },
         onExit: () => {
           plaidClickLockRef.current = false;
           setPlaidOpening(false);
+          clearPlaidOAuthSession();
           destroyPlaidHandler(linkHandlerRef.current);
           linkHandlerRef.current = null;
           onExit?.();
