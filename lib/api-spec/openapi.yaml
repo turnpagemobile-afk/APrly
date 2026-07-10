@@ -1210,6 +1210,44 @@ paths:
         "409":
           description: Conflict
 
+  /admin/waitlist:
+    get:
+      operationId: getAdminWaitlist
+      tags: [admin]
+      summary: List waitlist signups (paginated)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+            default: ""
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        "200":
+          description: Waitlist signups
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminWaitlistListResponse"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+
   /admin/partners:
     get:
       operationId: getAdminPartners
@@ -1922,6 +1960,37 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AdminPartnerListItem"
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+
+    AdminWaitlistSignupItem:
+      type: object
+      required: [id, email, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        createdAt:
+          type: string
+          format: date-time
+
+    AdminWaitlistListResponse:
+      type: object
+      required: [signups, total, page, pageSize]
+      properties:
+        signups:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminWaitlistSignupItem"
         total:
           type: integer
           minimum: 0

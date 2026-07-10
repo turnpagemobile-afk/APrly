@@ -334,6 +334,22 @@ export interface AdminPartnerListResponse {
   pageSize: number;
 }
 
+export interface AdminWaitlistSignupItem {
+  id: number;
+  email: string;
+  createdAt: string;
+}
+
+export interface AdminWaitlistListResponse {
+  signups: AdminWaitlistSignupItem[];
+  /** @minimum 0 */
+  total: number;
+  /** @minimum 1 */
+  page: number;
+  /** @minimum 1 */
+  pageSize: number;
+}
+
 export interface AdminCreatePartnerInput {
   /**
    * @minLength 1
@@ -942,6 +958,19 @@ export const GetAdminUsersTab = {
 } as const;
 
 export type GetAdminUserPlansParams = {
+  /**
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * @minimum 1
+   * @maximum 50
+   */
+  pageSize?: number;
+};
+
+export type GetAdminWaitlistParams = {
+  search?: string;
   /**
    * @minimum 1
    */

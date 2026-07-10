@@ -54,6 +54,10 @@ SITE_MODE=waitlist
 FRONTEND_DOCKERFILE=Dockerfile.waitlist
 ```
 
+`Dockerfile.waitlist` збирає **coming-soon** на `/` і **admin SPA** на `/admin/*`. Кабінет (`/dashboard`) у waitlist-режимі повертає 404.
+
+Адмін-панель: `https://aprly.ai/admin/login` (seed-адміни з `ADMIN_SEED_PASSWORD`, див. `.env.example`).
+
 ---
 
 ## 3. Міграції і старт (waitlist)
@@ -75,6 +79,8 @@ curl -fsS -X POST http://127.0.0.1/api/waitlist \
   -H 'Content-Type: application/json' \
   -d '{"email":"test@example.com"}'
 ```
+
+Після HTTPS — також `curl -fsSI https://aprly.ai/admin/login | head -5` (має бути HTML admin SPA, не coming-soon).
 
 ---
 
@@ -120,6 +126,14 @@ git pull origin dev
 $COMPOSE --profile ops run --rm db-migrate
 $COMPOSE build frontend api-server
 $COMPOSE up -d
+```
+
+Перевірка після оновлення:
+
+```bash
+curl -fsSI https://aprly.ai/ | head -3
+curl -fsSI https://aprly.ai/admin/login | head -3
+# У браузері: /admin → Waitlist у sidebar
 ```
 
 ---

@@ -16,6 +16,7 @@ import adminAuthRouter from "./admin-auth";
 import adminDashboardRouter from "./admin-dashboard";
 import adminPlanLeadsRouter from "./admin-plan-leads";
 import adminPartnersRouter from "./admin-partners";
+import adminWaitlistRouter from "./admin-waitlist";
 import adminUsersRouter from "./admin-users";
 
 const router: IRouter = Router();
@@ -38,5 +39,6 @@ router.use(adminDashboardRouter);
 router.use(adminPlanLeadsRouter);
 router.use(adminUsersRouter);
 router.use(adminPartnersRouter);
+router.use(adminWaitlistRouter);
 
 export default router;

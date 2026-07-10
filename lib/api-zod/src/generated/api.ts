@@ -1848,6 +1848,40 @@ export const PostAdminPlanLeadRejectResponse = zod.object({
 });
 
 /**
+ * @summary List waitlist signups (paginated)
+ */
+export const getAdminWaitlistQuerySearchDefault = ``;
+export const getAdminWaitlistQueryPageDefault = 1;
+
+export const getAdminWaitlistQueryPageSizeDefault = 10;
+export const getAdminWaitlistQueryPageSizeMax = 50;
+
+export const GetAdminWaitlistQueryParams = zod.object({
+  search: zod.coerce.string().default(getAdminWaitlistQuerySearchDefault),
+  page: zod.coerce.number().min(1).default(getAdminWaitlistQueryPageDefault),
+  pageSize: zod.coerce
+    .number()
+    .min(1)
+    .max(getAdminWaitlistQueryPageSizeMax)
+    .default(getAdminWaitlistQueryPageSizeDefault),
+});
+
+export const getAdminWaitlistResponseTotalMin = 0;
+
+export const GetAdminWaitlistResponse = zod.object({
+  signups: zod.array(
+    zod.object({
+      id: zod.number(),
+      email: zod.string().email(),
+      createdAt: zod.coerce.date(),
+    }),
+  ),
+  total: zod.number().min(getAdminWaitlistResponseTotalMin),
+  page: zod.number().min(1),
+  pageSize: zod.number().min(1),
+});
+
+/**
  * @summary List partners (paginated)
  */
 export const getAdminPartnersQuerySearchDefault = ``;

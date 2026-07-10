@@ -5,12 +5,10 @@ import { db, waitlistSignupsTable } from "@workspace/db";
 const router: IRouter = Router();
 
 function isDuplicateKeyError(err: unknown): boolean {
-  return (
-    typeof err === "object" &&
-    err !== null &&
-    "code" in err &&
-    (err as { code: unknown }).code === "23505"
-  );
+  if (typeof err !== "object" || err === null) return false;
+  if ("code" in err && (err as { code: unknown }).code === "23505") return true;
+  if ("cause" in err) return isDuplicateKeyError((err as { cause: unknown }).cause);
+  return false;
 }
 
 router.post("/waitlist", async (req, res, next) => {

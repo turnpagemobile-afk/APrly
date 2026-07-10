@@ -32,6 +32,7 @@ import type {
   AdminUserPlansResponse,
   AdminUsersListResponse,
   AdminVerifyOtpInput,
+  AdminWaitlistListResponse,
   AuditCheckoutPayload,
   AuditCheckoutSessionStatusResponse,
   CheckoutSessionStatusResponse,
@@ -47,6 +48,7 @@ import type {
   GetAdminPartnersParams,
   GetAdminUserPlansParams,
   GetAdminUsersParams,
+  GetAdminWaitlistParams,
   GetAuditCheckoutSessionStatusParams,
   GetCheckoutSessionStatusParams,
   GetSubscriptionCheckoutSessionStatusParams,
@@ -4360,6 +4362,106 @@ export const usePostAdminPlanLeadReject = <
 > => {
   return useMutation(getPostAdminPlanLeadRejectMutationOptions(options));
 };
+
+/**
+ * @summary List waitlist signups (paginated)
+ */
+export const getGetAdminWaitlistUrl = (params?: GetAdminWaitlistParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/admin/waitlist?${stringifiedParams}`
+    : `/api/admin/waitlist`;
+};
+
+export const getAdminWaitlist = async (
+  params?: GetAdminWaitlistParams,
+  options?: RequestInit,
+): Promise<AdminWaitlistListResponse> => {
+  return customFetch<AdminWaitlistListResponse>(
+    getGetAdminWaitlistUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getGetAdminWaitlistQueryKey = (
+  params?: GetAdminWaitlistParams,
+) => {
+  return [`/api/admin/waitlist`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetAdminWaitlistQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAdminWaitlist>>,
+  TError = ErrorType<void>,
+>(
+  params?: GetAdminWaitlistParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAdminWaitlist>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetAdminWaitlistQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAdminWaitlist>>
+  > = ({ signal }) => getAdminWaitlist(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminWaitlist>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAdminWaitlistQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAdminWaitlist>>
+>;
+export type GetAdminWaitlistQueryError = ErrorType<void>;
+
+/**
+ * @summary List waitlist signups (paginated)
+ */
+
+export function useGetAdminWaitlist<
+  TData = Awaited<ReturnType<typeof getAdminWaitlist>>,
+  TError = ErrorType<void>,
+>(
+  params?: GetAdminWaitlistParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAdminWaitlist>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAdminWaitlistQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
 
 /**
  * @summary List partners (paginated)

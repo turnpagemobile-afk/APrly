@@ -1,8 +1,66 @@
 # syntax=docker/dockerfile:1.7
 #
-# Lightweight production image: coming-soon / waitlist static page + nginx.
+# Production image: coming-soon / waitlist static page + admin SPA + nginx.
 # Use when SITE_MODE=waitlist (see docker-compose.prod.yml).
+# Public / serves waitlist HTML; /admin/* serves the admin panel.
 
+# ─────────────────────────────────────────────────────────────────────
+# deps: install workspace dependencies
+# ─────────────────────────────────────────────────────────────────────
+FROM node:24-slim AS deps
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3 make g++ ca-certificates \
+ && rm -rf /var/lib/apt/lists/* \
+ && corepack enable
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json tsconfig.json ./
+COPY artifacts/api-server/package.json ./artifacts/api-server/
+COPY artifacts/aprly/package.json ./artifacts/aprly/
+COPY lib/db/package.json ./lib/db/
+COPY lib/api-client-react/package.json ./lib/api-client-react/
+COPY lib/api-zod/package.json ./lib/api-zod/
+COPY lib/integrations-openai-ai-server/package.json ./lib/integrations-openai-ai-server/
+COPY lib/integrations-openai-ai-react/package.json ./lib/integrations-openai-ai-react/
+COPY scripts/package.json ./scripts/
+
+RUN corepack prepare pnpm@10.33.4 --activate
+
+RUN node <<'NODE'
+const fs = require("node:fs");
+const p = "pnpm-workspace.yaml";
+let y = fs.readFileSync(p, "utf8");
+y = y.replace(/^minimumReleaseAge:\s*\d+/m, "minimumReleaseAge: 0");
+fs.writeFileSync(p, y);
+NODE
+
+ENV npm_config_user_agent="pnpm/10.33.4 npm/? node/v24.0.0"
+
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# ─────────────────────────────────────────────────────────────────────
+# builder: admin SPA only
+# ─────────────────────────────────────────────────────────────────────
+FROM deps AS builder
+
+WORKDIR /app
+COPY . .
+
+ENV PORT=5173
+ENV NODE_ENV=production
+
+RUN pnpm --filter @workspace/aprly run build:admin \
+ && node artifacts/aprly/scripts/stage-admin-only.mjs
+
+# ─────────────────────────────────────────────────────────────────────
+# runtime: nginx + waitlist page + admin assets
+# ─────────────────────────────────────────────────────────────────────
 FROM nginx:alpine AS runtime
 
 RUN rm /etc/nginx/conf.d/default.conf \
@@ -12,7 +70,9 @@ COPY docker/nginx/40-aprly-ssl-init-prod.sh /docker-entrypoint.d/40-aprly-ssl-in
 RUN chmod +x /docker-entrypoint.d/40-aprly-ssl-init.sh
 
 COPY nginx/aprly-waitlist.conf /etc/nginx/conf.d/default.conf
+COPY nginx/aprly-admin-locations.inc /etc/nginx/conf.d/aprly-admin-locations.inc
 COPY deploy/waitlist/index.html /usr/share/nginx/html/index.html
+COPY --from=builder /app/artifacts/aprly/dist/admin /usr/share/nginx/html/admin
 
 EXPOSE 80
 EXPOSE 443
