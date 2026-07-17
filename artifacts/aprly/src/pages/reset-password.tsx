@@ -116,14 +116,10 @@ export default function ResetPasswordPage() {
   if (step === "invalid") {
     return (
       <AuthOverlayShell open onDismiss={navigateBack}>
-        <p className="pr-10 text-xs font-bold uppercase tracking-widest text-[var(--neutral-theme-900)]">
-          {copy.pageTitle}
-        </p>
+        <p className="app-header-screen-title-bold text-average pr-10">{copy.pageTitle}</p>
         <AuthBrandLogo className="mt-4" />
-        <p className="mt-6 text-sm font-bold uppercase tracking-wide text-[var(--neutral-theme-900)]">
-          {copy.cardTitle}
-        </p>
-        <p className="mt-3 text-sm text-destructive">{copy.missingToken}</p>
+        <p className="app-header-h6 text-title mt-6">{copy.cardTitle}</p>
+        <p className="app-text-p1-regular mt-3 text-[var(--danger-theme-700)]">{copy.missingToken}</p>
         <div className="mt-6 flex justify-center">
           <PillButton asChild>
             <Link href="/login">{copy.backToLogin}</Link>
@@ -136,20 +132,16 @@ export default function ResetPasswordPage() {
   if (step === "success") {
     return (
       <AuthOverlayShell open onDismiss={() => goToCabinet()} allowDismiss={false}>
-        <p className="pr-10 text-xs font-bold uppercase tracking-widest text-[var(--neutral-theme-900)]">
-          {copy.pageTitle}
-        </p>
+        <p className="app-header-screen-title-bold text-average pr-10">{copy.pageTitle}</p>
         <AuthBrandLogo className="mt-4" />
         <div className="flex flex-col items-center py-4 text-center">
           <CheckCircle2
-            className="h-16 w-16 text-[var(--primary-theme-500)]"
+            className="h-16 w-16 text-[var(--action-default-color)]"
             strokeWidth={1.5}
             aria-hidden
           />
-          <p className="mt-6 text-sm font-bold uppercase tracking-wide text-[var(--neutral-theme-900)]">
-            {copy.cardTitle}
-          </p>
-          <p className="mt-3 text-sm text-[var(--hint-text-color)]">{copy.successMessage}</p>
+          <p className="app-header-h6 text-title mt-6">{copy.cardTitle}</p>
+          <p className="app-text-p1-regular text-hint mt-3">{copy.successMessage}</p>
           <PillButton type="button" className="mt-8 w-full" onClick={() => goToCabinet()}>
             {copy.goToDashboard}
           </PillButton>
@@ -164,13 +156,9 @@ export default function ResetPasswordPage() {
       onDismiss={navigateBack}
       allowDismiss={!resetPassword.isPending}
     >
-      <p className="pr-10 text-xs font-bold uppercase tracking-widest text-[var(--neutral-theme-900)]">
-        {copy.pageTitle}
-      </p>
+      <p className="app-header-screen-title-bold text-average pr-10">{copy.pageTitle}</p>
       <AuthBrandLogo className="mt-4" />
-      <p className="mt-4 text-sm font-bold uppercase tracking-wide text-[var(--neutral-theme-900)]">
-        {copy.cardTitle}
-      </p>
+      <p className="app-header-h6 text-title mt-4">{copy.cardTitle}</p>
 
       <form className="mt-6 space-y-4" onSubmit={(e) => void onSubmit(e)}>
         <AuthPasswordInput
@@ -202,7 +190,7 @@ export default function ResetPasswordPage() {
         {showBanner && !passwordError && !confirmError ? (
           <div
             role="alert"
-            className="rounded-lg bg-[var(--error-box-bg-color)] px-3 py-2.5 text-sm text-destructive"
+            className="app-text-p1-regular rounded-[12px] border border-[var(--danger-theme-300)] bg-[var(--error-box-bg-color)] px-3 py-2.5 text-[var(--danger-theme-700)]"
           >
             {copy.errors.passwordsMismatch}
           </div>

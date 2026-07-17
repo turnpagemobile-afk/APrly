@@ -12,10 +12,10 @@ export function PlanLeadTotalSavingsFooter({
 
   return (
     <>
-      <span className="app-header-screen-title text-[var(--success-theme-700)]">
+      <span className="app-header-screen-title text-[var(--palette-functional-success-success-700)]">
         {copy.totalEstSaving}:
       </span>{" "}
-      <span className="app-header-screen-title-bold text-[var(--success-theme-700)]">
+      <span className="app-header-screen-title-bold text-[var(--palette-functional-success-success-700)]">
         {formatDashboardCurrency(totalYearlySavings, 0, { spaceAfterDollar: false })}
         {copy.perYearShort}
       </span>

@@ -1,9 +1,7 @@
-import { useState } from "react";
-import { User } from "lucide-react";
+import { useState, type ButtonHTMLAttributes } from "react";
 import { useLocation } from "wouter";
 import { accountMenuContent } from "@/content/dashboard-profile";
 import { dashboardPromoContent } from "@/content/dashboard-home";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -19,29 +17,28 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogoutConfirmDialog } from "@/components/dashboard/LogoutConfirmDialog";
 import { dashDialogRadiusClassName } from "@/lib/dashboard-dialog-styles";
+import { sharedAsset } from "@/lib/shared-assets";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { useCabinetPwaContext } from "@/lib/pwa/cabinet-pwa-context";
 
 const menuItemClass = cn(
   "cursor-pointer justify-center rounded-[12px] py-3 text-center",
-  "app-button-button-s text-action uppercase",
+  "app-button-button-s text-action",
   "focus:bg-[var(--primary-theme-100)] focus:text-action",
   "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
 );
 
-function AccountMenuTrigger(props: React.ComponentProps<typeof Button>) {
+function AccountMenuTrigger(props: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <Button
+    <button
       type="button"
-      variant="outline"
-      size="icon"
-      className="h-9 w-9 shrink-0 rounded-full border-[var(--action-default-color)] bg-white text-[var(--action-default-color)] hover:bg-white/90"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--card-1lvl-bg-color)] transition-opacity hover:opacity-90"
       aria-label="Account menu"
       {...props}
     >
-      <User className="h-5 w-5" aria-hidden="true" />
-    </Button>
+      <img src={sharedAsset("user.svg")} alt="" aria-hidden className="h-6 w-6" />
+    </button>
   );
 }
 

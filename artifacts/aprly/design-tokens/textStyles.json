@@ -1,5 +1,5 @@
 {
-  "fileName": "APrly (Green-beige)",
+  "fileName": "APrly (white-gren)",
   "textStyles": [
     {
       "name": "app/header/h1",
@@ -14,14 +14,14 @@
     },
     {
       "name": "app/header/h2",
-      "fontFamily": "Fraunces",
-      "fontWeight": "SemiBold",
-      "fontSize": 64,
+      "fontFamily": "Bricolage Grotesque",
+      "fontWeight": "96pt ExtraBold",
+      "fontSize": 75,
       "letterSpacing": {
         "unit": "PIXELS",
         "value": 0
       },
-      "textCase": "UPPER"
+      "textCase": "ORIGINAL"
     },
     {
       "name": "app/header/h2-bold-italic",
@@ -36,14 +36,14 @@
     },
     {
       "name": "app/header/h3",
-      "fontFamily": "Fraunces",
-      "fontWeight": "SemiBold",
+      "fontFamily": "Bricolage Grotesque",
+      "fontWeight": "96pt ExtraBold",
       "fontSize": 50,
       "letterSpacing": {
         "unit": "PIXELS",
         "value": 0
       },
-      "textCase": "UPPER"
+      "textCase": "ORIGINAL"
     },
     {
       "name": "app/header/h3-bold-italic",
@@ -58,36 +58,36 @@
     },
     {
       "name": "app/header/h4",
-      "fontFamily": "Fraunces",
-      "fontWeight": "SemiBold",
+      "fontFamily": "Bricolage Grotesque",
+      "fontWeight": "Bold",
       "fontSize": 40,
       "letterSpacing": {
         "unit": "PIXELS",
         "value": 0
       },
-      "textCase": "UPPER"
+      "textCase": "ORIGINAL"
     },
     {
       "name": "app/header/h5",
-      "fontFamily": "Fraunces",
-      "fontWeight": "SemiBold",
+      "fontFamily": "Bricolage Grotesque",
+      "fontWeight": "ExtraBold",
       "fontSize": 26,
       "letterSpacing": {
         "unit": "PIXELS",
         "value": 0
       },
-      "textCase": "UPPER"
+      "textCase": "ORIGINAL"
     },
     {
       "name": "app/header/h6",
-      "fontFamily": "Figtree",
-      "fontWeight": "ExtraBold",
+      "fontFamily": "Bricolage Grotesque",
+      "fontWeight": "Bold",
       "fontSize": 22,
       "letterSpacing": {
         "unit": "PIXELS",
         "value": 0
       },
-      "textCase": "UPPER"
+      "textCase": "ORIGINAL"
     },
     {
       "name": "app/header/title-1",
@@ -102,7 +102,7 @@
     },
     {
       "name": "app/header/screen-title",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "SemiBold",
       "fontSize": 26,
       "letterSpacing": {
@@ -113,7 +113,7 @@
     },
     {
       "name": "app/header/screen-title-bold",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "ExtraBold",
       "fontSize": 26,
       "letterSpacing": {
@@ -124,9 +124,9 @@
     },
     {
       "name": "app/header/subheadline-regular",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "Medium",
-      "fontSize": 20,
+      "fontSize": 24,
       "letterSpacing": {
         "unit": "PIXELS",
         "value": 0
@@ -135,9 +135,9 @@
     },
     {
       "name": "app/header/subheadline-bold",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "ExtraBold",
-      "fontSize": 20,
+      "fontSize": 24,
       "letterSpacing": {
         "unit": "PIXELS",
         "value": 0
@@ -146,7 +146,7 @@
     },
     {
       "name": "app/text/p1-regular",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "Medium",
       "fontSize": 18,
       "letterSpacing": {
@@ -157,7 +157,7 @@
     },
     {
       "name": "app/text/p1-bold",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "ExtraBold",
       "fontSize": 18,
       "letterSpacing": {
@@ -168,7 +168,7 @@
     },
     {
       "name": "app/text/p2-regular",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "Medium",
       "fontSize": 14,
       "letterSpacing": {
@@ -179,7 +179,7 @@
     },
     {
       "name": "app/text/p2-bold",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "ExtraBold",
       "fontSize": 14,
       "letterSpacing": {
@@ -322,47 +322,47 @@
     },
     {
       "name": "app/button/button-xxl",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "ExtraBold",
       "fontSize": 36,
       "letterSpacing": {
         "unit": "PIXELS",
         "value": 0
       },
-      "textCase": "UPPER"
+      "textCase": "ORIGINAL"
     },
     {
       "name": "app/button/button-xl",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "ExtraBold",
       "fontSize": 28,
       "letterSpacing": {
         "unit": "PIXELS",
         "value": 0
       },
-      "textCase": "UPPER"
+      "textCase": "ORIGINAL"
     },
     {
       "name": "app/button/button-l-m",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "ExtraBold",
-      "fontSize": 18,
+      "fontSize": 20,
       "letterSpacing": {
         "unit": "PIXELS",
         "value": 0
       },
-      "textCase": "UPPER"
+      "textCase": "ORIGINAL"
     },
     {
       "name": "app/button/button-s",
-      "fontFamily": "Figtree",
+      "fontFamily": "Bricolage Grotesque",
       "fontWeight": "ExtraBold",
       "fontSize": 16,
       "letterSpacing": {
         "unit": "PIXELS",
         "value": 0
       },
-      "textCase": "UPPER"
+      "textCase": "ORIGINAL"
     }
   ]
 }

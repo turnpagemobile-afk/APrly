@@ -129,14 +129,14 @@ Regenerate icons: `pnpm --filter @workspace/aprly run pwa:icons` (requires `pnpm
 
 ### Design tokens and landing assets
 
-Figma exports live in `local_docs/APRLY DESIGN/` (gitignored). Sync into the repo before commit:
+Figma exports live in `local_docs/WHITE_GREEN_DESIGN/` (gitignored stile/images may apply; committed copies land under `artifacts/aprly`). Sync into the repo before commit:
 
 ```bash
-pnpm --filter @workspace/aprly run sync-design   # → design-tokens/ + public/landing/
-pnpm --filter @workspace/aprly run tokens        # → src/styles/theme-tokens.css (commit output)
+pnpm --filter @workspace/aprly run sync-design   # WHITE_GREEN_DESIGN → design-tokens/ + public/
+pnpm --filter @workspace/aprly run tokens        # → src/styles/theme-tokens.css + app-text-styles.css (commit output)
 ```
 
-CI/droplet only see committed `artifacts/aprly/design-tokens/`, `public/landing/`, and `theme-tokens.css`.
+CI/droplet only see committed `artifacts/aprly/design-tokens/`, `public/landing/`, `public/shared/`, `public/cabinet/`, and generated CSS.
 
 ## Rolling back
 

@@ -1,7 +1,6 @@
-import { RefreshCw } from "lucide-react";
 import { dashboardPromoContent } from "@/content/dashboard-home";
 import { applyCabinetSwUpdate } from "@/lib/pwa/cabinet-sw-update";
-import { Button } from "@/components/ui/button";
+import { PillButton } from "@/components/shared/PillButton";
 
 type CabinetUpdateBannerProps = {
   visible: boolean;
@@ -13,20 +12,21 @@ export function CabinetUpdateBanner({ visible }: CabinetUpdateBannerProps) {
   return (
     <div
       role="status"
-      className="border-b border-primary/40 bg-primary/10 px-4 py-3 text-center text-sm text-foreground"
+      className="bg-[var(--primary-theme-600)] px-4 py-3 text-center"
     >
-      <div className="app-page-cabinet flex flex-col items-center justify-center gap-2 font-medium sm:flex-row sm:gap-3">
-        <span>{dashboardPromoContent.updateAvailable}</span>
-        <Button
+      <div className="app-page-cabinet flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+        <span className="app-text-p1-regular text-neutral-000">
+          {dashboardPromoContent.updateAvailable}
+        </span>
+        <PillButton
           type="button"
+          variant="special"
           size="sm"
-          variant="secondary"
-          className="h-8 shrink-0 font-semibold"
+          className="shrink-0"
           onClick={() => void applyCabinetSwUpdate()}
         >
-          <RefreshCw className="mr-2 h-3.5 w-3.5" aria-hidden="true" />
           {dashboardPromoContent.updateRefresh}
-        </Button>
+        </PillButton>
       </div>
     </div>
   );

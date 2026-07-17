@@ -18,6 +18,7 @@ import { PlanLeadProgressView } from "@/components/dashboard/plan-lead/PlanLeadP
 import { PlanLeadSendView } from "@/components/dashboard/plan-lead/PlanLeadSendView";
 import { PlanLeadDeniedView } from "@/components/dashboard/plan-lead/PlanLeadDeniedView";
 import { PlanLeadPartnerModalHost } from "@/components/dashboard/plan-lead/PlanLeadPartnerModalHost";
+import { PlanSendSuccessModal } from "@/components/dashboard/plan-lead/PlanSendSuccessModal";
 import { useAddPlanLeadCardsViaPlaid } from "@/components/dashboard/plan-lead/useAddPlanLeadCardsViaPlaid";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
 import { dashboardTabContent } from "@/content/dashboard-tab";
@@ -63,6 +64,7 @@ export default function PlanLeadDetailPage() {
   const { startCreatePlan, isCreatingPlan } = useCreatePlanViaPlaid({ returnTo });
 
   const [partnerModalOpen, setPartnerModalOpen] = useState(false);
+  const [sendSuccessOpen, setSendSuccessOpen] = useState(false);
   const plaidAutoStartRef = useRef(false);
 
   const planLeadId = useMemo(
@@ -177,11 +179,8 @@ export default function PlanLeadDetailPage() {
     await queryClient.invalidateQueries({
       queryKey: getGetPlanLeadQueryKey(planLeadId),
     });
-    toast({
-      title: planLeadDetailContent.sendSuccessTitle,
-      description: planLeadDetailContent.sendSuccessDescription,
-    });
     setPartnerModalOpen(false);
+    setSendSuccessOpen(true);
   };
 
   const onPartnerModalSend = async (partnerId: number) => {
@@ -316,6 +315,7 @@ export default function PlanLeadDetailPage() {
         subscriptionActive={subscription.subscriptionActive}
         onSendActive={(partnerId) => void onPartnerModalSend(partnerId)}
       />
+      <PlanSendSuccessModal open={sendSuccessOpen} onOpenChange={setSendSuccessOpen} />
     </DashboardShell>
   );
 }

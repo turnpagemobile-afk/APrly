@@ -1,7 +1,8 @@
 import { Loader2 } from "lucide-react";
 import { activateAccountContent } from "@/content/activate-account";
+import { PillButton } from "@/components/shared/PillButton";
 import { dashDialogRadiusClassName } from "@/lib/dashboard-dialog-styles";
-import { landingAsset } from "@/lib/landing-assets";
+import { cabinetAsset } from "@/lib/cabinet-assets";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -35,50 +36,58 @@ export function ActivateAccountModal({
         closeClassName="dash-modal-close data-[state=open]:bg-transparent data-[state=open]:text-[var(--action-default-color)]"
       >
         <DialogHeader className="space-y-0 text-left">
-          <DialogTitle className="dash-modal-title">{copy.title}</DialogTitle>
+          <DialogTitle className="app-header-h6 text-average pr-8">{copy.title}</DialogTitle>
         </DialogHeader>
 
-        <div className="dash-modal-price-banner">
-          <p className="dash-modal-price-lead">{copy.priceBannerLead}</p>
-          <p className="dash-modal-price-value">{copy.price}</p>
+        <div className="mt-5 rounded-[12px] bg-[var(--primary-theme-100)] px-5 py-5 text-center">
+          <p className="app-header-screen-title-bold text-title">{copy.priceBannerLead}</p>
+          <p className="app-header-screen-title-bold text-action mt-1">{copy.price}</p>
         </div>
 
-        <ul className="dash-modal-feature-list">
+        <ul className="mt-5 space-y-3">
           {copy.features.map((feature) => (
-            <li key={feature} className="dash-modal-feature-item">
+            <li key={feature} className="flex items-start gap-3">
               <img
-                src={landingAsset("shared/check-sky.png")}
+                src={cabinetAsset("cabinet/paywall/check.svg")}
                 alt=""
                 aria-hidden
-                className="dash-modal-feature-check"
+                className="mt-0.5 h-6 w-6 shrink-0"
               />
-              <span>{feature}</span>
+              <span className="app-text-p1-regular text-average">{feature}</span>
             </li>
           ))}
         </ul>
 
-        <p className="dash-modal-program-note">
+        <p className="app-text-p1-regular text-average mt-5 text-center">
           {copy.programNote}{" "}
-          <button type="button" className="dash-modal-why-link" onClick={onWhyClick}>
+          <button
+            type="button"
+            className="app-text-p1-bold text-action underline-offset-2 hover:underline"
+            onClick={onWhyClick}
+          >
             {copy.whyLink}
           </button>
         </p>
 
-        <button
-          type="button"
-          className="dash-modal-primary-btn"
-          disabled={isLoading}
-          onClick={onActivate}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
-              {copy.redirecting}
-            </>
-          ) : (
-            copy.activate
-          )}
-        </button>
+        <div className="mt-6 flex justify-center">
+          <PillButton
+            type="button"
+            variant="primary"
+            size="default"
+            className="h-[52px] w-[201px] max-w-full"
+            disabled={isLoading}
+            onClick={onActivate}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                {copy.redirecting}
+              </>
+            ) : (
+              copy.activate
+            )}
+          </PillButton>
+        </div>
       </DialogContent>
     </Dialog>
   );

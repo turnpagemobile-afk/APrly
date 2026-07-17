@@ -52,11 +52,12 @@ JWT_SECRET=<random-32-chars-min>
 FRONTEND_ORIGIN=https://aprly.ai
 SITE_MODE=waitlist
 FRONTEND_DOCKERFILE=Dockerfile.waitlist
+ADMIN_SEED_PASSWORD=<strong-password-min-8-chars>
 ```
 
 `Dockerfile.waitlist` збирає **coming-soon** на `/` і **admin SPA** на `/admin/*`. Кабінет (`/dashboard`) у waitlist-режимі повертає 404.
 
-Адмін-панель: `https://aprly.ai/admin/login` (seed-адміни з `ADMIN_SEED_PASSWORD`, див. `.env.example`).
+Адмін-панель: `https://aprly.ai/admin/login`. Seed-адміни (`super.admin@aprly.ai`, `cliff@aprly.ai`, `maxim@aprly.ai`) — пароль з `ADMIN_SEED_PASSWORD`. Без цього рядка `db-seed` пропустить створення адмінів.
 
 ---
 
@@ -66,6 +67,7 @@ FRONTEND_DOCKERFILE=Dockerfile.waitlist
 cd /var/www/aprly
 export COMPOSE_PARALLEL_LIMIT=1
 $COMPOSE --profile ops run --rm db-migrate
+$COMPOSE --profile ops run --rm db-seed
 $COMPOSE build frontend api-server
 $COMPOSE up -d
 $COMPOSE ps
@@ -81,6 +83,15 @@ curl -fsS -X POST http://127.0.0.1/api/waitlist \
 ```
 
 Після HTTPS — також `curl -fsSI https://aprly.ai/admin/login | head -5` (має бути HTML admin SPA, не coming-soon).
+
+Перевірка seed-адмінів (без пароля):
+
+```bash
+$COMPOSE exec db psql -U aprly -d aprly -c \
+  "SELECT id, email, role FROM users WHERE role = 'admin';"
+```
+
+У логах `db-seed` мають бути рядки `[seed] admin user id=… email=…`. Якщо `skip admin users` — додайте `ADMIN_SEED_PASSWORD` у `.env.prod` і повторіть `db-seed`.
 
 ---
 
@@ -124,6 +135,7 @@ git fetch --all --prune
 git checkout dev
 git pull origin dev
 $COMPOSE --profile ops run --rm db-migrate
+$COMPOSE --profile ops run --rm db-seed
 $COMPOSE build frontend api-server
 $COMPOSE up -d
 ```

@@ -414,7 +414,7 @@ export function SignupCheckoutWizard({
             </span>
             <Link
               href="/login"
-              className="app-button-button-s text-action hover:underline"
+              className="app-button-button-l-m text-action hover:underline"
               onClick={() => onOpenChange(false)}
             >
               {authContent.signup.loginLink}
@@ -434,7 +434,7 @@ export function SignupCheckoutWizard({
             strokeWidth={1.5}
             aria-hidden
           />
-          <p className="mt-6 text-lg font-extrabold uppercase tracking-tight text-[var(--neutral-theme-900)]">
+          <p className="app-header-h6 text-title mt-6">
             {authContent.signup.successTitle}
           </p>
           <p className="mt-3 text-sm text-[var(--hint-text-color)]">

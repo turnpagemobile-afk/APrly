@@ -20,6 +20,7 @@ import { getOrCreateGuestSessionId } from "@/lib/guest-session";
 import { saveOptimizerSnapshot, snapshotCardsForImport } from "@/lib/optimizerSnapshot";
 import { loadAndClearPlaidPendingAccounts } from "@/lib/plaid-oauth-session";
 import { optimizerContent } from "@/content/landing";
+import { landingAsset } from "@/lib/landing-assets";
 import { cn } from "@/lib/utils";
 
 const TARGET_APR = 8;
@@ -180,27 +181,30 @@ export const OptimizerSection = forwardRef<OptimizerSectionHandle, OptimizerSect
       <section
         id="optimizer"
         ref={sectionRef}
-        className="scroll-mt-24 bg-[var(--secondary-theme-200)] px-4 py-14 bp840:py-20 bp1200:py-24"
+        className="scroll-mt-24 bg-[var(--page-bg)] px-4 py-14 bp840:py-20 bp1200:py-24"
+        style={{
+          backgroundImage: `url(${landingAsset("landing/optimizer/start-audit-lines.png")})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
       >
         <div className="app-page-marketing app-page-marketing-content">
           <div
             className={cn(
-              "relative overflow-hidden rounded-[var(--design-card-corner-radius-small,24px)]",
-              "border border-[var(--primary-theme-200)]",
+              "relative overflow-hidden rounded-[32px]",
               "bg-[var(--neutral-theme-050)]",
-              "shadow-[0_10px_20px_0_rgba(29,62,11,0.08)]",
+              "shadow-[var(--landing-shadow)]",
             )}
           >
             <div className="relative z-10 flex flex-col p-10">
               <header className="text-left">
-                <h2 className="font-hero-display text-[clamp(1.75rem,2.5vw+0.5rem,3.125rem)] font-semibold uppercase leading-[1.1] text-[var(--title-beige-color)]">
-                  {optimizerContent.title}
-                </h2>
-                <p className="app-header-subheadline-regular text-average mt-4">
+                <h2 className="app-header-h3 text-title">{optimizerContent.title}</h2>
+                <p className="app-text-p1-regular text-average mt-4">
                   {optimizerContent.subtitle.body}
                   <a
                     href={optimizerContent.subtitle.linkHref}
-                    className="font-bold text-[var(--primary-theme-500)] underline-offset-2 hover:underline"
+                    className="app-text-p1-regular text-action underline-offset-2 hover:underline"
                   >
                     {optimizerContent.subtitle.linkText}
                   </a>

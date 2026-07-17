@@ -58,7 +58,7 @@ export function CardEntryList({
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <Label className="text-xs font-bold tracking-wide text-muted-foreground">
                 {brandLabel}
               </Label>
               <Input
@@ -71,7 +71,7 @@ export function CardEntryList({
 
             <div className="grid grid-cols-1 gap-4 cabinet:grid-cols-2">
               <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-xs font-bold tracking-wide text-muted-foreground">
                   {balanceLabel}
                 </Label>
                 <Input
@@ -83,7 +83,7 @@ export function CardEntryList({
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-xs font-bold tracking-wide text-muted-foreground">
                   {rateLabel}
                 </Label>
                 <Input

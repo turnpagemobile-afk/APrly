@@ -22,11 +22,11 @@ function FaqAccordionCard({ item }: { item: FaqItem }) {
   return (
     <AccordionItem
       value={item.id}
-      className="flex flex-col gap-5 overflow-hidden rounded-[24px] border-b-0 bg-[var(--card-1lvl-bg-color)] p-5"
+      className="flex flex-col gap-5 overflow-hidden rounded-[24px] border-b-0 bg-[var(--card-1lvl-bg-color)] p-5 shadow-[var(--faq-card-shadow)]"
     >
-      <AccordionTrigger className="group app-header-h6 text-action py-0 hover:no-underline [&>svg]:hidden">
+      <AccordionTrigger className="group py-0 hover:no-underline [&>svg]:hidden">
         <span className="flex flex-1 items-center justify-between gap-4">
-          {item.q}
+          <span className="app-header-h6 text-title min-w-0 flex-1">{item.q}</span>
           <span className="relative h-8 w-8 shrink-0">
             <img
               src={landingAsset("landing/faq/faq_chevron_in_circle_down.svg")}
@@ -70,12 +70,12 @@ export function FaqSection({ content = faqContent, className }: FaqSectionProps)
     <section
       id="faq"
       className={cn(
-        "scroll-mt-24 bg-[var(--secondary-theme-200)] px-4 py-12 bp600:py-14 bp1200:py-16",
+        "scroll-mt-24 bg-[var(--page-bg)] px-4 py-12 bp600:py-14 bp1200:py-16",
         className,
       )}
     >
       <div className="app-page-marketing app-page-marketing-content">
-        <h2 className="app-header-h3 text-center text-[var(--title-beige-color)]">
+        <h2 className="app-header-h3 text-title text-center">
           {content.title}
         </h2>
         {content.subtitle ? (

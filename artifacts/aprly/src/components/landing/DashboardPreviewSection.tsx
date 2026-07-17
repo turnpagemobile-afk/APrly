@@ -9,10 +9,11 @@ const MOBILE_PANEL_OVERLAP = 180;
 const MOBILE_TEXT_GAP_BELOW_MOCKUP = 20;
 const MOCKUP_TOP_GAP_FROM_PREV = 80;
 
-const PANEL_BG = "bg-[var(--secondary-theme-200)]";
+const PANEL_BG = "bg-[#FFF]";
 
 const panelBase = cn(
-  "overflow-hidden rounded-[24px] bp1200:rounded-[28px] bp1600:rounded-[32px]",
+  "overflow-hidden rounded-[24px] shadow-[var(--landing-shadow)]",
+  "bp1200:rounded-[28px] bp1600:rounded-[32px]",
 );
 
 /** Padding from peach panel edge to text (Figma). Applied on the panel only. */
@@ -66,7 +67,7 @@ export function DashboardPreviewSection() {
 
   return (
     <section
-      className="relative overflow-x-clip border-y border-[var(--primary-theme-800)] bg-[var(--page-bg)] px-4 pb-10 bp600:pb-12 bp1200:pb-16 bp1600:pb-20"
+      className="relative overflow-x-clip bg-[var(--page-bg)] px-4 pb-10 bp600:pb-12 bp1200:pb-16 bp1600:pb-20"
       style={{ paddingTop: MOCKUP_TOP_GAP_FROM_PREV }}
     >
       <div className="app-page-marketing relative">

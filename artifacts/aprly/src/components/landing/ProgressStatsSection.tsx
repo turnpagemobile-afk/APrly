@@ -68,23 +68,38 @@ function ProgressRateChart({
 }
 
 export function ProgressStatsSection() {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
   return (
-    <section className="bg-[var(--primary-theme-100)] px-4 py-10 bp840:py-14 bp1200:py-16">
+    <section className="bg-[var(--page-bg)] px-4 py-10 bp840:py-14 bp1200:py-16">
       <div className="app-page-marketing">
         <div
           className={cn(
-            "overflow-hidden rounded-[28px] bg-white shadow-sm",
-            "grid grid-cols-1",
-            "bp840:grid-cols-[minmax(0,42%)_minmax(0,1fr)]",
+            "overflow-hidden rounded-[var(--design-card-corner-radius,32px)]",
+            "bg-[var(--card-1lvl-bg-color)] p-10",
+            "shadow-[var(--landing-shadow)]",
+            "grid grid-cols-1 gap-8",
+            "bp840:grid-cols-[minmax(0,42%)_minmax(0,1fr)] bp840:gap-10",
           )}
         >
-          <div className="flex flex-col justify-center px-6 py-8 bp840:px-8 bp840:py-10 bp1200:px-10 bp1200:py-12">
-            <p className="app-text-p2-bold text-hint">{progressContent.subtitle}</p>
-            <h2 className="app-header-h4 text-title mt-3 bp840:mt-4">{progressContent.title}</h2>
-            <p className="app-text-p1-regular text-average mt-4 bp840:mt-5">{progressContent.body}</p>
+          <div className="flex flex-col justify-center">
+            <h2 className="app-header-h3 text-title">{progressContent.title}</h2>
+            {detailsOpen ? (
+              <p className="app-text-p1-regular mt-4 text-[var(--neutral-theme-900)] bp840:mt-5">
+                {progressContent.body}
+              </p>
+            ) : null}
+            <button
+              type="button"
+              className="app-button-button-l-m mt-5 w-fit cursor-pointer text-[var(--action-default-color)] transition-opacity hover:opacity-80"
+              aria-expanded={detailsOpen}
+              onClick={() => setDetailsOpen((open) => !open)}
+            >
+              {detailsOpen ? progressContent.showLess : progressContent.learnMore}
+            </button>
           </div>
 
-          <div className="flex flex-col justify-end bg-[var(--primary-theme-050)] px-5 pb-4 pt-5 bp840:px-7 bp840:pb-6 bp840:pt-8">
+          <div className="flex flex-col justify-end">
             <ProgressRateChart
               rates={progressContent.ratesWide}
               className="mx-auto hidden w-full max-w-md bp600:flex"

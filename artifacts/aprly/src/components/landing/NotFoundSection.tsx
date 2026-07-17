@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
+import { PillButton } from "@/components/shared/PillButton";
 import { notFoundContent } from "@/content/landing";
 import { landingAsset } from "@/lib/landing-assets";
 import { cn } from "@/lib/utils";
@@ -34,37 +34,22 @@ export function NotFoundSection({ className }: NotFoundSectionProps) {
         decoding="async"
       />
 
-      <h1
-        id="not-found-title"
-        className={cn(
-          "mt-8 max-w-lg text-xl font-extrabold uppercase leading-tight tracking-tight text-[var(--neutral-theme-900)]",
-          "bp600:mt-10 bp600:text-2xl",
-          "bp840:text-3xl",
-          "bp1200:text-[2rem]",
-        )}
-      >
+      <h1 id="not-found-title" className="app-header-h6 text-title mt-8 bp600:mt-10">
         {notFoundContent.title}
       </h1>
 
-      <p
-        className={cn(
-          "mt-3 max-w-md text-sm text-[var(--hint-text-color)]",
-          "bp600:mt-4 bp600:text-base",
-        )}
-      >
+      <p className="app-text-p1-regular text-average mt-3 max-w-md bp600:mt-4">
         {notFoundContent.subtitle}
       </p>
 
-      <Button
+      <PillButton
         type="button"
-        className={cn(
-          "mt-8 min-w-[160px] font-bold uppercase tracking-wide",
-          "w-full max-w-xs bp600:w-auto",
-        )}
+        variant="primary"
+        className="mt-8 h-[52px] w-[173px]"
         asChild
       >
         <Link href={notFoundContent.ctaHref}>{notFoundContent.cta}</Link>
-      </Button>
+      </PillButton>
     </section>
   );
 }

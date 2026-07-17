@@ -1,9 +1,9 @@
 import { planContent } from "@/content/landing";
 
 export const dashboardTabContent = {
-  pageTitle: "DASHBOARD",
+  pageTitle: "Dashboard",
   subscriptionCard: {
-    title: "SUBSCRIPTION FEATURES",
+    title: "Paid features",
     active: "ACTIVE",
     disabled: "DISABLED",
   },
@@ -13,25 +13,25 @@ export const dashboardTabContent = {
     cta: "Pay $39 — unlock partner sending",
   },
   empty: {
-    line1: "TO CREATE YOUR FIRST",
-    line2: "SAVING PLAN",
-    line3: "AND START SAVING MONEY TODAY",
-    cta: "CREATE SAVING PLAN",
+    line1: "To create your first",
+    line2: "saving plan",
+    line3: "and start saving money today",
+    cta: "Create saving plan",
   },
   summary: {
-    totalDebt: "TOTAL DEBT",
-    estimatedSavings: "EST. ANNUAL SAVINGS",
-    meltCountdown: "MELT COUNTDOWN",
+    totalDebt: "Total debt",
+    estimatedSavings: "Est. annual savings",
+    meltCountdown: "Melt countdown",
   },
   planLeads: {
-    title: "YOUR SAVING PLANS",
+    title: "Your saving plans",
     addAriaLabel: "Create saving plan",
-    addLead: "CREATE SAVING PLAN",
+    addLead: "Create saving plan",
   },
   planCard: {
     planLabel: "Saving Plan",
     cardsLabel: "cards",
-    addCard: "ADD CARD",
+    addCard: "Add card",
     rateLabel: "Rate:",
     balanceLabel: "Balance:",
     totalEstSaving: "Total Est. Saving",
