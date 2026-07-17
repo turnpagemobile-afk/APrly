@@ -66,9 +66,7 @@ function DashboardShellInner({
 
         <main className="flex min-h-0 flex-1 flex-col">{children}</main>
 
-        {activeTab !== "home" ? (
-          <LandingFooter copyright={copyright} homeHref="/dashboard?tab=home" />
-        ) : null}
+        <LandingFooter copyright={copyright} homeHref="/dashboard?tab=home" />
       </div>
     </CabinetActivateProvider>
   );
