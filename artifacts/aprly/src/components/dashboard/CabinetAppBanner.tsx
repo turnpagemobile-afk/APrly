@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
 import { dashboardPromoContent } from "@/content/dashboard-home";
+import { PillButton } from "@/components/shared/PillButton";
 import { useAuth } from "@/lib/auth-session";
 import { useCabinetPwaContext } from "@/lib/pwa/cabinet-pwa-context";
 import { dashDialogRadiusClassName } from "@/lib/dashboard-dialog-styles";
+import { sharedAsset } from "@/lib/shared-assets";
 import {
   Dialog,
   DialogContent,
@@ -97,10 +98,11 @@ export function CabinetAppBanner({ subscriptionActive }: CabinetAppBannerProps) 
         <button
           type="button"
           onClick={onDismiss}
-          className="absolute right-3 top-3 text-neutral-000 opacity-80 transition-opacity hover:opacity-100 bp600:right-4"
+          className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center opacity-90 transition-opacity hover:opacity-100 bp600:right-4"
           aria-label="Dismiss banner"
         >
-          <X className="h-4 w-4" />
+          {/* shared close.svg is white-filled (synced from close-red.svg) — correct on green banner */}
+          <img src={sharedAsset("close.svg")} alt="" aria-hidden className="h-6 w-6" />
         </button>
         <div className="flex flex-col items-start gap-3 pr-8 bp600:flex-row bp600:items-center bp600:justify-between bp600:gap-6">
           <div className="max-w-2xl">
@@ -111,19 +113,17 @@ export function CabinetAppBanner({ subscriptionActive }: CabinetAppBannerProps) 
               {dashboardPromoContent.bannerBody}
             </p>
           </div>
-          <button
+          <PillButton
             type="button"
-            className={cn(
-              "app-button-button-l-m text-action shrink-0 rounded-full",
-              "bg-[var(--button-special-bg-color)] px-6 py-3",
-              "transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50",
-            )}
+            variant="special"
+            size="default"
+            className="shrink-0"
             disabled={downloadDisabled}
             title={disabledTitle}
             onClick={() => void onDownload()}
           >
             {downloadLabel}
-          </button>
+          </PillButton>
         </div>
       </div>
 

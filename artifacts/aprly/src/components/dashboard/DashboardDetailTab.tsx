@@ -8,6 +8,7 @@ import { SubscriptionStatusCard } from "@/components/dashboard/SubscriptionStatu
 import { CreatePlanEmptyCard } from "@/components/dashboard/CreatePlanEmptyCard";
 import { DashboardPlansSummary } from "@/components/dashboard/DashboardPlansSummary";
 import { PlanLeadCard } from "@/components/dashboard/PlanLeadCard";
+import { PillButton } from "@/components/shared/PillButton";
 
 type DashboardDetailTabProps = {
   subscriptionActive: boolean;
@@ -52,7 +53,7 @@ export function DashboardDetailTab({
   return (
     <div className="app-page-cabinet max-w-none py-6 cabinet:max-w-none bp600:py-8">
       <div className="dash-plans-layout space-y-8">
-        <h1 className="text-2xl font-extrabold uppercase tracking-wide text-[var(--title-color)]">
+        <h1 className="app-header-screen-title-bold text-average">
           {dashboardTabContent.pageTitle}
         </h1>
 
@@ -86,14 +87,16 @@ export function DashboardDetailTab({
             </ul>
 
             <div className="flex justify-center">
-              <button
+              <PillButton
                 type="button"
-                className="dash-plan-create-cta"
+                variant="primary"
+                size="xl"
+                className="h-[76px] w-[329px] max-w-full app-button-button-xl"
                 disabled={isCreatingPlan}
                 onClick={onCreateSavingPlan}
               >
                 {dashboardTabContent.planLeads.addLead}
-              </button>
+              </PillButton>
             </div>
           </>
         )}

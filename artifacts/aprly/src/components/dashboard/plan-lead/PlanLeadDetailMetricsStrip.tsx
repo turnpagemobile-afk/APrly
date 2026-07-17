@@ -67,7 +67,7 @@ function statusLabelClass(status: PlanLeadStatus): string {
     case "in_progress":
       return "text-[var(--info-theme-900)]";
     case "won":
-      return "text-[var(--success-theme-100)]";
+      return "text-[var(--neutral-theme-000)]";
     case "denied":
       return "text-[var(--neutral-theme-000)]/90";
     default:
@@ -116,7 +116,7 @@ export function PlanLeadDetailMetricsStrip({
           <p className="app-header-screen-title-bold text-[var(--neutral-theme-000)]">
             {formatDashboardCurrency(detail.balance, 0)}
           </p>
-          <p className="app-text-p2-bold text-[var(--accent-theme-100)]">
+          <p className="app-text-p2-bold text-[var(--neutral-theme-000)]">
             {metrics.totalPlanDebt}
           </p>
         </div>
@@ -144,7 +144,7 @@ export function PlanLeadDetailMetricsStrip({
           <p className="app-header-screen-title-bold text-[var(--neutral-theme-000)]">
             {formatDashboardCurrency(detail.estimatedAnnualSavings, 0)}
           </p>
-          <p className="app-text-p2-bold text-[var(--success-theme-100)]">
+          <p className="app-text-p2-bold text-[var(--neutral-theme-000)]">
             {metrics.estimatedSavings}
           </p>
         </div>
@@ -152,7 +152,7 @@ export function PlanLeadDetailMetricsStrip({
 
       <div className="dash-plan-detail-metric-tile dash-plan-detail-metric-tile--rate-low">
         <div className="dash-metric-card-stack">
-          <p className="app-header-screen-title-bold text-[var(--success-theme-500)]">
+          <p className="app-header-screen-title-bold text-[var(--success-theme-600)]">
             {detail.targetApr.toFixed(2)}%
           </p>
           <p className="app-text-p2-bold text-[var(--success-theme-900)]">

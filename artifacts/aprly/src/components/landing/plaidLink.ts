@@ -7,10 +7,20 @@ export type PlaidLinkHandler = {
   exit: (...args: unknown[]) => void;
 };
 
-export type PlaidCreateConfig = Record<string, unknown>;
+export type PlaidLinkOnSuccess = (publicToken: string, metadata: unknown) => void;
+export type PlaidLinkOnExit = () => void;
+export type PlaidLinkOnEvent = (eventName: string) => void;
+
+export type PlaidCreateConfig = {
+  token: string;
+  receivedRedirectUri?: string;
+  onSuccess: PlaidLinkOnSuccess;
+  onExit?: PlaidLinkOnExit;
+  onEvent?: PlaidLinkOnEvent;
+};
 
 type PlaidHost = {
-  create: (config: PlaidCreateConfig) => PlaidLinkHandler;
+  create: (config: Record<string, unknown>) => PlaidLinkHandler;
 };
 
 function getPlaidHost(): PlaidHost {
@@ -102,7 +112,13 @@ export function destroyPlaidHandler(handler: PlaidLinkHandler | null): void {
 }
 
 export function createPlaidLink(config: PlaidCreateConfig): PlaidLinkHandler {
-  return getPlaidHost().create(config);
+  return getPlaidHost().create(config as Record<string, unknown>);
+}
+
+export function resumePlaidLink(config: PlaidCreateConfig): PlaidLinkHandler {
+  const handler = createPlaidLink(config);
+  openPlaidLinkDeferred(handler);
+  return handler;
 }
 
 export function openPlaidLinkDeferred(handler: PlaidLinkHandler): void {

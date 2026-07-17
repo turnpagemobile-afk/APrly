@@ -8,17 +8,18 @@
   }
 
   .dash-account-page-title {
+    @apply text-2xl font-extrabold tracking-wide text-[var(--average-text-color)];
     font-family: var(--app-font-display);
-    @apply text-2xl font-extrabold uppercase tracking-wide text-[var(--title-color)];
   }
 
   .dash-account-card {
-    @apply rounded-[var(--design-card-corner-radius-small,24px)] border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] p-5 shadow-sm bp600:p-6;
+    @apply rounded-[var(--design-card-corner-radius-small,24px)] bg-[var(--card-1lvl-bg-color)] p-5 bp600:p-6;
+    box-shadow: var(--cabinet-card-shadow);
   }
 
   .dash-account-section-title {
     font-family: var(--app-font-display);
-    @apply mb-4 text-lg font-extrabold uppercase leading-tight tracking-wide text-[var(--neutral-theme-900)];
+    @apply mb-4 text-lg font-extrabold leading-tight tracking-wide text-[var(--title-color)];
   }
 
   .dash-account-field-error {
@@ -32,7 +33,7 @@
 
   .dash-account-primary-btn {
     font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center self-center px-5 py-3 text-center text-base font-extrabold uppercase tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60 bp600:w-auto bp600:min-w-[220px];
+    @apply inline-flex min-h-[52px] w-full items-center justify-center self-center px-5 py-3 text-center text-base font-extrabold tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60 bp600:w-auto bp600:min-w-[220px];
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--action-default-color);
   }
@@ -69,13 +70,13 @@
 
   .dash-account-access-title {
     font-family: var(--app-font-display);
-    @apply text-base font-extrabold uppercase leading-snug tracking-wide text-[var(--neutral-theme-900)];
+    @apply text-base font-extrabold leading-snug tracking-wide text-[var(--neutral-theme-900)];
   }
 
   .dash-account-get-full-access-label {
     font-family: var(--app-font-display);
     font-feature-settings: "case" on;
-    @apply text-[26px] font-black uppercase leading-[1.3] text-black;
+    @apply text-[26px] font-black leading-[1.3] text-black;
   }
 
   .dash-account-access-desc {
@@ -84,12 +85,6 @@
 
   .dash-account-success {
     @apply flex flex-col items-center justify-center py-6 text-center;
-  }
-
-  .dash-account-success-icon {
-    @apply mb-4 flex h-16 w-16 items-center justify-center rounded-full;
-    background: var(--button-secondary-normal-bg-color);
-    color: var(--action-default-color);
   }
 
   .dash-account-success-message {
@@ -102,7 +97,7 @@
 
   .dash-account-logout-btn {
     font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-2 self-stretch px-5 py-3 text-center text-base font-extrabold uppercase tracking-wide transition-colors hover:bg-[var(--danger-theme-100)] bp600:w-auto bp600:min-w-[200px];
+    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-2 self-stretch px-5 py-3 text-center text-base font-extrabold tracking-wide transition-colors hover:bg-[var(--danger-theme-100)] bp600:w-auto bp600:min-w-[200px];
     border-radius: var(--design-button-corner-radius, 12px);
     border: calc(var(--design-button-line-width, 3) * 1px) solid var(--danger-theme-500);
     color: var(--danger-theme-500);
@@ -111,7 +106,7 @@
 
   .dash-account-delete-btn {
     font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-2 self-stretch px-5 py-3 text-center text-base font-extrabold uppercase tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60 bp600:w-auto bp600:min-w-[220px];
+    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-2 self-stretch px-5 py-3 text-center text-base font-extrabold tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60 bp600:w-auto bp600:min-w-[220px];
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--danger-theme-500);
   }
@@ -136,7 +131,7 @@
 
   .dash-account-confirm-title {
     font-family: var(--app-font-display);
-    @apply pr-8 text-lg font-extrabold uppercase leading-tight tracking-wide text-[var(--neutral-theme-900)];
+    @apply pr-8 text-lg font-extrabold leading-tight tracking-wide text-[var(--neutral-theme-900)];
   }
 
   .dash-account-confirm-body {
@@ -153,7 +148,7 @@
 
   .dash-account-confirm-btn {
     font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-2 px-5 py-3 text-base font-extrabold uppercase tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60;
+    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-2 px-5 py-3 text-base font-extrabold tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60;
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--danger-theme-500);
   }
@@ -161,7 +156,7 @@
   .dash-account-confirm-cancel-btn {
     font-family: var(--app-font-display);
     border: calc(var(--design-button-line-width, 3) * 1px) solid var(--action-default-color);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center px-5 py-3 text-base font-extrabold uppercase tracking-wide transition-colors hover:bg-[var(--button-secondary-hover-bg-color)] disabled:opacity-60;
+    @apply inline-flex min-h-[52px] w-full items-center justify-center px-5 py-3 text-base font-extrabold tracking-wide transition-colors hover:bg-[var(--button-secondary-hover-bg-color)] disabled:opacity-60;
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--button-secondary-normal-bg-color);
     color: var(--action-default-color);

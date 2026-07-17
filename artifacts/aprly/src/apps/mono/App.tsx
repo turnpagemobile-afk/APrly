@@ -14,6 +14,7 @@ import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Login from "@/pages/login";
 import ResetPassword from "@/pages/reset-password";
+import PlaidOAuthPage from "@/pages/plaid-oauth";
 import Dashboard from "@/pages/dashboard";
 import CreateDetailedPlan from "@/pages/dashboard/create-plan";
 import PlanLeadDetailPage from "@/pages/dashboard/plan-lead-detail";
@@ -41,6 +42,7 @@ export default function MonoApp() {
                   <Route path="/" component={Home} />
                   <Route path="/login" component={Login} />
                   <Route path="/reset-password" component={ResetPassword} />
+                  <Route path="/plaid/oauth" component={PlaidOAuthPage} />
                   <Route path="/dashboard/create-plan">
                     <ProtectedRoute>
                       <CreateDetailedPlan />

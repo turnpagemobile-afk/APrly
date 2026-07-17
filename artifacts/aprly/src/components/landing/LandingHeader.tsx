@@ -4,7 +4,7 @@ import { Link } from "wouter";
 import { AuthBrandLogo } from "@/components/auth/AuthBrandLogo";
 import { PillButton } from "@/components/shared/PillButton";
 import { brandContent } from "@/content/landing";
-import { heroContent, navContent } from "@/content/landings/green";
+import { navContent } from "@/content/landings/green";
 import { sharedAsset } from "@/lib/shared-assets";
 import { cn } from "@/lib/utils";
 
@@ -55,9 +55,12 @@ function LandingHeaderActions({
   return wrap(
     <>
       <PillButton
-        variant="outline"
-        size={layout === "mobile-row" ? "default" : "sm"}
-        className={cn(layout === "mobile-row" && "h-12 min-h-12 flex-1 px-4")}
+        variant="ghost"
+        size="default"
+        className={cn(
+          "w-[86px] min-w-[86px] px-0",
+          layout === "mobile-row" && "h-12 min-h-12 flex-1",
+        )}
         asChild
       >
         <Link href={navContent.logIn.href} onClick={onActionClick}>
@@ -65,16 +68,16 @@ function LandingHeaderActions({
         </Link>
       </PillButton>
       <PillButton
-        variant="solid"
-        size={layout === "mobile-row" ? "default" : "sm"}
+        variant="primary"
+        size="lg"
         type="button"
-        className={cn(layout === "mobile-row" && "h-12 min-h-12 flex-1 px-4")}
+        className={cn(layout === "mobile-row" && "h-12 min-h-12 flex-1")}
         onClick={() => {
           onActionClick?.();
           onGetStarted();
         }}
       >
-        {heroContent.cta.label}
+        {navContent.getStarted.label}
       </PillButton>
     </>,
   );
@@ -94,7 +97,7 @@ function NavLinksList({ className, linkClassName, onSelect }: NavLinksListProps)
           <button
             type="button"
             className={cn(
-              "font-bold uppercase text-[var(--primary-theme-500)] transition-opacity hover:opacity-80",
+              "app-button-button-l-m text-[var(--action-default-color)] transition-opacity hover:opacity-80",
               linkClassName,
             )}
             onClick={() => onSelect(link.href)}
@@ -190,13 +193,14 @@ function LandingNavOverlay({ onClose, onGetStarted, onSelect }: LandingNavOverla
         </nav>
 
         <div className="flex items-center justify-center gap-3">
-          <PillButton variant="outline" className="h-12 min-h-12 flex-1 max-w-[200px]" asChild>
+          <PillButton variant="ghost" size="default" className="h-12 min-h-12 flex-1 max-w-[200px]" asChild>
             <Link href={navContent.logIn.href} onClick={onClose}>
               {navContent.logIn.label}
             </Link>
           </PillButton>
           <PillButton
-            variant="solid"
+            variant="primary"
+            size="lg"
             type="button"
             className="h-12 min-h-12 flex-1 max-w-[200px]"
             onClick={() => {
@@ -204,7 +208,7 @@ function LandingNavOverlay({ onClose, onGetStarted, onSelect }: LandingNavOverla
               onGetStarted();
             }}
           >
-            {heroContent.cta.label}
+            {navContent.getStarted.label}
           </PillButton>
         </div>
       </div>
@@ -286,7 +290,7 @@ export function LandingHeader({ onGetStarted, onNavigateAnchor }: LandingHeaderP
                 <div ref={menuRef} className="relative">
                   <button
                     type="button"
-                    className="flex h-11 w-11 items-center justify-center transition-opacity hover:opacity-80"
+                    className="flex h-11 w-11 items-center justify-center rounded-full transition-opacity hover:opacity-80"
                     aria-label={menuOpen ? "Close menu" : "Open menu"}
                     aria-expanded={menuOpen}
                     aria-haspopup="true"
@@ -296,7 +300,7 @@ export function LandingHeader({ onGetStarted, onNavigateAnchor }: LandingHeaderP
                     <img
                       src={sharedAsset("menu-button.svg")}
                       alt=""
-                      className="h-11 w-11"
+                      className="h-6 w-6 object-contain"
                       aria-hidden
                     />
                   </button>

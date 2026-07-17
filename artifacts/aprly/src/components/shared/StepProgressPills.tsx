@@ -35,7 +35,9 @@ export function StepProgressPills({
                   "h-4 shrink-0 transition-[width,background-color] duration-300",
                   step === currentStep
                     ? "w-[72px] bg-[var(--success-theme-500)]"
-                    : "w-8 bg-[var(--secondary-theme-300)]",
+                    : step < currentStep
+                      ? "w-8 bg-[var(--primary-theme-200)]"
+                      : "w-8 bg-[var(--neutral-theme-200)]",
                 )
               : cn(
                   "h-1 flex-1",

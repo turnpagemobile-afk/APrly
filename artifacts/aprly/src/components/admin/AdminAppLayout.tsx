@@ -6,6 +6,7 @@ import AdminUsersPage from "@/pages/admin/users";
 import AdminUserDetailPage from "@/pages/admin/user-detail";
 import AdminPartnersPage from "@/pages/admin/partners";
 import AdminPartnerDetailPage from "@/pages/admin/partner-detail";
+import AdminWaitlistPage from "@/pages/admin/waitlist";
 import AdminPlanLeadDetailPage from "@/pages/admin/plan-lead-detail";
 import NotFound from "@/pages/not-found";
 
@@ -41,6 +42,8 @@ export default function AdminAppLayout() {
           <Route path="/admin/partners/:id" component={AdminPartnerDetailPage} />
           <Route path="/admin/partners/" component={AdminPartnersPage} />
           <Route path="/admin/partners" component={AdminPartnersPage} />
+          <Route path="/admin/waitlist/" component={AdminWaitlistPage} />
+          <Route path="/admin/waitlist" component={AdminWaitlistPage} />
           <Route path="/admin">
             <Redirect to="/admin/dashboard" />
           </Route>

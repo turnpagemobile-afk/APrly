@@ -9,11 +9,6 @@ location = /dashboard/index.html {
     try_files $uri =404;
 }
 
-location = /admin/index.html {
-    add_header Cache-Control "no-cache, no-store, must-revalidate" always;
-    try_files $uri =404;
-}
-
 # Mono-era PWA at site root — no-cache so update checks pick up the cleanup worker.
 location = /sw.js {
     add_header Cache-Control "no-cache, no-store, must-revalidate" always;
@@ -50,21 +45,4 @@ location = /dashboard {
     return 301 /dashboard/$is_args$args;
 }
 
-# Admin SPA (built with base /admin/).
-location ^~ /admin/assets/ {
-    try_files $uri =404;
-    access_log off;
-    expires 1y;
-    add_header Cache-Control "public, immutable";
-}
-
-# Strip trailing slash on admin sub-routes (not bare /admin/).
-rewrite ^(/admin/.+)/$ $1 permanent;
-
-location /admin/ {
-    try_files $uri /admin/index.html;
-}
-
-location = /admin {
-    return 301 /admin/$is_args$args;
-}
+include /etc/nginx/conf.d/aprly-admin-locations.inc;

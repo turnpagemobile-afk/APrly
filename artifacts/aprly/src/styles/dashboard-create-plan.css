@@ -9,7 +9,7 @@
 
   .dash-create-plan-page-title {
     font-family: var(--app-font-display);
-    @apply mb-6 text-2xl font-extrabold uppercase tracking-wide text-[var(--title-color)] bp600:mb-8;
+    @apply mb-6 text-2xl font-extrabold tracking-wide text-[var(--title-color)] bp600:mb-8;
   }
 
   .dash-create-plan-stack {
@@ -34,7 +34,7 @@
 
   .dash-create-plan-card-title {
     font-family: var(--app-font-display);
-    @apply text-lg font-extrabold uppercase tracking-wide text-[var(--neutral-theme-900)];
+    @apply text-lg font-extrabold tracking-wide text-[var(--neutral-theme-900)];
   }
 
   .dash-create-plan-remove-btn {
@@ -91,7 +91,7 @@
   .dash-create-plan-plaid-btn {
     font-family: var(--app-font-display);
     border: calc(var(--design-button-line-width, 3) * 1px) solid var(--action-default-color);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center px-5 py-3 text-center text-sm font-extrabold uppercase tracking-wide text-[var(--action-default-color)] transition-colors disabled:opacity-60 bp840:flex-1;
+    @apply inline-flex min-h-[52px] w-full items-center justify-center px-5 py-3 text-center text-sm font-extrabold tracking-wide text-[var(--action-default-color)] transition-colors disabled:opacity-60 bp840:flex-1;
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--button-secondary-normal-bg-color);
   }
@@ -106,7 +106,7 @@
 
   .dash-create-plan-manual-link {
     font-family: var(--app-font-display);
-    @apply text-sm font-extrabold uppercase tracking-wide text-[var(--action-default-color)] underline-offset-2 hover:underline;
+    @apply text-sm font-extrabold tracking-wide text-[var(--action-default-color)] underline-offset-2 hover:underline;
   }
 
   .dash-create-plan-save-row {
@@ -115,7 +115,7 @@
 
   .dash-create-plan-save-btn {
     font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] w-auto items-center justify-center gap-3 p-[14px] text-center text-base font-extrabold uppercase tracking-wide text-white transition-opacity disabled:cursor-not-allowed;
+    @apply inline-flex min-h-[52px] w-auto items-center justify-center gap-3 p-[14px] text-center text-base font-extrabold tracking-wide text-white transition-opacity disabled:cursor-not-allowed;
     border-radius: var(--button-corner-radius, var(--design-button-corner-radius, 12px));
     background: var(--neutral-theme-300);
   }

@@ -1,5 +1,7 @@
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { dashboardProfileContent } from "@/content/dashboard-profile";
+import { PillButton } from "@/components/shared/PillButton";
+import { cabinetAsset } from "@/lib/cabinet-assets";
 
 type AccountSuccessViewProps = {
   message: string;
@@ -10,13 +12,16 @@ export function AccountSuccessView({ message, onOk }: AccountSuccessViewProps) {
   const copy = dashboardProfileContent;
   return (
     <div className="dash-account-success">
-      <div className="dash-account-success-icon" aria-hidden>
-        <CheckCircle2 className="h-8 w-8" />
-      </div>
+      <img
+        src={cabinetAsset("cabinet/account/success-background.png")}
+        alt=""
+        aria-hidden
+        className="mb-4 h-40 w-40 object-contain"
+      />
       <p className="dash-account-success-message">{message}</p>
-      <button type="button" className="dash-account-primary-btn mt-6" onClick={onOk}>
+      <PillButton type="button" variant="primary" size="default" className="mt-6" onClick={onOk}>
         {copy.ok}
-      </button>
+      </PillButton>
     </div>
   );
 }
@@ -29,9 +34,9 @@ type AccountSubmitButtonProps = {
 export function AccountSubmitButton({ label, pending }: AccountSubmitButtonProps) {
   return (
     <div className="flex justify-center pt-2">
-      <button type="submit" className="dash-account-primary-btn" disabled={pending}>
+      <PillButton type="submit" variant="primary" size="default" disabled={pending}>
         {pending ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden /> : label}
-      </button>
+      </PillButton>
     </div>
   );
 }

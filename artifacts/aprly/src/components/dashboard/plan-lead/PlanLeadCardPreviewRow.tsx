@@ -1,4 +1,3 @@
-import { Trash2 } from "lucide-react";
 import type { LeadCardItem } from "@workspace/api-client-react";
 import { formatDashboardCurrency } from "@/lib/format-currency";
 import { dashboardTabContent } from "@/content/dashboard-tab";
@@ -116,12 +115,17 @@ export function PlanLeadCardPreviewRow({
         {showDelete ? (
           <button
             type="button"
-            className="dash-plan-card-grid-delete"
+            className="dash-plan-card-grid-delete h-11 w-11 items-center justify-center"
             aria-label={`Delete ${card.brand}`}
             disabled={isDeleting}
             onClick={onDelete}
           >
-            <Trash2 className="h-5 w-5" aria-hidden="true" />
+            <img
+              src={cabinetAsset("cabinet/dashboard/trash.svg")}
+              alt=""
+              aria-hidden
+              className="h-6 w-6"
+            />
           </button>
         ) : null}
 

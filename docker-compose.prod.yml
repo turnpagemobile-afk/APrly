@@ -1,4 +1,5 @@
 # Production stack for APRly on the DigitalOcean droplet.
+# Waitlist: FRONTEND_DOCKERFILE=Dockerfile.waitlist in .env.prod (fast, no Vite build).
 #
 # Reads variables from .env.prod (see deploy/README.md). Only nginx (in the
 # `frontend` service) is published on the host; db and api-server stay on the
@@ -90,7 +91,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.frontend
+      dockerfile: ${FRONTEND_DOCKERFILE:-Dockerfile.frontend}
     image: aprly-frontend:local
     restart: unless-stopped
     ports:

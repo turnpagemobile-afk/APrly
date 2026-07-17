@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { PillButton } from "@/components/shared/PillButton";
 import { cabinetShellContent } from "@/content/dashboard-home";
 import { cn } from "@/lib/utils";
 
@@ -16,37 +16,35 @@ export function CabinetHeaderActions({
   onCreateSavingPlan,
   isCreatingPlan = false,
 }: CabinetHeaderActionsProps) {
-  const fullButtonClass = cn(
-    "border-[var(--action-default-color)] font-bold uppercase tracking-wide text-action hover:bg-[var(--primary-theme-100)]",
-    variant === "desktop" ? "inline-flex" : "hidden bp600:inline-flex",
-  );
-
   const fullButton = (
-    <Button
+    <PillButton
       type="button"
-      size="sm"
-      variant="outline"
-      className={fullButtonClass}
+      variant="secondary"
+      size="default"
+      className={cn(
+        "h-[52px] w-[244px] max-w-full shrink-0",
+        variant === "desktop" ? "inline-flex" : "hidden bp600:inline-flex",
+      )}
       disabled={isOffline || isCreatingPlan}
       onClick={onCreateSavingPlan}
     >
       {cabinetShellContent.createSavingPlan}
-    </Button>
+    </PillButton>
   );
 
   const plusButton =
     variant === "compact" ? (
-      <Button
+      <PillButton
         type="button"
-        size="icon"
-        variant="outline"
-        className="h-10 w-10 shrink-0 rounded-xl border-[var(--action-default-color)] text-action hover:bg-[var(--primary-theme-100)] bp600:hidden"
+        variant="secondary"
+        size="sm"
+        className="h-11 w-11 shrink-0 px-0 bp600:hidden"
         disabled={isOffline || isCreatingPlan}
         onClick={onCreateSavingPlan}
         aria-label={cabinetShellContent.createSavingPlan}
       >
         <Plus className="h-5 w-5" aria-hidden="true" />
-      </Button>
+      </PillButton>
     ) : null;
 
   return (

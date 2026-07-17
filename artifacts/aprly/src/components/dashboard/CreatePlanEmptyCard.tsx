@@ -1,5 +1,5 @@
 import { dashboardTabContent } from "@/content/dashboard-tab";
-import { Button } from "@/components/ui/button";
+import { PillButton } from "@/components/shared/PillButton";
 
 type CreatePlanEmptyCardProps = {
   onCreateSavingPlan: () => void;
@@ -12,20 +12,28 @@ export function CreatePlanEmptyCard({
 }: CreatePlanEmptyCardProps) {
   const copy = dashboardTabContent.empty;
   return (
-    <div className="rounded-2xl border border-[var(--primary-theme-200)] bg-[var(--primary-theme-100)] px-6 py-12 text-center bp600:px-10 bp600:py-16">
-      <p className="text-sm font-extrabold uppercase leading-snug tracking-wide text-[var(--neutral-theme-900)] bp600:text-base">
-        {copy.line1}{" "}
-        <span className="text-[var(--title-color)]">{copy.line2}</span> {copy.line3}
-      </p>
-      <Button
-        type="button"
-        size="lg"
-        className="mt-8 w-full max-w-md bg-[var(--action-default-color)] font-bold uppercase tracking-wide hover:bg-[var(--action-hover-color)] bp600:w-auto bp600:min-w-[240px]"
-        disabled={isCreatingPlan}
-        onClick={onCreateSavingPlan}
-      >
-        {copy.cta}
-      </Button>
+    <div
+      className="mx-auto flex w-full max-w-[580px] flex-col gap-5 rounded-[var(--design-card-corner-radius-small,24px)] bg-[var(--card-1lvl-bg-color)] p-5"
+      style={{ boxShadow: "var(--cabinet-card-shadow)" }}
+    >
+      <div className="rounded-[12px] bg-[var(--primary-theme-100)] px-4 py-5 text-center">
+        <p className="app-header-screen-title-bold text-title leading-snug">
+          {copy.line1}{" "}
+          <span className="text-action">{copy.line2}</span> {copy.line3}
+        </p>
+      </div>
+      <div className="flex justify-center">
+        <PillButton
+          type="button"
+          variant="primary"
+          size="default"
+          className="h-[52px] w-[244px] max-w-full"
+          disabled={isCreatingPlan}
+          onClick={onCreateSavingPlan}
+        >
+          {copy.cta}
+        </PillButton>
+      </div>
     </div>
   );
 }

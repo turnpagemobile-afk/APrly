@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APrly — Coming Soon</title>
+<meta name="description" content="APrly is a bank-verified way to see what your interest is really costing you. We're finishing the build.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #104587;
+    --navy-ink: #0b2a52;
+    --mint: #62d7ad;
+    --mint-deep: #3fbe92;
+    --bg: #f6f7f9;
+    --paper: #ffffff;
+    --text-secondary: #5b6472;
+    --border: #e3e7ed;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--navy-ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 32px clamp(20px, 5vw, 56px) 0;
+  }
+
+  .logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+  }
+  .logo .ap { color: var(--navy); }
+  .logo .rly { color: var(--mint-deep); }
+
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px clamp(20px, 5vw, 56px) 60px;
+  }
+
+  .content {
+    max-width: 640px;
+    width: 100%;
+    text-align: center;
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: clamp(30px, 5vw, 44px);
+    line-height: 1.18;
+    letter-spacing: -0.015em;
+    margin: 0 0 24px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: rise 0.7s ease-out 0.1s forwards;
+  }
+  h1 .line2 {
+    display: block;
+    color: var(--navy);
+    position: relative;
+  }
+  h1 .line2::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+    width: 120px;
+    height: 4px;
+    background: var(--mint);
+    transform: translateX(-50%);
+    border-radius: 2px;
+  }
+
+  .subhead {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-width: 480px;
+    margin: 0 auto 8px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: rise 0.7s ease-out 0.25s forwards;
+  }
+
+  .microline {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin: 0 auto 40px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: rise 0.7s ease-out 0.35s forwards;
+  }
+
+  /* Signature element: the equation strip */
+  .equation-wrap {
+    position: relative;
+    margin: 0 auto 40px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: rise 0.7s ease-out 0.45s forwards;
+  }
+
+  .equation-glow {
+    position: absolute;
+    inset: -30% -10%;
+    background: radial-gradient(ellipse at center, rgba(98,215,173,0.25), transparent 70%);
+    filter: blur(20px);
+    z-index: 0;
+    animation: breathe 4.5s ease-in-out infinite;
+  }
+
+  .equation {
+    position: relative;
+    z-index: 1;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px clamp(14px, 4vw, 32px);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 10px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .eq-term { display: flex; flex-direction: column; align-items: center; }
+  .eq-value { font-weight: 600; font-size: 19px; color: var(--navy-ink); }
+  .eq-value.result { color: var(--navy); }
+  .eq-label { font-size: 10.5px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 3px; font-family: 'Inter', sans-serif; }
+  .eq-op { font-size: 18px; color: var(--text-secondary); align-self: center; padding: 0 2px; }
+
+  .equation-caption {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Waitlist form */
+  form {
+    display: flex;
+    gap: 10px;
+    max-width: 420px;
+    margin: 0 auto 12px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: rise 0.7s ease-out 0.55s forwards;
+  }
+
+  input[type="email"] {
+    flex: 1;
+    min-width: 0;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--navy-ink);
+    background: var(--paper);
+  }
+  input[type="email"]:focus {
+    outline: none;
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(16,69,135,0.12);
+  }
+  input[type="email"]::placeholder { color: #9aa3b1; }
+
+  button {
+    background: var(--mint);
+    color: var(--navy-ink);
+    border: none;
+    border-radius: 8px;
+    padding: 13px 22px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  button:hover { background: var(--mint-deep); }
+  button:active { transform: scale(0.98); }
+  button:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+
+  .consent {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    opacity: 0;
+    animation: rise 0.7s ease-out 0.6s forwards;
+  }
+
+  .success-message {
+    display: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy);
+    background: rgba(98,215,173,0.15);
+    border: 1px solid var(--mint);
+    border-radius: 8px;
+    padding: 14px 18px;
+    max-width: 420px;
+    margin: 0 auto 12px;
+  }
+
+  footer {
+    padding: 24px clamp(20px, 5vw, 56px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--text-secondary); text-decoration: underline; text-underline-offset: 2px; }
+  footer a:hover { color: var(--navy); }
+
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  @media (max-width: 480px) {
+    form { flex-direction: column; }
+    button { width: 100%; }
+    footer { flex-direction: column; text-align: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    h1, .subhead, .microline, .equation-wrap, form, .consent {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .equation-glow { animation: none !important; opacity: 0.6; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="ap">AP</span><span class="rly">rly</span></div>
+</header>
+
+<main>
+  <div class="content">
+    <h1>Your debt isn't a character flaw.<span class="line2">It's a math problem.</span></h1>
+
+    <p class="subhead">APrly is a bank-verified way to see exactly what your interest is costing you above a fair baseline — and where to take that number next.</p>
+    <p class="microline">Designed to route people toward real, accredited help — not to replace it.</p>
+
+    <div class="equation-wrap">
+      <div class="equation-glow" aria-hidden="true"></div>
+      <div class="equation" role="img" aria-label="Your APR minus an 8 percent baseline equals your Interest Waste">
+        <div class="eq-term">
+          <span class="eq-value" data-target="24.9" data-suffix="%">0%</span>
+          <span class="eq-label">Your APR</span>
+        </div>
+        <span class="eq-op">&minus;</span>
+        <div class="eq-term">
+          <span class="eq-value" data-target="8" data-suffix="%">0%</span>
+          <span class="eq-label">8% Baseline</span>
+        </div>
+        <span class="eq-op">=</span>
+        <div class="eq-term">
+          <span class="eq-value result" data-target="16.9" data-suffix="%">0%</span>
+          <span class="eq-label">Interest Waste</span>
+        </div>
+      </div>
+      <p class="equation-caption">Illustrative example — not your data.</p>
+    </div>
+
+    <div class="success-message" id="successMessage">You're on the list. We'll email you the moment we open.</div>
+
+    <form id="waitlistForm">
+      <label for="email" class="sr-only" style="position:absolute;left:-9999px;">Email address</label>
+      <input type="email" id="email" name="email" placeholder="you@email.com" required>
+      <button type="submit">Join the waitlist</button>
+    </form>
+    <p class="waitlist-error" id="waitlistError" style="display:none;font-size:14px;color:#b42318;margin:0 auto 12px;max-width:420px;"></p>
+    <p class="consent">No spam. We don't sell your information. Unsubscribe anytime.</p>
+  </div>
+</main>
+
+<footer>
+  <span>&copy; 2026 APrly, Inc.</span>
+  <span>Read-only bank connections, built on Plaid.</span>
+  <a href="mailto:partners@aprly.ai">Partnership &amp; press inquiries</a>
+</footer>
+
+<script>
+  // One-time count-up for the equation strip
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var values = document.querySelectorAll('.eq-value');
+    values.forEach(function (el) {
+      var target = parseFloat(el.getAttribute('data-target'));
+      var suffix = el.getAttribute('data-suffix') || '';
+      if (reduceMotion) {
+        el.textContent = target + suffix;
+        return;
+      }
+      var duration = 900;
+      var start = null;
+      function step(ts) {
+        if (!start) start = ts;
+        var progress = Math.min((ts - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        var current = (target * eased).toFixed(target % 1 !== 0 ? 1 : 0);
+        el.textContent = current + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  })();
+
+  function showWaitlistSuccess() {
+    document.getElementById('waitlistForm').style.display = 'none';
+    document.querySelector('.consent').style.display = 'none';
+    document.getElementById('successMessage').style.display = 'block';
+  }
+
+  function showWaitlistError(message) {
+    var el = document.getElementById('waitlistError');
+    if (!el) return;
+    el.textContent = message;
+    el.style.display = 'block';
+  }
+
+  document.getElementById('waitlistForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var input = document.getElementById('email');
+    var email = (input.value || '').trim();
+    var err = document.getElementById('waitlistError');
+    if (err) err.style.display = 'none';
+    if (!email || !input.checkValidity()) {
+      input.reportValidity();
+      return;
+    }
+    var btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email: email, source: 'aprly.ai' })
+    }).then(function (res) {
+      if (res.status === 200 || res.status === 201) {
+        showWaitlistSuccess();
+        return;
+      }
+      return res.json().catch(function () { return {}; }).then(function (body) {
+        throw new Error(body.error || 'Could not join the waitlist. Please try again.');
+      });
+    }).catch(function (err) {
+      showWaitlistError(err && err.message ? err.message : 'Could not join the waitlist. Please try again.');
+      btn.disabled = false;
+    });
+  });
+</script>
+
+</body>
+</html>

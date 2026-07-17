@@ -30,6 +30,7 @@ export const adminContent = {
     dashboard: "Dashboard",
     users: "Users",
     partners: "Partners",
+    waitlist: "Waitlist",
     subscription: "Subscription",
     logout: "Log Out",
   },
@@ -104,6 +105,14 @@ export const adminContent = {
     clearSearch: "Clear search",
     clearSearchAria: "Clear search",
     nothingFound: "Sorry, but nothing found.",
+  },
+  waitlist: {
+    title: "Waitlist",
+    searchPlaceholder: "Search by email",
+    rowNumber: "#",
+    email: "Email",
+    signedUp: "Signed up",
+    empty: "No waitlist signups yet",
   },
   partnerDetail: {
     breadcrumbPartners: "Partners",

@@ -51,6 +51,22 @@ export const CreateLeadResponse = zod.object({
 });
 
 /**
+ * @summary Join the APRly waitlist (coming soon page)
+ */
+export const joinWaitlistBodyEmailMax = 254;
+
+export const joinWaitlistBodySourceMax = 64;
+
+export const JoinWaitlistBody = zod.object({
+  email: zod.string().email().max(joinWaitlistBodyEmailMax),
+  source: zod.string().max(joinWaitlistBodySourceMax).optional(),
+});
+
+export const JoinWaitlistResponse = zod.object({
+  ok: zod.boolean(),
+});
+
+/**
  * @summary Calculate debt interest savings
  */
 export const calculateOptimizationBodyTotalDebtMin = 0;
@@ -151,6 +167,12 @@ export const CreatePlaidLinkTokenResponse = zod.object({
   linkToken: zod.string(),
   expiration: zod.coerce.date(),
   sandbox: zod.boolean(),
+  redirectUri: zod
+    .string()
+    .nullable()
+    .describe(
+      "OAuth redirect URI registered with Plaid; null when not configured",
+    ),
 });
 
 /**
@@ -1065,7 +1087,7 @@ export const AdminVerifyOtpResponse = zod.object({
 });
 
 /**
- * @summary Re-issue OTP challenge (v1 logs code, no email)
+ * @summary Re-issue OTP challenge and resend email
  */
 export const AdminResendOtpBody = zod.object({
   challengeToken: zod.string(),
@@ -1823,6 +1845,40 @@ export const PostAdminPlanLeadRejectResponse = zod.object({
   canStartWorking: zod.boolean(),
   canCompleteStep: zod.boolean(),
   canReject: zod.boolean(),
+});
+
+/**
+ * @summary List waitlist signups (paginated)
+ */
+export const getAdminWaitlistQuerySearchDefault = ``;
+export const getAdminWaitlistQueryPageDefault = 1;
+
+export const getAdminWaitlistQueryPageSizeDefault = 10;
+export const getAdminWaitlistQueryPageSizeMax = 50;
+
+export const GetAdminWaitlistQueryParams = zod.object({
+  search: zod.coerce.string().default(getAdminWaitlistQuerySearchDefault),
+  page: zod.coerce.number().min(1).default(getAdminWaitlistQueryPageDefault),
+  pageSize: zod.coerce
+    .number()
+    .min(1)
+    .max(getAdminWaitlistQueryPageSizeMax)
+    .default(getAdminWaitlistQueryPageSizeDefault),
+});
+
+export const getAdminWaitlistResponseTotalMin = 0;
+
+export const GetAdminWaitlistResponse = zod.object({
+  signups: zod.array(
+    zod.object({
+      id: zod.number(),
+      email: zod.string().email(),
+      createdAt: zod.coerce.date(),
+    }),
+  ),
+  total: zod.number().min(getAdminWaitlistResponseTotalMin),
+  page: zod.number().min(1),
+  pageSize: zod.number().min(1),
 });
 
 /**

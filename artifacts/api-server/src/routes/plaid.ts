@@ -48,6 +48,46 @@ function getPlaidClient(): PlaidApi {
   );
 }
 
+function isLocalFrontendOrigin(origin: string): boolean {
+  try {
+    const { hostname } = new URL(origin);
+    return hostname === "localhost" || hostname === "127.0.0.1";
+  } catch {
+    return false;
+  }
+}
+
+function plaidRedirectUri(): string | undefined {
+  const explicit = process.env["PLAID_REDIRECT_URI"]?.trim();
+  if (explicit) return explicit;
+  const origin = process.env["FRONTEND_ORIGIN"]?.trim().replace(/\/+$/, "");
+  if (!origin || isLocalFrontendOrigin(origin)) return undefined;
+  return `${origin}/plaid/oauth`;
+}
+
+function plaidApiErrorResponse(
+  err: unknown,
+): { status: number; message: string } | null {
+  if (!err || typeof err !== "object" || !("response" in err)) return null;
+  const response = (err as { response?: { status?: number; data?: unknown } })
+    .response;
+  if (!response?.data || typeof response.data !== "object") return null;
+
+  const data = response.data as Record<string, unknown>;
+  const message =
+    (typeof data.error_message === "string" && data.error_message) ||
+    (typeof data.display_message === "string" && data.display_message) ||
+    (typeof data.error === "string" && data.error) ||
+    "Plaid request failed";
+
+  const status =
+    response.status != null && response.status >= 400 && response.status < 600
+      ? response.status
+      : 502;
+
+  return { status, message };
+}
+
 function pickPurchaseApr(liab: CreditCardLiability | undefined): number | undefined {
   if (!liab?.aprs?.length) return undefined;
   const purchase = liab.aprs.find((a) => a.apr_type === APRAprTypeEnum.PurchaseApr);
@@ -66,7 +106,7 @@ router.post("/plaid/link-token", async (_req, res, next) => {
     }
 
     const client = getPlaidClient();
-    const redirectUri = process.env["PLAID_REDIRECT_URI"]?.trim();
+    const redirectUri = plaidRedirectUri();
 
     const tokenRes = await client.linkTokenCreate({
       user: { client_user_id: randomUUID() },
@@ -92,9 +132,15 @@ router.post("/plaid/link-token", async (_req, res, next) => {
       linkToken,
       expiration,
       sandbox: plaidBasePath() === PlaidEnvironments.sandbox,
+      redirectUri: redirectUri ?? null,
     });
     res.json(data);
   } catch (err) {
+    const plaidErr = plaidApiErrorResponse(err);
+    if (plaidErr) {
+      res.status(plaidErr.status).json({ error: plaidErr.message });
+      return;
+    }
     next(err);
   }
 });
@@ -181,6 +227,11 @@ router.post("/plaid/exchange", async (req, res, next) => {
     });
     res.json(data);
   } catch (err) {
+    const plaidErr = plaidApiErrorResponse(err);
+    if (plaidErr) {
+      res.status(plaidErr.status).json({ error: plaidErr.message });
+      return;
+    }
     next(err);
   }
 });

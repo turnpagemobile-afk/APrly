@@ -9,8 +9,8 @@ Quick reference for operating the production droplet.
 - Env file: `/var/www/aprly/.env.prod` (mode `0600`, NOT in git). Must define
   Postgres + `DATABASE_URL`, OpenAI (`AI_INTEGRATIONS_OPENAI_*`), and for Plaid
   routes: `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV` (`sandbox` /
-  `development` / `production`). Optional: `PLAID_REDIRECT_URI` (required for
-  some Link flows once DNS/TLS is live).
+  `development` / `production`). Optional: `PLAID_REDIRECT_URI` (OAuth return URL;
+  default `{FRONTEND_ORIGIN}/plaid/oauth` when unset — register in Plaid Dashboard).
 - Super admin seed (passed into the `db-seed` container via compose):
   `ADMIN_SEED_EMAIL` (default `super.admin@aprly.ai`) and **`ADMIN_SEED_PASSWORD`**
   (required — if empty, seed skips admin and `/admin/login` will always 401).
@@ -129,14 +129,14 @@ Regenerate icons: `pnpm --filter @workspace/aprly run pwa:icons` (requires `pnpm
 
 ### Design tokens and landing assets
 
-Figma exports live in `local_docs/APRLY DESIGN/` (gitignored). Sync into the repo before commit:
+Figma exports live in `local_docs/WHITE_GREEN_DESIGN/` (gitignored stile/images may apply; committed copies land under `artifacts/aprly`). Sync into the repo before commit:
 
 ```bash
-pnpm --filter @workspace/aprly run sync-design   # → design-tokens/ + public/landing/
-pnpm --filter @workspace/aprly run tokens        # → src/styles/theme-tokens.css (commit output)
+pnpm --filter @workspace/aprly run sync-design   # WHITE_GREEN_DESIGN → design-tokens/ + public/
+pnpm --filter @workspace/aprly run tokens        # → src/styles/theme-tokens.css + app-text-styles.css (commit output)
 ```
 
-CI/droplet only see committed `artifacts/aprly/design-tokens/`, `public/landing/`, and `theme-tokens.css`.
+CI/droplet only see committed `artifacts/aprly/design-tokens/`, `public/landing/`, `public/shared/`, `public/cabinet/`, and generated CSS.
 
 ## Rolling back
 

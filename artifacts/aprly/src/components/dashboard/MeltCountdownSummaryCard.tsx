@@ -71,14 +71,14 @@ export function MeltCountdownSummaryCard({
   return (
     <div
       className={cn(
-        "dash-summary-tile border border-[var(--success-theme-400)] bg-[var(--success-theme-100)]",
+        "dash-summary-tile border-2 border-[var(--success-theme-400)] bg-[var(--success-theme-100)]",
       )}
     >
       <div className="dash-metric-card-stack">
         <div className="dash-melt-value-row">
           <MeltCountdownValue display={display} />
         </div>
-        <p className="dash-display-label text-[var(--neutral-theme-900)]">{label}</p>
+        <p className="dash-display-label text-[var(--success-theme-900)]">{label}</p>
       </div>
     </div>
   );

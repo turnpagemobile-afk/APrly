@@ -9,6 +9,17 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface JoinWaitlistInput {
+  /** @maxLength 254 */
+  email: string;
+  /** @maxLength 64 */
+  source?: string;
+}
+
+export interface JoinWaitlistResponse {
+  ok: boolean;
+}
+
 export interface CreateLeadInput {
   /**
    * @minLength 1
@@ -71,6 +82,8 @@ export interface PlaidLinkToken {
   linkToken: string;
   expiration: string;
   sandbox: boolean;
+  /** OAuth redirect URI registered with Plaid; null when not configured */
+  redirectUri: string | null;
 }
 
 export interface PlaidExchangeInput {
@@ -313,6 +326,22 @@ export interface AdminPartnerListItem {
 
 export interface AdminPartnerListResponse {
   partners: AdminPartnerListItem[];
+  /** @minimum 0 */
+  total: number;
+  /** @minimum 1 */
+  page: number;
+  /** @minimum 1 */
+  pageSize: number;
+}
+
+export interface AdminWaitlistSignupItem {
+  id: number;
+  email: string;
+  createdAt: string;
+}
+
+export interface AdminWaitlistListResponse {
+  signups: AdminWaitlistSignupItem[];
   /** @minimum 0 */
   total: number;
   /** @minimum 1 */
@@ -929,6 +958,19 @@ export const GetAdminUsersTab = {
 } as const;
 
 export type GetAdminUserPlansParams = {
+  /**
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * @minimum 1
+   * @maximum 50
+   */
+  pageSize?: number;
+};
+
+export type GetAdminWaitlistParams = {
+  search?: string;
   /**
    * @minimum 1
    */

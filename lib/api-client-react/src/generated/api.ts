@@ -32,6 +32,7 @@ import type {
   AdminUserPlansResponse,
   AdminUsersListResponse,
   AdminVerifyOtpInput,
+  AdminWaitlistListResponse,
   AuditCheckoutPayload,
   AuditCheckoutSessionStatusResponse,
   CheckoutSessionStatusResponse,
@@ -47,12 +48,15 @@ import type {
   GetAdminPartnersParams,
   GetAdminUserPlansParams,
   GetAdminUsersParams,
+  GetAdminWaitlistParams,
   GetAuditCheckoutSessionStatusParams,
   GetCheckoutSessionStatusParams,
   GetSubscriptionCheckoutSessionStatusParams,
   HealthStatus,
   ImportCardsInput,
   ImportCardsResponse,
+  JoinWaitlistInput,
+  JoinWaitlistResponse,
   Lead,
   LoginInput,
   MeResponse,
@@ -249,6 +253,92 @@ export const useCreateLead = <
   TContext
 > => {
   return useMutation(getCreateLeadMutationOptions(options));
+};
+
+/**
+ * @summary Join the APRly waitlist (coming soon page)
+ */
+export const getJoinWaitlistUrl = () => {
+  return `/api/waitlist`;
+};
+
+export const joinWaitlist = async (
+  joinWaitlistInput: JoinWaitlistInput,
+  options?: RequestInit,
+): Promise<JoinWaitlistResponse> => {
+  return customFetch<JoinWaitlistResponse>(getJoinWaitlistUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(joinWaitlistInput),
+  });
+};
+
+export const getJoinWaitlistMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof joinWaitlist>>,
+    TError,
+    { data: BodyType<JoinWaitlistInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof joinWaitlist>>,
+  TError,
+  { data: BodyType<JoinWaitlistInput> },
+  TContext
+> => {
+  const mutationKey = ["joinWaitlist"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof joinWaitlist>>,
+    { data: BodyType<JoinWaitlistInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return joinWaitlist(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type JoinWaitlistMutationResult = NonNullable<
+  Awaited<ReturnType<typeof joinWaitlist>>
+>;
+export type JoinWaitlistMutationBody = BodyType<JoinWaitlistInput>;
+export type JoinWaitlistMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Join the APRly waitlist (coming soon page)
+ */
+export const useJoinWaitlist = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof joinWaitlist>>,
+    TError,
+    { data: BodyType<JoinWaitlistInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof joinWaitlist>>,
+  TError,
+  { data: BodyType<JoinWaitlistInput> },
+  TContext
+> => {
+  return useMutation(getJoinWaitlistMutationOptions(options));
 };
 
 /**
@@ -3085,7 +3175,7 @@ export const useAdminVerifyOtp = <
 };
 
 /**
- * @summary Re-issue OTP challenge (v1 logs code, no email)
+ * @summary Re-issue OTP challenge and resend email
  */
 export const getAdminResendOtpUrl = () => {
   return `/api/admin/auth/resend-otp`;
@@ -3148,7 +3238,7 @@ export type AdminResendOtpMutationBody = BodyType<AdminResendOtpInput>;
 export type AdminResendOtpMutationError = ErrorType<void>;
 
 /**
- * @summary Re-issue OTP challenge (v1 logs code, no email)
+ * @summary Re-issue OTP challenge and resend email
  */
 export const useAdminResendOtp = <
   TError = ErrorType<void>,
@@ -4272,6 +4362,106 @@ export const usePostAdminPlanLeadReject = <
 > => {
   return useMutation(getPostAdminPlanLeadRejectMutationOptions(options));
 };
+
+/**
+ * @summary List waitlist signups (paginated)
+ */
+export const getGetAdminWaitlistUrl = (params?: GetAdminWaitlistParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/admin/waitlist?${stringifiedParams}`
+    : `/api/admin/waitlist`;
+};
+
+export const getAdminWaitlist = async (
+  params?: GetAdminWaitlistParams,
+  options?: RequestInit,
+): Promise<AdminWaitlistListResponse> => {
+  return customFetch<AdminWaitlistListResponse>(
+    getGetAdminWaitlistUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getGetAdminWaitlistQueryKey = (
+  params?: GetAdminWaitlistParams,
+) => {
+  return [`/api/admin/waitlist`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetAdminWaitlistQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAdminWaitlist>>,
+  TError = ErrorType<void>,
+>(
+  params?: GetAdminWaitlistParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAdminWaitlist>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetAdminWaitlistQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAdminWaitlist>>
+  > = ({ signal }) => getAdminWaitlist(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminWaitlist>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAdminWaitlistQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAdminWaitlist>>
+>;
+export type GetAdminWaitlistQueryError = ErrorType<void>;
+
+/**
+ * @summary List waitlist signups (paginated)
+ */
+
+export function useGetAdminWaitlist<
+  TData = Awaited<ReturnType<typeof getAdminWaitlist>>,
+  TError = ErrorType<void>,
+>(
+  params?: GetAdminWaitlistParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAdminWaitlist>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAdminWaitlistQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
 
 /**
  * @summary List partners (paginated)

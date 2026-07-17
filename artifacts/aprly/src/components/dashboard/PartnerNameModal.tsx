@@ -79,12 +79,12 @@ export function PartnerNameModal({ open, onOpenChange, onComplete }: PartnerName
         closeClassName="dash-modal-close data-[state=open]:bg-transparent data-[state=open]:text-[var(--action-default-color)]"
       >
         <DialogHeader className="space-y-0 text-left">
-          <DialogTitle className="dash-modal-title">{copy.title}</DialogTitle>
+          <DialogTitle className="app-header-h6 text-average">{copy.title}</DialogTitle>
         </DialogHeader>
 
-        <p className="dash-modal-subtitle">{copy.subtitle}</p>
+        <p className="app-text-p1-regular text-average mt-3">{copy.subtitle}</p>
 
-        <form onSubmit={(e) => void onSubmit(e)} className="mt-4 space-y-4">
+        <form onSubmit={(e) => void onSubmit(e)} className="mt-4 flex flex-col space-y-4">
           <AuthTextInput
             id="partner-first-name"
             label={copy.firstName}
@@ -107,8 +107,8 @@ export function PartnerNameModal({ open, onOpenChange, onComplete }: PartnerName
 
           <PillButton
             type="submit"
-            size="lg"
-            className="mt-6 w-full"
+            size="default"
+            className="mt-6 h-[52px] w-[220px] max-w-full self-center"
             disabled={patchMe.isPending}
           >
             {patchMe.isPending ? (

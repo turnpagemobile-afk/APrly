@@ -12,6 +12,7 @@ import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Login from "@/pages/login";
 import ResetPassword from "@/pages/reset-password";
+import PlaidOAuthPage from "@/pages/plaid-oauth";
 import NotFound from "@/pages/not-found";
 
 export default function LandingApp() {
@@ -26,6 +27,7 @@ export default function LandingApp() {
               <Route path="/" component={Home} />
               <Route path="/login" component={Login} />
               <Route path="/reset-password" component={ResetPassword} />
+              <Route path="/plaid/oauth" component={PlaidOAuthPage} />
               <Route path="/privacy" component={Privacy} />
               <Route path="/terms" component={Terms} />
               <Route path="/404" component={NotFound} />

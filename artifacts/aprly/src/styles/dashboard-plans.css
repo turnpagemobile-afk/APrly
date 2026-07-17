@@ -9,12 +9,12 @@
 
   .dash-display-label {
     font-family: var(--app-font-display);
-    @apply text-[14px] font-extrabold uppercase leading-5 tracking-normal;
+    @apply text-[14px] font-extrabold leading-5 tracking-normal;
   }
 
   .dash-display-value {
     font-family: var(--app-font-display);
-    @apply text-[26px] font-black uppercase leading-[1.3] tracking-normal;
+    @apply text-[26px] font-black leading-[1.3] tracking-normal;
   }
 
   .dash-melt-value-row {
@@ -24,13 +24,13 @@
   .dash-melt-number {
     font-family: var(--app-font-display);
     font-feature-settings: "case" on;
-    @apply text-[26px] font-black uppercase leading-[1.3] tracking-normal text-[var(--primary-theme-600)];
+    @apply text-[26px] font-black leading-[1.3] tracking-normal text-[var(--palette-functional-success-success-600)];
   }
 
   .dash-melt-unit {
     font-family: var(--app-font-display);
     font-feature-settings: "case" on;
-    @apply text-[18px] font-extrabold normal-case leading-6 tracking-normal text-[var(--neutral-theme-900)];
+    @apply text-[18px] font-extrabold normal-case leading-6 tracking-normal text-[var(--success-theme-900)];
   }
 
   .dash-text-lg-xb {
@@ -64,7 +64,7 @@
   }
 
   .dash-plan-card-widget {
-    @apply rounded-[12px] border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] p-4 bp600:p-5;
+    @apply rounded-[12px] border border-[var(--neutral-theme-200)] bg-[var(--neutral-theme-050)] p-4 bp600:p-5;
   }
 
   .dash-plan-card-chip {
@@ -84,7 +84,7 @@
   }
 
   .dash-plan-card-saving {
-    background: var(--success-theme-500);
+    background: var(--palette-functional-success-success-600);
   }
 
   /** PLANS tab content width: 1128 / 988 / 948 / 657 / 463 / calc(100% - 40px) */
@@ -102,7 +102,8 @@
   }
 
   .dash-summary-tile {
-    @apply relative box-border flex h-[104px] min-h-[104px] max-h-[104px] flex-col overflow-hidden rounded-2xl p-4 shadow-sm;
+    @apply relative box-border flex h-[104px] min-h-[104px] max-h-[104px] flex-col overflow-hidden rounded-2xl p-4;
+    box-shadow: var(--cabinet-card-shadow);
   }
 
   .dash-metric-card-bg-icon {
@@ -113,7 +114,7 @@
     @apply box-border flex w-full min-w-[min(100%,343px)] max-w-[var(--design-grid-extralarge-max-content,1128px)] flex-col items-start self-stretch overflow-hidden p-0.5 transition-[box-shadow];
     border-radius: var(--design-card-corner-radius, 32px);
     background: var(--card-1lvl-bg-color);
-    box-shadow: 0 10px 20px 0 rgba(29, 62, 11, 0.1);
+    box-shadow: var(--cabinet-card-shadow);
   }
 
   .dash-plan-lead-card--interactive:hover {
@@ -156,14 +157,9 @@
     @apply flex shrink-0 items-center justify-center;
   }
 
-  .dash-plan-add-card-btn {
-    border: calc(var(--design-button-line-width, 3) * 1px) solid var(--action-default-color);
-    @apply mx-auto flex min-h-[52px] max-w-[190px] items-center justify-center gap-2 px-5 py-3 text-center uppercase tracking-normal rounded-[var(--design-button-corner-radius,12px)] bg-[var(--button-secondary-normal-bg-color)] transition-colors hover:bg-[var(--button-secondary-hover-bg-color)];
-  }
-
   .dash-plan-status-badge {
     gap: 7px;
-    @apply inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold uppercase tracking-wide text-white;
+    @apply inline-flex items-center rounded-full px-3 py-1.5 text-sm font-extrabold tracking-wide text-[var(--neutral-theme-000)];
   }
 
   .dash-plan-status-badge--waiting {
@@ -171,15 +167,15 @@
   }
 
   .dash-plan-status-badge--in-progress {
-    background: var(--primary-theme-500);
+    background: var(--info-theme-600);
   }
 
   .dash-plan-status-badge--won {
-    background: var(--success-theme-500);
+    background: var(--success-theme-600);
   }
 
   .dash-plan-create-cta {
     font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-3 self-center px-5 py-5 rounded-[var(--design-button-corner-radius,12px)] bg-[var(--action-default-color)] text-center text-xl font-extrabold uppercase tracking-wide text-white transition-opacity hover:opacity-95 bp600:w-auto;
+    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-3 self-center px-5 py-5 rounded-[var(--design-button-corner-radius,12px)] bg-[var(--action-default-color)] text-center text-xl font-extrabold tracking-wide text-white transition-opacity hover:opacity-95 bp600:w-auto;
   }
 }

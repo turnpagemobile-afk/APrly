@@ -19,6 +19,7 @@ const NAV: {
   { href: "/admin/dashboard", label: adminContent.nav.dashboard, icon: "dashboard" },
   { href: "/admin/users", label: adminContent.nav.users, icon: "users" },
   { href: "/admin/partners", label: adminContent.nav.partners, icon: "partners" },
+  { href: "/admin/waitlist", label: adminContent.nav.waitlist, icon: "waitlist" },
 ];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {

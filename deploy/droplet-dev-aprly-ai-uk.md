@@ -52,10 +52,10 @@ nano /var/www/aprly/.env.prod
 FRONTEND_ORIGIN=https://dev.aprly.ai
 ```
 
-`PLAID_REDIRECT_URI` **не обов’язковий** для sandbox Link у браузері (як локально без цього рядка). Додавайте лише якщо потрібен OAuth redirect і URI зареєстрований у [Plaid Dashboard → API](https://dashboard.plaid.com/developers/api):
+`PLAID_REDIRECT_URI` **не обов’язковий** для sandbox Link у браузері (як локально без цього рядка). Додавайте лише якщо потрібен OAuth redirect і URI зареєстрований у [Plaid Dashboard → API](https://dashboard.plaid.com/developers/api). Якщо не задано, api-server використовує `{FRONTEND_ORIGIN}/plaid/oauth`:
 
 ```bash
-# PLAID_REDIRECT_URI=https://dev.aprly.ai/
+# PLAID_REDIRECT_URI=https://dev.aprly.ai/plaid/oauth
 ```
 
 Після **будь-якої** зміни `.env.prod` — не `build`, а recreate **api-server** (крок 6).

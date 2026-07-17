@@ -9,3 +9,4 @@ export * from "./lead_cards";
 export * from "./plan_leads";
 export * from "./partners";
 export * from "./ghl_sync_queue";
+export * from "./waitlist_signups";

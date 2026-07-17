@@ -40,7 +40,7 @@
   },
   "button-corner-radius": {
     "$type": "number",
-    "$value": 150,
+    "$value": 18,
     "$extensions": {
       "com.figma.variableId": "VariableID:5007:31694",
       "com.figma.scopes": [

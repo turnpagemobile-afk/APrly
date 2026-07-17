@@ -125,7 +125,7 @@ FRONTEND_ORIGIN=https://134-122-126-71.nip.io
 
 Якщо використовуєте Plaid з redirect:
 
-- додайте **`PLAID_REDIRECT_URI=https://134-122-126-71.nip.io/...`** (точний шлях як у коді / Plaid Dashboard),
+- додайте **`PLAID_REDIRECT_URI=https://134-122-126-71.nip.io/plaid/oauth`** (або `{FRONTEND_ORIGIN}/plaid/oauth` за замовчуванням у коді) у Plaid Dashboard,
 - у **Plaid Dashboard** додайте **той самий** URI в allowlist.
 
 Збережіть файл (`Ctrl+O`, Enter, `Ctrl+X`).
