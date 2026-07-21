@@ -14,6 +14,7 @@
 @import "./styles/admin-user-detail.css";
 @import "./styles/admin-plan-detail.css";
 @import "./styles/reset-password.css";
+@import "./styles/auth-field.css";
 @import "./styles/app-text-styles.css";
 @import "./styles/app-text-colors.css";
 @plugin "@tailwindcss/typography";

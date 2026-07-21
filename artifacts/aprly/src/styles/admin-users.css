@@ -12,18 +12,21 @@
   }
 
   .admin-search-input {
-    @apply w-full min-h-[var(--design-input-min-height-x1,52px)] border shadow-none transition-colors;
+    @apply w-full min-h-[var(--design-input-min-height-x1,52px)] border-2 shadow-none;
     @apply rounded-[12px] py-[14px] pr-[14px] text-sm;
     @apply focus-visible:outline-none focus-visible:ring-0;
     padding-left: 42px;
     border-color: var(--input-default-border-color);
     background: var(--input-default-bg-color);
     color: var(--input-text-color);
+    transition: color, background-color, border-color, box-shadow;
   }
 
+  .admin-search-input:focus,
   .admin-search-input:focus-visible {
     border-color: var(--input-focus-border-color);
     background: var(--input-focus-bg-color);
+    box-shadow: 0 0 0 4px var(--button-default-focus);
   }
 
   .admin-search-input--has-clear {
@@ -42,9 +45,12 @@
     @apply shrink-0 rounded-[12px] border px-5 py-3 uppercase transition-colors;
     border-color: var(--action-default-color);
     background: var(--button-secondary-normal-bg-color);
+    color: var(--action-default-color);
   }
 
   .admin-users-search-clear-btn:hover {
+    border-color: var(--success-theme-500);
+    color: var(--success-theme-600);
     background: var(--button-secondary-hover-bg-color);
   }
 

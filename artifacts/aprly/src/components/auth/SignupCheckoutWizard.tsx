@@ -168,6 +168,12 @@ export function SignupCheckoutWizard({
         ? authContent.signup.errors.passwordsMismatch
         : null;
 
+  const termsError = fieldErrors.termsAccepted?.length
+    ? fieldErrors.termsAccepted.join(" ")
+    : submitAttempted && !termsAccepted
+      ? authContent.signup.errors.termsRequired
+      : null;
+
   const resetForm = useCallback(() => {
     setStep(1);
     setEmail("");
@@ -367,7 +373,18 @@ export function SignupCheckoutWizard({
               <AuthCheckbox
                 id="su-terms"
                 checked={termsAccepted}
-                onCheckedChange={(v) => setTermsAccepted(v === true)}
+                invalid={Boolean(termsError)}
+                onCheckedChange={(v) => {
+                  const accepted = v === true;
+                  setTermsAccepted(accepted);
+                  if (accepted) {
+                    setFieldErrors((prev) => {
+                      if (!prev.termsAccepted?.length) return prev;
+                      const { termsAccepted: _t, ...rest } = prev;
+                      return rest;
+                    });
+                  }
+                }}
               />
               <Label htmlFor="su-terms" className="app-text-p1-regular text-average leading-snug">
                 <span>I&apos;ve read and agree to the </span>
@@ -387,8 +404,8 @@ export function SignupCheckoutWizard({
                 <span>.</span>
               </Label>
             </div>
-            {fieldErrors.termsAccepted?.length ? (
-              <p className="text-sm text-destructive">{fieldErrors.termsAccepted.join(" ")}</p>
+            {termsError ? (
+              <p className="text-center text-sm text-destructive">{termsError}</p>
             ) : null}
 
             <PillButton

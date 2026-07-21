@@ -27,7 +27,7 @@
   }
 
   .admin-auth-submit-btn {
-    @apply mt-2 flex w-full min-h-[52px] items-center justify-center rounded-full border border-transparent bg-[var(--action-default-color)] px-6 py-3 transition-colors hover:bg-[var(--action-hover-color)] disabled:pointer-events-none disabled:opacity-50;
+    @apply mt-2 flex w-full min-h-[52px] items-center justify-center rounded-full border border-transparent bg-[var(--action-default-color)] px-6 py-3 transition-colors hover:bg-[var(--success-theme-700)] disabled:cursor-not-allowed disabled:bg-[var(--button-disable-color)] disabled:text-[var(--neutral-theme-000)] disabled:hover:bg-[var(--button-disable-color)];
   }
 
   .admin-auth-verify-header {

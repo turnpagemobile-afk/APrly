@@ -107,9 +107,9 @@
 
   /* === input === */
   --input-default-bg-color: #FFFFFF;
-  --input-default-border-color: #C4C7CC;
+  --input-default-border-color: #6B7280;
   --input-focus-bg-color: #EEFAF6;
-  --input-focus-border-color: #64D2AD;
+  --input-focus-border-color: #10B981;
   --input-error-bg-color: #FEF2F4;
   --input-disable-bg-color: #E1E3E6;
   --input-disable-border-color: #C4C7CC;
@@ -328,9 +328,9 @@
 
   /* === input === */
   --input-default-bg-color: #FFFFFF;
-  --input-default-border-color: #C4C7CC;
+  --input-default-border-color: #6B7280;
   --input-focus-bg-color: #EEFAF6;
-  --input-focus-border-color: #64D2AD;
+  --input-focus-border-color: #10B981;
   --input-error-bg-color: #FEF2F4;
   --input-disable-bg-color: #E1E3E6;
   --input-disable-border-color: #C4C7CC;

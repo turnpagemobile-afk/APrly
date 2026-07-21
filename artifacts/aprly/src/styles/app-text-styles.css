@@ -9,9 +9,11 @@
 @layer components {
   /* Figma: app/header/h1 */
   .app-header-h1 {
-    font-family: var(--app-font-display);
+    font-family: var(--app-font-bricolage);
     font-size: 80px;
-    font-weight: 900;
+    font-weight: 800;
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 96;
     line-height: normal;
     letter-spacing: 0px;
     text-transform: uppercase;

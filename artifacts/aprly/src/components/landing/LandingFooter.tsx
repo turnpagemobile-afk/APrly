@@ -32,13 +32,13 @@ function FooterLinks() {
 
   return (
     <nav
-      className="flex flex-wrap items-center justify-center gap-x-2 app-button-button-s text-[var(--neutral-theme-000)] bp840:justify-end"
+      className="flex flex-wrap items-center justify-center gap-x-2 app-button-button-l-m text-action bp840:justify-end"
       aria-label="Footer"
     >
       <Link href={termsLink.href} className="transition-opacity hover:opacity-80">
         {termsLink.label}
       </Link>
-      <span className="text-[var(--neutral-theme-000)]" aria-hidden>
+      <span className="text-action" aria-hidden>
         /
       </span>
       <Link href={privacyLink.href} className="transition-opacity hover:opacity-80">
@@ -61,9 +61,9 @@ function FooterSocial() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={item.label}
-            className="transition-opacity hover:opacity-80"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center transition-opacity hover:opacity-80"
           >
-            <img src={iconSrc} alt="" className="h-5 w-5" aria-hidden />
+            <img src={iconSrc} alt={item.label} className="h-6 w-6 shrink-0" />
           </a>
         );
       })}
@@ -81,14 +81,14 @@ export function LandingFooter({ copyright, className }: LandingFooterProps) {
           <PlaidBadge />
           <FooterLinks />
           <FooterSocial />
-          <p className="app-text-p2-regular text-[var(--neutral-theme-500)]">{copyright}</p>
+          <p className="app-text-p2-regular text-[var(--neutral-theme-400)]">{copyright}</p>
         </div>
 
         {/* bp840+: two columns */}
         <div className="hidden w-full items-end justify-between gap-5 bp840:flex">
           <div className="flex flex-col items-start gap-3">
             <PlaidBadge />
-            <p className="app-text-p2-regular text-[var(--neutral-theme-500)]">{copyright}</p>
+            <p className="app-text-p2-regular text-[var(--neutral-theme-400)]">{copyright}</p>
           </div>
           <div className="flex flex-col items-end gap-3 text-right">
             <FooterLinks />

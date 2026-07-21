@@ -76,12 +76,18 @@
   }
 
   .admin-confirm-btn--cancel:hover {
+    border-color: var(--success-theme-500);
+    color: var(--success-theme-600);
     background: var(--button-secondary-hover-bg-color);
   }
 
   .admin-confirm-btn--danger {
-    @apply min-h-[52px] flex-1 rounded-full px-6 py-3 uppercase text-[var(--neutral-theme-000)] transition-opacity hover:opacity-95;
+    @apply min-h-[52px] flex-1 rounded-full px-6 py-3 uppercase text-[var(--neutral-theme-000)] transition-colors;
     background: var(--danger-theme-500);
+  }
+
+  .admin-confirm-btn--danger:not(:disabled):hover {
+    background: var(--danger-theme-600);
   }
 
   .admin-confirm-btn--danger:disabled {

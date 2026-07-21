@@ -2,7 +2,11 @@ import { forwardRef, type InputHTMLAttributes } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { authInputClass } from "./auth-field-styles";
+import {
+  authFieldHaloClass,
+  authFieldInputInnerClass,
+  authFieldShellClass,
+} from "./auth-field-styles";
 
 export type AuthTextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "id"> & {
   id: string;
@@ -28,16 +32,20 @@ export const AuthTextInput = forwardRef<HTMLInputElement, AuthTextInputProps>(
         >
           {label}
         </Label>
-        <Input
-          ref={ref}
-          id={id}
-          className={cn(authInputClass(hasError), className)}
-          aria-invalid={hasError || undefined}
-          aria-describedby={hasError ? `${id}-error` : undefined}
-          {...props}
-        />
+        <div className={authFieldHaloClass(hasError)}>
+          <div className={authFieldShellClass(hasError)}>
+            <Input
+              ref={ref}
+              id={id}
+              className={cn(authFieldInputInnerClass, className)}
+              aria-invalid={hasError || undefined}
+              aria-describedby={hasError ? `${id}-error` : undefined}
+              {...props}
+            />
+          </div>
+        </div>
         {error ? (
-          <p id={`${id}-error`} className="text-sm text-destructive">
+          <p id={`${id}-error`} className="text-center text-sm text-destructive">
             {error}
           </p>
         ) : null}

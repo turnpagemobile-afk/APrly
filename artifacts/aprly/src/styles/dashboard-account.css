@@ -33,9 +33,13 @@
 
   .dash-account-primary-btn {
     font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center self-center px-5 py-3 text-center text-base font-extrabold tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60 bp600:w-auto bp600:min-w-[220px];
+    @apply inline-flex min-h-[52px] w-full items-center justify-center self-center px-5 py-3 text-center text-base font-extrabold tracking-wide text-white transition-colors disabled:cursor-not-allowed disabled:bg-[var(--button-disable-color)] disabled:text-[var(--neutral-theme-000)] bp600:w-auto bp600:min-w-[220px];
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--action-default-color);
+  }
+
+  .dash-account-primary-btn:not(:disabled):hover {
+    background: var(--success-theme-700);
   }
 
   .dash-account-access-row {
@@ -106,9 +110,13 @@
 
   .dash-account-delete-btn {
     font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-2 self-stretch px-5 py-3 text-center text-base font-extrabold tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60 bp600:w-auto bp600:min-w-[220px];
+    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-2 self-stretch px-5 py-3 text-center text-base font-extrabold tracking-wide text-white transition-colors disabled:cursor-not-allowed disabled:bg-[var(--button-disable-color)] disabled:text-[var(--neutral-theme-000)] bp600:w-auto bp600:min-w-[220px];
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--danger-theme-500);
+  }
+
+  .dash-account-delete-btn:not(:disabled):hover {
+    background: var(--danger-theme-600);
   }
 
   .dash-account-confirm-overlay {
@@ -148,17 +156,27 @@
 
   .dash-account-confirm-btn {
     font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-2 px-5 py-3 text-base font-extrabold tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60;
+    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-2 px-5 py-3 text-base font-extrabold tracking-wide text-white transition-colors disabled:cursor-not-allowed disabled:bg-[var(--button-disable-color)] disabled:text-[var(--neutral-theme-000)];
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--danger-theme-500);
+  }
+
+  .dash-account-confirm-btn:not(:disabled):hover {
+    background: var(--danger-theme-600);
   }
 
   .dash-account-confirm-cancel-btn {
     font-family: var(--app-font-display);
     border: calc(var(--design-button-line-width, 3) * 1px) solid var(--action-default-color);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center px-5 py-3 text-base font-extrabold tracking-wide transition-colors hover:bg-[var(--button-secondary-hover-bg-color)] disabled:opacity-60;
+    @apply inline-flex min-h-[52px] w-full items-center justify-center px-5 py-3 text-base font-extrabold tracking-wide transition-colors disabled:cursor-not-allowed disabled:border-[var(--button-disable-color)] disabled:bg-[var(--button-disable-color)] disabled:text-[var(--neutral-theme-000)];
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--button-secondary-normal-bg-color);
     color: var(--action-default-color);
+  }
+
+  .dash-account-confirm-cancel-btn:not(:disabled):hover {
+    border-color: var(--success-theme-500);
+    color: var(--success-theme-600);
+    background: var(--button-secondary-hover-bg-color);
   }
 }
