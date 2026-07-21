@@ -81,13 +81,17 @@ export function HeroSection({
                 preload="metadata"
                 poster={landingAsset("landing/hero/little.png")}
                 aria-label={heroContent.videoAlt}
+                aria-describedby="hero-video-caption"
               >
                 <source
                   src={landingAsset("landing/hero/landing-video-section.mp4")}
                   type="video/mp4"
                 />
               </video>
-              <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-12 text-center text-sm font-semibold text-white bp840:text-base">
+              <p
+                id="hero-video-caption"
+                className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-12 text-center text-sm font-semibold text-white bp840:text-base"
+              >
                 {heroContent.videoCaption}
               </p>
             </div>

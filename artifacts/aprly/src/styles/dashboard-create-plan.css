@@ -46,14 +46,17 @@
   }
 
   .dash-create-plan-input {
-    @apply h-[var(--design-input-min-height-x1,52px)] w-full rounded-lg border px-3 text-sm text-[var(--input-text-color)] shadow-none transition-colors focus-visible:outline-none focus-visible:ring-0;
+    @apply h-[var(--design-input-min-height-x1,52px)] w-full rounded-lg border-2 px-3 text-sm text-[var(--input-text-color)] shadow-none focus-visible:outline-none focus-visible:ring-0;
     border-color: var(--input-default-border-color);
     background: var(--input-default-bg-color);
+    transition: color, background-color, border-color, box-shadow;
   }
 
-  .dash-create-plan-input:focus {
+  .dash-create-plan-input:focus,
+  .dash-create-plan-input:focus-visible {
     border-color: var(--input-focus-border-color);
     background: var(--input-focus-bg-color);
+    box-shadow: 0 0 0 4px var(--button-default-focus);
   }
 
   .dash-create-plan-input-adorned {
@@ -91,12 +94,14 @@
   .dash-create-plan-plaid-btn {
     font-family: var(--app-font-display);
     border: calc(var(--design-button-line-width, 3) * 1px) solid var(--action-default-color);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center px-5 py-3 text-center text-sm font-extrabold tracking-wide text-[var(--action-default-color)] transition-colors disabled:opacity-60 bp840:flex-1;
+    @apply inline-flex min-h-[52px] w-full items-center justify-center px-5 py-3 text-center text-sm font-extrabold tracking-wide text-[var(--action-default-color)] transition-colors disabled:cursor-not-allowed disabled:border-[var(--button-disable-color)] disabled:bg-[var(--button-disable-color)] disabled:text-[var(--neutral-theme-000)] bp840:flex-1;
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--button-secondary-normal-bg-color);
   }
 
   .dash-create-plan-plaid-btn:not(:disabled):hover {
+    border-color: var(--success-theme-500);
+    color: var(--success-theme-600);
     background: var(--button-secondary-hover-bg-color);
   }
 
@@ -115,9 +120,9 @@
 
   .dash-create-plan-save-btn {
     font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] w-auto items-center justify-center gap-3 p-[14px] text-center text-base font-extrabold tracking-wide text-white transition-opacity disabled:cursor-not-allowed;
+    @apply inline-flex min-h-[52px] w-auto items-center justify-center gap-3 p-[14px] text-center text-base font-extrabold tracking-wide text-white transition-colors disabled:cursor-not-allowed;
     border-radius: var(--button-corner-radius, var(--design-button-corner-radius, 12px));
-    background: var(--neutral-theme-300);
+    background: var(--button-disable-color);
   }
 
   .dash-create-plan-save-btn:not(:disabled) {
@@ -125,10 +130,11 @@
   }
 
   .dash-create-plan-save-btn:not(:disabled):hover {
-    @apply opacity-95;
+    background: var(--success-theme-700);
   }
 
   .dash-create-plan-save-btn:disabled {
-    @apply opacity-100;
+    @apply text-[var(--neutral-theme-000)];
+    background: var(--button-disable-color);
   }
 }

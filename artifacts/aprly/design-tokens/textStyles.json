@@ -1,10 +1,10 @@
 {
-  "fileName": "APrly (white-gren)",
+  "fileName": "APrly (white-green)",
   "textStyles": [
     {
       "name": "app/header/h1",
-      "fontFamily": "Inter Display",
-      "fontWeight": "Black",
+      "fontFamily": "Bricolage Grotesque",
+      "fontWeight": "96pt ExtraBold",
       "fontSize": 80,
       "letterSpacing": {
         "unit": "PIXELS",

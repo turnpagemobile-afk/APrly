@@ -30,14 +30,14 @@ const sizeClasses: Record<NonNullable<PillButtonProps["size"]>, string> = {
 const variantClasses: Record<Exclude<PillButtonVariant, "solid">, string> = {
   primary: cn(
     "border border-transparent bg-[var(--action-default-color)] text-[var(--neutral-theme-000)]",
-    "hover:bg-[var(--action-hover-color)]",
+    "hover:bg-[var(--success-theme-700)]",
     "focus-visible:shadow-[0_0_0_4px_var(--button-default-focus)]",
     "disabled:bg-[var(--button-disable-color)] disabled:text-[var(--neutral-theme-000)]",
   ),
   secondary: cn(
     "border-2 border-[var(--action-default-color)]",
     "bg-[var(--button-secondary-normal-bg-color)] text-[var(--action-default-color)]",
-    "hover:bg-[var(--button-secondary-hover-bg-color)]",
+    "hover:border-[var(--success-theme-500)] hover:bg-[var(--button-secondary-hover-bg-color)] hover:text-[var(--success-theme-600)]",
     "focus-visible:shadow-[0_0_0_4px_var(--button-default-focus)]",
     "disabled:border-[var(--button-disable-color)] disabled:bg-[var(--button-disable-color)] disabled:text-[var(--neutral-theme-000)]",
   ),
@@ -55,7 +55,7 @@ const variantClasses: Record<Exclude<PillButtonVariant, "solid">, string> = {
   ),
   destructive: cn(
     "border border-transparent bg-[var(--palette-functional-danger-danger-500)] text-[var(--neutral-theme-000)]",
-    "hover:bg-[var(--palette-functional-danger-danger-600,#E11D48)]",
+    "hover:bg-[var(--danger-theme-600)]",
     "focus-visible:shadow-[0_0_0_4px_var(--button-destructive-focus)]",
     "disabled:bg-[var(--button-disable-color)]",
   ),
@@ -85,7 +85,7 @@ export const PillButton = forwardRef<HTMLButtonElement, PillButtonProps>(
         className={cn(
           "inline-flex items-center justify-center rounded-[var(--design-button-corner-radius,18px)] transition-colors",
           "focus-visible:outline-none",
-          "disabled:pointer-events-none",
+          "disabled:cursor-not-allowed",
           sizeClasses[size],
           variantClasses[resolvedVariant],
           className,

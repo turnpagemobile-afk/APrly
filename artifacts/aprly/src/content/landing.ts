@@ -33,8 +33,8 @@ export const heroContent = {
   sublineBold: "about 30 seconds",
   sublineAfter: ", with no hit to your credit.",
   cta: { label: "Start Audit", target: "#optimizer" },
-  videoAlt: "APrly overview video",
-  posterAlt: "APrly hero video poster",
+  videoAlt:
+    "Person looking thoughtful indoors. On-screen text: Staring at credit card balances with rates.",
   videoCaption: "Staring at credit card balances with rates",
   interestRateLabel: "INTEREST RATE",
 } as const;
@@ -122,28 +122,32 @@ export const whyContent = {
       title: "Bank-level security",
       body:
         "Your accounts connect through Plaid, the bank-grade infrastructure behind many of the apps you already use. APrly reads what it needs to run your audit and never sells your financial data.",
-      imageAlt: "Bank-level security",
+      imageAlt:
+        "Cybersecurity professional monitoring data networks in a server room.",
     },
     {
       id: "credit",
       title: "No credit impact",
       body:
         "Running your audit is not a credit application. There's no hard pull and no effect on your score — it's a read of your numbers, not a request for new credit.",
-      imageAlt: "No credit impact",
+      imageAlt:
+        "Smiling woman holding a phone with a secure shield icon, representing credit score protection.",
     },
     {
       id: "partners",
       title: "Verified nonprofit partners",
       body:
         "When you're ready for help, APrly connects you — with your consent — to verified nonprofit credit counseling partners, not to commission-driven debt settlement companies.",
-      imageAlt: "Verified partners",
+      imageAlt:
+        "A credit counselor consulting a client at a desk with a verified non-profit partner emblem.",
     },
     {
       id: "math-first",
       title: "Math-first, not shame-first",
       body:
         "We don't think you're bad with money. We think most people have never seen their numbers laid out clearly. APrly is built around that one idea: show the math, drop the judgment.",
-      imageAlt: "Math-first approach",
+      imageAlt:
+        "A couple looking at clear credit and savings data on a laptop screen without stress.",
     },
   ],
 } as const;
@@ -326,9 +330,9 @@ export const footerContent = {
     { id: "privacy", label: "Privacy Policy", href: "/privacy" },
   ],
   social: [
-    { id: "instagram", label: "Instagram", href: "#" },
-    { id: "facebook", label: "Facebook", href: "#" },
-    { id: "linkedin", label: "LinkedIn", href: "#" },
+    { id: "instagram", label: "Instagram link", href: "https://www.instagram.com/" },
+    { id: "facebook", label: "Facebook link", href: "https://www.facebook.com/" },
+    { id: "linkedin", label: "LinkedIn link", href: "https://www.linkedin.com/" },
   ],
   copyrightTemplate: "Copyright \u00a9APrly, All rights reserved, {year}",
 } as const;
@@ -364,6 +368,7 @@ export const authContent = {
       confirmRequired: "You need to confirm password to proceed",
       emailInvalid: "Please check the email address you entered",
       passwordsMismatch: "The passwords you enter must match",
+      termsRequired: "You need to check the box to continue.",
     },
   },
   forgotPassword: {

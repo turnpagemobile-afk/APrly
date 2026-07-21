@@ -1,0 +1,25 @@
+@layer components {
+  /* Chrome/WebKit autofill paints a rectangular fill that bleeds into rounded borders.
+     Override with inset box-shadow matching design tokens. */
+  .auth-field-input:-webkit-autofill,
+  .auth-field-input:-webkit-autofill:hover,
+  .auth-field-input:-webkit-autofill:focus,
+  .auth-field-input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--input-text-color);
+    caret-color: var(--input-text-color);
+    transition: background-color 99999s ease-out;
+    box-shadow: 0 0 0 1000px var(--input-default-bg-color) inset;
+  }
+
+  .auth-field-shell:focus-within .auth-field-input:-webkit-autofill,
+  .auth-field-shell:focus-within .auth-field-input:-webkit-autofill:hover,
+  .auth-field-shell:focus-within .auth-field-input:-webkit-autofill:focus {
+    box-shadow: 0 0 0 1000px var(--input-focus-bg-color) inset;
+  }
+
+  .auth-field-shell--error .auth-field-input:-webkit-autofill,
+  .auth-field-shell--error .auth-field-input:-webkit-autofill:hover,
+  .auth-field-shell--error .auth-field-input:-webkit-autofill:focus {
+    box-shadow: 0 0 0 1000px var(--input-error-bg-color) inset;
+  }
+}

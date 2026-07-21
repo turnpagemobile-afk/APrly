@@ -84,7 +84,7 @@ export function adminPlanDetailStatusValueClass(ctx: AdminPlanBadgeContext): str
     case "waiting":
       return "text-[var(--neutral-theme-500)]";
     case "onReview":
-      return "text-[var(--warning-theme-500)]";
+      return "text-[var(--warning-theme-700)]";
     case "inProgress":
       return "text-[var(--info-theme-500)]";
     case "won":

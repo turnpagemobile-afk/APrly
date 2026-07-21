@@ -84,7 +84,7 @@
   }
 
   .dash-plan-card-saving {
-    background: var(--palette-functional-success-success-600);
+    background: var(--palette-functional-success-success-700);
   }
 
   /** PLANS tab content width: 1128 / 988 / 948 / 657 / 463 / calc(100% - 40px) */
@@ -176,6 +176,10 @@
 
   .dash-plan-create-cta {
     font-family: var(--app-font-display);
-    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-3 self-center px-5 py-5 rounded-[var(--design-button-corner-radius,12px)] bg-[var(--action-default-color)] text-center text-xl font-extrabold tracking-wide text-white transition-opacity hover:opacity-95 bp600:w-auto;
+    @apply inline-flex min-h-[52px] w-full items-center justify-center gap-3 self-center px-5 py-5 rounded-[var(--design-button-corner-radius,12px)] bg-[var(--action-default-color)] text-center text-xl font-extrabold tracking-wide text-white transition-colors bp600:w-auto;
+  }
+
+  .dash-plan-create-cta:hover {
+    background: var(--success-theme-700);
   }
 }

@@ -116,11 +116,11 @@
   }
 
   .admin-user-plan-status-badge--on-review {
-    background: var(--warning-theme-500);
+    background: var(--warning-theme-800);
   }
 
   .admin-user-plan-status-badge--in-progress {
-    background: var(--info-theme-500);
+    background: var(--info-theme-600);
   }
 
   .admin-user-plan-status-badge--won {

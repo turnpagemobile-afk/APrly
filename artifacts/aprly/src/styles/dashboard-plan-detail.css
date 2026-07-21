@@ -64,13 +64,17 @@
   }
 
   .dash-plan-detail-metric-tile--savings {
-    border: 1px solid var(--success-theme-500);
-    background: var(--success-theme-500);
+    border: 1px solid var(--success-theme-700);
+    background: var(--success-theme-700);
   }
 
   .dash-plan-detail-metric-tile--rate-low {
     border: 2px solid var(--success-theme-400);
     background: var(--success-theme-100);
+  }
+
+  .dash-plan-detail-metric-tile--rate-low .dash-metric-card-stack > .app-header-screen-title-bold {
+    color: var(--success-theme-600);
   }
 
   .dash-metric-card-bg-icon--won {
@@ -86,9 +90,13 @@
   }
 
   .dash-plan-detail-negotiate-btn {
-    @apply inline-flex min-h-[52px] min-w-[200px] items-center justify-center px-10 py-3 text-center transition-opacity hover:opacity-95;
+    @apply inline-flex min-h-[52px] min-w-[200px] items-center justify-center px-10 py-3 text-center transition-colors;
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--action-default-color);
+  }
+
+  .dash-plan-detail-negotiate-btn:hover {
+    background: var(--success-theme-700);
   }
 
   .dash-plan-detail-cards-section {

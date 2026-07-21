@@ -152,7 +152,7 @@ export function PlanLeadDetailMetricsStrip({
 
       <div className="dash-plan-detail-metric-tile dash-plan-detail-metric-tile--rate-low">
         <div className="dash-metric-card-stack">
-          <p className="app-header-screen-title-bold text-[var(--success-theme-600)]">
+          <p className="app-header-screen-title-bold">
             {detail.targetApr.toFixed(2)}%
           </p>
           <p className="app-text-p2-bold text-[var(--success-theme-900)]">
