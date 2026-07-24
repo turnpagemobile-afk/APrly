@@ -18,6 +18,7 @@ import {
   loadOptimizerSnapshot,
   snapshotCardsForImport,
 } from "@/lib/optimizerSnapshot";
+import { useBitField } from "@/lib/use-bit-field";
 import { AuthCheckbox } from "@/components/shared/auth-form/AuthCheckbox";
 import { AuthPasswordInput } from "@/components/shared/auth-form/AuthPasswordInput";
 import { AuthTextInput } from "@/components/shared/auth-form/AuthTextInput";
@@ -103,6 +104,17 @@ export function SignupCheckoutWizard({
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+
+  const setEmailBit = useCallback((v: string) => setEmail(v), []);
+  const setPasswordBit = useCallback((v: string) => setPassword(v), []);
+  const setConfirmBit = useCallback((v: string) => setConfirmPassword(v), []);
+  const setTermsBit = useCallback((v: string) => {
+    setTermsAccepted(v === "true");
+  }, []);
+  useBitField("su-email", setEmailBit);
+  useBitField("su-password", setPasswordBit);
+  useBitField("su-confirm", setConfirmBit);
+  useBitField("su-terms", setTermsBit);
 
   const registerMutation = useMutation({
     mutationFn: (data: {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetMeQueryKey, usePatchMe } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth-session";
@@ -6,6 +6,7 @@ import { dashboardProfileContent } from "@/content/dashboard-profile";
 import { toast } from "@/hooks/use-toast";
 import { AuthTextInput } from "@/components/shared/auth-form/AuthTextInput";
 import { AccountSubmitButton, AccountSuccessView } from "@/components/dashboard/account/AccountShared";
+import { useBitField } from "@/lib/use-bit-field";
 
 export function AccountPersonalInfoCard() {
   const { user } = useAuth();
@@ -18,6 +19,11 @@ export function AccountPersonalInfoCard() {
   const [lastName, setLastName] = useState("");
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const setFirstNameBit = useCallback((v: string) => setFirstName(v), []);
+  const setLastNameBit = useCallback((v: string) => setLastName(v), []);
+  useBitField("account-first-name", setFirstNameBit);
+  useBitField("account-last-name", setLastNameBit);
 
   useEffect(() => {
     if (!user) return;

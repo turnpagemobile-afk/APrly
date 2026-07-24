@@ -6,12 +6,15 @@ import rateLimit from "express-rate-limit";
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { handleStripeWebhook } from "./lib/stripe-webhook";
+import { elevenLabsAllowedOrigins } from "./routes/elevenlabs";
 
 const app: Express = express();
 
 app.set("trust proxy", 1);
 
 const frontendOrigin = process.env["FRONTEND_ORIGIN"] ?? "http://localhost:5173";
+const corsOrigins = elevenLabsAllowedOrigins();
+corsOrigins.add(frontendOrigin.replace(/\/+$/, ""));
 
 app.use(
   pinoHttp({
@@ -34,7 +37,13 @@ app.use(
 );
 app.use(
   cors({
-    origin: frontendOrigin.replace(/\/+$/, ""),
+    origin(origin, callback) {
+      if (!origin || corsOrigins.has(origin.replace(/\/+$/, ""))) {
+        callback(null, true);
+        return;
+      }
+      callback(null, false);
+    },
     credentials: true,
   }),
 );
