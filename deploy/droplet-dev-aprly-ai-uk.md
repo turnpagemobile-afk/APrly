@@ -52,6 +52,19 @@ nano /var/www/aprly/.env.prod
 FRONTEND_ORIGIN=https://dev.aprly.ai
 ```
 
+Bit (ElevenLabs) — також у `.env.prod` (значення з локального `.env`, не в git):
+
+```bash
+ELEVENLABS_API_KEY=...
+AI_ASSISSTANT_ID=agent_...
+```
+
+Ці змінні мають бути в блоці `environment` сервісу `api-server` у `docker-compose.prod.yml` (інакше контейнер їх не побачить). Після зміни `.env.prod` або pull compose:
+
+```bash
+$COMPOSE up -d --no-deps --force-recreate api-server
+```
+
 `PLAID_REDIRECT_URI` **не обов’язковий** для sandbox Link у браузері (як локально без цього рядка). Додавайте лише якщо потрібен OAuth redirect і URI зареєстрований у [Plaid Dashboard → API](https://dashboard.plaid.com/developers/api). Якщо не задано, api-server використовує `{FRONTEND_ORIGIN}/plaid/oauth`:
 
 ```bash
