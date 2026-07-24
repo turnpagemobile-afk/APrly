@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useForgotPasswordFlow } from "@/lib/forgot-password-context";
 import { Loader2 } from "lucide-react";
 import { goToCabinet } from "@/lib/app-navigation";
@@ -14,6 +14,7 @@ import { PillButton } from "@/components/shared/PillButton";
 import { authContent } from "@/content/landing";
 import { useNavigateBack } from "@/lib/navigate-back";
 import { useSignupCheckout } from "@/lib/signup-checkout-context";
+import { useBitField } from "@/lib/use-bit-field";
 
 export default function LoginPage() {
   const queryClient = useQueryClient();
@@ -26,6 +27,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [authError, setAuthError] = useState(false);
+  const setEmailBit = useCallback((v: string) => setEmail(v), []);
+  const setPasswordBit = useCallback((v: string) => setPassword(v), []);
+  useBitField("login-email", setEmailBit);
+  useBitField("login-password", setPasswordBit);
   const returnTo = useMemo(
     () => readLoginReturnTo(window.location.search),
     [],
