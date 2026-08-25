@@ -41,13 +41,13 @@ export function DashboardTabBar({
             type="button"
             onClick={() => onTabChange(tab.id)}
             className={cn(
-              "border-b-2 text-xs uppercase tracking-widest transition-colors bp600:text-sm",
+              "app-button-button-l-m border-b-[6px] transition-colors",
               isSplit
                 ? "flex w-full min-h-[44px] items-center justify-center py-3"
                 : "pb-3 pt-1",
               isActive
-                ? "border-[var(--action-default-color)] font-bold text-[var(--neutral-theme-900)]"
-                : "border-transparent font-semibold text-[var(--primary-theme-600)] hover:text-[var(--primary-theme-700)]",
+                ? "border-[var(--action-default-color)] text-action"
+                : "border-transparent text-title hover:text-action",
             )}
             aria-current={isActive ? "page" : undefined}
           >

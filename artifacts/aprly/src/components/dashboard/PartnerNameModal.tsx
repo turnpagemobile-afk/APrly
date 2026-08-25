@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { getGetMeQueryKey, usePatchMe } from "@workspace/api-client-react";
@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth-session";
 import { toast } from "@/hooks/use-toast";
 import { dashDialogRadiusClassName } from "@/lib/dashboard-dialog-styles";
 import { cn } from "@/lib/utils";
+import { registerBitField } from "@/lib/bit-field-registry";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +33,9 @@ export function PartnerNameModal({ open, onOpenChange, onComplete }: PartnerName
   const [lastName, setLastName] = useState("");
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
+  const setFirstNameBit = useCallback((v: string) => setFirstName(v), []);
+  const setLastNameBit = useCallback((v: string) => setLastName(v), []);
+
   useEffect(() => {
     if (!open) {
       setSubmitAttempted(false);
@@ -40,6 +44,16 @@ export function PartnerNameModal({ open, onOpenChange, onComplete }: PartnerName
     setFirstName(user?.firstName?.trim() ?? "");
     setLastName(user?.lastName?.trim() ?? "");
   }, [open, user?.firstName, user?.lastName]);
+
+  useEffect(() => {
+    if (!open) return;
+    const offFirst = registerBitField("partner-first-name", setFirstNameBit);
+    const offLast = registerBitField("partner-last-name", setLastNameBit);
+    return () => {
+      offFirst();
+      offLast();
+    };
+  }, [open, setFirstNameBit, setLastNameBit]);
 
   const firstNameError = submitAttempted && !firstName.trim();
   const lastNameError = submitAttempted && !lastName.trim();
@@ -79,12 +93,12 @@ export function PartnerNameModal({ open, onOpenChange, onComplete }: PartnerName
         closeClassName="dash-modal-close data-[state=open]:bg-transparent data-[state=open]:text-[var(--action-default-color)]"
       >
         <DialogHeader className="space-y-0 text-left">
-          <DialogTitle className="dash-modal-title">{copy.title}</DialogTitle>
+          <DialogTitle className="app-header-h6 text-average">{copy.title}</DialogTitle>
         </DialogHeader>
 
-        <p className="dash-modal-subtitle">{copy.subtitle}</p>
+        <p className="app-text-p1-regular text-average mt-3">{copy.subtitle}</p>
 
-        <form onSubmit={(e) => void onSubmit(e)} className="mt-4 space-y-4">
+        <form onSubmit={(e) => void onSubmit(e)} className="mt-4 flex flex-col space-y-4">
           <AuthTextInput
             id="partner-first-name"
             label={copy.firstName}
@@ -107,8 +121,8 @@ export function PartnerNameModal({ open, onOpenChange, onComplete }: PartnerName
 
           <PillButton
             type="submit"
-            size="lg"
-            className="mt-6 w-full"
+            size="default"
+            className="mt-6 h-[52px] w-[220px] max-w-full self-center"
             disabled={patchMe.isPending}
           >
             {patchMe.isPending ? (

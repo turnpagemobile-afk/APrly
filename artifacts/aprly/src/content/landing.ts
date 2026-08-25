@@ -13,24 +13,28 @@ type NavLink = { id: string; label: string; href: string };
 
 export const navContent = {
   links: [
-    { id: "audit", label: "START AUDIT", href: "#optimizer" },
-    { id: "how", label: "THREE STEPS", href: "#how" },
-    { id: "why", label: "WHY TRUST US", href: "#why" },
-    { id: "faq", label: "FREQUENTLY ASKED QUESTIONS", href: "#faq" },
+    { id: "audit", label: "Start Audit", href: "#optimizer" },
+    { id: "how", label: "Three Steps", href: "#how" },
+    { id: "why", label: "Why Trust Us", href: "#why" },
+    { id: "faq", label: "Frequently Asked Questions", href: "#faq" },
   ] as readonly NavLink[],
-  logIn: { label: "LOG IN", href: "/login" },
-  getStarted: { label: "START AUDIT", target: "#optimizer" },
+  logIn: { label: "Log In", href: "/login" },
+  getStarted: { label: "Start audit", target: "#optimizer" },
 } as const;
 
 export const heroContent = {
-  headline: "YOUR DEBT ISN'T A CHARACTER FLAW.",
-  headlineLead: "IT'S A",
-  headlineHighlight: "MATH PROBLEM.",
+  headline: "Your debt isn't a character flaw. It's a math problem.",
+  headlineLead: "Your debt isn't a character flaw.",
+  headlineHighlight: "It's a math problem.",
   subline:
     "See exactly what your interest rate is costing you against an 8% baseline — in about 30 seconds, with no hit to your credit.",
-  cta: { label: "START AUDIT", target: "#optimizer" },
-  videoAlt: "APrly overview video",
-  posterAlt: "APrly hero video poster",
+  sublineBefore:
+    "See exactly what your interest rate is costing you against an 8% baseline — in ",
+  sublineBold: "about 30 seconds",
+  sublineAfter: ", with no hit to your credit.",
+  cta: { label: "Start Audit", target: "#optimizer" },
+  videoAlt:
+    "Person looking thoughtful indoors. On-screen text: Staring at credit card balances with rates.",
   videoCaption: "Staring at credit card balances with rates",
   interestRateLabel: "INTEREST RATE",
 } as const;
@@ -48,10 +52,12 @@ export const functionsContent = {
 export type ProgressRatePair = { readonly high: number; readonly low: number };
 
 export const progressContent = {
-  title: "THIS IS YOUR INTEREST WASTE",
-  subtitle: "The number most people never see",
+  title: "This is your Interest Waste",
+  subtitle: "",
   body:
-    "Every balance you carry has a rate attached to it. APrly compares that rate to an 8% baseline and shows you the gap — the money leaving your accounts as interest before it does anything for you. We don't change your rate. We make it impossible to ignore.",
+    "APrly compares your current loan rates to an 8% baseline, exposing the exact gap you waste on interest. We don't change your rate—we make it impossible to ignore.",
+  learnMore: "Learn more",
+  showLess: "Show less",
   captionWide: "Data on the 6 largest banks in the U.S.",
   captionNarrow: "Data on the 4 largest banks in the U.S.",
   /** Current vs baseline APR (%) — 6 / 4 largest banks (Figma landing-progres). */
@@ -73,6 +79,8 @@ export const progressContent = {
   title: string;
   subtitle: string;
   body: string;
+  learnMore: string;
+  showLess: string;
   captionWide: string;
   captionNarrow: string;
   ratesWide: readonly ProgressRatePair[];
@@ -80,25 +88,25 @@ export const progressContent = {
 };
 
 export const easyStepsContent = {
-  title: "THREE STEPS. REAL NUMBERS. NO SALES PITCH.",
+  title: "Three steps. Real numbers. No sales pitch.",
   steps: [
     {
       number: "1",
-      title: "CONNECT SECURELY WITH PLAID",
+      title: "Connect securely with Plaid",
       tone: "primary" as const,
       body:
         "Link your accounts through Plaid, the same bank-grade connection used by thousands of trusted apps. APrly sees the numbers it needs to run your audit — and nothing it doesn't. No statements to dig up, no spreadsheets.",
     },
     {
       number: "2",
-      title: "SEE YOUR INTEREST WASTE",
+      title: "See your Interest Waste",
       tone: "teal" as const,
       body:
         "In about 30 seconds, APrly turns your balances and rates into one clear picture: how much you're paying in interest, and the gap against an 8% baseline. The Interest Melt view updates in real time so you can see exactly where the leak is.",
     },
     {
       number: "3",
-      title: "GET YOUR VERIFIED AUDIT PACKET",
+      title: "Get your Verified Audit Packet",
       tone: "green" as const,
       body:
         "Walk away with your packet — and, if and when you want it, a consent-based introduction to a verified nonprofit credit counseling partner. You're in control of every step. Nothing happens without your say-so.",
@@ -107,42 +115,39 @@ export const easyStepsContent = {
 } as const;
 
 export const whyContent = {
-  title: "BUILT TO BE TRUSTED WITH THE HARD NUMBERS",
+  title: "Built to be trusted with the hard numbers",
   items: [
     {
       id: "security",
-      title: "BANK-LEVEL SECURITY",
+      title: "Bank-level security",
       body:
         "Your accounts connect through Plaid, the bank-grade infrastructure behind many of the apps you already use. APrly reads what it needs to run your audit and never sells your financial data.",
-      imageAlt: "Bank-level security",
+      imageAlt:
+        "Cybersecurity professional monitoring data networks in a server room.",
     },
     {
       id: "credit",
-      title: "NO CREDIT IMPACT",
+      title: "No credit impact",
       body:
         "Running your audit is not a credit application. There's no hard pull and no effect on your score — it's a read of your numbers, not a request for new credit.",
-      imageAlt: "No credit impact",
+      imageAlt:
+        "Smiling woman holding a phone with a secure shield icon, representing credit score protection.",
     },
     {
       id: "partners",
-      title: "VERIFIED NONPROFIT PARTNERS",
+      title: "Verified nonprofit partners",
       body:
         "When you're ready for help, APrly connects you — with your consent — to verified nonprofit credit counseling partners, not to commission-driven debt settlement companies.",
-      imageAlt: "Verified partners",
+      imageAlt:
+        "A credit counselor consulting a client at a desk with a verified non-profit partner emblem.",
     },
     {
       id: "math-first",
-      title: "MATH-FIRST, NOT SHAME-FIRST",
+      title: "Math-first, not shame-first",
       body:
         "We don't think you're bad with money. We think most people have never seen their numbers laid out clearly. APrly is built around that one idea: show the math, drop the judgment.",
-      imageAlt: "Math-first approach",
-    },
-    {
-      id: "no-pressure",
-      title: "NO SALES PRESSURE",
-      body:
-        "Running your audit doesn't put you in a sales funnel. There's no closer waiting to call you, no pitch to sit through. You see your numbers and decide what's next.",
-      imageAlt: "No sales pressure",
+      imageAlt:
+        "A couple looking at clear credit and savings data on a laptop screen without stress.",
     },
   ],
 } as const;
@@ -182,10 +187,10 @@ export const dashboardPreviewContent = {
 } as const;
 
 export const optimizerContent = {
-  title: "START AUDIT",
+  title: "Start Audit",
   subtitle: {
     body:
-      "At the end of your 30-second audit, APrly assembles a Verified Audit Packet: a clear, organized snapshot of your balances, your rates, and your total Interest Waste measured against the 8% baseline. It's yours to keep, yours to share, and — when you choose to — yours to hand to a verified nonprofit counselor who can help you build a plan. If you need help adding your bank cards via Plaid, this ",
+      "Get your Verified Audit Packet in 30 seconds. It maps your balances, rates, and Interest Waste against an 8% baseline. Keep it, share it, or hand it to a nonprofit counselor to start saving. If you need help adding your bank cards via Plaid, this ",
     linkText: "video tutorial will help you",
     linkHref: "#",
   },
@@ -197,22 +202,22 @@ export const optimizerContent = {
   step1: {
     features: [
       {
-        title: "CLARITY, IN WRITING",
+        title: "Clarity, in writing",
         body:
           "Your balances and rates, organized — not scattered across a dozen logins.",
       },
       {
-        title: "THE INTEREST MELT VIEW",
+        title: "The Interest Melt view",
         body:
           "See how much of your payment is actually reducing your debt versus feeding interest.",
       },
       {
-        title: "READY TO ACT ON",
+        title: "Ready to act on",
         body:
           "Share it with a verified nonprofit partner the moment you decide you want help.",
       },
     ],
-    connectPlaid: "CONNECT VIA PLAID",
+    connectPlaid: "Connect via Plaid",
     plaidBanner: {
       verified: "VERIFIED",
       securityNote:
@@ -220,20 +225,26 @@ export const optimizerContent = {
     },
   },
   step2: {
-    continue: "CONTINUE",
-    back: "BACK",
-    connectMorePlaid: "CONNECT MORE VIA PLAID",
+    continue: "Continue",
+    back: "Back",
+    connectMorePlaid: "Connect more via Plaid",
   },
   step3: {
-    readyTitle: "YOUR",
-    readyHighlight: "SAVING PLAN",
-    readySuffix: "IS READY!",
-    chartTitle: "DEBT INTEREST ANALYSIS FOR THE NEXT 12 MONTHS",
+    readyTitle: "Your",
+    readyHighlight: "SAVING Plan",
+    readySuffix: "is ready!",
+    metrics: {
+      totalDebt: "TOTAL DEBT",
+      dailyWaste: "DAILY INTEREST WASTE",
+      monthlySaving: "MONTHLY SAVING",
+      annualSaving: "ANNUAL SAVING",
+    },
+    chartTitle: "Debt interest analysis for the next 12 months",
     chartLegendWaste: "Interest Waste (Current APR)",
     chartLegendBaseline: "Interest at 8% Baseline",
     ctaLead: "Create a free APrly account and start saving today",
-    ctaLabel: "START SAVING",
-    back: "BACK",
+    ctaLabel: "Start saving",
+    back: "Back",
   },
 } as const;
 
@@ -244,42 +255,42 @@ export type FaqContent = {
 };
 
 export const faqContent = {
-  title: "FREQUENTLY ASKED QUESTIONS",
+  title: "Frequently Asked Questions",
   subtitle: "",
   items: [
     {
       id: "what",
-      q: "WHAT IS APRLY AND HOW DOES IT WORK?",
+      q: "What is APrly and how does it work?",
       a: "APrly is a 30-second debt audit. You connect your accounts securely through Plaid, and APrly shows you what your interest is actually costing you compared to an 8% baseline — your Interest Waste. You get a Verified Audit Packet summarizing it all, and, when you choose to, a consent-based introduction to a verified nonprofit credit counseling partner. APrly shows you the math; you decide what to do with it.",
     },
     {
       id: "settlement",
-      q: "HOW IS APRLY DIFFERENT FROM DEBT SETTLEMENT COMPANIES?",
+      q: "How is APrly different from debt settlement companies?",
       a: "Debt settlement companies typically charge fees, may ask you to stop paying creditors, and can damage your credit. APrly is different on purpose: we don't settle, negotiate, or touch your accounts. We show you your numbers and connect you — only with your consent — to verified nonprofit credit counseling partners.",
     },
     {
       id: "secure",
-      q: "IS MY FINANCIAL DATA SECURE?",
+      q: "Is my financial data secure?",
       a: "Your accounts connect through Plaid, the bank-grade service used by many of the financial apps you already trust. APrly accesses only what it needs to run your audit, and we don't sell your financial data.",
     },
     {
       id: "credit",
-      q: "DOES RUNNING AN AUDIT AFFECT MY CREDIT SCORE?",
+      q: "Does running an audit affect my credit score?",
       a: "No. Your audit is a read of your existing numbers, not an application for new credit. There's no hard inquiry and no impact on your score.",
     },
     {
       id: "interest-rate",
-      q: "WILL APRLY LOWER MY INTEREST RATE?",
+      q: "Will APrly lower my interest rate?",
       a: "APrly doesn't change your rates or negotiate with your lenders. What it does is make your rates and their real cost impossible to ignore — and connect you to verified nonprofit help that can work with you on a plan. The clarity is the product.",
     },
     {
       id: "six-months",
-      q: "WHAT HAPPENS AFTER 6 MONTHS OF USING APRLY?",
+      q: "What happens after 6 months of using APrly?",
       a: "Maintaining your secure connection for at least six months triggers the Month-6 Check-In. At this milestone in your recovery program, the platform provides a structured UI review to assess your improved financial standing. This check-in determines if you are now eligible to request even deeper hardship concessions and lower rates from your lenders.",
     },
     {
       id: "no-pressure",
-      q: "NO SALES PRESSURE",
+      q: "No sales pressure",
       a: "Running your audit doesn't put you in a sales funnel. There's no closer waiting to call you, no pitch to sit through. You see your numbers and decide what's next.",
     },
   ],
@@ -288,7 +299,7 @@ export const faqContent = {
 export const planContent = {
   title: "The first step toward your financial freedom from the burden of bank interest",
   subtitle: "",
-  cta: { label: "START AUDIT", target: "#optimizer" },
+  cta: { label: "Start Audit", target: "#optimizer" },
   card: {
     heading: "Unlock APrly — US $39 one-time",
     features: [
@@ -306,35 +317,35 @@ export const planContent = {
 } as const;
 
 export const notFoundContent = {
-  title: "I CAN'T FIND THAT PAGE",
+  title: "I can't find that page",
   subtitle: "Check the address or learn more about APrly",
-  cta: "LEARN MORE",
+  cta: "Learn more",
   ctaHref: "/",
   imageAlt: "Magnifying glass illustration for page not found",
 } as const;
 
 export const footerContent = {
   links: [
-    { id: "terms", label: "TERMS & CONDITIONS", href: "/terms" },
-    { id: "privacy", label: "PRIVACY POLICY", href: "/privacy" },
+    { id: "terms", label: "Terms & Conditions", href: "/terms" },
+    { id: "privacy", label: "Privacy Policy", href: "/privacy" },
   ],
   social: [
-    { id: "instagram", label: "Instagram", href: "#" },
-    { id: "facebook", label: "Facebook", href: "#" },
-    { id: "linkedin", label: "LinkedIn", href: "#" },
+    { id: "instagram", label: "Instagram link", href: "https://www.instagram.com/" },
+    { id: "facebook", label: "Facebook link", href: "https://www.facebook.com/" },
+    { id: "linkedin", label: "LinkedIn link", href: "https://www.linkedin.com/" },
   ],
   copyrightTemplate: "Copyright \u00a9APrly, All rights reserved, {year}",
 } as const;
 
 export const authContent = {
   login: {
-    title: "LOG IN",
+    title: "Log In",
     emailLabel: "Email",
     passwordLabel: "Password",
-    forgot: "FORGOT PASSWORD?",
-    submit: "LOG IN",
+    forgot: "Forgot password?",
+    submit: "Log In",
     signupPrompt: "Don't have an account?",
-    signupLink: "SIGN UP",
+    signupLink: "Sign Up",
     errors: {
       emailRequired: "You need to enter your email to proceed",
       passwordRequired: "You need to enter password to proceed",
@@ -342,29 +353,30 @@ export const authContent = {
     },
   },
   signup: {
-    step1Title: "SIGN UP",
+    step1Title: "Sign Up",
     step2Subtitle: "Add your personal info to your account.",
-    submit: "CONTINUE",
-    saveToAccount: "SAVE TO ACCOUNT",
-    successTitle: "ACCOUNT HAS BEEN CREATED",
+    submit: "Continue",
+    saveToAccount: "Save to account",
+    successTitle: "Account has been created",
     successSubtitle: "Now you can start saving with our tool.",
     successOk: "OK",
     loginPrompt: "Already have an account?",
-    loginLink: "LOG IN",
+    loginLink: "Log In",
     errors: {
       emailRequired: "You need to enter your email to proceed",
       passwordRequired: "You need to enter password to proceed",
       confirmRequired: "You need to confirm password to proceed",
       emailInvalid: "Please check the email address you entered",
       passwordsMismatch: "The passwords you enter must match",
+      termsRequired: "You need to check the box to continue.",
     },
   },
   forgotPassword: {
-    title: "FORGOT PASSWORD",
+    title: "Forgot password",
     prompt: "To proceed please enter your account email",
     emailLabel: "Email",
-    submit: "CONTINUE",
-    successTitle: "EMAIL HAS BEEN SENT",
+    submit: "Continue",
+    successTitle: "Email has been sent",
     successSubtitle:
       "We've sent you an email with a link to reset your APrly account password.",
     successOk: "OK",
@@ -375,13 +387,13 @@ export const authContent = {
     },
   },
   resetPassword: {
-    pageTitle: "ACCOUNT PASSWORD",
-    cardTitle: "SET A NEW PASSWORD",
+    pageTitle: "Account password",
+    cardTitle: "Set a new password",
     newPassword: "New password",
     confirmPassword: "Confirm a new password",
-    submit: "SAVE PASSWORD",
+    submit: "Save password",
     successMessage: "Your account password has been successfully changed.",
-    goToDashboard: "GO TO DASHBOARD",
+    goToDashboard: "Go to dashboard",
     missingToken: "This reset link is invalid or has expired.",
     backToLogin: "Back to login",
     errors: {

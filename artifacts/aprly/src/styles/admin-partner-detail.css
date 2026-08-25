@@ -12,7 +12,7 @@
   }
 
   .admin-partner-detail-btn {
-    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-5 py-2 uppercase transition-opacity hover:opacity-90 disabled:opacity-50;
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-5 py-2 uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-[var(--button-disable-color)] disabled:text-[var(--neutral-theme-000)] disabled:opacity-100 disabled:hover:opacity-100;
     color: var(--neutral-theme-000);
   }
 
@@ -24,8 +24,18 @@
     background: var(--action-default-color);
   }
 
+  .admin-partner-detail-btn--deactivate:not(:disabled):hover {
+    background: var(--success-theme-700);
+    opacity: 1;
+  }
+
   .admin-partner-detail-btn--delete {
     background: var(--danger-theme-500);
+  }
+
+  .admin-partner-detail-btn--delete:not(:disabled):hover {
+    background: var(--danger-theme-600);
+    opacity: 1;
   }
 
   .admin-partner-status-card {

@@ -14,6 +14,7 @@
 @import "./styles/admin-user-detail.css";
 @import "./styles/admin-plan-detail.css";
 @import "./styles/reset-password.css";
+@import "./styles/auth-field.css";
 @import "./styles/app-text-styles.css";
 @import "./styles/app-text-colors.css";
 @plugin "@tailwindcss/typography";
@@ -113,8 +114,6 @@
  * via Tailwind arbitrary value, e.g. `bg-[var(--primary-theme-500)]`.
  */
 :root {
-  /* Green landing footer — dark forest green per NEW_GREEN_DESIGN */
-  --footer-bg-color: #2D4A2B;
   --header-bg-color: var(--page-bg);
   --action-default-color: var(--primary-theme-500);
 
@@ -167,6 +166,10 @@
   --app-font-mono: Menlo, monospace;
   --app-font-hero-display: "Fraunces", Georgia, serif;
   --app-font-hero-body: "Figtree", "Inter", sans-serif;
+  --app-font-bricolage: "Bricolage Grotesque", "Figtree", "Inter", sans-serif;
+  --landing-shadow: 0px 25px 100px 0px #45589d14;
+  --cabinet-card-shadow: 0px 10px 20px 0px #1d3e0b1a;
+  --faq-card-shadow: 0px 20px 50px 0px #2e5b841a;
   --radius: var(--design-button-corner-radius, 12px);
 
   --button-outline: rgba(0, 0, 0, 0.1);

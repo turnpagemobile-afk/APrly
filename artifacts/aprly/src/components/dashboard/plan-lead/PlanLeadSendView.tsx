@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import type { PlanLeadDetail } from "@workspace/api-client-react";
+import { AddCardButton } from "@/components/shared/AddCardButton";
 import { dashboardTabContent } from "@/content/dashboard-tab";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
 import { PlanLeadDetailHeader } from "@/components/dashboard/plan-lead/PlanLeadDetailHeader";
 import { PlanLeadDetailMetricsStrip } from "@/components/dashboard/plan-lead/PlanLeadDetailMetricsStrip";
 import { PlanLeadEditableCards } from "@/components/dashboard/plan-lead/PlanLeadEditableCards";
 import { PartnerNameModal } from "@/components/dashboard/PartnerNameModal";
-import { cabinetAsset } from "@/lib/cabinet-assets";
+import { PillButton } from "@/components/shared/PillButton";
 import { useAuth } from "@/lib/auth-session";
 
 type PlanLeadSendViewProps = {
@@ -61,13 +62,15 @@ export function PlanLeadSendView({
       <PlanLeadDetailMetricsStrip detail={detail} />
 
       <div className="dash-plan-detail-negotiate-row">
-        <button
+        <PillButton
           type="button"
-          className="dash-plan-detail-negotiate-btn app-button-button-xl text-neutral-000"
+          variant="primary"
+          size="xl"
+          className="h-[76px] w-[209px] max-w-full app-button-button-xl"
           onClick={onNegotiateClick}
         >
           {copy.negotiate}
-        </button>
+        </PillButton>
       </div>
 
       {detail.cards.length > 0 ? (
@@ -76,24 +79,12 @@ export function PlanLeadSendView({
             <h2 className="dash-plan-detail-cards-title app-header-h6 text-average">
               {planLeadDetailContent.yourCards}
             </h2>
-            <button
+            <AddCardButton
               type="button"
-              className="dash-plan-add-card-btn app-button-button-l-m text-action"
+              loading={isAddingCard}
               disabled={isAddingCard}
               onClick={onAddCard}
-            >
-              {isAddingCard ? (
-                <Loader2 className="h-6 w-6 shrink-0 animate-spin" aria-hidden="true" />
-              ) : (
-                <img
-                  src={cabinetAsset("cabinet/dashboard/plus.svg")}
-                  alt=""
-                  aria-hidden
-                  className="h-6 w-6 shrink-0"
-                />
-              )}
-              {planLeadDetailContent.addCard}
-            </button>
+            />
           </div>
           {isSavingCards ? (
             <div className="flex justify-center py-2">

@@ -36,12 +36,12 @@
   }
 
   .dash-plan-detail-metric-tile--status-waiting {
-    border: 1px solid var(--neutral-theme-400);
+    border: 2px solid var(--neutral-theme-400);
     background: var(--neutral-theme-100);
   }
 
   .dash-plan-detail-metric-tile--status-in-progress {
-    border: 1px solid var(--info-theme-400);
+    border: 2px solid var(--info-theme-400);
     background: var(--info-theme-100);
   }
 
@@ -59,18 +59,22 @@
   }
 
   .dash-plan-detail-metric-tile--rate-high {
-    border: 1px solid var(--accent-theme-400);
+    border: 2px solid var(--accent-theme-400);
     background: var(--accent-theme-100);
   }
 
   .dash-plan-detail-metric-tile--savings {
-    border: 1px solid var(--success-theme-500);
-    background: var(--success-theme-500);
+    border: 1px solid var(--success-theme-700);
+    background: var(--success-theme-700);
   }
 
   .dash-plan-detail-metric-tile--rate-low {
-    border: 1px solid var(--success-theme-400);
+    border: 2px solid var(--success-theme-400);
     background: var(--success-theme-100);
+  }
+
+  .dash-plan-detail-metric-tile--rate-low .dash-metric-card-stack > .app-header-screen-title-bold {
+    color: var(--success-theme-600);
   }
 
   .dash-metric-card-bg-icon--won {
@@ -86,9 +90,13 @@
   }
 
   .dash-plan-detail-negotiate-btn {
-    @apply inline-flex min-h-[52px] min-w-[200px] items-center justify-center px-10 py-3 text-center transition-opacity hover:opacity-95;
+    @apply inline-flex min-h-[52px] min-w-[200px] items-center justify-center px-10 py-3 text-center transition-colors;
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--action-default-color);
+  }
+
+  .dash-plan-detail-negotiate-btn:hover {
+    background: var(--success-theme-700);
   }
 
   .dash-plan-detail-cards-section {
@@ -97,10 +105,6 @@
 
   .dash-plan-detail-cards-head {
     @apply flex flex-wrap items-center justify-between gap-3;
-  }
-
-  .dash-plan-detail-cards-head .dash-plan-add-card-btn {
-    @apply mx-0;
   }
 
   .dash-plan-detail-cards-title {
@@ -112,7 +116,8 @@
   }
 
   .dash-plan-detail-card {
-    @apply overflow-hidden rounded-2xl border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] shadow-sm;
+    @apply overflow-hidden rounded-2xl bg-[var(--card-1lvl-bg-color)];
+    box-shadow: var(--cabinet-card-shadow);
   }
 
   .dash-plan-detail-card .dash-plan-card-widget {
@@ -194,19 +199,20 @@
   }
 
   .dash-plan-detail-partner {
-    @apply flex items-start gap-3 rounded-2xl border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] p-5 shadow-sm;
+    @apply flex items-start gap-3 rounded-2xl bg-[var(--card-1lvl-bg-color)] p-5;
+    box-shadow: var(--cabinet-card-shadow);
   }
 
   .dash-plan-detail-partner-icon {
-    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--action-default-color)]/10 text-[var(--action-default-color)];
+    @apply flex h-11 w-11 shrink-0 items-center justify-center;
   }
 
   .dash-plan-detail-partner-name {
-    @apply text-lg font-extrabold text-[var(--neutral-theme-900)];
+    @apply text-lg font-extrabold text-[var(--average-text-color)];
   }
 
   .dash-plan-detail-partner-meta {
-    @apply mt-1 text-sm text-[var(--hint-text-color)];
+    @apply mt-1 text-sm text-[var(--average-text-color)];
   }
 
   .dash-plan-detail-portal {
@@ -214,7 +220,7 @@
   }
 
   .dash-plan-detail-portal-progress-track {
-    @apply h-2 w-full overflow-hidden rounded-full bg-[var(--info-theme-200)];
+    @apply h-1.5 w-full overflow-hidden rounded-full bg-[var(--info-theme-200)];
   }
 
   .dash-plan-detail-portal-progress-fill {
@@ -330,11 +336,11 @@
   }
 
   .dash-plan-detail-step-pill--done {
-    @apply bg-[var(--neutral-theme-000)] text-[var(--success-theme-500)];
+    @apply bg-[var(--neutral-theme-000)] text-[var(--success-theme-600)];
   }
 
   .dash-plan-detail-step-pill--active {
-    @apply bg-[var(--info-theme-500)] text-[var(--neutral-theme-000)];
+    @apply bg-[var(--info-theme-600)] text-[var(--neutral-theme-000)];
   }
 
   .dash-plan-detail-step-content {
@@ -346,7 +352,8 @@
   }
 
   .dash-plan-detail-review-banner {
-    @apply rounded-2xl border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)] px-5 py-4 text-center shadow-sm;
+    @apply rounded-2xl bg-[var(--card-1lvl-bg-color)] px-5 py-5 text-center;
+    box-shadow: var(--cabinet-card-shadow);
   }
 
   .dash-plan-detail-denied-message {

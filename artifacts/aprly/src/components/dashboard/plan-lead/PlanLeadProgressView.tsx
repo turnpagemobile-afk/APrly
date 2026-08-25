@@ -1,10 +1,10 @@
-import { Building2 } from "lucide-react";
 import type { PlanLeadDetail } from "@workspace/api-client-react";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
 import { PlanLeadDetailHeader } from "@/components/dashboard/plan-lead/PlanLeadDetailHeader";
 import { PlanLeadDetailMetricsStrip } from "@/components/dashboard/plan-lead/PlanLeadDetailMetricsStrip";
 import { LeadCardsList } from "@/components/dashboard/plan-lead/LeadCardsList";
 import { HardshipPortalStepper } from "@/components/dashboard/plan-lead/HardshipPortalStepper";
+import { cabinetAsset } from "@/lib/cabinet-assets";
 
 type PlanLeadProgressViewProps = {
   detail: PlanLeadDetail;
@@ -47,12 +47,19 @@ export function PlanLeadProgressView({
 
       {detail.partner ? (
         <article className="dash-plan-detail-partner">
-          <span className="dash-plan-detail-partner-icon" aria-hidden="true">
-            <Building2 className="h-5 w-5" />
-          </span>
-          <div>
-            <p className="dash-plan-detail-partner-name">{detail.partner.name}</p>
-            {sentLabel ? <p className="dash-plan-detail-partner-meta">{sentLabel}</p> : null}
+          <img
+            src={cabinetAsset("cabinet/dashboard/portfel.svg")}
+            alt=""
+            aria-hidden
+            className="h-11 w-11 shrink-0"
+          />
+          <div className="min-w-0">
+            <p className="app-header-screen-title-bold text-average">
+              Partner name {detail.partner.name}
+            </p>
+            {sentLabel ? (
+              <p className="app-text-p1-regular text-average mt-1">{sentLabel}</p>
+            ) : null}
           </div>
         </article>
       ) : null}

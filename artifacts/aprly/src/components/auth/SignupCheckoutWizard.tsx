@@ -18,6 +18,7 @@ import {
   loadOptimizerSnapshot,
   snapshotCardsForImport,
 } from "@/lib/optimizerSnapshot";
+import { useBitField } from "@/lib/use-bit-field";
 import { AuthCheckbox } from "@/components/shared/auth-form/AuthCheckbox";
 import { AuthPasswordInput } from "@/components/shared/auth-form/AuthPasswordInput";
 import { AuthTextInput } from "@/components/shared/auth-form/AuthTextInput";
@@ -104,6 +105,17 @@ export function SignupCheckoutWizard({
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
+  const setEmailBit = useCallback((v: string) => setEmail(v), []);
+  const setPasswordBit = useCallback((v: string) => setPassword(v), []);
+  const setConfirmBit = useCallback((v: string) => setConfirmPassword(v), []);
+  const setTermsBit = useCallback((v: string) => {
+    setTermsAccepted(v === "true");
+  }, []);
+  useBitField("su-email", setEmailBit);
+  useBitField("su-password", setPasswordBit);
+  useBitField("su-confirm", setConfirmBit);
+  useBitField("su-terms", setTermsBit);
+
   const registerMutation = useMutation({
     mutationFn: (data: {
       email: string;
@@ -167,6 +179,12 @@ export function SignupCheckoutWizard({
       : confirmMismatch
         ? authContent.signup.errors.passwordsMismatch
         : null;
+
+  const termsError = fieldErrors.termsAccepted?.length
+    ? fieldErrors.termsAccepted.join(" ")
+    : submitAttempted && !termsAccepted
+      ? authContent.signup.errors.termsRequired
+      : null;
 
   const resetForm = useCallback(() => {
     setStep(1);
@@ -367,7 +385,18 @@ export function SignupCheckoutWizard({
               <AuthCheckbox
                 id="su-terms"
                 checked={termsAccepted}
-                onCheckedChange={(v) => setTermsAccepted(v === true)}
+                invalid={Boolean(termsError)}
+                onCheckedChange={(v) => {
+                  const accepted = v === true;
+                  setTermsAccepted(accepted);
+                  if (accepted) {
+                    setFieldErrors((prev) => {
+                      if (!prev.termsAccepted?.length) return prev;
+                      const { termsAccepted: _t, ...rest } = prev;
+                      return rest;
+                    });
+                  }
+                }}
               />
               <Label htmlFor="su-terms" className="app-text-p1-regular text-average leading-snug">
                 <span>I&apos;ve read and agree to the </span>
@@ -387,8 +416,8 @@ export function SignupCheckoutWizard({
                 <span>.</span>
               </Label>
             </div>
-            {fieldErrors.termsAccepted?.length ? (
-              <p className="text-sm text-destructive">{fieldErrors.termsAccepted.join(" ")}</p>
+            {termsError ? (
+              <p className="text-center text-sm text-destructive">{termsError}</p>
             ) : null}
 
             <PillButton
@@ -414,7 +443,7 @@ export function SignupCheckoutWizard({
             </span>
             <Link
               href="/login"
-              className="app-button-button-s text-action hover:underline"
+              className="app-button-button-l-m text-action hover:underline"
               onClick={() => onOpenChange(false)}
             >
               {authContent.signup.loginLink}
@@ -434,7 +463,7 @@ export function SignupCheckoutWizard({
             strokeWidth={1.5}
             aria-hidden
           />
-          <p className="mt-6 text-lg font-extrabold uppercase tracking-tight text-[var(--neutral-theme-900)]">
+          <p className="app-header-h6 text-title mt-6">
             {authContent.signup.successTitle}
           </p>
           <p className="mt-3 text-sm text-[var(--hint-text-color)]">

@@ -52,10 +52,35 @@ nano /var/www/aprly/.env.prod
 FRONTEND_ORIGIN=https://dev.aprly.ai
 ```
 
-`PLAID_REDIRECT_URI` **не обов’язковий** для sandbox Link у браузері (як локально без цього рядка). Додавайте лише якщо потрібен OAuth redirect і URI зареєстрований у [Plaid Dashboard → API](https://dashboard.plaid.com/developers/api). Якщо не задано, api-server використовує `{FRONTEND_ORIGIN}/plaid/oauth`:
+Bit (ElevenLabs) — також у `.env.prod` (значення з локального `.env`, не в git):
 
 ```bash
-# PLAID_REDIRECT_URI=https://dev.aprly.ai/plaid/oauth
+ELEVENLABS_API_KEY=...
+AI_ASSISSTANT_ID=agent_...
+```
+
+Ці змінні мають бути в блоці `environment` сервісу `api-server` у `docker-compose.prod.yml` (інакше контейнер їх не побачить). Після зміни `.env.prod` або pull compose:
+
+```bash
+$COMPOSE up -d --no-deps --force-recreate api-server
+```
+
+`PLAID_REDIRECT_URI` на deployed host:
+
+- **не задано** → api-server шле `{FRONTEND_ORIGIN}/plaid/oauth` (URI має бути в [Plaid Dashboard → API](https://dashboard.plaid.com/developers/api));
+- **`off`** / `none` / `false` → як localhost: `redirect_uri` у link-token **не** передається (роут `/plaid/oauth` лишається в SPA);
+- явний URL → використовується він.
+
+Для dev без allowlist у Plaid:
+
+```bash
+PLAID_REDIRECT_URI=off
+```
+
+Коли OAuth-банки потрібні — зареєструйте URI і поставте:
+
+```bash
+PLAID_REDIRECT_URI=https://dev.aprly.ai/plaid/oauth
 ```
 
 Після **будь-якої** зміни `.env.prod` — не `build`, а recreate **api-server** (крок 6).

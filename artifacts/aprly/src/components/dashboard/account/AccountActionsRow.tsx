@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { LogOut, XCircle } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteMe } from "@workspace/api-client-react";
 import { goToLanding } from "@/lib/app-navigation";
@@ -7,6 +6,8 @@ import { dashboardProfileContent } from "@/content/dashboard-profile";
 import { toast } from "@/hooks/use-toast";
 import { AccountConfirmDialog } from "@/components/dashboard/account/AccountConfirmDialog";
 import { LogoutConfirmDialog } from "@/components/dashboard/LogoutConfirmDialog";
+import { PillButton } from "@/components/shared/PillButton";
+import { cabinetAsset } from "@/lib/cabinet-assets";
 
 export function AccountActionsRow() {
   const queryClient = useQueryClient();
@@ -34,19 +35,37 @@ export function AccountActionsRow() {
   return (
     <>
       <div className="dash-account-actions pt-2">
-        <button
+        <PillButton
           type="button"
-          className="dash-account-logout-btn"
+          variant="destructiveSecondary"
+          size="default"
+          className="h-[52px] w-[171px] max-w-full gap-2"
           onClick={() => setLogoutOpen(true)}
         >
-          <LogOut className="h-5 w-5 shrink-0" aria-hidden />
+          <img
+            src={cabinetAsset("cabinet/account/logout.svg")}
+            alt=""
+            aria-hidden
+            className="h-6 w-6 shrink-0"
+          />
           {copy.actions.logOut}
-        </button>
+        </PillButton>
 
-        <button type="button" className="dash-account-delete-btn" onClick={() => setDeleteOpen(true)}>
-          <XCircle className="h-5 w-5 shrink-0" aria-hidden />
+        <PillButton
+          type="button"
+          variant="destructive"
+          size="default"
+          className="h-[52px] w-[245px] max-w-full gap-2"
+          onClick={() => setDeleteOpen(true)}
+        >
+          <img
+            src={cabinetAsset("cabinet/account/close-red.svg")}
+            alt=""
+            aria-hidden
+            className="h-6 w-6 shrink-0"
+          />
           {deleteCopy.button}
-        </button>
+        </PillButton>
       </div>
 
       <LogoutConfirmDialog open={logoutOpen} onOpenChange={setLogoutOpen} />

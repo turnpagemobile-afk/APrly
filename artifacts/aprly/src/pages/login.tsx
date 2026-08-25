@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useForgotPasswordFlow } from "@/lib/forgot-password-context";
 import { Loader2 } from "lucide-react";
 import { goToCabinet } from "@/lib/app-navigation";
@@ -14,6 +14,7 @@ import { PillButton } from "@/components/shared/PillButton";
 import { authContent } from "@/content/landing";
 import { useNavigateBack } from "@/lib/navigate-back";
 import { useSignupCheckout } from "@/lib/signup-checkout-context";
+import { useBitField } from "@/lib/use-bit-field";
 
 export default function LoginPage() {
   const queryClient = useQueryClient();
@@ -26,6 +27,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [authError, setAuthError] = useState(false);
+  const setEmailBit = useCallback((v: string) => setEmail(v), []);
+  const setPasswordBit = useCallback((v: string) => setPassword(v), []);
+  useBitField("login-email", setEmailBit);
+  useBitField("login-password", setPasswordBit);
   const returnTo = useMemo(
     () => readLoginReturnTo(window.location.search),
     [],
@@ -106,7 +111,7 @@ export default function LoginPage() {
         {showAuthErrorBox ? (
           <div
             role="alert"
-            className="rounded-[12px] bg-[var(--error-box-bg-color)] px-3 py-2.5 text-sm text-destructive"
+            className="app-text-p1-regular rounded-[12px] border border-[var(--danger-theme-300)] bg-[var(--error-box-bg-color)] px-3 py-2.5 text-[var(--danger-theme-700)]"
           >
             {authContent.login.errors.invalid}
           </div>
@@ -115,7 +120,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-between gap-4 pt-2">
           <button
             type="button"
-            className="app-button-button-s text-action hover:underline"
+            className="app-button-button-l-m text-action hover:underline"
             onClick={openForgotPassword}
           >
             {authContent.login.forgot}
@@ -136,7 +141,7 @@ export default function LoginPage() {
         </span>
         <button
           type="button"
-          className="app-button-button-s text-action hover:underline"
+          className="app-button-button-l-m text-action hover:underline"
           onClick={() => openSignup()}
         >
           {authContent.login.signupLink}

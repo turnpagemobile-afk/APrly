@@ -1,27 +1,12 @@
 import { statsContent } from "@/content/landing";
 import { cn } from "@/lib/utils";
 
-const SECTION_BG = "bg-[var(--palette-secondary-secondary-500)]";
-const CIRCLE_BG = "bg-[var(--palette-secondary-secondary-400)]";
-
 const circleSizeClass = cn(
   "size-[260px]",
   "bp600:size-[240px]",
   "bp840:size-[260px]",
   "bp1200:size-[300px]",
   "bp1600:size-[320px]",
-);
-
-const circleValueClass = cn(
-  "font-[family-name:var(--app-font-hero-display)]",
-  "text-[69px] font-semibold leading-[1.1] tracking-normal uppercase",
-  "text-neutral-000",
-);
-
-const circleLabelClass = cn(
-  "font-[family-name:var(--app-font-hero-body)]",
-  "text-[22px] font-medium leading-[1.3] tracking-[-0.02em]",
-  "text-center text-neutral-000",
 );
 
 type StatItem = (typeof statsContent.items)[number];
@@ -38,13 +23,19 @@ function StatCircle({
       <div
         className={cn(
           "flex shrink-0 items-center justify-center rounded-full",
-          CIRCLE_BG,
+          "bg-[var(--neutral-theme-900)]",
           circleSizeClass,
         )}
       >
-        <span className={circleValueClass}>{item.value}</span>
+        <span className="app-header-h2 text-[var(--neutral-theme-000)]">
+          {item.value}
+        </span>
       </div>
-      <p className={cn(circleLabelClass, "mt-6 max-w-[16rem] bp840:max-w-none")}>
+      <p
+        className={cn(
+          "app-header-h6 text-average mt-6 max-w-[16rem] bp840:max-w-none",
+        )}
+      >
         {item.label}
       </p>
     </div>
@@ -53,12 +44,7 @@ function StatCircle({
 
 export function StatsSection() {
   return (
-    <section
-      className={cn(
-        SECTION_BG,
-        "px-4 py-12 bp600:py-14 bp840:py-16 bp1200:py-20",
-      )}
-    >
+    <section className="bg-[var(--page-bg)] px-4 py-12 bp600:py-14 bp840:py-16 bp1200:py-20">
       <div className="app-page-marketing">
         <div
           className={cn(

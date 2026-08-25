@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingFooter } from "@/components/landing/LandingFooter";
+import { BitConvaiWidget } from "@/components/ai/BitConvaiWidget";
 import { footerContent, navContent, brandContent } from "@/content/landing";
 import {
   isCabinetShellPath,
@@ -291,6 +292,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       ) : null}
 
       <main className="flex-1">{children}</main>
+
+      {isLandingApp ? <BitConvaiWidget /> : null}
 
       {showStandaloneLandingFooter ? (
         <LandingFooter copyright={copyright} />

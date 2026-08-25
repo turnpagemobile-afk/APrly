@@ -1,8 +1,8 @@
 export const activateAccountContent = {
   modal: {
-    title: "ACTIVATE YOUR ACCOUNT",
-    priceBannerLead: "GET FULL ACCESS TO APRLY FOR",
-    price: "$ 39.99 / 6 MONTHS",
+    title: "Activate your account",
+    priceBannerLead: "Get full access to APrly for",
+    price: "$ 39.99 / 6 months",
     features: [
       "Priority support",
       "Cancel anytime",
@@ -12,22 +12,22 @@ export const activateAccountContent = {
     ],
     programNote: "Recommended 6-Month Recovery Program.",
     whyLink: "Why?",
-    activate: "ACTIVATE APRLY",
+    activate: "Activate APrly",
     redirecting: "Redirecting to checkout…",
   },
   whyModal: {
-    title: "WHY THE 6-MONTH RECOVERY PROGRAM?",
+    title: "Why the 6-month recovery program?",
     sections: [
       {
-        title: "PROTECTION",
+        title: "Protection",
         body: "Banks often attempt to revert rates after 90 days. We monitor your accounts to prevent \"Rate Leakage.\"",
       },
       {
-        title: "CREDIT DEFENSE",
+        title: "Credit defense",
         body: "We verify that your creditors are reporting your new plan correctly to protect your score.",
       },
       {
-        title: "THE FINAL MELT",
+        title: "The final melt",
         body: "Our AI optimizes your payment waterfall every month as your balances drop. Stay protected for less than 70 cents a day.",
       },
     ],

@@ -75,14 +75,12 @@ export function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswordModalP
 
   return (
     <AuthOverlayShell open={open} onDismiss={dismiss} allowDismiss={!forgot.isPending}>
-      <p className="pr-10 text-xs font-bold uppercase tracking-widest text-[var(--neutral-theme-900)]">
-        {copy.title}
-      </p>
+      <p className="app-header-h6 text-title pr-10">{copy.title}</p>
 
       {step === "form" ? (
         <>
           <AuthForgotLockIllustration className="mt-4" />
-          <p className="mt-4 text-center text-sm text-[var(--hint-text-color)]">{copy.prompt}</p>
+          <p className="app-text-p1-regular text-average mt-4 text-center">{copy.prompt}</p>
 
           <form className="mt-5 space-y-4" onSubmit={(e) => void onSubmit(e)}>
             <AuthTextInput
@@ -112,10 +110,8 @@ export function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswordModalP
       ) : (
         <>
           <AuthForgotEmailIllustration className="mt-4" />
-          <p className="mt-4 text-center text-sm font-bold uppercase tracking-wide text-[var(--neutral-theme-900)]">
-            {copy.successTitle}
-          </p>
-          <p className="mt-2 text-center text-sm text-[var(--hint-text-color)]">
+          <p className="app-header-h6 text-title mt-4 text-center">{copy.successTitle}</p>
+          <p className="app-text-p1-regular text-hint mt-2 text-center">
             {copy.successSubtitle}
           </p>
           <div className="flex justify-center pt-6">

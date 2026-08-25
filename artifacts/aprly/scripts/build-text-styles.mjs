@@ -26,11 +26,13 @@ const FONT_FAMILY_MAP = {
   Figtree: "var(--app-font-hero-body)",
   "Inter Display": "var(--app-font-display)",
   Inter: "var(--app-font-sans)",
+  "Bricolage Grotesque": "var(--app-font-bricolage)",
 };
 
 const FONT_WEIGHT_MAP = {
   Black: 900,
-  "ExtraBold": 800,
+  ExtraBold: 800,
+  "96pt ExtraBold": 800,
   Bold: 700,
   "Bold Italic": 700,
   SemiBold: 600,
@@ -75,6 +77,11 @@ function buildStyleRule(style) {
 
   if (weightKey === "Bold Italic") {
     lines.push("    font-style: italic;");
+  }
+
+  if (typeof weightKey === "string" && weightKey.includes("96pt")) {
+    lines.push("    font-optical-sizing: auto;");
+    lines.push('    font-variation-settings: "opsz" 96;');
   }
 
   const lineHeight = LINE_HEIGHT_SUPPLEMENT[style.name];

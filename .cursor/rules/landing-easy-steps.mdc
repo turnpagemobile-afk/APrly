@@ -1,11 +1,12 @@
 ---
-description: Spec for Easy Steps landing section (#how) — TS_fix layout
+description: Spec for Easy Steps landing section (#how) — white-green accordion cards
 globs: artifacts/aprly/src/components/landing/EasyStepsSection.tsx
 ---
 
-# Easy Steps (`#how`) — TS_fix implementation
+# Easy Steps (`#how`) — white-green accordion
 
-Source of truth: `local_docs/NEW_GREEN_DESIGN/fix/TS_fix.txt`
+Source of truth: `local_docs/WHITE_GREEN_DESIGN/White-green design.txt` (landing block 4)
+and Figma screenshots `landing/4/` / `fix/1/figma.png`.
 
 Do **not** modify this file unless the user explicitly asks for Easy Steps / `#how` changes.
 
@@ -14,45 +15,42 @@ Do **not** modify this file unless the user explicitly asks for Easy Steps / `#h
 - `app-header-h3` + `text-title` (`--title-color`), centered
 - Content: `easyStepsContent.title` from `landing.ts`
 
-## Grid (critical)
+## Layout
 
-One **vertical** container (`flex flex-col w-full`) holds **three separate full-width rows** — not one `flex-row` with three cards side by side.
+Staggered rows across the marketing width (`justify-start` / `justify-center` / `justify-end`):
 
-Each row:
-- `flex flex-row w-full`
-- Row 1: `justify-start` — card aligned left
-- Row 2: `justify-center` — card centered
-- Row 3: `justify-end` — card aligned right
-- Contains exactly **one** `EasyStepCard`
+- Section bg: `page-bg`
+- Each step is a full-width flex row; card aligned left → center → right
+- Card width: `w-[83%] min-[600px]:w-[577px] bp840:w-[600px] shrink-0`
+- Vertical spacing: `gap-5` between rows
+- Do **not** wrap all cards in a narrow `max-w-[720px]` column (kills the stagger)
 
-Same grid on all breakpoints; only card width changes responsively.
+## Card chrome
 
-## Card width (all steps)
-
-```
-w-[83%] min-[600px]:w-[577px] bp840:w-[600px]
-```
+- Background `#FFF`
+- Radius `12px`
+- Shadow `var(--landing-shadow)` (`0px 25px 100px 0px #45589D14`)
+- Padding `20px`
 
 ## Card content
 
-- Transparent background; decorative PNG in top-right (`landing/easy-steps/1.png`, `2.png`, `3.png`)
-- **No** watermark digit numbers
-- Inner text always `text-left`
-- Title: `app-header-h4` + `text-action` (`--action-default-color`)
-- Body: `app-header-subheadline-regular` + `text-average`
-
-## Step 2 image special case
-
-- **≥600px:** `2.png` protrudes 50% above the card (`-translate-y-1/2`); row has `overflow-visible`, `pt-16`, and `mt-12`/`mt-16` gap from the row above
-- **≤599px:** image fully inside top-right corner of the card (`translate-y-0`, card `overflow-hidden`); **no** `mt` between row 1 and row 2 (`max-[599px]:mt-0`) since the image fits within the card padding
+- Number badge PNGs: `landing/easy-steps/1.png`, `2.png`, `3.png` (synced from WHITE_GREEN `#1` / `#2` / `#3`)
+- Number size: native aspect — `1.png` → `h-[101px] w-auto`; `2.png`/`3.png` → `h-[104px] w-auto` (never `h-10 w-10` square crop)
+- Title: `app-header-h5` + `text-title`
+- Body: collapsed by default; `app-text-p1-regular` + `neutral-theme-900` when open
+- Expand/collapse via local `useState` per card (independent; all may be open)
+- Closed icon: `landing/easy-steps/arrow-down.svg`
+- Open icon: `landing/faq/faq_chevron_in_circle_up.svg`
 
 ## Assets
 
-Synced via `pnpm sync-design` from `local_docs/NEW_GREEN_DESIGN/fix/{1,2,3}.png` → `public/landing/easy-steps/`.
+Synced via `pnpm sync-design` from `local_docs/WHITE_GREEN_DESIGN` → `public/landing/easy-steps/`.
 
 ## Anti-patterns
 
-- Single `flex-row` parent with three cards (wrong grid)
-- Watermark digit overlays (`accent-theme-200` spans)
-- Ad-hoc `font-serif` / `primary-theme-*` typography instead of global text styles
-- Desktop/mobile dual DOM or auto-rotate (removed legacy behavior)
+- Protruding step-2 photo (`-translate-y-1/2`) from NEW_GREEN
+- Title `app-header-h4` + `text-action` (old green theme)
+- Watermark digit overlays
+- Always-visible body text without accordion
+- Square-cropping number PNGs (`h-10 w-10`)
+- Single centered `max-w-[720px]` stack (no horizontal stagger)

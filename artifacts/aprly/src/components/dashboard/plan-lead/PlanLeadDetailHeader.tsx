@@ -1,8 +1,8 @@
 import { Link } from "wouter";
-import { ArrowLeft } from "lucide-react";
 import { dashboardTabContent } from "@/content/dashboard-tab";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
 import { PlanDetailActionsMenu } from "@/components/dashboard/plan-lead/PlanDetailActionsMenu";
+import { cabinetAsset } from "@/lib/cabinet-assets";
 
 type PlanLeadDetailHeaderProps = {
   planIndex: number;
@@ -24,7 +24,12 @@ export function PlanLeadDetailHeader({
   return (
     <header className="dash-plan-detail-header">
       <Link href={returnTo} className="dash-plan-detail-back">
-        <ArrowLeft className="dash-plan-detail-back-icon" aria-hidden="true" />
+        <img
+          src={cabinetAsset("cabinet/dashboard/arrow-left.svg")}
+          alt=""
+          aria-hidden
+          className="h-11 w-11 shrink-0"
+        />
         <h1 className="dash-plan-detail-title app-header-screen-title-bold text-average">
           {title}
         </h1>

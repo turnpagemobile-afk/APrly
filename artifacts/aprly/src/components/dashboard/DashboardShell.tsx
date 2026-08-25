@@ -10,6 +10,7 @@ import type { StartCheckoutOptions } from "@/lib/use-audit-checkout";
 import { CabinetPwaProvider, useCabinetPwaContext } from "@/lib/pwa/cabinet-pwa-context";
 import { CabinetOfflineBanner } from "@/components/dashboard/CabinetOfflineBanner";
 import { CabinetUpdateBanner } from "@/components/dashboard/CabinetUpdateBanner";
+import { BitConvaiWidget } from "@/components/ai/BitConvaiWidget";
 
 type DashboardShellProps = {
   activeTab: DashboardTab;
@@ -66,9 +67,8 @@ function DashboardShellInner({
 
         <main className="flex min-h-0 flex-1 flex-col">{children}</main>
 
-        {activeTab !== "home" ? (
-          <LandingFooter copyright={copyright} homeHref="/dashboard?tab=home" />
-        ) : null}
+        <LandingFooter copyright={copyright} homeHref="/dashboard?tab=home" />
+        <BitConvaiWidget />
       </div>
     </CabinetActivateProvider>
   );

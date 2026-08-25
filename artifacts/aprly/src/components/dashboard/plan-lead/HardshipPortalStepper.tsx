@@ -86,14 +86,14 @@ export function HardshipPortalStepper({
                 <div className="dash-plan-detail-step-badge">
                   {isDone ? (
                     <img
-                      src={cabinetAsset("cabinet/dashboard/checked.png")}
+                      src={cabinetAsset("cabinet/dashboard/checked.svg")}
                       alt=""
                       aria-hidden
                       className="dash-plan-detail-step-icon"
                     />
                   ) : isActive ? (
                     <img
-                      src={cabinetAsset("cabinet/dashboard/flag.png")}
+                      src={cabinetAsset("cabinet/dashboard/flag.svg")}
                       alt=""
                       aria-hidden
                       className="dash-plan-detail-step-icon"

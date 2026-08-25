@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import type { Partner } from "@workspace/api-client-react";
+import { PillButton } from "@/components/shared/PillButton";
 import { planLeadDetailContent } from "@/content/plan-lead-detail";
 import { dashDialogRadiusClassName } from "@/lib/dashboard-dialog-styles";
 import { cn } from "@/lib/utils";
@@ -52,13 +53,13 @@ export function SendPlanPartnerModal({
         closeClassName="dash-modal-close data-[state=open]:bg-transparent data-[state=open]:text-[var(--action-default-color)]"
       >
         <DialogHeader className="space-y-0 text-left">
-          <DialogTitle className="dash-modal-title">{copy.title}</DialogTitle>
+          <DialogTitle className="app-header-h6 text-average pr-8">{copy.title}</DialogTitle>
         </DialogHeader>
 
-        <p className="dash-modal-subtitle">{copy.subtitle}</p>
+        <p className="app-text-p1-regular text-average mt-4">{copy.subtitle}</p>
 
         {partners.length === 0 ? (
-          <p className="dash-modal-subtitle text-[var(--hint-text-color)]">{copy.empty}</p>
+          <p className="app-text-p1-regular text-hint mt-4">{copy.empty}</p>
         ) : (
           <ul className="dash-modal-partner-list" role="radiogroup" aria-label={copy.subtitle}>
             {partners.map((partner) => {
@@ -78,7 +79,9 @@ export function SendPlanPartnerModal({
                     <span className="dash-modal-partner-radio" aria-hidden>
                       <span className="dash-modal-partner-radio-dot" />
                     </span>
-                    <span className="dash-modal-partner-name">{partner.name}</span>
+                    <span className="app-text-p1-regular text-average min-w-0 flex-1 truncate text-left">
+                      {partner.name}
+                    </span>
                   </button>
                 </li>
               );
@@ -86,9 +89,11 @@ export function SendPlanPartnerModal({
           </ul>
         )}
 
-        <button
+        <PillButton
           type="button"
-          className="dash-modal-primary-btn"
+          variant="primary"
+          size="default"
+          className="mt-6 w-full"
           disabled={selectedId == null || isSending || partners.length === 0}
           onClick={onSendClick}
         >
@@ -100,7 +105,7 @@ export function SendPlanPartnerModal({
           ) : (
             copy.sendInfo
           )}
-        </button>
+        </PillButton>
       </DialogContent>
     </Dialog>
   );

@@ -1,7 +1,7 @@
 import { useMemo, type Dispatch, type SetStateAction } from "react";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { PillButton } from "@/components/shared/PillButton";
 import type { CardEntry } from "./types";
 import { accountsAreComplete } from "./optimizerAccounts";
 import { optimizerContent } from "@/content/landing";
@@ -51,24 +51,20 @@ function AuditCardSummaryRow({
   return (
     <article
       className={cn(
-        "flex gap-3 rounded-[var(--design-card-corner-radius-small,24px)] bg-white p-4 shadow-[0_4px_12px_0_rgba(29,62,11,0.08)]",
+        "flex gap-3 rounded-[var(--design-card-corner-radius-small,24px)] bg-[var(--card-1lvl-bg-color)] p-4 shadow-[var(--cabinet-card-shadow)]",
         "bp600:items-start bp600:p-5",
       )}
     >
-      <span
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--info-theme-500)]"
+      <img
+        src={landingAsset("landing/audit/credit-card.svg")}
+        alt=""
         aria-hidden
-      >
-        <img
-          src={landingAsset("landing/audit/credit-card.svg")}
-          alt=""
-          className="h-5 w-5"
-        />
-      </span>
+        className="h-11 w-11 shrink-0"
+      />
 
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-base font-extrabold leading-snug text-[var(--neutral-theme-900)] bp600:text-lg">
+          <h3 className="app-text-p1-bold text-average">
             {account.brand || `Card ${index + 1}`}
           </h3>
           {canRemove ? (
@@ -94,13 +90,17 @@ function AuditCardSummaryRow({
             "bp600:mt-4 bp600:flex-row bp600:flex-wrap bp600:gap-3",
           )}
         >
-          <span className="inline-flex w-fit items-center rounded-full bg-[var(--info-theme-100)] px-3 py-1.5 text-sm font-semibold text-[var(--info-theme-500)]">
-            Balance:{" "}
-            <span className="ml-1 font-extrabold">${formatBalance(account.balance)}</span>
+          <span className="inline-flex w-fit items-center rounded-full bg-[var(--info-theme-200)] px-3 py-1.5">
+            <span className="app-text-p1-regular text-average">Balance:</span>
+            <span className="app-text-p1-bold text-average ml-1">
+              ${formatBalance(account.balance)}
+            </span>
           </span>
-          <span className="inline-flex w-fit items-center rounded-full bg-[var(--accent-theme-100)] px-3 py-1.5 text-sm font-semibold text-[var(--accent-theme-500)]">
-            Rate:{" "}
-            <span className="ml-1 font-extrabold">{formatRate(account.rate)}</span>
+          <span className="inline-flex w-fit items-center rounded-full bg-[var(--accent-theme-200)] px-3 py-1.5">
+            <span className="app-text-p1-regular text-average">Rate:</span>
+            <span className="app-text-p1-bold text-average ml-1">
+              {formatRate(account.rate)}
+            </span>
           </span>
         </div>
       </div>
@@ -124,9 +124,6 @@ export function OptimizerStep2({
 
   const cardsReady = useMemo(() => accountsAreComplete(accounts), [accounts]);
 
-  const actionButtonClass =
-    "h-12 w-full rounded-full px-6 text-sm font-bold uppercase tracking-wide bp600:px-8";
-
   return (
     <motion.div
       initial={{ opacity: 0, x: 24 }}
@@ -149,43 +146,40 @@ export function OptimizerStep2({
 
       <div className="flex flex-col gap-3 bp600:items-center bp600:gap-4">
         <div className="mx-auto flex w-full flex-col gap-3 bp600:max-w-[360px] bp600:gap-4">
-          <Button
+          <PillButton
             type="button"
+            variant="primary"
+            size="lg"
             disabled={plaidBusy}
             onClick={onPlaidConnect}
-            className={cn(
-              actionButtonClass,
-              "bg-[var(--primary-theme-500)] text-white hover:bg-[var(--primary-theme-600)]",
-            )}
+            className="w-full"
           >
             {plaidBusy ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
             ) : null}
             {copy.connectMorePlaid}
-          </Button>
+          </PillButton>
 
           <div className="grid grid-cols-2 gap-3">
-            <Button
+            <PillButton
               type="button"
+              variant="secondary"
+              size="lg"
               onClick={onBack}
-              className={cn(
-                actionButtonClass,
-                "border-2 border-[var(--primary-theme-500)] bg-white text-[var(--primary-theme-500)] hover:bg-[var(--primary-theme-100)]",
-              )}
+              className="w-full min-w-0"
             >
               {copy.back}
-            </Button>
-            <Button
+            </PillButton>
+            <PillButton
               type="button"
+              variant="primary"
+              size="lg"
               onClick={onNext}
               disabled={!cardsReady}
-              className={cn(
-                actionButtonClass,
-                "bg-[var(--primary-theme-500)] text-white hover:bg-[var(--primary-theme-600)] disabled:opacity-50",
-              )}
+              className="w-full min-w-0"
             >
               {copy.continue}
-            </Button>
+            </PillButton>
           </div>
         </div>
       </div>

@@ -9,34 +9,42 @@ export function SubscriptionStatusCard({ active }: SubscriptionStatusCardProps) 
   return (
     <div
       className={cn(
-        "dash-summary-tile border bg-[var(--card-1lvl-bg-color)]",
+        "box-border flex h-[98px] w-full max-w-[220px] flex-col justify-center gap-2.5 rounded-2xl bg-[var(--card-1lvl-bg-color)] p-4",
         active
-          ? "border-[var(--success-theme-400)]"
-          : "border-[var(--danger-theme-400)]",
+          ? "border-2 border-[var(--success-theme-400)]"
+          : "border-2 border-[var(--danger-theme-400)]",
       )}
     >
-      <div className="dash-metric-card-stack">
+      <span
+        className={cn(
+          "inline-flex h-8 w-[114px] items-center gap-2 rounded-full px-2.5 uppercase tracking-wide",
+          "app-text-p2-bold text-average",
+          active ? "bg-[var(--success-theme-200)]" : "bg-[var(--danger-theme-200)]",
+        )}
+      >
         <span
           className={cn(
-            "inline-flex w-fit items-center gap-2 rounded-full px-3 py-1 uppercase tracking-wide text-white dash-text-sm-sb",
-            active ? "bg-[var(--success-theme-500)]" : "bg-[var(--danger-theme-500)]",
+            "h-5 w-5 shrink-0 rounded-full",
+            active
+              ? "bg-[var(--palette-functional-success-success-500)]"
+              : "bg-[var(--palette-functional-danger-danger-500)]",
           )}
-        >
-          <span
-            className={cn(
-              "h-2 w-2 rounded-full bg-white/90",
-              !active && "opacity-80",
-            )}
-            aria-hidden
-          />
-          {active
-            ? dashboardTabContent.subscriptionCard.active
-            : dashboardTabContent.subscriptionCard.disabled}
-        </span>
-        <p className="dash-display-label text-[var(--neutral-theme-900)]">
-          {dashboardTabContent.subscriptionCard.title}
-        </p>
-      </div>
+          aria-hidden
+        />
+        {active
+          ? dashboardTabContent.subscriptionCard.active
+          : dashboardTabContent.subscriptionCard.disabled}
+      </span>
+      <p
+        className={cn(
+          "app-text-p2-bold uppercase",
+          active
+            ? "text-[var(--success-theme-900)]"
+            : "text-[var(--danger-theme-900)]",
+        )}
+      >
+        {dashboardTabContent.subscriptionCard.title}
+      </p>
     </div>
   );
 }

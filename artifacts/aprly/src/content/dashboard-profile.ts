@@ -1,29 +1,29 @@
 export const dashboardProfileContent = {
-  pageTitle: "ACCOUNT",
+  pageTitle: "Account",
   accessCard: {
-    getFullAccess: "GET FULL ACCESS",
-    activate: "ACTIVATE APRLY",
-    activeTitle: "YOUR ACCOUNT IS ACTIVE",
+    getFullAccess: "Get full access",
+    activate: "Activate APrly",
+    activeTitle: "Your account is active",
     activeDescriptionFrom: "Your full access is activated from {date}.",
     activeDescriptionFallback: "Your full access is active.",
   },
   loginEmail: {
-    title: "LOGIN EMAIL",
+    title: "Login email",
     emailLabel: "Email",
   },
   personalInfo: {
-    title: "PERSONAL INFO",
+    title: "Personal info",
     firstName: "First name",
     lastName: "Last name",
-    save: "SAVE CHANGES",
+    save: "Save changes",
     successMessage: "Your personal info has been successfully changed.",
   },
   password: {
-    title: "ACCOUNT PASSWORD",
+    title: "Account password",
     oldPassword: "Old password",
     newPassword: "New password",
     confirmPassword: "Confirm a new password",
-    apply: "CHANGE PASSWORD",
+    apply: "Change password",
     errorBanner: "Please check the passwords you entered.",
     successMessage: "Your account password has been successfully changed.",
     passwordLength: "Password must be 8–20 characters.",
@@ -31,21 +31,21 @@ export const dashboardProfileContent = {
     currentPasswordIncorrect: "Current password is incorrect.",
   },
   actions: {
-    logOut: "LOG OUT",
+    logOut: "Log out",
   },
   fieldRequired: "This field is required",
   ok: "OK",
   logout: {
-    title: "LOG OUT",
+    title: "Log out",
     message: "Are you sure you want to log out?",
-    confirm: "CONFIRM & LOG OUT",
+    confirm: "Confirm & log out",
   },
   deleteAccount: {
-    title: "DELETE ACCOUNT",
+    title: "Delete account",
     message:
       "Are you sure you want to delete your account? This action cannot be undone.",
-    button: "DELETE ACCOUNT",
-    confirm: "CONFIRM & DELETE ACCOUNT",
+    button: "Delete account",
+    confirm: "Confirm & delete account",
   },
   toast: {
     profileSaved: {

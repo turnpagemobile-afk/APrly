@@ -3,16 +3,16 @@
  */
 
 export const cabinetShellContent = {
-  createSavingPlan: "CREATE SAVING PLAN",
-  createSavingPlanShort: "CREATE PLAN",
+  createSavingPlan: "Create saving plan",
+  createSavingPlanShort: "Create plan",
   tabs: {
-    home: "HOME",
-    dashboard: "DASHBOARD",
+    home: "Home",
+    dashboard: "Dashboard",
   },
 } as const;
 
 export const cabinetHomeContent = {
-  goToDashboardCta: "GO TO DASHBOARD",
+  goToDashboardCta: "Go to dashboard",
 } as const;
 
 export const dashboardPromoContent = {
@@ -21,7 +21,7 @@ export const dashboardPromoContent = {
     "Full APrly experience on both iOS and Android. Get easy access to APrly in a way that works best for you.",
   title: "APrly. Sync Everywhere.",
   body: "Install APrly on your home screen for quick access to your wealth cockpit — no app store required.",
-  cta: { label: "DOWNLOAD APrly APP" },
+  cta: { label: "Download APrly App" },
   ctaInstalled: "Installed on this device",
   ctaIos: "Add to Home Screen",
   disabledNoSubscription: "Activate your APrly subscription to install the app.",

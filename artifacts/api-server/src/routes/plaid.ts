@@ -59,6 +59,10 @@ function isLocalFrontendOrigin(origin: string): boolean {
 
 function plaidRedirectUri(): string | undefined {
   const explicit = process.env["PLAID_REDIRECT_URI"]?.trim();
+  // Explicit off — same as localhost (no redirect_uri in link token)
+  if (explicit === "off" || explicit === "none" || explicit === "false") {
+    return undefined;
+  }
   if (explicit) return explicit;
   const origin = process.env["FRONTEND_ORIGIN"]?.trim().replace(/\/+$/, "");
   if (!origin || isLocalFrontendOrigin(origin)) return undefined;

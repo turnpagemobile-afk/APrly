@@ -37,7 +37,7 @@
   }
 
   .admin-plan-detail-metric-tile--on-review {
-    border: 1px solid var(--warning-theme-400);
+    border: 2px solid var(--warning-theme-400);
     background: var(--warning-theme-100);
   }
 
@@ -88,7 +88,7 @@
   }
 
   .admin-plan-detail-btn {
-    @apply inline-flex min-h-[44px] items-center justify-center rounded-xl px-6 py-2 uppercase transition-opacity hover:opacity-90 disabled:opacity-50;
+    @apply inline-flex min-h-[44px] items-center justify-center rounded-xl px-6 py-2 uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-[var(--button-disable-color)] disabled:text-[var(--neutral-theme-000)] disabled:opacity-100 disabled:hover:opacity-100;
     color: var(--neutral-theme-000);
   }
 
@@ -96,8 +96,18 @@
     background: var(--action-default-color);
   }
 
+  .admin-plan-detail-btn--primary:not(:disabled):hover {
+    background: var(--success-theme-700);
+    opacity: 1;
+  }
+
   .admin-plan-detail-btn--danger {
     background: var(--danger-theme-500);
+  }
+
+  .admin-plan-detail-btn--danger:not(:disabled):hover {
+    background: var(--danger-theme-600);
+    opacity: 1;
   }
 
   .admin-plan-detail-step-actions {

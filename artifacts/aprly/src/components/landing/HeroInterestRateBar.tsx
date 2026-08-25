@@ -31,20 +31,27 @@ type HeroInterestRateBarProps = {
 function RateMarker({
   rate,
   leftPct,
-  className,
+  tone,
   visible = true,
-  dashedStem = false,
 }: {
   rate: number;
   leftPct: number;
-  className?: string;
+  tone: "black" | "green";
   visible?: boolean;
-  dashedStem?: boolean;
 }) {
+  const bubbleBg =
+    tone === "black"
+      ? "bg-[var(--neutral-theme-1000)]"
+      : "bg-[var(--action-default-color)]";
+  const pointerBorder =
+    tone === "black"
+      ? "border-t-[var(--neutral-theme-1000)]"
+      : "border-t-[var(--action-default-color)]";
+
   return (
     <div
       className={cn(
-        "pointer-events-none absolute top-0 -translate-x-1/2 transition-opacity duration-200",
+        "pointer-events-none absolute top-0 z-20 -translate-x-1/2 transition-opacity duration-200",
         visible ? "opacity-100" : "opacity-0",
       )}
       style={{ left: `${leftPct}%` }}
@@ -53,23 +60,20 @@ function RateMarker({
       <div className="flex flex-col items-center">
         <span
           className={cn(
-            "rounded-full px-2.5 py-1 text-[10px] font-bold leading-none text-white bp600:px-3 bp600:py-1.5 bp600:text-xs bp840:text-sm",
-            className,
+            "rounded-full px-2.5 py-1 text-[10px] font-bold leading-none text-white",
+            "bp600:px-3 bp600:py-1.5 bp600:text-xs bp840:text-sm",
+            bubbleBg,
           )}
         >
           {rate}%
         </span>
-        {dashedStem ? (
-          <>
-            <span
-              className="mt-1 block h-3 w-0 border-l border-dashed border-white/90 bp600:hidden"
-              aria-hidden
-            />
-            <span className="mt-1 hidden h-3 w-px bg-white/90 bp600:block" aria-hidden />
-          </>
-        ) : (
-          <span className="mt-1 block h-3 w-px bg-white/90" aria-hidden />
-        )}
+        <span
+          className={cn(
+            "mt-[-1px] h-0 w-0 border-x-[5px] border-x-transparent border-t-[6px]",
+            pointerBorder,
+          )}
+          aria-hidden
+        />
       </div>
     </div>
   );
@@ -141,40 +145,39 @@ export function HeroInterestRateBar({ className }: HeroInterestRateBarProps) {
         <RateMarker
           rate={START_RATE}
           leftPct={MARKER_22_PCT}
-          className="bg-[var(--accent-theme-500)]"
-          dashedStem
+          tone="black"
         />
         <RateMarker
           rate={END_RATE}
           leftPct={MARKER_8_PCT}
-          className="bg-[var(--primary-theme-500)]"
+          tone="green"
           visible={show8Marker}
         />
 
         <div
-          className="relative h-[30px] rounded-[100px] border-2 border-[var(--neutral-theme-000)] bg-white bp600:h-[34px] bp840:h-[38px]"
+          className={cn(
+            "relative h-[30px] overflow-hidden rounded-[100px]",
+            "border border-white/80 shadow-[var(--landing-shadow)]",
+            "bp600:h-[34px] bp840:h-[38px]",
+          )}
+          style={{
+            background:
+              "linear-gradient(90deg, var(--neutral-theme-050) 0%, var(--neutral-theme-200) 100%)",
+          }}
           role="progressbar"
           aria-valuemin={END_RATE}
           aria-valuemax={START_RATE}
           aria-valuenow={ariaValue}
           aria-label={heroContent.interestRateLabel}
         >
-          <div className="absolute inset-0 overflow-hidden rounded-[100px]">
-            <div
-              className="h-full rounded-[100px]"
-              style={{ width: `${fillEndPct}%`, backgroundColor: fillColor }}
-            />
-          </div>
-
           <div
-            className="absolute top-1/2 z-10 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-sm bp600:h-[18px] bp600:w-[18px] bp840:h-5 bp840:w-5"
-            style={{ left: `${fillEndPct}%` }}
-            aria-hidden
+            className="absolute inset-y-0 left-0 rounded-[100px]"
+            style={{ width: `${fillEndPct}%`, backgroundColor: fillColor }}
           />
         </div>
       </div>
 
-      <p className="text-center text-xs font-bold uppercase tracking-widest text-[var(--secondary-theme-100)] bp840:text-sm">
+      <p className="app-text-p2-bold text-average mt-2 text-center uppercase tracking-widest">
         {heroContent.interestRateLabel}
       </p>
     </div>

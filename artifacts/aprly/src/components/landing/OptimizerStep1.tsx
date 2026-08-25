@@ -1,6 +1,6 @@
 import type { RefObject } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { PillButton } from "@/components/shared/PillButton";
 import { optimizerContent } from "@/content/landing";
 import { sharedAsset } from "@/lib/shared-assets";
 import { cn } from "@/lib/utils";
@@ -24,64 +24,49 @@ export function OptimizerStep1({
       transition={{ duration: 0.3 }}
       className="flex flex-col"
     >
-      <div className="space-y-6 bp600:space-y-8">
-        <div className="flex w-full flex-col items-center gap-5" role="list">
-          {optimizerContent.step1.features.map((feature) => (
-            <article
-              key={feature.title}
-              role="listitem"
-              className={cn(
-                "relative w-full max-w-full pt-5 pl-5",
-                "bp600:max-w-[557px] bp840:max-w-[690px]",
-              )}
-            >
-              <span
-                className="pointer-events-none absolute top-0 left-0 h-[70px] w-[70px] rounded-full bg-[var(--secondary-theme-200)]"
-                aria-hidden
-              />
-              <h3 className="relative font-hero-display text-[1.625rem] font-semibold uppercase leading-[1.3] text-[var(--title-beige-color)]">
-                {feature.title}
-              </h3>
-              <p className="relative mt-2 font-hero-body text-xl font-medium leading-[26px] text-[var(--average-text-color)]">
-                {feature.body}
-              </p>
-            </article>
-          ))}
-        </div>
-
-        <div className="flex justify-center pt-2">
-          <Button
-            ref={connectButtonRef}
-            type="button"
-            size="lg"
-            disabled={plaidBusy}
-            onClick={onPlaidConnect}
-            className="h-12 w-full min-w-0 rounded-full bg-[var(--primary-theme-500)] px-10 text-sm font-bold uppercase tracking-wide text-white hover:bg-[var(--primary-theme-600)] bp600:w-auto bp600:min-w-[240px]"
-          >
-            {optimizerContent.step1.connectPlaid}
-          </Button>
-        </div>
+      <div className="flex justify-center pt-2">
+        <PillButton
+          ref={connectButtonRef}
+          type="button"
+          variant="primary"
+          size="xxl"
+          disabled={plaidBusy}
+          onClick={onPlaidConnect}
+          className="h-[104px] w-[420px] max-w-full px-7"
+        >
+          {optimizerContent.step1.connectPlaid}
+        </PillButton>
       </div>
 
-      <div className="mt-8 overflow-hidden rounded-[20px]">
-        <div className="flex items-center justify-between bg-[var(--palette-green-forest-green-forest-500)] px-[30px] py-5 text-white">
+      <div
+        className={cn(
+          "mx-auto mt-8 w-full max-w-[698px] overflow-hidden rounded-[20px] border border-[var(--primary-theme-200)] px-[30px] py-5",
+          "bg-[linear-gradient(0deg,var(--primary-theme-050),var(--primary-theme-050)),radial-gradient(100%_100%_at_100%_0%,rgba(16,185,129,0.1)_0%,rgba(16,185,129,0)_100%)]",
+        )}
+      >
+        <div className="flex items-center justify-between gap-4">
           <img
             src={sharedAsset("plaid-logo.png")}
             alt="Plaid"
-            className="h-5 w-auto object-contain"
+            className="h-10 w-[106px] object-contain"
             loading="lazy"
           />
-          <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide">
+          <span className="flex items-center gap-1.5">
             <img
-              src={sharedAsset("heroicon.svg")}
+              src={sharedAsset("checked-circle.svg")}
               alt=""
               className="h-6 w-6"
               aria-hidden
             />
-            {optimizerContent.step1.plaidBanner.verified}
+            <span
+              className="text-[22px] font-extrabold uppercase leading-9 text-[var(--primary-theme-600)]"
+              style={{ fontFamily: "var(--app-font-bricolage)" }}
+            >
+              {optimizerContent.step1.plaidBanner.verified}
+            </span>
           </span>
         </div>
-        <p className="bg-[var(--primary-theme-100)] px-[30px] py-5 text-sm leading-relaxed text-[var(--average-text-color)]">
+        <p className="app-text-p1-regular text-average mt-4">
           {optimizerContent.step1.plaidBanner.securityNote}
         </p>
       </div>

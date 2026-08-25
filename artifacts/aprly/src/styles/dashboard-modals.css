@@ -8,7 +8,7 @@
   }
 
   .dash-modal-panel {
-    @apply max-w-[min(100%-2rem,480px)] gap-0 border-0 p-6 shadow-lg bp600:max-w-[520px] bp600:p-8;
+    @apply flex max-w-[min(100%-2rem,480px)] flex-col gap-0 border-0 p-6 shadow-lg bp600:max-w-[520px] bp600:p-8;
     border-radius: var(--design-card-corner-radius-small, 24px);
     background: var(--card-1lvl-bg-color);
   }
@@ -36,7 +36,7 @@
 
   .dash-modal-title {
     font-family: var(--app-font-display);
-    @apply pr-8 text-lg font-extrabold uppercase leading-tight tracking-wide text-[var(--neutral-theme-900)];
+    @apply pr-8 text-lg font-extrabold leading-tight tracking-wide text-[var(--neutral-theme-900)];
   }
 
   .dash-modal-title--center {
@@ -51,12 +51,12 @@
 
   .dash-modal-price-lead {
     font-family: var(--app-font-display);
-    @apply text-sm font-extrabold uppercase tracking-wide text-[var(--neutral-theme-900)] bp600:text-base;
+    @apply text-sm font-extrabold tracking-wide text-[var(--neutral-theme-900)] bp600:text-base;
   }
 
   .dash-modal-price-value {
     font-family: var(--app-font-display);
-    @apply mt-1 text-2xl font-black uppercase tracking-wide text-[var(--action-default-color)] bp600:text-[28px];
+    @apply mt-1 text-2xl font-black tracking-wide text-[var(--action-default-color)] bp600:text-[28px];
   }
 
   .dash-modal-feature-list {
@@ -81,9 +81,13 @@
 
   .dash-modal-primary-btn {
     font-family: var(--app-font-display);
-    @apply mt-6 inline-flex min-h-[52px] w-full items-center justify-center gap-2 px-5 py-3 text-base font-extrabold uppercase tracking-wide text-white transition-opacity hover:opacity-95 disabled:opacity-60;
+    @apply mt-6 inline-flex min-h-[52px] w-full items-center justify-center gap-2 px-5 py-3 text-base font-extrabold tracking-wide text-white transition-colors disabled:cursor-not-allowed disabled:bg-[var(--button-disable-color)] disabled:text-[var(--neutral-theme-000)];
     border-radius: var(--design-button-corner-radius, 12px);
     background: var(--action-default-color);
+  }
+
+  .dash-modal-primary-btn:not(:disabled):hover {
+    background: var(--success-theme-700);
   }
 
   .dash-modal-subtitle {
@@ -106,7 +110,7 @@
 
   .dash-modal-why-heading {
     font-family: var(--app-font-display);
-    @apply text-sm font-extrabold uppercase tracking-wide text-[var(--action-default-color)];
+    @apply text-sm font-extrabold tracking-wide text-[var(--action-default-color)];
   }
 
   .dash-modal-why-body {
@@ -118,28 +122,29 @@
   }
 
   .dash-modal-partner-option {
-    @apply flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors;
-    border-color: var(--input-default-border-color);
+    @apply flex w-full items-center gap-3 rounded-xl border px-3 py-1.5 text-left transition-colors;
+    border-color: var(--card-border-color);
     background: var(--card-1lvl-bg-color);
   }
 
   .dash-modal-partner-option--selected {
-    border-color: var(--action-default-color);
-    background: color-mix(in srgb, var(--primary-theme-100) 80%, white);
+    border: 2px solid var(--success-theme-400);
+    background: var(--success-theme-200);
   }
 
   .dash-modal-partner-radio {
-    @apply flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2;
+    @apply flex h-5 w-5 shrink-0 items-center justify-center rounded-full border;
     border-color: var(--input-default-border-color);
+    background: var(--input-default-bg-color);
   }
 
   .dash-modal-partner-option--selected .dash-modal-partner-radio {
-    border-color: var(--action-default-color);
+    border-color: var(--input-default-border-color);
   }
 
   .dash-modal-partner-radio-dot {
-    @apply h-2.5 w-2.5 rounded-full opacity-0;
-    background: var(--action-default-color);
+    @apply h-3 w-3 rounded-full opacity-0;
+    background: var(--palette-functional-success-success-500);
   }
 
   .dash-modal-partner-option--selected .dash-modal-partner-radio-dot {
@@ -151,22 +156,30 @@
   }
 
   .dash-modal-field-label {
-    @apply mb-2 block text-xs font-semibold uppercase tracking-wide text-[var(--hint-text-color)];
+    @apply mb-2 block text-xs font-semibold tracking-wide text-[var(--hint-text-color)];
   }
 
   .dash-modal-input {
-    @apply h-12 w-full rounded-lg border px-3 text-sm text-[var(--input-text-color)] shadow-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-theme-300)];
+    @apply h-12 w-full rounded-lg border-2 px-3 text-sm text-[var(--input-text-color)] shadow-none focus-visible:outline-none focus-visible:ring-0;
     border-color: var(--input-default-border-color);
     background: var(--input-default-bg-color);
+    transition: color, background-color, border-color, box-shadow;
   }
 
-  .dash-modal-input:focus {
+  .dash-modal-input:focus,
+  .dash-modal-input:focus-visible {
     border-color: var(--input-focus-border-color);
     background: var(--input-focus-bg-color);
+    box-shadow: 0 0 0 4px var(--button-default-focus);
   }
 
   .dash-modal-input--error {
     border-color: var(--danger-theme-500);
+  }
+
+  .dash-modal-input--error:focus,
+  .dash-modal-input--error:focus-visible {
+    box-shadow: 0 0 0 4px var(--button-destructive-focus);
   }
 
   .dash-modal-field-error {

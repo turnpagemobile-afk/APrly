@@ -11,7 +11,8 @@ import { WhySection } from "../components/landing/WhySection";
 import { DashboardPreviewSection } from "../components/landing/DashboardPreviewSection";
 import { StatsSection } from "../components/landing/StatsSection";
 import { FaqSection } from "../components/landing/FaqSection";
-import { FooterCtaSection } from "../components/landing/FooterCtaSection";
+import { LandingFooter } from "../components/landing/LandingFooter";
+import { footerContent } from "@/content/landing";
 import { loadOptimizerSnapshot } from "@/lib/optimizerSnapshot";
 import { useSignupCheckout } from "@/lib/signup-checkout-context";
 import { toast } from "@/hooks/use-toast";
@@ -85,7 +86,12 @@ export default function Home() {
       <DashboardPreviewSection />
       <StatsSection />
       <FaqSection />
-      <FooterCtaSection onAuditClick={scrollToOptimizer} />
+      <LandingFooter
+        copyright={footerContent.copyrightTemplate.replace(
+          "{year}",
+          String(new Date().getFullYear()),
+        )}
+      />
     </div>
   );
 }

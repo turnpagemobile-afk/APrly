@@ -61,3 +61,4 @@ Overview.md
 threat_model.md
 .cursor/history/*
 .cursor/plans/*
+artifacts/aprly/.env

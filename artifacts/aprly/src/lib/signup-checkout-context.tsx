@@ -2,10 +2,12 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
+import { registerBitOpenSignup } from "@/lib/bit-ui-actions";
 
 export type OpenSignupOptions = {
   stripeSessionId?: string | null;
@@ -43,6 +45,8 @@ export function SignupCheckoutProvider({ children }: { children: ReactNode }) {
     setMountKey(options?.stripeSessionId ?? `signup-${Date.now()}`);
     setOpen(true);
   }, []);
+
+  useEffect(() => registerBitOpenSignup(openSignup), [openSignup]);
 
   const closeSignup = useCallback(() => {
     setOpen(false);

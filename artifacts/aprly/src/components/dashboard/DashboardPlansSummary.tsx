@@ -32,7 +32,7 @@ function SummaryMetricCard({
         variant === "debt" &&
           "border border-[var(--accent-theme-500)] bg-[var(--accent-theme-500)] text-[var(--neutral-theme-000)]",
         variant === "savings" &&
-          "border border-[var(--success-theme-500)] bg-[var(--success-theme-500)] text-[var(--neutral-theme-000)]",
+          "border border-[var(--success-theme-700)] bg-[var(--success-theme-700)] text-[var(--neutral-theme-000)]",
         variant === "default" &&
           "border border-[var(--card-border-color)] bg-[var(--card-1lvl-bg-color)]",
       )}
